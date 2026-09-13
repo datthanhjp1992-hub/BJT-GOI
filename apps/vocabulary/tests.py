@@ -195,3 +195,55 @@ class SearchQuerySetTests(VocabularyTestCase):
     def test_empty_query_returns_nothing(self):
         self._word("注文する", "ちゅうもんする", "gọi món")
         self.assertEqual(Vocabulary.objects.search("   ").count(), 0)
+
+
+class AdminTopicAssignmentTests(TestCase):
+    """Gán chủ đề cho từ vựng phải làm được ngay trong Django admin.
+
+    Bẫy đã gặp thật: `Vocabulary.topics` là M2M đi qua through model, mà Django
+    loại mọi M2M kiểu đó khỏi ModelForm — màn "Thêm vocabulary" im lặng mất phần
+    chủ đề, không báo lỗi gì. Phải có inline của VocabularyTopic thay thế.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        call_command("seed_mastercode", verbosity=0)
+
+    def setUp(self):
+        cache.clear()
+        self.admin = User.objects.create_superuser(
+            username="sieuquantri", password="MatKhauRatManh123", email="a@b.c",
+        )
+        self.client.force_login(self.admin)
+
+    def test_add_form_offers_the_topic_inline(self):
+        response = self.client.get("/admin/vocabulary/vocabulary/add/")
+        self.assertEqual(response.status_code, 200)
+        # `topic_links` là related_name của VocabularyTopic -> tiền tố của formset.
+        self.assertContains(response, "topic_links-TOTAL_FORMS")
+
+    def test_saving_through_the_inline_fills_audit_columns(self):
+        """Inline đi qua save() nên có created_by — khác `topics.add()`."""
+        topic = Topic.objects.create(name="Họp hành", slug="hop-hanh", name_ja="会議・打合せ")
+        response = self.client.post(
+            "/admin/vocabulary/vocabulary/add/",
+            {
+                "word": "議事録", "reading": "ぎじろく", "meaning_vi": "biên bản họp",
+                "audio_url": "",
+                "topic_links-TOTAL_FORMS": "1", "topic_links-INITIAL_FORMS": "0",
+                "topic_links-MIN_NUM_FORMS": "0", "topic_links-MAX_NUM_FORMS": "1000",
+                "topic_links-0-topic": str(topic.pk),
+                "examples-TOTAL_FORMS": "0", "examples-INITIAL_FORMS": "0",
+                "examples-MIN_NUM_FORMS": "0", "examples-MAX_NUM_FORMS": "1000",
+            },
+        )
+        self.assertEqual(response.status_code, 302, getattr(response, "context", None))
+        vocab = Vocabulary.objects.get(word="議事録")
+        self.assertEqual([t.slug for t in vocab.topics.all()], ["hop-hanh"])
+        self.assertEqual(VocabularyTopic.objects.get().created_by, self.admin)
+
+    def test_topic_admin_lists_word_count(self):
+        Topic.objects.create(name="Họp hành", slug="hop-hanh")
+        response = self.client.get("/admin/vocabulary/topic/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Họp hành")

@@ -16,12 +16,16 @@ pip install -r requirements.txt
 # thiếu nó là mọi trang 500 ngay ở thẻ {% static %} đầu tiên.
 python manage.py collectstatic --no-input
 
-# Supabase là DB dùng chung; migration của repo chỉ thêm bảng/cột nên chạy
-# trước khi instance mới lên là an toàn.
+# Supabase là DB dùng chung.
+# CẢNH BÁO (13/09/2026): migration KHÔNG còn chỉ thêm bảng/cột — bản bỏ cấp độ
+# BJT có XOÁ CỘT (accounts/0002, vocabulary/0003, gamification/0002). Trong lúc
+# Render còn giữ instance cũ để phục vụ, code cũ vẫn SELECT bjt_level trên bảng
+# vừa mất cột đó -> 500 cho tới khi instance mới lên. Deploy bản này lúc vắng
+# người, hoặc tạm bật maintenance.
 python manage.py migrate --no-input
 
 # Cả hai đều idempotent (update_or_create) — deploy lại bao nhiêu lần cũng
 # không tạo bản ghi trùng. Thiếu seed_mastercode thì MỌI <select> trên UI rỗng
-# (cấp độ BJT, theme...), xem apps/core/mastercode.py.
+# (theme, kiểu phiên học...), xem apps/core/mastercode.py.
 python manage.py seed_mastercode
 python manage.py seed_gamification
