@@ -95,6 +95,25 @@ button.btn,button.pill{font:inherit;cursor:pointer;}
 .toolbar input,.toolbar select{width:auto;flex:0 1 auto;}
 .toolbar .grow{flex:1 1 240px;}
 .pagination{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:24px;font-size:14px;color:var(--ink-soft);}
+
+/* SC08 Cài đặt — xem ghi chú đầy đủ ở cùng khối trong theme_a.css.
+   Theme B vuông hoàn toàn nên border-radius:0. */
+input[type=checkbox],input[type=radio]{width:auto;padding:0;margin:0;flex:none;}
+.checkbox-row{display:flex;align-items:center;gap:10px;font-size:14.5px;color:var(--ink);margin-bottom:12px;cursor:pointer;}
+.checkbox-row:last-child{margin-bottom:0;}
+.choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.choice-card{display:block;margin:0;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:0;color:var(--ink);font-size:14px;cursor:pointer;}
+.choice-card:has(input:checked){border-color:var(--accent);}
+.choice-card:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px;}
+.choice-card .swatch{display:block;height:50px;border-radius:0;background:var(--border);margin-bottom:10px;}
+.choice-card .swatch[data-theme="a"]{background:linear-gradient(135deg,#B5432E,#8f3323);}
+.choice-card .swatch[data-theme="b"]{background:linear-gradient(135deg,#14141A,#3B4FC7);}
+.choice-card .swatch[data-theme="c"]{background:linear-gradient(135deg,#FF6F61,#FFC93C);}
+.choice-name{display:flex;align-items:center;gap:8px;}
+.choice-name strong{font-weight:600;font-size:13.5px;}
+@media (max-width: 560px){
+  .choice-grid{grid-template-columns:1fr;}
+}
 /* Khu quản trị trên màn hẹp: sidebar 220px + nội dung sẽ tràn ngang ở điện
    thoại, nên xếp dọc lại. Ba file mockup gốc không có media query nào. */
 @media (max-width: 720px){

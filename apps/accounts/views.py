@@ -17,7 +17,13 @@ from apps.core import mastercode
 from apps.core.constants import CODE_TYPE_UI_THEME
 from apps.core.properties import message
 
-from .forms import LoginForm, ProfileForm, RegisterForm, SettingsForm
+from .forms import (
+    LoginForm,
+    PasswordUpdateForm,
+    ProfileForm,
+    RegisterForm,
+    SettingsForm,
+)
 
 REDIRECT_FIELD_NAME = "next"
 DEFAULT_REDIRECT = "learning:dashboard"
@@ -103,14 +109,30 @@ def profile_view(request):
 
 @login_required
 def settings_view(request):
-    """SC08_CaiDat. Đổi theme là đổi luôn file CSS mà base.html nạp."""
+    """SC08_CaiDat. Đổi theme là đổi luôn file CSS mà base.html nạp.
+
+    Trang có HAI form độc lập cùng POST về đây, phân biệt bằng ô ẩn `section`:
+
+        "preferences" — giao diện, mục tiêu, múi giờ, thông báo
+        "password"    — đổi mật khẩu
+
+    Chỉ form được gửi mới nhận `request.POST`; form còn lại dựng ở trạng thái
+    chưa bind nên hiện đúng giá trị đang lưu, không kéo theo lỗi đỏ oan của
+    khu bên cạnh. Tên ô là `section` chứ không phải `form` — `form` đã là tên
+    biến context của template.
+    """
     previous_theme = request.user.ui_theme
-    form = SettingsForm(request.POST or None, instance=request.user)
-    if request.method == "POST" and form.is_valid():
-        user = form.save()
-        # Đổi mật khẩu không nằm ở form này, nhưng gọi cho chắc: giữ session
-        # sống nếu sau này thêm field ảnh hưởng tới password hash.
-        update_session_auth_hash(request, user)
+    section = request.POST.get("section") if request.method == "POST" else None
+
+    settings_form = SettingsForm(
+        request.POST if section == "preferences" else None, instance=request.user
+    )
+    password_form = PasswordUpdateForm(
+        request.user, request.POST if section == "password" else None
+    )
+
+    if section == "preferences" and settings_form.is_valid():
+        user = settings_form.save()
         if user.ui_theme != previous_theme:
             flash.success(request, message(
                 "accounts.settings.success.theme_updated",
@@ -121,4 +143,16 @@ def settings_view(request):
         else:
             flash.success(request, message("common.success.saved"))
         return redirect("accounts:settings")
-    return render(request, "accounts/settings.html", {"form": form})
+
+    if section == "password" and password_form.is_valid():
+        user = password_form.save()
+        # BẮT BUỘC: đổi mật khẩu làm hash phiên đăng nhập cũ hết hiệu lực, thiếu
+        # dòng này thì người dùng bị đá ra trang đăng nhập ngay sau khi đổi.
+        update_session_auth_hash(request, user)
+        flash.success(request, message("accounts.settings.success.password_changed"))
+        return redirect("accounts:settings")
+
+    return render(request, "accounts/settings.html", {
+        "form": settings_form,
+        "password_form": password_form,
+    })

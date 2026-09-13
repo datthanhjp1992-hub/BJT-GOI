@@ -1,5 +1,97 @@
 {% extends "base.html" %}
-{% block title %}Cài đặt - BJT GOI{% endblock %}
+{% load properties_tags %}
+{% comment %}SC08_CaiDat — port từ htmlTemplate/SC08_CaiDat_*.html.
+
+Khác mockup ở ba chỗ, đều có lý do:
+  1. Mockup còn ô "Trình độ mục tiêu (BJT)" — cấp độ BJT đã bị bỏ ngày
+     13/09/2026, từ vựng phân loại theo CHỦ ĐỀ. Thay bằng ô Múi giờ, thứ
+     learning/services.py đã dùng để tính bài đến hạn + streak nhưng trước giờ
+     chưa màn nào cho người học sửa.
+  2. Mockup dùng thẻ <a> để "đổi theme" — ở đây là radio thật trong một form
+     POST, vì đổi theme là ghi vào User.ui_theme.
+  3. Thêm khu Đổi mật khẩu (form thứ hai).
+
+Ba thẻ giao diện KHÔNG liệt kê cứng A/B/C: lặp qua form.ui_theme, choices lấy
+từ MasterCode. Thêm một theme mới ở MasterCode là trang này tự có thêm thẻ;
+muốn có dải màu xem trước thì thêm một dòng .choice-card .swatch[data-theme]
+vào 3 file static/css/theme_*.css, thiếu thì thẻ vẫn hiện, chỉ là ô màu xám.
+
+Chú thích nhiều dòng BẮT BUỘC dùng comment/endcomment — {# #} của Django chỉ
+có tác dụng trên MỘT dòng, viết tràn dòng là bị in thẳng ra HTML.
+{% endcomment %}
+
+{% block title %}{% label "accounts.settings.title" %} | {% label "common.brand.name" %}{% endblock %}
+{% block wrap_attrs %} style="max-width:640px;"{% endblock %}
+
 {% block content %}
-  <!-- TODO: port SC0x mockup markup for settings here, wiring {{ form }} fields -->
+  <div class="eyebrow">{% label "accounts.settings.eyebrow" %}</div>
+  <h1 class="serif" style="font-size:28px;margin:0 0 28px;">{% label "accounts.settings.title" %}</h1>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="section" value="preferences">
+
+    {% for error in form.non_field_errors %}
+      <div class="flash error">{{ error }}</div>
+    {% endfor %}
+
+    <div class="card" style="margin-bottom:20px;">
+      <h3 class="serif" style="margin:0 0 4px;">{% label "accounts.settings.section.theme" %}</h3>
+      <p class="muted" style="margin:0 0 20px;font-size:14px;">{% label "accounts.settings.hint.theme" %}</p>
+
+      <div class="choice-grid">
+        {% for choice in form.ui_theme %}
+          <label class="choice-card">
+            <span class="swatch" data-theme="{{ choice.data.value|stringformat:'s'|lower }}"></span>
+            <span class="choice-name">{{ choice.tag }}<strong>{{ choice.choice_label }}</strong></span>
+          </label>
+        {% endfor %}
+      </div>
+      {% for error in form.ui_theme.errors %}<p class="error">{{ error }}</p>{% endfor %}
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <h3 class="serif" style="margin:0 0 16px;">{% label "accounts.settings.section.goal" %}</h3>
+      {% include "partials/field.html" with field=form.daily_review_goal %}
+      {% include "partials/field.html" with field=form.timezone %}
+    </div>
+
+    <div class="card">
+      <h3 class="serif" style="margin:0 0 16px;">{% label "accounts.settings.section.notification" %}</h3>
+      {% comment %}Checkbox KHÔNG đi qua partials/field.html: ở đó nhãn nằm
+      TRÊN ô nhập, còn checkbox thì nhãn phải nằm cạnh ô. Rule
+      input[type=checkbox]{width:auto} trong theme_*.css là thứ giữ cho ô vuông
+      không bị input{width:100%} kéo giãn hết chiều ngang card.{% endcomment %}
+      <label class="checkbox-row">
+        {{ form.daily_reminder_enabled }}<span>{{ form.daily_reminder_enabled.label }}</span>
+      </label>
+      <label class="checkbox-row">
+        {{ form.weekly_email_summary_enabled }}<span>{{ form.weekly_email_summary_enabled.label }}</span>
+      </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="margin-top:22px;">{% label "common.button.save" %}</button>
+  </form>
+
+  <div class="divider"></div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="section" value="password">
+
+    <div class="card">
+      <h3 class="serif" style="margin:0 0 4px;">{% label "accounts.settings.section.password" %}</h3>
+      <p class="muted" style="margin:0 0 20px;font-size:14px;">{% label "accounts.settings.hint.password" %}</p>
+
+      {% for error in password_form.non_field_errors %}
+        <div class="flash error">{{ error }}</div>
+      {% endfor %}
+
+      {% for field in password_form %}
+        {% include "partials/field.html" with field=field %}
+      {% endfor %}
+
+      <button type="submit" class="btn btn-outline">{% label "accounts.settings.button.change_password" %}</button>
+    </div>
+  </form>
 {% endblock %}

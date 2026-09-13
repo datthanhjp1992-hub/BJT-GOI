@@ -1,8 +1,11 @@
 """
-Test cho SC01_DangNhap và SC02_DangKy.
+Test cho SC01_DangNhap, SC02_DangKy và SC08_CaiDat.
 
 Chạy: python manage.py test apps.accounts
 """
+from pathlib import Path
+
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.management import call_command
@@ -206,3 +209,154 @@ class ThemeRenderingTests(AccountsTestCase):
         response = self.client.get(reverse("learning:dashboard"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "theme_a")
+
+
+class SettingsViewTests(AccountsTestCase):
+    """SC08_CaiDat — hai form độc lập trên cùng một URL."""
+
+    PASSWORD = "MatKhauRatManh123"
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(
+            username="dat", email="dat@example.com", password=self.PASSWORD,
+            ui_theme="A", daily_review_goal=20, timezone="Asia/Tokyo",
+        )
+        self.client.force_login(self.user)
+        self.url = reverse("accounts:settings")
+
+    def _prefs(self, **overrides):
+        data = {
+            "section": "preferences",
+            "ui_theme": "A",
+            "daily_review_goal": "20",
+            "timezone": "Asia/Tokyo",
+        }
+        data.update(overrides)
+        return data
+
+    def test_login_required(self):
+        self.client.logout()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("accounts:login"), response["Location"])
+
+    def test_get_renders_one_card_per_theme(self):
+        """Thẻ chọn giao diện dựng từ MasterCode, không liệt kê cứng A/B/C."""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/settings.html")
+        # "Washi & Vermillion" ra HTML thành "Washi &amp; Vermillion" — so khớp
+        # phần không có ký tự phải escape.
+        for name in ("Washi", "Studio Mono", "Genki Playful"):
+            self.assertContains(response, name)
+        self.assertEqual(response.content.decode().count('class="choice-card"'), 3)
+
+    def test_saving_preferences_updates_user(self):
+        response = self.client.post(self.url, self._prefs(
+            daily_review_goal="35",
+            timezone="Asia/Ho_Chi_Minh",
+            daily_reminder_enabled="on",
+        ))
+        self.assertRedirects(response, self.url)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.daily_review_goal, 35)
+        self.assertEqual(self.user.timezone, "Asia/Ho_Chi_Minh")
+        self.assertTrue(self.user.daily_reminder_enabled)
+        # Checkbox không gửi lên = tắt; đây là hành vi mặc định của HTML form,
+        # test để không ai "sửa" thành giữ nguyên giá trị cũ.
+        self.assertFalse(self.user.weekly_email_summary_enabled)
+
+    def test_changing_theme_flashes_name_from_mastercode(self):
+        response = self.client.post(self.url, self._prefs(ui_theme="C"), follow=True)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.ui_theme, "C")
+        self.assertContains(response, message(
+            "accounts.settings.success.theme_updated", theme_name="Genki Playful",
+        ))
+        # Đổi theme phải kéo theo file CSS khác ngay ở lần render kế tiếp.
+        self.assertContains(response, "theme_c")
+
+    def test_goal_outside_range_is_rejected(self):
+        for bad in ("0", "500"):
+            with self.subTest(goal=bad):
+                response = self.client.post(self.url, self._prefs(daily_review_goal=bad))
+                self.assertEqual(response.status_code, 200)
+                self.user.refresh_from_db()
+                self.assertEqual(self.user.daily_review_goal, 20)
+
+    def test_unknown_timezone_is_rejected(self):
+        """Giá trị lạ phải bị chặn ở form — User.tzinfo sẽ âm thầm rơi về
+        TIME_ZONE của server, nên lưu được giá trị rác là bug lặng lẽ."""
+        response = self.client.post(self.url, self._prefs(timezone="Mars/Olympus"))
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.timezone, "Asia/Tokyo")
+
+    def test_password_change_keeps_session(self):
+        response = self.client.post(self.url, {
+            "section": "password",
+            "old_password": self.PASSWORD,
+            "new_password1": "MatKhauMoiRatManh456",
+            "new_password2": "MatKhauMoiRatManh456",
+        })
+        self.assertRedirects(response, self.url)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("MatKhauMoiRatManh456"))
+        # Thiếu update_session_auth_hash thì người dùng bị đá ra login ngay sau
+        # khi đổi mật khẩu thành công.
+        self.assertIn("_auth_user_id", self.client.session)
+
+    def test_wrong_current_password_is_rejected(self):
+        response = self.client.post(self.url, {
+            "section": "password",
+            "old_password": "sai-mat-khau",
+            "new_password1": "MatKhauMoiRatManh456",
+            "new_password2": "MatKhauMoiRatManh456",
+        })
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(self.PASSWORD))
+
+    def test_password_form_does_not_touch_preferences(self):
+        """Hai form tách nhau: gửi khu mật khẩu không được coi là khu tuỳ chọn
+        gửi rỗng (nếu gộp chung, daily_review_goal sẽ thành "bắt buộc nhập")."""
+        self.client.post(self.url, {
+            "section": "password",
+            "old_password": "sai-mat-khau",
+            "new_password1": "x",
+            "new_password2": "x",
+        })
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.daily_review_goal, 20)
+        self.assertEqual(self.user.ui_theme, "A")
+
+
+class ThemeCssContractTests(TestCase):
+    """Ba file theme_*.css phải cùng cung cấp những gì SC08 cần.
+
+    Bẫy thật: `input,select{width:100%;padding:12px 14px}` khai ở đầu cả 3 file
+    áp cho MỌI input, nên checkbox/radio bị kéo giãn hết chiều ngang card. Ba
+    file mockup gốc né bằng style="width:auto" viết tay từng thẻ, bản Django
+    render input từ form nên bắt buộc phải sửa ở CSS.
+    """
+
+    REQUIRED_RULES = (
+        "input[type=checkbox]",
+        "input[type=radio]",
+        ".checkbox-row",
+        ".choice-grid",
+        ".choice-card",
+        '.swatch[data-theme="a"]',
+        '.swatch[data-theme="b"]',
+        '.swatch[data-theme="c"]',
+    )
+
+    def test_every_theme_defines_settings_rules(self):
+        for name in ("theme_a.css", "theme_b.css", "theme_c.css"):
+            css = (Path(settings.BASE_DIR) / "static" / "css" / name).read_text(
+                encoding="utf-8"
+            )
+            for rule in self.REQUIRED_RULES:
+                with self.subTest(file=name, rule=rule):
+                    self.assertIn(rule, css, msg=f"{name} thiếu rule {rule} cho SC08")

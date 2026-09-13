@@ -15,13 +15,69 @@ theo thứ tự phương Tây, sai với tiếng Việt (Nguyễn Văn A). Nên 
 được lưu vào `first_name` (max_length 150, đủ dùng) và `last_name` để trống —
 template hiển thị `user.first_name|default:user.username`.
 """
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 from django import forms
 from django.contrib.auth import authenticate, get_user_model, password_validation
+from django.contrib.auth.forms import PasswordChangeForm
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from apps.core.properties import label, message
 
 User = get_user_model()
+
+# Khoảng hợp lệ của "số từ ôn mỗi ngày" (SC08). Model chỉ là
+# PositiveSmallIntegerField nên tự nó chấp nhận 0 và 32767 — cả hai đều vô
+# nghĩa với người học và làm hỏng các con số trên trang chủ.
+DAILY_GOAL_MIN = 1
+DAILY_GOAL_MAX = 200
+
+# Múi giờ cho SC08. ĐÂY LÀ NGOẠI LỆ CÓ CHỦ ĐÍCH với quy ước "không hardcode
+# choices": múi giờ là danh sách chuẩn IANA, không phải danh mục nghiệp vụ do
+# admin định nghĩa, nên không đưa vào MasterCode (xem claude/db-schema-django.md).
+# Cố tình chỉ liệt kê những múi giờ người học Việt/Nhật thực sự dùng —
+# zoneinfo.available_timezones() có hơn 600 mục, nhét hết vào một <select> thì
+# không ai chọn nổi. Giá trị đang lưu của user luôn được thêm vào (xem
+# `_timezone_choices`) nên dữ liệu cũ ngoài danh sách không bị mất khi lưu.
+COMMON_TIMEZONES = [
+    "Asia/Tokyo",
+    "Asia/Ho_Chi_Minh",
+    "Asia/Seoul",
+    "Asia/Taipei",
+    "Asia/Shanghai",
+    "Asia/Singapore",
+    "Asia/Bangkok",
+    "Australia/Sydney",
+    "Europe/London",
+    "America/Los_Angeles",
+    "UTC",
+]
+
+
+def _timezone_choices(current=None):
+    """Choices cho ô múi giờ, kèm độ lệch UTC để người dùng dễ nhận ra mình đang
+    chọn đúng chưa ("Asia/Tokyo (UTC+09:00)").
+
+    Độ lệch tính theo THỜI ĐIỂM HIỆN TẠI, cố ý: những vùng có giờ mùa hè
+    (Europe/London, America/Los_Angeles) hiển thị đúng độ lệch đang áp dụng.
+    Tên vùng lưu vào DB vẫn là tên IANA, không phải con số này.
+    """
+    names = list(COMMON_TIMEZONES)
+    if current and current not in names:
+        names.insert(0, current)
+
+    choices = []
+    for name in names:
+        try:
+            offset = datetime.now(ZoneInfo(name)).strftime("%z")
+        except Exception:
+            # Tên vùng lạ (dữ liệu cũ, nhập tay) thì bỏ qua thay vì làm vỡ cả
+            # trang Cài đặt — ô select chỉ đơn giản không có sẵn mục đó.
+            continue
+        choices.append((name, f"{name} (UTC{offset[:3]}:{offset[3:]})"))
+    return choices
 
 
 def _required_message(*fields):
@@ -177,16 +233,31 @@ class ProfileForm(forms.ModelForm):
 
 
 class SettingsForm(forms.ModelForm):
-    """SC08_CaiDat."""
+    """SC08_CaiDat — phần tuỳ chọn (giao diện, mục tiêu, múi giờ, thông báo).
+
+    Đổi mật khẩu KHÔNG nằm ở form này, xem `PasswordUpdateForm` bên dưới: hai
+    khu là hai <form> riêng POST về cùng một URL, phân biệt bằng ô ẩn `section`
+    (xem apps.accounts.views.settings_view). Gộp chung thì gõ sai mật khẩu cũ
+    sẽ kéo theo cả phần tuỳ chọn không lưu được, và ngược lại.
+
+    `ui_theme` dùng RadioSelect thay cho <select> mặc định để template dựng
+    được 3 thẻ có ô màu xem trước như mockup SC08. Choices vẫn lấy động từ
+    MasterCode qua model — thêm một theme mới không phải sửa file này.
+    """
+
+    # Ngoại lệ "không hardcode choices" — xem ghi chú ở COMMON_TIMEZONES.
+    timezone = forms.ChoiceField(choices=())
 
     class Meta:
         model = User
         fields = [
             "ui_theme",
             "daily_review_goal",
+            "timezone",
             "daily_reminder_enabled",
             "weekly_email_summary_enabled",
         ]
+        widgets = {"ui_theme": forms.RadioSelect}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -194,10 +265,57 @@ class SettingsForm(forms.ModelForm):
         self.fields["daily_review_goal"].label = label(
             "accounts.settings.field.daily_review_goal"
         )
+        self.fields["timezone"].label = label("accounts.settings.field.timezone")
+        self.fields["timezone"].help_text = label("accounts.settings.hint.timezone")
         self.fields["daily_reminder_enabled"].label = label(
             "accounts.settings.field.daily_reminder"
         )
         self.fields["weekly_email_summary_enabled"].label = label(
             "accounts.settings.field.weekly_summary"
         )
+
+        # Danh sách múi giờ dựng lúc chạy chứ không phải lúc import: giá trị
+        # đang lưu của user phải luôn có mặt, và độ lệch UTC đổi theo giờ mùa hè.
+        self.fields["timezone"].choices = _timezone_choices(
+            getattr(self.instance, "timezone", None)
+        )
+
+        # `fields` của mỗi instance form là bản deepcopy riêng, nên append
+        # validator ở đây không rò rỉ sang form khác.
+        goal = self.fields["daily_review_goal"]
+        goal_range = message(
+            "accounts.settings.validation.goal_range",
+            min=DAILY_GOAL_MIN, max=DAILY_GOAL_MAX,
+        )
+        goal.validators.append(MinValueValidator(DAILY_GOAL_MIN, message=goal_range))
+        goal.validators.append(MaxValueValidator(DAILY_GOAL_MAX, message=goal_range))
+        goal.widget.attrs.update({"min": DAILY_GOAL_MIN, "max": DAILY_GOAL_MAX})
+
+        _required_message(*self.fields.values())
+
+
+class PasswordUpdateForm(PasswordChangeForm):
+    """SC08_CaiDat — khu "Đổi mật khẩu".
+
+    Kế thừa `PasswordChangeForm` của Django để dùng lại đúng phần đã được kiểm
+    chứng: xác minh mật khẩu HIỆN TẠI (chặn người ngồi vào máy đang mở sẵn phiên
+    đăng nhập đổi mật khẩu), chạy đủ AUTH_PASSWORD_VALIDATORS, so khớp hai lần
+    nhập. Ở đây chỉ thay nhãn để không hardcode chuỗi tiếng Việt.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["old_password"].label = label(
+            "accounts.settings.field.current_password"
+        )
+        self.fields["new_password1"].label = label(
+            "accounts.settings.field.new_password"
+        )
+        self.fields["new_password2"].label = label("common.field.confirm_password")
+        # help_text mặc định của new_password1 là một khối <ul> do
+        # password_validators_help_text_html() sinh ra; partials/field.html bọc
+        # help_text trong <p> nên sẽ thành <ul> lồng trong <p>. Bỏ đi, quy tắc
+        # nào vi phạm thì đã hiện thành thông báo lỗi ngay dưới ô nhập.
+        for field in self.fields.values():
+            field.help_text = ""
         _required_message(*self.fields.values())
