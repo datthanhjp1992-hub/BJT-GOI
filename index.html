@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BJT-GOI — Tài liệu &amp; bản mẫu giao diện</title>
+<meta name="description" content="Trang mục lục cho repo BJT-GOI: sơ đồ cơ sở dữ liệu, tài liệu nghiệp vụ và 30 bản mẫu giao diện.">
+<style>
+/* Token lấy từ Thiết kế A "Washi & Vermillion" — xem htmlTemplate/STYLE_GUIDE.md */
+:root{
+  --bg:#FAF6EE; --surface:#FFFFFF; --ink:#24211D; --ink-soft:#6b6455;
+  --accent:#B5432E; --accent-dark:#8f3323; --accent-soft:#f0d9cf;
+  --gold:#B8912B; --teal:#3F6B63; --border:#DCD3C0;
+  --serif: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --sans: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;}
+h1,h2,h3,.serif{font-family:var(--serif);}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px;}
+
+.topbar{border-bottom:1px solid var(--border);background:var(--surface);}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:72px;flex-wrap:wrap;padding-block:12px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:22px;}
+.brand .mark{width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.pill{padding:8px 18px;border-radius:3px;font-size:14px;border:1px solid var(--border);}
+.pill:hover{border-color:var(--accent);color:var(--accent);}
+
+main{padding:48px 0 72px;}
+.eyebrow{color:var(--accent);font-size:13px;letter-spacing:.02em;margin-bottom:10px;}
+.muted{color:var(--ink-soft);}
+.lead{font-size:16.5px;max-width:62ch;}
+.divider{height:1px;background:var(--border);margin:44px 0 32px;}
+
+.grid{display:grid;gap:18px;}
+.cols-2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));}
+.card{display:block;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:22px 24px;}
+a.card:hover{border-color:var(--accent);}
+.card h3{margin:0 0 6px;font-size:17px;}
+.card p{margin:0;font-size:14px;color:var(--ink-soft);}
+
+.screens{width:100%;border-collapse:collapse;font-size:14.5px;background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.screens th{text-align:left;font-weight:500;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);padding:12px 14px;border-bottom:1px solid var(--border);}
+.screens td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.screens tr:last-child td{border-bottom:none;}
+.screens tr:hover td{background:#fbf8f2;}
+.code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13px;color:var(--ink-soft);}
+.styles{display:flex;gap:6px;flex-wrap:wrap;}
+.styles a{border:1px solid var(--border);border-radius:3px;padding:3px 12px;font-size:13px;}
+.styles a:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
+.tag{display:inline-block;padding:3px 11px;border-radius:20px;font-size:12px;border:1px solid var(--border);color:var(--ink-soft);white-space:nowrap;}
+.tag.done{background:var(--accent-soft);border-color:transparent;color:var(--accent-dark);}
+.table-scroll{overflow-x:auto;}
+
+footer.note{padding:22px 0;text-align:center;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--border);}
+</style>
+</head>
+<body>
+
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="mark">言</span>BJT-GOI</div>
+  <a class="pill" href="https://github.com/datthanhjp1992-hub/BJT-GOI">Mã nguồn trên GitHub</a>
+</div></header>
+
+<main><div class="wrap">
+
+  <div class="eyebrow">Kotoba Việt</div>
+  <h1 style="font-size:32px;margin:0 0 12px;">Tài liệu &amp; bản mẫu giao diện</h1>
+  <p class="lead muted" style="margin:0;">
+    Ứng dụng web học từ vựng tiếng Nhật theo BJT (Business Japanese Proficiency Test)
+    dành cho người Việt. Backend Django + PostgreSQL. Trang này là mục lục cho phần
+    tài liệu thiết kế và 30 bản mẫu giao diện tĩnh của dự án.
+  </p>
+
+  <div class="divider"></div>
+
+  <div class="eyebrow">Tài liệu</div>
+  <h2 style="font-size:22px;margin:0 0 20px;">Thiết kế hệ thống</h2>
+  <div class="grid cols-2">
+    <a class="card" href="docs/db-schema.html">
+      <h3>Sơ đồ cơ sở dữ liệu →</h3>
+      <p>Sơ đồ quan hệ, chi tiết 18 bảng, runbook deploy Supabase và bảng rà soát thiết kế.</p>
+    </a>
+    <a class="card" href="https://github.com/datthanhjp1992-hub/BJT-GOI/blob/main/htmlTemplate/STYLE_GUIDE.md">
+      <h3>Style guide →</h3>
+      <p>Token màu, kiểu chữ, bo góc của 3 theme và bộ class dùng chung cho mọi màn hình.</p>
+    </a>
+    <a class="card" href="https://github.com/datthanhjp1992-hub/BJT-GOI/blob/main/docs/SPEC_GOP_Y_THANH_TICH.md">
+      <h3>Spec góp ý &amp; thành tích →</h3>
+      <p>Nghiệp vụ đóng góp từ vựng, kiểm duyệt, tính điểm và hệ thống danh hiệu nhiều nhóm.</p>
+    </a>
+    <a class="card" href="https://github.com/datthanhjp1992-hub/BJT-GOI/blob/main/docs/CHANGELOG_YEU_CAU.md">
+      <h3>Changelog yêu cầu →</h3>
+      <p>Lịch sử các thay đổi nghiệp vụ đã chốt, kèm lý do từng quyết định.</p>
+    </a>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="eyebrow">Bản mẫu tĩnh</div>
+  <h2 style="font-size:22px;margin:0 0 8px;">Giao diện 3 phong cách</h2>
+  <p class="muted" style="margin:0 0 22px;font-size:14.5px;">
+    Mỗi màn hình có 3 bản: <strong>A</strong> Washi &amp; Vermillion (Nhật truyền thống),
+    <strong>B</strong> Studio Mono (tối giản), <strong>C</strong> Genki Playful (tươi sáng).
+    Người dùng chọn phong cách ở màn Cài đặt; ứng dụng thật nạp đúng file CSS tương ứng.
+    Cột cuối cho biết màn nào đã dựng xong bằng Django.
+  </p>
+
+  <p style="margin:0 0 22px;">
+    <a class="pill" href="htmlTemplate/SC00_ChonThietKe.html">Xem trang so sánh 3 phong cách →</a>
+  </p>
+
+  <div class="table-scroll">
+  <table class="screens">
+    <thead>
+      <tr><th>Mã</th><th>Màn hình</th><th>Bản mẫu</th><th>Django</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="code">SC00</td><td>Trang chọn phong cách</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC00_TrangChon_A.html">A</a>
+          <a href="htmlTemplate/SC00_TrangChon_B.html">B</a>
+          <a href="htmlTemplate/SC00_TrangChon_C.html">C</a>
+        </div></td>
+        <td><span class="tag">—</span></td>
+      </tr>
+      <tr>
+        <td class="code">SC01</td><td>Đăng nhập</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC01_DangNhap_A.html">A</a>
+          <a href="htmlTemplate/SC01_DangNhap_B.html">B</a>
+          <a href="htmlTemplate/SC01_DangNhap_C.html">C</a>
+        </div></td>
+        <td><span class="tag done">Đã dựng</span></td>
+      </tr>
+      <tr>
+        <td class="code">SC02</td><td>Đăng ký</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC02_DangKy_A.html">A</a>
+          <a href="htmlTemplate/SC02_DangKy_B.html">B</a>
+          <a href="htmlTemplate/SC02_DangKy_C.html">C</a>
+        </div></td>
+        <td><span class="tag done">Đã dựng</span></td>
+      </tr>
+      <tr>
+        <td class="code">SC03</td><td>Trang chủ</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC03_TrangChu_A.html">A</a>
+          <a href="htmlTemplate/SC03_TrangChu_B.html">B</a>
+          <a href="htmlTemplate/SC03_TrangChu_C.html">C</a>
+        </div></td>
+        <td><span class="tag done">Đã dựng</span></td>
+      </tr>
+      <tr>
+        <td class="code">SC04</td><td>Học từ vựng (flashcard)</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC04_HocTuVung_A.html">A</a>
+          <a href="htmlTemplate/SC04_HocTuVung_B.html">B</a>
+          <a href="htmlTemplate/SC04_HocTuVung_C.html">C</a>
+        </div></td>
+        <td><span class="tag">Chưa</span></td>
+      </tr>
+      <tr>
+        <td class="code">SC05</td><td>Danh sách từ vựng</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC05_DanhSachTuVung_A.html">A</a>
+          <a href="htmlTemplate/SC05_DanhSachTuVung_B.html">B</a>
+          <a href="htmlTemplate/SC05_DanhSachTuVung_C.html">C</a>
+        </div></td>
+        <td><span class="tag done">Đã dựng</span></td>
+      </tr>
+      <tr>
+        <td class="code">SC06</td><td>Kiểm tra</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC06_KiemTra_A.html">A</a>
+          <a href="htmlTemplate/SC06_KiemTra_B.html">B</a>
+          <a href="htmlTemplate/SC06_KiemTra_C.html">C</a>
+        </div></td>
+        <td><span class="tag">Chưa</span></td>
+      </tr>
+      <tr>
+        <td class="code">SC07</td><td>Quản trị (admin)</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC07_QuanTriAdmin_A.html">A</a>
+          <a href="htmlTemplate/SC07_QuanTriAdmin_B.html">B</a>
+          <a href="htmlTemplate/SC07_QuanTriAdmin_C.html">C</a>
+        </div></td>
+        <td><span class="tag">Chưa</span></td>
+      </tr>
+      <tr>
+        <td class="code">SC08</td><td>Cài đặt</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC08_CaiDat_A.html">A</a>
+          <a href="htmlTemplate/SC08_CaiDat_B.html">B</a>
+          <a href="htmlTemplate/SC08_CaiDat_C.html">C</a>
+        </div></td>
+        <td><span class="tag">Chưa</span></td>
+      </tr>
+      <tr>
+        <td class="code">SC09</td><td>Thông tin cá nhân</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC09_ThongTinCaNhan_A.html">A</a>
+          <a href="htmlTemplate/SC09_ThongTinCaNhan_B.html">B</a>
+          <a href="htmlTemplate/SC09_ThongTinCaNhan_C.html">C</a>
+        </div></td>
+        <td><span class="tag">Chưa</span></td>
+      </tr>
+      <tr>
+        <td class="code">SC10</td><td>Luyện viết PDF</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC10_LuyenVietPdf_A.html">A</a>
+          <a href="htmlTemplate/SC10_LuyenVietPdf_B.html">B</a>
+          <a href="htmlTemplate/SC10_LuyenVietPdf_C.html">C</a>
+        </div></td>
+        <td><span class="tag">Chưa</span></td>
+      </tr>
+      <tr>
+        <td class="code">SC11</td><td>Góp ý từ vựng</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC11_GopYTuVung_A.html">A</a>
+          <a href="htmlTemplate/SC11_GopYTuVung_B.html">B</a>
+          <a href="htmlTemplate/SC11_GopYTuVung_C.html">C</a>
+        </div></td>
+        <td><span class="tag">Chưa</span></td>
+      </tr>
+      <tr>
+        <td class="code">SC12</td><td>Hòm thư góp ý</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC12_HopThuGopY_A.html">A</a>
+          <a href="htmlTemplate/SC12_HopThuGopY_B.html">B</a>
+          <a href="htmlTemplate/SC12_HopThuGopY_C.html">C</a>
+        </div></td>
+        <td><span class="tag">Chưa</span></td>
+      </tr>
+      <tr>
+        <td class="code">SC13</td><td>Điểm &amp; thành tích</td>
+        <td><div class="styles">
+          <a href="htmlTemplate/SC13_ThanhTich_A.html">A</a>
+          <a href="htmlTemplate/SC13_ThanhTich_B.html">B</a>
+          <a href="htmlTemplate/SC13_ThanhTich_C.html">C</a>
+        </div></td>
+        <td><span class="tag">Chưa</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p class="muted" style="margin:20px 0 0;font-size:13.5px;">
+    Mẫu phiếu luyện viết tay:
+    <a href="htmlTemplate/mau_luyen_viet.pdf" style="color:var(--accent);">mau_luyen_viet.pdf</a>
+    · Mẫu file nhập từ vựng:
+    <a href="htmlTemplate/mau_danh_sach_tu_vung.xlsx" style="color:var(--accent);">.xlsx</a>,
+    <a href="htmlTemplate/mau_danh_sach_tu_vung.csv" style="color:var(--accent);">.csv</a>
+  </p>
+
+</div></main>
+
+<footer class="note">BJT-GOI — Học từ vựng tiếng Nhật cho người Việt</footer>
+
+</body>
+</html>
