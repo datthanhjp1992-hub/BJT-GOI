@@ -60,6 +60,7 @@ class TemplateLeakTests(TestCase):
             reverse("accounts:profile"),
             reverse("accounts:settings"),
             reverse("admin_panel:overview"),
+            reverse("admin_panel:data_index"),
         ]
         for url in urls:
             with self.subTest(url=url):

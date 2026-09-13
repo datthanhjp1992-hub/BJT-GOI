@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC07b — nhập 1 bảng từ file.
+
+Hai bước trên cùng một template: chưa có `report` thì chỉ hiện form tải lên;
+có `report` thì hiện kết quả kiểm tra, và chỉ khi report.can_apply mới hiện nút
+xác nhận ghi.{% endcomment %}
+
+{% block title %}{% label "admin.data.button.import" %} {{ model_name }} | {% label "common.brand.name" %}{% endblock %}
+{% block main_attrs %} style="padding:0;"{% endblock %}
+
+{% block main %}
+<div class="admin-layout">
+
+  {% include "admin_panel/_sidebar.html" %}
+
+  <div class="admin-content">
+    {% include "partials/messages.html" %}
+
+    <a href="{% url 'admin_panel:data_index' %}" class="muted" style="font-size:13px;">{% label "admin.data.link.back" %}</a>
+
+    <div class="eyebrow" style="margin-top:12px;">{% label "admin.data.eyebrow" %}</div>
+    <h1 class="serif" style="font-size:26px;margin:0 0 6px;">{{ model_name }}</h1>
+    <p class="muted" style="margin:0 0 20px;font-size:13px;">{{ model_label }}</p>
+
+    <div class="card" style="margin-bottom:20px;">
+      <p style="margin:0 0 8px;font-size:14px;">{% message "admin.data.hint.insert_only" %}</p>
+      {% if duplicate_key %}
+        <p class="muted" style="margin:0;font-size:13px;">{% message "admin.data.hint.duplicate_key" fields=duplicate_key %}</p>
+      {% else %}
+        <p class="muted" style="margin:0;font-size:13px;">{% message "admin.data.hint.no_duplicate_key" %}</p>
+      {% endif %}
+      {% for name, through in m2m_notes %}
+        <p class="muted" style="margin:8px 0 0;font-size:13px;">{% message "admin.data.hint.m2m" field=name through=through %}</p>
+      {% endfor %}
+    </div>
+
+    <div class="eyebrow">{% label "admin.data.section.upload" %}</div>
+    <div class="card" style="margin-bottom:24px;">
+      <form method="post" enctype="multipart/form-data" action="{% url 'admin_panel:data_import' model_label %}">
+        {% csrf_token %}
+        <label for="data_file">{% label "admin.data.field.file" %}</label>
+        <input type="file" id="data_file" name="data_file" accept=".csv,.xlsx,.xlsm" required>
+        <div class="toolbar" style="margin-top:12px;">
+          <button type="submit">{% label "admin.data.button.preview" %}</button>
+          <a href="{% url 'admin_panel:data_template' model_label 'xlsx' %}">{% label "admin.data.button.template_xlsx" %}</a>
+          <a href="{% url 'admin_panel:data_template' model_label 'csv' %}">{% label "admin.data.button.template_csv" %}</a>
+        </div>
+      </form>
+    </div>
+
+    {% if report %}
+      <div class="eyebrow">{% label "admin.data.section.preview" %}</div>
+      <p class="muted" style="margin:0 0 12px;font-size:13px;">{{ source_filename }}</p>
+
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:20px;">
+        <div class="stat">
+          <div class="num">{{ report.new_count }}</div>
+          <div class="label">{% label "admin.data.stat.new" %}</div>
+        </div>
+        <div class="stat">
+          <div class="num">{{ report.duplicate_count }}</div>
+          <div class="label">{% label "admin.data.stat.duplicate" %}</div>
+        </div>
+        <div class="stat">
+          <div class="num">{{ report.error_count }}</div>
+          <div class="label">{% label "admin.data.stat.error" %}</div>
+        </div>
+      </div>
+
+      {% if report.missing_columns %}
+        <div class="card" style="margin-bottom:20px;">
+          <p style="margin:0;">{% message "admin.data.error.missing_columns" columns=report.missing_columns|join:", " %}</p>
+        </div>
+      {% endif %}
+
+      {% if report.unknown_columns %}
+        <p class="muted" style="font-size:13px;">{% message "admin.data.hint.unknown_columns" columns=report.unknown_columns|join:", " %}</p>
+      {% endif %}
+
+      {% if problem_rows %}
+        <div class="eyebrow">{% label "admin.data.section.errors" %}</div>
+        <div class="card" style="padding:0;margin-bottom:20px;">
+          <table>
+            <tr>
+              <th>{% label "admin.data.preview.row" %}</th>
+              <th>{% label "admin.data.preview.detail" %}</th>
+            </tr>
+            {% for row in problem_rows %}
+              <tr>
+                <td>{{ row.number }}</td>
+                <td>{% for error in row.errors %}{{ error }}{% if not forloop.last %}; {% endif %}{% endfor %}</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+        {% if problem_overflow %}
+          <p class="muted" style="font-size:13px;">{% message "admin.data.hint.more_rows" count=problem_overflow %}</p>
+        {% endif %}
+      {% endif %}
+
+      <div class="card" style="padding:0;margin-bottom:20px;">
+        <table>
+          <tr>
+            <th>{% label "admin.data.preview.row" %}</th>
+            <th>{% label "admin.data.preview.status" %}</th>
+            <th>{% label "admin.data.preview.key" %}</th>
+            <th>{% label "admin.data.preview.detail" %}</th>
+          </tr>
+          {% for row in preview_rows %}
+            <tr>
+              <td>{{ row.number }}</td>
+              <td>
+                {% if row.status == "new" %}
+                  <span class="tag">{% label "admin.data.status.new" %}</span>
+                {% elif row.status == "duplicate" %}
+                  <span class="tag level">{% label "admin.data.status.duplicate" %}</span>
+                {% else %}
+                  <span class="tag level">{% label "admin.data.status.error" %}</span>
+                {% endif %}
+              </td>
+              <td>{{ row.display|default:"—" }}</td>
+              <td class="muted">{% for error in row.errors %}{{ error }}{% if not forloop.last %}; {% endif %}{% endfor %}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      {% if preview_overflow %}
+        <p class="muted" style="font-size:13px;">{% message "admin.data.hint.more_rows" count=preview_overflow %}</p>
+      {% endif %}
+
+      {% if report.can_apply %}
+        <form method="post" action="{% url 'admin_panel:data_import_confirm' model_label %}">
+          {% csrf_token %}
+          <input type="hidden" name="token" value="{{ token }}">
+          <p class="muted" style="font-size:13px;">{% message "admin.data.hint.confirm" created=report.new_count skipped=report.duplicate_count %}</p>
+          <button type="submit">{% label "admin.data.button.confirm" %}</button>
+        </form>
+      {% elif report.error_count %}
+        <p style="font-size:14px;">{% message "admin.data.error.has_errors" count=report.error_count %}</p>
+      {% elif not report.new_count %}
+        <p style="font-size:14px;">{% message "admin.data.error.nothing_to_import" %}</p>
+      {% endif %}
+    {% endif %}
+
+    <div class="eyebrow" style="margin-top:28px;">{% label "admin.data.section.columns" %}</div>
+    <div class="card" style="padding:0;">
+      <table>
+        <tr>
+          <th>{% label "admin.data.column.header" %}</th>
+          <th>{% label "admin.data.column.required" %}</th>
+          <th>{% label "admin.data.column.hint" %}</th>
+        </tr>
+        {% for column in columns %}
+          <tr>
+            <td><code>{{ column.header }}</code></td>
+            <td>{% if column.required %}<span class="tag level">{% label "admin.data.column.required" %}</span>{% else %}<span class="muted">—</span>{% endif %}</td>
+            <td class="muted">{{ column.hint }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

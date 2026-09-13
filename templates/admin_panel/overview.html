@@ -2,8 +2,8 @@
 {% load properties_tags mastercode_tags %}
 {% comment %}SC07_QuanTriAdmin — port từ htmlTemplate/SC07_QuanTriAdmin_*.html.
 
-Sidebar trỏ thẳng sang các trang danh sách của Django admin: màn này cố tình
-KHÔNG tự viết CRUD, xem ghi chú đầu apps/admin_panel/views.py.{% endcomment %}
+Màn tổng quan. Nhập/xuất hàng loạt ở admin_panel:data_index, sửa/xoá từng bản
+ghi vẫn ở Django admin — xem ghi chú đầu apps/admin_panel/views.py.{% endcomment %}
 
 {% block title %}{% label "common.nav.admin" %} | {% label "common.brand.name" %}{% endblock %}
 
@@ -14,14 +14,7 @@ KHÔNG tự viết CRUD, xem ghi chú đầu apps/admin_panel/views.py.{% endcom
 {% block main %}
 <div class="admin-layout">
 
-  <nav class="sidebar">
-    <a class="active" href="{% url 'admin_panel:overview' %}">{% label "common.nav.admin_overview" %}</a>
-    <a href="{% url 'admin:accounts_user_changelist' %}">{% label "common.nav.admin_users" %}</a>
-    <a href="{% url 'admin:vocabulary_vocabulary_changelist' %}">{% label "common.nav.admin_vocabulary" %}</a>
-    <a href="{% url 'admin:vocabulary_topic_changelist' %}">{% label "common.nav.admin_topics" %}</a>
-    <a href="{% url 'admin:gamification_contribution_changelist' %}">{% label "common.nav.admin_inbox" %}</a>
-    <a href="{% url 'learning:dashboard' %}">← {% label "common.nav.back_to_app" %}</a>
-  </nav>
+  {% include "admin_panel/_sidebar.html" %}
 
   <div class="admin-content">
     {% include "partials/messages.html" %}

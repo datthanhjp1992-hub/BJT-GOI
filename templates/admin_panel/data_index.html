@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC07b — danh sách 18 bảng, mỗi bảng có lối tải mẫu / xuất / nhập.
+
+Danh sách sinh từ apps/core/dataio.importable_models(): thêm model mới vào 6
+app nội bộ là nó tự xuất hiện ở đây, không phải sửa template.{% endcomment %}
+
+{% block title %}{% label "admin.data.title" %} | {% label "common.brand.name" %}{% endblock %}
+{% block main_attrs %} style="padding:0;"{% endblock %}
+
+{% block main %}
+<div class="admin-layout">
+
+  {% include "admin_panel/_sidebar.html" %}
+
+  <div class="admin-content">
+    {% include "partials/messages.html" %}
+
+    <div class="eyebrow">{% label "admin.data.eyebrow" %}</div>
+    <h1 class="serif" style="font-size:28px;margin:0 0 6px;">{% label "admin.data.title" %}</h1>
+    <p class="muted" style="margin:0 0 20px;font-size:14px;">
+      {% message "admin.data.hint.intro" max_rows=max_rows %}
+    </p>
+
+    <div class="card" style="padding:0;">
+      <table>
+        <tr>
+          <th>{% label "admin.data.table.name" %}</th>
+          <th>{% label "admin.data.table.rows" %}</th>
+          <th>{% label "admin.data.table.columns" %}</th>
+          <th>{% label "admin.data.table.duplicate_key" %}</th>
+          <th>{% label "admin.data.table.actions" %}</th>
+        </tr>
+        {% for table in tables %}
+          <tr>
+            <td>
+              {{ table.name }}
+              <div class="muted" style="font-size:12px;">{{ table.label }}</div>
+            </td>
+            <td>{{ table.count }}</td>
+            <td class="muted">{{ table.columns }}</td>
+            <td>
+              {% if table.duplicate_key %}
+                <span class="tag">{{ table.duplicate_key }}</span>
+              {% else %}
+                <span class="tag level">{% label "admin.data.tag.no_duplicate_key" %}</span>
+              {% endif %}
+            </td>
+            <td style="white-space:nowrap;">
+              <a href="{% url 'admin_panel:data_template' table.label 'csv' %}">{% label "admin.data.button.template_csv" %}</a> ·
+              <a href="{% url 'admin_panel:data_template' table.label 'xlsx' %}">{% label "admin.data.button.template_xlsx" %}</a> ·
+              <a href="{% url 'admin_panel:data_export' table.label 'csv' %}">{% label "admin.data.button.export_csv" %}</a> ·
+              <a href="{% url 'admin_panel:data_export' table.label 'xlsx' %}">{% label "admin.data.button.export_xlsx" %}</a> ·
+              <a href="{% url 'admin_panel:data_import' table.label %}"><strong>{% label "admin.data.button.import" %} →</strong></a>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

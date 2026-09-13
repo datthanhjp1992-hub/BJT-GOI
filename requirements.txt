@@ -8,3 +8,5 @@ django-cors-headers>=4.3
 gunicorn>=22.0
 tzdata>=2024.1  ; sys_platform == "win32"
 whitenoise>=6.6
+# Đọc/ghi .xlsx cho màn nhập-xuất dữ liệu SC07b (apps/core/dataio.py)
+openpyxl>=3.1
