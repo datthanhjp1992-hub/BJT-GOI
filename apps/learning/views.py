@@ -24,7 +24,6 @@ def dashboard_view(request):
         "display_name": (user.first_name or "").strip() or user.get_username(),
         "stats": stats,
         "due_count": stats["due_today"],
-        "daily_goal": user.daily_review_goal,
         "in_progress": services.get_topic_in_progress(user),
         "suggested_topics": services.get_suggested_topics(user),
         "bjt_level_code_type": CODE_TYPE_BJT_LEVEL,

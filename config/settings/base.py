@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     "apps.learning",
     "apps.practice_sheets",
     "apps.gamification",
+    # Khu vuc quan tri SC07 - khong co model, chi doc du lieu app khac.
+    "apps.admin_panel",
 ]
 
 MIDDLEWARE = [

@@ -55,7 +55,10 @@ Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endco
           <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "learning.dashboard.button.browse_vocabulary" %}</a>
         {% endif %}
       {% else %}
-        <h3 class="serif" style="margin:0 0 6px;">{{ daily_goal }}</h3>
+        {% comment %}Trước đây chỗ này in thẳng {{ daily_goal }} — một con số không nhãn,
+           đọc lên không hiểu là gì. Mục tiêu mỗi ngày thuộc về màn Cài đặt,
+           không phải tiêu đề của thẻ này.{% endcomment %}
+        <h3 class="serif" style="margin:0 0 6px;">{% label "learning.dashboard.title.all_caught_up" %}</h3>
         <p class="muted" style="margin:0 0 18px;">{% message "learning.dashboard.hint.no_review_due" %}</p>
         <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "learning.dashboard.button.browse_vocabulary" %}</a>
       {% endif %}

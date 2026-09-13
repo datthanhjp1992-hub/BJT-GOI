@@ -95,3 +95,10 @@ button.btn,button.pill{font:inherit;cursor:pointer;}
 .toolbar input,.toolbar select{width:auto;flex:0 1 auto;}
 .toolbar .grow{flex:1 1 240px;}
 .pagination{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:24px;font-size:14px;color:var(--ink-soft);}
+/* Khu quản trị trên màn hẹp: sidebar 220px + nội dung sẽ tràn ngang ở điện
+   thoại, nên xếp dọc lại. Ba file mockup gốc không có media query nào. */
+@media (max-width: 720px){
+  .admin-layout{flex-direction:column;}
+  .sidebar{width:auto;border-right:none;border-bottom:1px solid var(--border);padding:16px 20px;}
+  .admin-content{padding:24px 20px;}
+}

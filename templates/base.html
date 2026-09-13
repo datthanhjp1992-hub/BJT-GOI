@@ -20,11 +20,16 @@ Block cho template con:
 </head>
 <body>
   {% include "partials/topbar.html" %}
-  <main>
+  <main{% block main_attrs %}{% endblock %}>
+    {% comment %}Trang thường chỉ cần override `content`. Trang cần bố cục
+    khác hẳn (khu quản trị: sidebar + nội dung, tràn hết chiều ngang) thì
+    override cả `main` để thoát khỏi khung .wrap.{% endcomment %}
+    {% block main %}
     <div class="wrap"{% block wrap_attrs %}{% endblock %}>
       {% include "partials/messages.html" %}
       {% block content %}{% endblock %}
     </div>
+    {% endblock %}
   </main>
   <footer class="note">{% label "common.brand.name" %} — {% label "common.brand.tagline" %}</footer>
   <script src="{% static 'js/main.js' %}"></script>

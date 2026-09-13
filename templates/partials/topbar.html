@@ -20,6 +20,9 @@ trang chủ hoặc từ danh sách từ vựng.
       <a href="{% url 'practice_sheets:create' %}"{% if active_nav == "practice_sheet" %} class="active"{% endif %}>{% label "common.nav.practice_sheet" %}</a>
     </nav>
     <div class="navmeta">
+      {% if user.is_staff %}
+        <a href="{% url 'admin_panel:overview' %}"{% if active_nav == "admin" %} class="active"{% endif %}>{% label "common.nav.admin" %}</a>
+      {% endif %}
       <a href="{% url 'accounts:profile' %}">{{ user.first_name|default:user.get_username }}</a>
       <a class="pill ghost" href="{% url 'accounts:settings' %}" title="{% label 'common.nav.settings' %}">⚙️</a>
       {% comment %}Đăng xuất phải là POST — xem apps.accounts.views.logout_view.{% endcomment %}
