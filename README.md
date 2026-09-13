@@ -128,3 +128,55 @@ python manage.py runserver
 Yêu cầu: PostgreSQL đã tạo sẵn database/user khớp với `.env`; máy chủ có sẵn font
 `Noto Sans CJK` và `DejaVu Sans` (thường có sẵn trên Ubuntu/Debian qua gói
 `fonts-noto-cjk` và `fonts-dejavu`) để tính năng tạo PDF luyện viết hoạt động đúng.
+
+## Deploy lên Render
+
+Render chạy web service (Django + gunicorn); database vẫn là PostgreSQL của
+Supabase. Ba file phục vụ việc này: `render.yaml` (blueprint), `build.sh`
+(các bước build) và `config/settings/render.py` (settings).
+
+### Các bước
+
+1. **Lấy connection string Supabase**: Dashboard > nút **Connect** > tab
+   **Session pooler**, **cổng 5432**. Thay `[YOUR-PASSWORD]` bằng mật khẩu
+   thật (ký tự đặc biệt phải URL-encode: `@` → `%40`, `#` → `%23`, `/` → `%2F`).
+
+   > Đừng dùng **Direct connection** (`db.<ref>.supabase.co`) — nó chỉ có IPv6,
+   > Render gọi không tới. Transaction pooler (6543) cũng chạy được nhưng
+   > không có prepared statement, để dành cho môi trường serverless.
+
+2. **Render Dashboard > New > Blueprint**, trỏ vào repo này. Render đọc
+   `render.yaml`, hỏi đúng một biến là `DATABASE_URL` — dán chuỗi ở bước 1.
+
+3. Bấm deploy. `build.sh` sẽ tự chạy `collectstatic`, `migrate`,
+   `seed_mastercode`, `seed_gamification` (tất cả đều idempotent).
+
+4. **Tạo tài khoản quản trị.** Gói free của Render không có shell, nên chạy từ
+   máy mình, trỏ thẳng vào Supabase:
+
+   ```bash
+   # .env ở local đã có DATABASE_URL giống hệt
+   python manage.py createsuperuser --settings=config.settings.supabase
+   ```
+
+### Những chỗ dễ vướng
+
+- **403 CSRF khi bấm Đăng nhập** — thiếu `CSRF_TRUSTED_ORIGINS`.
+  `config/settings/render.py` đã tự dựng từ `RENDER_EXTERNAL_HOSTNAME`, nên
+  lỗi này chỉ xuất hiện nếu dùng tên miền riêng; lúc đó thêm tên miền vào biến
+  môi trường `CSRF_TRUSTED_ORIGINS` (dạng `https://ten-mien.com`).
+- **Trang trắng / 500 ngay ở CSS** — `collectstatic` chưa chạy.
+  `CompressedManifestStaticFilesStorage` cần file `staticfiles.json`; đó là lý
+  do `build.sh` gọi `collectstatic` TRƯỚC `migrate`.
+- **Lần vào đầu tiên chậm ~1 phút** — gói free ngủ sau 15 phút không có
+  request. Bình thường.
+- **Supabase free tự pause sau 7 ngày không hoạt động** → app sẽ không nối
+  được DB. Cần một cron ping định kỳ (GitHub Actions) nếu để lâu không dùng.
+- **File PDF luyện viết (SC10) sẽ mất sau mỗi lần deploy** — đĩa của instance
+  Render là tạm. Khi làm tới màn đó phải chuyển `MEDIA_ROOT` sang Supabase
+  Storage hoặc S3, và cài font Noto Sans CJK + DejaVu cho reportlab.
+
+### GitHub Pages vẫn giữ nguyên
+`index.html` + `.nojekyll` ở gốc repo là **site tài liệu tĩnh** (sơ đồ CSDL,
+bản mẫu giao diện), không liên quan tới ứng dụng chạy trên Render. Hai thứ
+sống song song, không xung đột.

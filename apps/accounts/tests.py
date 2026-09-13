@@ -178,7 +178,11 @@ class ThemeRenderingTests(AccountsTestCase):
     """
 
     def test_each_theme_loads_its_own_stylesheet(self):
-        for theme, expected in (("A", "theme_a.css"), ("B", "theme_b.css"), ("C", "theme_c.css")):
+        # So khớp theo TIỀN TỐ chứ không phải nguyên tên file: trên production
+        # WhiteNoise dùng ManifestStaticFilesStorage nên href thật là
+        # "theme_a.<hash>.css". Ràng cứng ".css" là test xanh ở local, đỏ khi
+        # chạy đúng cấu hình production.
+        for theme, expected in (("A", "theme_a"), ("B", "theme_b"), ("C", "theme_c")):
             with self.subTest(theme=theme):
                 user = User.objects.create_user(
                     username="user" + theme, password="MatKhauRatManh123", ui_theme=theme,
@@ -190,4 +194,17 @@ class ThemeRenderingTests(AccountsTestCase):
 
     def test_anonymous_pages_fall_back_to_theme_a(self):
         response = self.client.get(reverse("accounts:login"))
-        self.assertContains(response, "theme_a.css")
+        self.assertContains(response, "theme_a")
+
+    def test_invalid_theme_falls_back_instead_of_crashing(self):
+        """ui_theme rỗng/lạ không được làm 500 cả trang.
+
+        base.html nối chuỗi thành tên file CSS; với ManifestStaticFilesStorage
+        một tên không có trong manifest sẽ ném ValueError.
+        """
+        user = User.objects.create_user(username="loi", password="MatKhauRatManh123")
+        User.objects.filter(pk=user.pk).update(ui_theme="")
+        self.client.force_login(user)
+        response = self.client.get(reverse("learning:dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "theme_a")

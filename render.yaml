@@ -1,0 +1,32 @@
+# Render Blueprint — Dashboard > New > Blueprint > trỏ vào repo này.
+#
+# KHÔNG khai database ở đây: dự án dùng PostgreSQL của Supabase, Render chỉ
+# chạy web service. DATABASE_URL để `sync: false` nghĩa là Render hỏi giá trị
+# lúc tạo service và không bao giờ ghi nó vào file này.
+services:
+  - type: web
+    name: bjt-goi
+    runtime: python
+    plan: free
+    # Region free gần Supabase ap-northeast-1 (Tokyo) nhất.
+    region: singapore
+    branch: main
+    buildCommand: bash ./build.sh
+    startCommand: gunicorn config.wsgi:application --workers 2 --threads 4 --timeout 60
+    # "/" redirect sang dashboard rồi sang login (302); dùng thẳng trang login
+    # để health check nhận 200.
+    healthCheckPath: /accounts/login/
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.render
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: DEBUG
+        value: "false"
+      # Render sinh ngẫu nhiên 1 lần rồi giữ nguyên — không cần tự nghĩ.
+      - key: SECRET_KEY
+        generateValue: true
+      # Supabase Dashboard > Connect > tab "Session pooler", CỔNG 5432.
+      # KHÔNG dùng "Direct connection" (chỉ có IPv6, Render gọi không tới).
+      - key: DATABASE_URL
+        sync: false
