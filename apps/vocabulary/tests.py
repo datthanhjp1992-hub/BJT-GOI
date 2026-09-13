@@ -1,0 +1,182 @@
+"""
+Test cho SC05_DanhSachTuVung.
+
+Chạy: python manage.py test apps.vocabulary
+
+Ghi chú: nhánh TÌM KIẾM (`?q=`) dùng TrigramSimilarity nên bắt buộc phải có
+extension pg_trgm — test tìm kiếm ở lớp SearchTests sẽ tự bỏ qua nếu database
+đang chạy không bật được extension đó.
+"""
+from django.contrib.auth import get_user_model
+from django.core.cache import cache
+from django.core.management import call_command
+from django.db import connection
+from django.test import TestCase
+from django.urls import reverse
+
+from apps.core.properties import label, message
+from apps.learning.models import UserVocabularyProgress
+
+from .models import Topic, Vocabulary, VocabularyTopic
+from .views import PAGE_SIZE
+
+User = get_user_model()
+
+
+def _pg_trgm_available():
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT COUNT(*) FROM pg_extension WHERE extname = 'pg_trgm'")
+        return cursor.fetchone()[0] > 0
+
+
+class VocabularyTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        call_command("seed_mastercode", verbosity=0)
+
+    def setUp(self):
+        cache.clear()
+        self.user = User.objects.create_user(username="dat", password="MatKhauRatManh123")
+        self.client.force_login(self.user)
+        self.topic = Topic.objects.create(name="Nhà hàng", slug="nha-hang")
+
+    def _word(self, word, reading, meaning, level="J4", topic=True):
+        vocab = Vocabulary.objects.create(
+            word=word, reading=reading, meaning_vi=meaning, bjt_level=level,
+        )
+        if topic:
+            VocabularyTopic.objects.create(vocabulary=vocab, topic=self.topic)
+        return vocab
+
+
+class ListViewTests(VocabularyTestCase):
+    def test_requires_login(self):
+        self.client.logout()
+        url = reverse("vocabulary:index")
+        self.assertRedirects(self.client.get(url), reverse("accounts:login") + "?next=" + url)
+
+    def test_index_lists_every_word(self):
+        self._word("注文する", "ちゅうもんする", "gọi món")
+        self._word("予約", "よやく", "đặt chỗ trước")
+        self._word("孤児", "こじ", "từ không thuộc chủ đề nào", topic=False)
+
+        response = self.client.get(reverse("vocabulary:index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "vocabulary/list.html")
+        self.assertEqual(response.context["total_count"], 3)
+        self.assertIsNone(response.context["topic"])
+        self.assertContains(response, "ちゅうもんする")
+
+    def test_topic_route_filters(self):
+        self._word("注文する", "ちゅうもんする", "gọi món")
+        other = Topic.objects.create(name="Gia đình", slug="gia-dinh")
+        vocab = self._word("家族", "かぞく", "gia đình", topic=False)
+        VocabularyTopic.objects.create(vocabulary=vocab, topic=other)
+
+        response = self.client.get(reverse("vocabulary:list", args=["nha-hang"]))
+        self.assertEqual(response.context["total_count"], 1)
+        self.assertEqual(response.context["topic"], self.topic)
+        self.assertNotContains(response, "かぞく")
+
+    def test_unknown_topic_returns_404(self):
+        self.assertEqual(
+            self.client.get(reverse("vocabulary:list", args=["khong-ton-tai"])).status_code,
+            404,
+        )
+
+    def test_level_filter(self):
+        self._word("注文する", "ちゅうもんする", "gọi món", level="J4")
+        self._word("会計", "かいけい", "tính tiền", level="J3")
+
+        response = self.client.get(reverse("vocabulary:index"), {"level": "J3"})
+        self.assertEqual(response.context["total_count"], 1)
+        self.assertEqual(response.context["selected_level"], "J3")
+        self.assertContains(response, "かいけい")
+        self.assertNotContains(response, "ちゅうもんする")
+
+    def test_study_status_per_word(self):
+        new = self._word("注文する", "ちゅうもんする", "gọi món")
+        learning = self._word("予約", "よやく", "đặt chỗ")
+        mastered = self._word("会計", "かいけい", "tính tiền")
+        UserVocabularyProgress.objects.create(user=self.user, vocabulary=learning)
+        UserVocabularyProgress.objects.create(
+            user=self.user, vocabulary=mastered, is_mastered=True
+        )
+
+        response = self.client.get(reverse("vocabulary:index"))
+        status_by_id = {w.pk: w.study_status for w in response.context["page_obj"].object_list}
+        self.assertEqual(status_by_id[new.pk], "new")
+        self.assertEqual(status_by_id[learning.pk], "learning")
+        self.assertEqual(status_by_id[mastered.pk], "mastered")
+        self.assertContains(response, label("vocabulary.list.tag.status.mastered"))
+
+    def test_status_is_per_user(self):
+        vocab = self._word("注文する", "ちゅうもんする", "gọi món")
+        other = User.objects.create_user(username="khac", password="x")
+        UserVocabularyProgress.objects.create(user=other, vocabulary=vocab, is_mastered=True)
+
+        response = self.client.get(reverse("vocabulary:index"))
+        self.assertEqual(response.context["page_obj"].object_list[0].study_status, "new")
+
+    def test_orphan_word_has_no_review_link(self):
+        self._word("孤児", "こじ", "từ mồ côi", topic=False)
+        response = self.client.get(reverse("vocabulary:index"))
+        self.assertIsNone(response.context["page_obj"].object_list[0].primary_topic)
+
+    def test_empty_state(self):
+        response = self.client.get(reverse("vocabulary:index"))
+        self.assertContains(response, message("vocabulary.list.empty"))
+
+    def test_pagination_keeps_filters(self):
+        for index in range(PAGE_SIZE + 3):
+            self._word("語%02d" % index, "ご%02d" % index, "nghĩa %02d" % index, level="J4")
+
+        first = self.client.get(reverse("vocabulary:index"), {"level": "J4"})
+        self.assertEqual(len(first.context["page_obj"].object_list), PAGE_SIZE)
+        self.assertIn("level=J4", first.context["pagination_query"])
+
+        second = self.client.get(reverse("vocabulary:index"), {"level": "J4", "page": 2})
+        self.assertEqual(len(second.context["page_obj"].object_list), 3)
+        # `page` không được lặp lại trong querystring phân trang.
+        self.assertNotIn("page=", second.context["pagination_query"])
+
+
+class SearchTests(VocabularyTestCase):
+    def setUp(self):
+        super().setUp()
+        if not _pg_trgm_available():
+            self.skipTest("database đang chạy không có extension pg_trgm")
+
+    def test_search_matches_reading(self):
+        self._word("注文する", "ちゅうもんする", "gọi món")
+        self._word("会計", "かいけい", "tính tiền")
+
+        response = self.client.get(reverse("vocabulary:index"), {"q": "ちゅうもん"})
+        self.assertEqual(response.context["total_count"], 1)
+        self.assertContains(response, "注文する")
+
+    def test_search_is_combined_with_level_filter(self):
+        self._word("注文する", "ちゅうもんする", "gọi món", level="J4")
+        self._word("注文書", "ちゅうもんしょ", "đơn đặt hàng", level="J3")
+
+        response = self.client.get(
+            reverse("vocabulary:index"), {"q": "ちゅうもん", "level": "J3"}
+        )
+        self.assertEqual(response.context["total_count"], 1)
+        self.assertContains(response, "注文書")
+
+
+class SearchQuerySetTests(VocabularyTestCase):
+    def test_search_sql_uses_trigram_similarity(self):
+        """Không cần pg_trgm để kiểm tra: chỉ soi SQL mà ORM sinh ra.
+
+        Cốt để phát hiện sớm nếu ai đó lỡ đổi .search() thành icontains thuần
+        — lúc đó index GIN ở Meta.indexes thành vô dụng.
+        """
+        sql = str(Vocabulary.objects.search("ちゅうもん").query).lower()
+        self.assertIn("similarity(", sql)
+        self.assertIn("order by", sql)
+
+    def test_empty_query_returns_nothing(self):
+        self._word("注文する", "ちゅうもんする", "gọi món")
+        self.assertEqual(Vocabulary.objects.search("   ").count(), 0)

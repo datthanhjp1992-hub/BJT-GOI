@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load properties_tags mastercode_tags %}
+{% comment %}SC05_DanhSachTuVung — port từ htmlTemplate/SC05_DanhSachTuVung_*.html.
+Bộ lọc cấp độ dựng động từ MasterCode (context `level_choices`), không liệt kê
+cứng J5..J1 trong template.{% endcomment %}
+
+{% block title %}{% if topic %}{{ topic.name }}{% else %}{% label "vocabulary.list.title.all" %}{% endif %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">{% label "vocabulary.list.eyebrow" %}</div>
+  <h1 class="serif" style="font-size:28px;margin:0 0 24px;">
+    {% if topic %}{{ topic.icon_emoji }} {{ topic.name }}{% else %}{% label "vocabulary.list.title.all" %}{% endif %}
+  </h1>
+
+  {# --- Ô tìm kiếm: GET để người dùng bookmark/chia sẻ được kết quả --- #}
+  <form class="toolbar" method="get">
+    <input class="grow" type="search" name="q" value="{{ query }}"
+           aria-label="{% label 'vocabulary.list.field.search' %}"
+           placeholder="{% label 'vocabulary.list.field.search' %}">
+    {% if selected_level %}<input type="hidden" name="level" value="{{ selected_level }}">{% endif %}
+    <button type="submit" class="btn btn-primary">{% label "vocabulary.list.button.search" %}</button>
+  </form>
+
+  {# --- Lọc cấp độ BJT: giữ nguyên từ khoá đang tìm --- #}
+  <div class="toolbar" role="group" aria-label="{% label 'vocabulary.list.field.filter_level' %}">
+    <a class="tag{% if not selected_level %} level{% endif %}" href="?{% if query %}q={{ query|urlencode }}{% endif %}">{% label "vocabulary.list.field.filter_all" %}</a>
+    {% for code, name in level_choices %}
+      <a class="tag{% if selected_level == code %} level{% endif %}"
+         href="?level={{ code|urlencode }}{% if query %}&q={{ query|urlencode }}{% endif %}">{{ name }}</a>
+    {% endfor %}
+  </div>
+
+  <p class="muted" style="margin:0 0 16px;font-size:14px;">
+    {% message "vocabulary.list.hint.result_count" count=total_count %}
+  </p>
+
+  {% if page_obj.object_list %}
+    <div class="card" style="padding:0;">
+      <table>
+        <tr>
+          <th>{% label "vocabulary.list.table.word" %}</th>
+          <th>{% label "vocabulary.list.table.reading" %}</th>
+          <th>{% label "vocabulary.list.table.meaning" %}</th>
+          <th>{% label "vocabulary.list.table.level" %}</th>
+          <th>{% label "vocabulary.list.table.status" %}</th>
+          <th></th>
+        </tr>
+        {% for word in page_obj.object_list %}
+          <tr>
+            <td class="serif">{{ word.word }}</td>
+            <td>{{ word.reading }}</td>
+            <td>{{ word.meaning_vi }}</td>
+            <td><span class="tag">{{ word.bjt_level|code_name:bjt_level_code_type }}</span></td>
+            <td>
+              {% if word.study_status == "mastered" %}
+                <span class="tag">{% label "vocabulary.list.tag.status.mastered" %}</span>
+              {% elif word.study_status == "learning" %}
+                <span class="tag level">{% label "vocabulary.list.tag.status.learning" %}</span>
+              {% else %}
+                <span class="tag">{% label "vocabulary.list.tag.status.new" %}</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if word.primary_topic %}
+                <a href="{% url 'learning:flashcard' word.primary_topic.slug %}">
+                  {% if word.study_status == "new" %}{% label "vocabulary.list.link.start" %}{% else %}{% label "vocabulary.list.link.review" %}{% endif %} →
+                </a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a class="tag" href="?page={{ page_obj.previous_page_number }}{{ pagination_query }}">{% label "common.pagination.prev" %}</a>
+        {% endif %}
+        <span>{{ page_obj.number }} / {{ paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a class="tag" href="?page={{ page_obj.next_page_number }}{{ pagination_query }}">{% label "common.pagination.next" %}</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="card"><p class="muted" style="margin:0;">{% message "vocabulary.list.empty" %}</p></div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load properties_tags mastercode_tags %}
+{% comment %}SC03_TrangChu — port từ htmlTemplate/SC03_TrangChu_*.html.
+Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endcomment %}
+
+{% block title %}{% label "common.nav.home" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">{% label greeting_key %}</div>
+  <h1 class="serif" style="font-size:32px;margin:0 0 28px;">
+    {% message "learning.dashboard.greeting" name=display_name %}
+  </h1>
+
+  <div class="grid cols-3" style="margin-bottom:28px;">
+    <div class="stat">
+      <div class="num">{{ stats.words_mastered }}</div>
+      <div class="label">{% label "learning.dashboard.stat.words_mastered" %}</div>
+    </div>
+    <div class="stat">
+      <div class="num">{{ stats.streak_days }}</div>
+      <div class="label">{% label "learning.dashboard.stat.streak_days" %}</div>
+    </div>
+    <div class="stat">
+      <div class="num">{{ stats.due_today }}</div>
+      <div class="label">{% label "learning.dashboard.stat.due_today" %}</div>
+    </div>
+  </div>
+
+  <div class="grid cols-2">
+    {# --- Thẻ "Tiếp tục học" --- #}
+    <div class="card stamp">
+      <div class="eyebrow">{% label "learning.dashboard.section.continue" %}</div>
+      {% if in_progress %}
+        <h3 class="serif" style="margin:0 0 6px;">{{ in_progress.topic.icon_emoji }} {{ in_progress.topic.name }}</h3>
+        <p class="muted" style="margin:0 0 18px;">
+          {% message "learning.dashboard.hint.topic_progress" learned=in_progress.learned total=in_progress.total level=in_progress.level_code|code_name:bjt_level_code_type %}
+        </p>
+        <div class="progressbar" style="margin-bottom:20px;"><span style="width:{{ in_progress.percent }}%"></span></div>
+        <a class="btn btn-primary" href="{% url 'learning:flashcard' in_progress.topic.slug %}">{% label "learning.dashboard.button.continue_learning" %}</a>
+      {% else %}
+        <p class="muted" style="margin:0 0 18px;">{% message "learning.dashboard.hint.no_topic_in_progress" %}</p>
+        <a class="btn btn-primary" href="{% url 'vocabulary:index' %}">{% label "learning.dashboard.button.browse_vocabulary" %}</a>
+      {% endif %}
+    </div>
+
+    {# --- Thẻ "Ôn tập hôm nay" --- #}
+    <div class="card">
+      <div class="eyebrow">{% label "learning.dashboard.section.review_due" %}</div>
+      {% if due_count %}
+        <h3 class="serif" style="margin:0 0 6px;">{% message "learning.dashboard.hint.review_due" count=due_count %}</h3>
+        <p class="muted" style="margin:0 0 18px;">{% message "learning.dashboard.hint.review_due_desc" %}</p>
+        {% if in_progress %}
+          <a class="btn btn-outline" href="{% url 'learning:quiz' in_progress.topic.slug %}">{% label "learning.dashboard.button.start_quiz" %}</a>
+        {% else %}
+          <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "learning.dashboard.button.browse_vocabulary" %}</a>
+        {% endif %}
+      {% else %}
+        <h3 class="serif" style="margin:0 0 6px;">{{ daily_goal }}</h3>
+        <p class="muted" style="margin:0 0 18px;">{% message "learning.dashboard.hint.no_review_due" %}</p>
+        <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "learning.dashboard.button.browse_vocabulary" %}</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="eyebrow">{% label "learning.dashboard.section.suggested_topics" %}</div>
+  {% if suggested_topics %}
+    <div class="grid cols-3">
+      {% for topic in suggested_topics %}
+        <a class="card" href="{% url 'vocabulary:list' topic.slug %}">
+          <span class="tag level">{{ topic.level_code|code_name:bjt_level_code_type }}</span>
+          <h3 class="serif" style="margin:12px 0 6px;">{{ topic.icon_emoji }} {{ topic.name }}</h3>
+          <p class="muted" style="margin:0;">{% message "vocabulary.topic.hint.word_count" count=topic.word_count %}</p>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">{% label "common.empty.no_data" %}</p>
+  {% endif %}
+{% endblock %}

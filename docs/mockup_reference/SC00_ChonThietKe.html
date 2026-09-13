@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8">
+<title>Chọn thiết kế | Ứng dụng học từ vựng Nhật - Việt</title>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;background:#F7F5F0;color:#222;}
+  .wrap{max-width:960px;margin:0 auto;padding:64px 28px;}
+  h1{font-size:28px;margin:0 0 8px;}
+  p.lead{color:#666;margin:0 0 40px;font-size:15.5px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .card{border:1px solid #ddd;border-radius:10px;overflow:hidden;background:#fff;text-decoration:none;color:#222;display:block;transition:transform .15s ease;}
+  .card:hover{transform:translateY(-3px);}
+  .preview{height:110px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;}
+  .a .preview{background:linear-gradient(135deg,#B5432E,#8f3323);}
+  .b .preview{background:linear-gradient(135deg,#14141A,#3B4FC7);}
+  .c .preview{background:linear-gradient(135deg,#FF6F61,#FFC93C);}
+  .body{padding:20px;}
+  .body h3{margin:0 0 6px;font-size:17px;}
+  .body p{margin:0 0 12px;font-size:14px;color:#666;line-height:1.5;}
+  .body .file{font-size:12.5px;color:#999;}
+  .note{margin-top:36px;font-size:13.5px;color:#888;}
+</style>
+</head><body>
+<div class="wrap">
+  <h1>🌸 Chọn hướng thiết kế</h1>
+  <p class="lead">Mỗi thẻ dưới đây mở trang danh mục riêng của một thiết kế, từ đó bạn xem toàn bộ 7 màn hình của thiết kế đó (đã liên kết với nhau như website thật).</p>
+  <div class="grid">
+    <a class="card a" href="SC00_TrangChon_A.html">
+      <div class="preview">Thiết kế A</div>
+      <div class="body">
+        <h3>Washi &amp; Vermillion</h3>
+        <p>Phong cách truyền thống Nhật Bản, giấy washi ấm áp, điểm nhấn đỏ son.</p>
+        <div class="file">Mở: SC00_TrangChon_A.html</div>
+      </div>
+    </a>
+    <a class="card b" href="SC00_TrangChon_B.html">
+      <div class="preview">Thiết kế B</div>
+      <div class="body">
+        <h3>Studio Mono</h3>
+        <p>Hiện đại, tối giản, dạng lưới phẳng, một màu nhấn indigo.</p>
+        <div class="file">Mở: SC00_TrangChon_B.html</div>
+      </div>
+    </a>
+    <a class="card c" href="SC00_TrangChon_C.html">
+      <div class="preview">Thiết kế C</div>
+      <div class="body">
+        <h3>Genki Playful</h3>
+        <p>Tươi sáng, bo tròn, gamified với emoji và màu sắc vui vẻ.</p>
+        <div class="file">Mở: SC00_TrangChon_C.html</div>
+      </div>
+    </a>
+  </div>
+  <p class="note">Tất cả các file nằm chung một thư mục, tên file đã được đặt duy nhất (có hậu tố _A / _B / _C) để không bị trùng khi tải xuống.</p>
+</div>
+</body></html>

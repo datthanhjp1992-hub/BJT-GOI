@@ -1,0 +1,33 @@
+{% load static properties_tags %}<!DOCTYPE html>
+{% comment %}
+Layout gốc. File CSS được chọn theo User.ui_theme (A/B/C) nhờ context
+processor apps.accounts.context_processors.ui_theme — cả 3 file dùng CHUNG
+bộ class trong htmlTemplate/STYLE_GUIDE.md, nên template con chỉ được dùng
+các class ở đó, không tự đặt class mới.
+
+Block cho template con:
+  title       tiêu đề tab
+  wrap_attrs  thuộc tính thêm cho <div class="wrap"> (vd thu hẹp trang login)
+  content     nội dung chính
+{% endcomment %}
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% label "common.brand.name" %}{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/theme_'|add:ui_theme|lower|add:'.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  {% include "partials/topbar.html" %}
+  <main>
+    <div class="wrap"{% block wrap_attrs %}{% endblock %}>
+      {% include "partials/messages.html" %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+  <footer class="note">{% label "common.brand.name" %} — {% label "common.brand.tagline" %}</footer>
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

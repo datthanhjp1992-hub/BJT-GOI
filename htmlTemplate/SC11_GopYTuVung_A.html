@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8">
+<title>Góp ý từ vựng | Kotoba Việt</title>
+<link rel="stylesheet" href="style_A.css"></head><body>
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="mark">言</span>Kotoba Việt</div>
+  <nav class="mainnav">
+    <a href="SC03_TrangChu_A.html">Trang chủ</a>
+    <a href="SC05_DanhSachTuVung_A.html">Từ vựng</a>
+    <a href="SC04_HocTuVung_A.html">Flashcard</a>
+    <a href="SC06_KiemTra_A.html">Kiểm tra</a>
+    <a class="active" href="SC11_GopYTuVung_A.html">Góp ý</a>
+    <a href="SC10_LuyenVietPdf_A.html">Luyện viết</a>
+  </nav>
+  <div class="navmeta"><a href="SC09_ThongTinCaNhan_A.html">Dat</a> <a class="pill ghost" href="SC08_CaiDat_A.html">⚙️</a> <a class="pill ghost" href="SC01_DangNhap_A.html">Đăng xuất</a></div>
+</div></header>
+<main><div class="wrap" style="max-width:760px;">
+  <div class="eyebrow">Cộng đồng đóng góp</div>
+  <h1 class="serif" style="font-size:28px;margin:0 0 8px;">Góp ý từ vựng</h1>
+  <p class="muted" style="margin:0 0 26px;">Đề xuất từ mới, sửa nghĩa/cách dùng, hoặc bình luận thêm cho từ đã có. Góp ý được duyệt sẽ cộng điểm và hiện danh hiệu ở hồ sơ của bạn — xem tại <a href="SC13_ThanhTich_A.html" style="color:var(--accent);">Điểm &amp; Thành tích →</a></p>
+
+  <div style="display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid var(--border);">
+    <button type="button" onclick="showMainTab('new')" id="maintab-new-btn" style="background:none;border:none;cursor:pointer;padding:10px 4px 12px;margin-right:24px;font-family:var(--sans);font-size:15px;color:var(--accent);border-bottom:2px solid var(--accent);font-weight:600;">✏️ Gửi góp ý mới</button>
+    <button type="button" onclick="showMainTab('mine')" id="maintab-mine-btn" style="background:none;border:none;cursor:pointer;padding:10px 4px 12px;font-family:var(--sans);font-size:15px;color:var(--ink-soft);border-bottom:2px solid transparent;">📋 Góp ý của tôi <span class="tag" style="margin-left:4px;">7</span></button>
+  </div>
+
+  <div id="maintab-new">
+    <div class="card">
+      <p style="margin:0 0 14px;font-size:13.5px;color:var(--ink-soft);">Loại góp ý</p>
+      <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
+        <button type="button" onclick="showType('word')" id="type-word-btn" class="btn btn-primary" style="padding:10px 18px;font-size:14px;">🆕 Từ mới</button>
+        <button type="button" onclick="showType('meaning')" id="type-meaning-btn" class="btn btn-outline" style="padding:10px 18px;font-size:14px;">✏️ Sửa nghĩa / cách dùng</button>
+        <button type="button" onclick="showType('comment')" id="type-comment-btn" class="btn btn-outline" style="padding:10px 18px;font-size:14px;">💬 Bình luận</button>
+      </div>
+
+      <div id="type-word">
+        <div class="grid cols-2" style="gap:16px;">
+          <div class="field"><label>Từ vựng (Kanji/Kana) *</label><input type="text" placeholder="Ví dụ: 打ち合わせ"></div>
+          <div class="field"><label>Cách đọc (Furigana) *</label><input type="text" placeholder="Ví dụ: うちあわせ"></div>
+        </div>
+        <div class="field"><label>Nghĩa tiếng Việt *</label><input type="text" placeholder="Ví dụ: buổi họp, trao đổi công việc"></div>
+        <div class="grid cols-2" style="gap:16px;">
+          <div class="field"><label>Cấp độ BJT (nếu biết)</label>
+            <select><option value="">— Chưa rõ —</option><option>J5</option><option>J4</option><option selected>J3</option><option>J2</option><option>J1</option><option>J1+</option></select>
+          </div>
+          <div class="field"><label>Chủ đề liên quan</label>
+            <select><option>Công việc</option><option>Nhà hàng &amp; Ẩm thực</option><option>Gia đình</option><option value="">— Không rõ —</option></select>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0;"><label>Ghi chú thêm (tuỳ chọn)</label><input type="text" placeholder="Ví dụ câu, ngữ cảnh dùng từ..."></div>
+      </div>
+
+      <div id="type-meaning" style="display:none;">
+        <div class="field"><label>Chọn từ cần sửa *</label>
+          <select><option>注文する — ちゅうもんする (gọi món)</option><option>予約 — よやく (đặt chỗ trước)</option><option>美味しい — おいしい (ngon)</option></select>
+        </div>
+        <div class="field"><label>Nghĩa / cách dùng đề xuất *</label><input type="text" placeholder="Nghĩa/cách dùng bạn muốn sửa hoặc bổ sung"></div>
+        <div class="field" style="margin-bottom:0;"><label>Lý do đề xuất (tuỳ chọn)</label><input type="text" placeholder="Vì sao bạn nghĩ nghĩa hiện tại chưa đúng/chưa đủ?"></div>
+      </div>
+
+      <div id="type-comment" style="display:none;">
+        <div class="field"><label>Chọn từ muốn bình luận *</label>
+          <select><option>注文する — ちゅうもんする (gọi món)</option><option>予約 — よやく (đặt chỗ trước)</option><option>美味しい — おいしい (ngon)</option></select>
+        </div>
+        <div class="field" style="margin-bottom:0;"><label>Nội dung bình luận *</label><input type="text" placeholder="Chia sẻ thêm cách dùng, ví dụ thực tế, lưu ý khi dùng từ này..."></div>
+        <p class="muted" style="font-size:12.5px;margin:10px 0 0;">Bình luận sẽ hiện công khai dưới màn hình học từ vựng sau khi admin duyệt.</p>
+      </div>
+
+      <div class="divider"></div>
+      <a class="btn btn-primary" href="#" onclick="return false;">Gửi góp ý</a>
+      <p class="muted" style="font-size:12.5px;margin:10px 0 0;">Mỗi góp ý được duyệt sẽ cộng điểm cho bạn — xem chi tiết ở trang Điểm &amp; Thành tích.</p>
+    </div>
+  </div>
+
+  <div id="maintab-mine" style="display:none;">
+    <div class="card" style="padding:0;">
+      <table>
+        <tr><th>Loại</th><th>Nội dung</th><th>Trạng thái</th><th>Phản hồi admin</th><th>Ngày gửi</th></tr>
+        <tr>
+          <td>Từ mới</td><td>打ち合わせ (うちあわせ)</td>
+          <td><span class="tag" style="background:#dbe6d8;border-color:transparent;color:#2f4f47;">Đã duyệt · +10đ</span></td>
+          <td class="muted">Đã thêm vào chủ đề "Công việc", cảm ơn bạn!</td><td class="muted">08/09/2026</td>
+        </tr>
+        <tr>
+          <td>Bình luận</td><td>美味しい</td>
+          <td><span class="tag" style="background:#dbe6d8;border-color:transparent;color:#2f4f47;">Đã duyệt · +2đ</span></td>
+          <td class="muted">—</td><td class="muted">05/09/2026</td>
+        </tr>
+        <tr>
+          <td>Sửa nghĩa</td><td>予約</td>
+          <td><span class="tag" style="background:#f0d9cf;border-color:transparent;color:#8f3323;">Từ chối</span></td>
+          <td class="muted">Nghĩa hiện tại đã đúng, cảm ơn góp ý của bạn.</td><td class="muted">02/09/2026</td>
+        </tr>
+        <tr>
+          <td>Từ mới</td><td>見積もり (みつもり)</td>
+          <td><span class="tag">Chờ duyệt</span></td>
+          <td class="muted">—</td><td class="muted">10/09/2026</td>
+        </tr>
+      </table>
+    </div>
+    <p class="muted" style="font-size:12.5px;margin:12px 0 0;">Hiển thị 4/7 góp ý gần nhất.</p>
+  </div>
+</div></main>
+<footer class="note">Thiết kế A — Washi &amp; Vermillion · Bản mẫu tĩnh</footer>
+<script>
+function showMainTab(name){
+  document.getElementById('maintab-new').style.display = (name === 'new') ? 'block' : 'none';
+  document.getElementById('maintab-mine').style.display = (name === 'mine') ? 'block' : 'none';
+  var nb = document.getElementById('maintab-new-btn'), mb = document.getElementById('maintab-mine-btn');
+  var active = 'color:var(--accent);border-bottom:2px solid var(--accent);font-weight:600;';
+  var inactive = 'color:var(--ink-soft);border-bottom:2px solid transparent;';
+  var base = 'background:none;border:none;cursor:pointer;padding:10px 4px 12px;font-family:var(--sans);font-size:15px;';
+  nb.style.cssText = base + 'margin-right:24px;' + (name === 'new' ? active : inactive);
+  mb.style.cssText = base + (name === 'mine' ? active : inactive);
+}
+function showType(name){
+  document.getElementById('type-word').style.display = (name === 'word') ? 'block' : 'none';
+  document.getElementById('type-meaning').style.display = (name === 'meaning') ? 'block' : 'none';
+  document.getElementById('type-comment').style.display = (name === 'comment') ? 'block' : 'none';
+  ['word','meaning','comment'].forEach(function(t){
+    document.getElementById('type-' + t + '-btn').className = (t === name) ? 'btn btn-primary' : 'btn btn-outline';
+  });
+}
+</script>
+</body></html>

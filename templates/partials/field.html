@@ -1,0 +1,12 @@
+{% comment %}
+Render 1 field theo đúng markup .field của mockup (label + input + lỗi).
+Dùng: {% include "partials/field.html" with field=form.email %}
+Nhãn lấy từ form (form đã tra label.properties trong __init__), không viết
+chuỗi tiếng Việt ở đây.
+{% endcomment %}
+<div class="field">
+  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  {{ field }}
+  {% if field.help_text %}<p class="muted" style="font-size:12.5px;margin:6px 0 0;">{{ field.help_text }}</p>{% endif %}
+  {% for error in field.errors %}<p class="error">{{ error }}</p>{% endfor %}
+</div>

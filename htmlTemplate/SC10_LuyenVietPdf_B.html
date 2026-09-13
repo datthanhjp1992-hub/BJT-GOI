@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8">
+<title>Luyện viết | Kotoba</title>
+<link rel="stylesheet" href="style_B.css"></head><body>
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="mark">言</span>KOTOBA</div>
+  <nav class="mainnav">
+    <a href="SC03_TrangChu_B.html">Trang chủ</a>
+    <a href="SC05_DanhSachTuVung_B.html">Từ vựng</a>
+    <a href="SC04_HocTuVung_B.html">Flashcard</a>
+    <a href="SC06_KiemTra_B.html">Kiểm tra</a>
+    <a href="SC11_GopYTuVung_B.html">Góp ý</a>
+    <a class="active" href="SC10_LuyenVietPdf_B.html">Luyện viết</a>
+  </nav>
+  <div class="navmeta"><a href="SC09_ThongTinCaNhan_B.html">Dat</a> <a class="pill ghost" href="SC08_CaiDat_B.html">⚙️</a> <a class="pill ghost" href="SC01_DangNhap_B.html">Đăng xuất</a></div>
+</div></header>
+<main><div class="wrap">
+  <div class="eyebrow">// handwriting practice generator</div>
+  <h1 style="font-size:26px;margin:0 0 8px;font-weight:700;">Tạo phiếu luyện viết PDF</h1>
+  <p class="muted" style="margin:0 0 24px;font-size:14.5px;">Upload danh sách từ của riêng bạn theo mẫu chuẩn, hệ thống tạo file PDF ô vuông tập viết — PDF trải dài thêm trang tự động, không giới hạn số từ.</p>
+
+  <div class="grid-gap cols-2">
+    <div class="card">
+      <div style="display:flex;gap:4px;margin-bottom:18px;border-bottom:1px solid var(--border);">
+        <button type="button" onclick="showTab('upload')" id="tab-upload-btn" style="background:none;border:none;cursor:pointer;padding:9px 4px 11px;margin-right:22px;font-family:var(--sans);font-size:14px;color:var(--ink);border-bottom:2px solid var(--accent);font-weight:700;">📤 UPLOAD DANH SÁCH</button>
+        <button type="button" onclick="showTab('select')" id="tab-select-btn" style="background:none;border:none;cursor:pointer;padding:9px 4px 11px;font-family:var(--sans);font-size:14px;color:var(--ink-soft);border-bottom:2px solid transparent;">☑️ CHỌN TỪ CÓ SẴN</button>
+      </div>
+
+      <div id="tab-upload">
+        <h3 style="margin:0 0 4px;">1. Upload file danh sách từ</h3>
+        <p class="muted" style="margin:0 0 16px;font-size:13.5px;">Chấp nhận file <strong>.xlsx</strong> hoặc <strong>.csv</strong> theo mẫu chuẩn bên dưới.</p>
+
+        <label for="file-input" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1px dashed var(--ink-soft);padding:32px 20px;text-align:center;cursor:pointer;background:#fafafa;">
+          <span style="font-size:26px;">📄</span>
+          <span style="font-size:14px;">Kéo thả file vào đây, hoặc <span style="color:var(--accent);text-decoration:underline;">bấm để chọn file</span></span>
+          <span class="muted" style="font-size:12px;font-family:var(--mono);">.xlsx / .csv — max 5MB</span>
+        </label>
+        <input id="file-input" type="file" accept=".xlsx,.csv" style="display:none;" onchange="document.getElementById('upload-result').style.display='block'; document.getElementById('dropzone-empty-note').style.display='none';">
+
+        <div style="margin:14px 0 0;padding:14px 16px;background:var(--accent-soft);">
+          <p style="margin:0 0 8px;font-size:13px;font-weight:700;color:var(--accent);">CHƯA CÓ FILE? TẢI MẪU CHUẨN:</p>
+          <a class="btn btn-outline" style="padding:8px 16px;font-size:13px;margin-right:8px;" href="mau_danh_sach_tu_vung.xlsx" download>⬇ Mẫu Excel (.xlsx)</a>
+          <a class="btn btn-outline" style="padding:8px 16px;font-size:13px;" href="mau_danh_sach_tu_vung.csv" download>⬇ Mẫu CSV (.csv)</a>
+        </div>
+
+        <p class="muted" style="font-size:12.5px;margin:14px 0 0;" id="dropzone-empty-note">
+          Cột bắt buộc: <strong>Từ vựng</strong>, <strong>Cách đọc</strong>, <strong>Nghĩa tiếng Việt</strong>.
+          Cột <strong>Cấp độ BJT</strong> không bắt buộc. Xem sheet "Huong_dan" trong file mẫu để biết chi tiết.
+        </p>
+
+        <div id="upload-result" style="display:none;margin-top:18px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <p style="margin:0;font-size:13.5px;"><strong style="color:var(--sage);">✓ Đã đọc được 38 từ</strong> từ file "danh_sach_tu_vung.xlsx"</p>
+            <a href="#" onclick="document.getElementById('upload-result').style.display='none'; document.getElementById('dropzone-empty-note').style.display='block'; return false;" class="muted" style="font-size:12.5px;text-decoration:underline;">✕ Xoá, chọn lại</a>
+          </div>
+          <div style="max-height:220px;overflow:auto;border:1px solid var(--border);">
+            <table style="font-size:13px;">
+              <thead><tr><th>Từ vựng</th><th>Cách đọc</th><th>Nghĩa</th><th>Cấp độ</th></tr></thead>
+              <tbody>
+                <tr><td>注文する</td><td>ちゅうもんする</td><td>gọi món, đặt món</td><td><span class="tag level">J4</span></td></tr>
+                <tr><td>予約</td><td>よやく</td><td>đặt chỗ trước</td><td><span class="tag level">J4</span></td></tr>
+                <tr><td>お会計</td><td>おかいけい</td><td>tính tiền</td><td><span class="tag level">J5</span></td></tr>
+                <tr><td>美味しい</td><td>おいしい</td><td>ngon</td><td><span class="tag level">J5</span></td></tr>
+                <tr><td>打ち合わせ</td><td>うちあわせ</td><td>buổi họp, trao đổi công việc</td><td><span class="tag level">J3</span></td></tr>
+                <tr><td class="muted" colspan="4">… và 33 từ khác</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="muted" style="font-size:12px;margin:10px 0 0;">PDF sẽ tự động tạo khoảng 4 trang cho 38 từ này.</p>
+        </div>
+      </div>
+
+      <div id="tab-select" style="display:none;">
+        <h3 style="margin:0 0 4px;">1. Chọn từ vựng có sẵn</h3>
+        <p class="muted" style="margin:0 0 16px;font-size:13.5px;">Chủ đề: Nhà hàng &amp; Ẩm thực</p>
+        <div style="display:grid;gap:8px;">
+          <label style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--border);">
+            <input type="checkbox" checked style="width:auto;"><strong>注文する</strong><span class="muted" style="font-size:12.5px;">ちゅうもんする — gọi món</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--border);">
+            <input type="checkbox" checked style="width:auto;"><strong>予約</strong><span class="muted" style="font-size:12.5px;">よやく — đặt chỗ trước</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--border);">
+            <input type="checkbox" checked style="width:auto;"><strong>お会計</strong><span class="muted" style="font-size:12.5px;">おかいけい — tính tiền</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--border);">
+            <input type="checkbox" checked style="width:auto;"><strong>美味しい</strong><span class="muted" style="font-size:12.5px;">おいしい — ngon</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--border);">
+            <input type="checkbox" checked style="width:auto;"><strong>メニュー</strong><span class="muted" style="font-size:12.5px;">めにゅー — thực đơn</span>
+          </label>
+        </div>
+        <p class="muted" style="font-size:12.5px;margin:14px 0 0;">Hoặc <a href="SC05_DanhSachTuVung_B.html" style="color:var(--accent);">chọn từ chủ đề khác →</a></p>
+      </div>
+    </div>
+
+    <div class="card" style="align-self:start;">
+      <h3 style="margin:0 0 4px;">2. Tùy chọn phiếu</h3>
+      <p class="muted" style="margin:0 0 16px;font-size:13.5px;">38 từ trong file đã upload</p>
+      <div class="field"><label>SỐ DÒNG LUYỆN VIẾT / TỪ</label><select><option>1 dòng</option><option selected>2 dòng</option><option>3 dòng</option></select></div>
+      <div class="field" style="margin-bottom:0;"><label>HIỂN THỊ</label>
+        <label style="display:flex;gap:8px;align-items:center;font-size:13.5px;margin-bottom:8px;"><input type="checkbox" checked style="width:auto;"> Có chữ mờ để đồ theo</label>
+        <label style="display:flex;gap:8px;align-items:center;font-size:13.5px;"><input type="checkbox" checked style="width:auto;"> Hiện cách đọc và nghĩa</label>
+      </div>
+      <div class="divider"></div>
+      <a class="btn btn-primary btn-block" href="mau_luyen_viet.pdf" download>Tạo &amp; Tải file PDF</a>
+      <p class="muted" style="font-size:12px;text-align:center;margin:10px 0 0;">File mẫu — bấm để xem PDF thực tế được tạo. PDF thật sẽ trải dài nhiều trang theo số từ.</p>
+    </div>
+  </div>
+</div></main>
+<footer class="note">DESIGN B — STUDIO MONO — STATIC MOCKUP</footer>
+<script>
+function showTab(name){
+  document.getElementById('tab-upload').style.display = (name === 'upload') ? 'block' : 'none';
+  document.getElementById('tab-select').style.display = (name === 'select') ? 'block' : 'none';
+  var up = document.getElementById('tab-upload-btn');
+  var sel = document.getElementById('tab-select-btn');
+  var active = 'color:var(--ink);border-bottom:2px solid var(--accent);font-weight:700;';
+  var inactive = 'color:var(--ink-soft);border-bottom:2px solid transparent;';
+  var base = 'background:none;border:none;cursor:pointer;padding:9px 4px 11px;font-family:var(--sans);font-size:14px;';
+  up.style.cssText = base + 'margin-right:22px;' + (name === 'upload' ? active : inactive);
+  sel.style.cssText = base + (name === 'select' ? active : inactive);
+}
+</script>
+</body></html>

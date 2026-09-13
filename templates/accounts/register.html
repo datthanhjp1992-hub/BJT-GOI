@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC02_DangKy — port từ htmlTemplate/SC02_DangKy_*.html{% endcomment %}
+
+{% block title %}{% label "accounts.register.title" %} | {% label "common.brand.name" %}{% endblock %}
+{% block wrap_attrs %} style="max-width:420px;"{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">{% label "accounts.register.eyebrow" %}</div>
+  <h1 class="serif" style="font-size:30px;margin:0 0 8px;">{% label "accounts.register.title" %}</h1>
+  <p class="muted" style="margin:0 0 32px;">{% label "accounts.register.subtitle" %}</p>
+
+  <form class="card" method="post" novalidate>
+    {% csrf_token %}
+
+    {% for error in form.non_field_errors %}
+      <div class="flash error">{{ error }}</div>
+    {% endfor %}
+
+    {% for field in form %}
+      {% include "partials/field.html" with field=field %}
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary btn-block">{% label "accounts.register.button.submit" %}</button>
+
+    <div class="divider"></div>
+    <p class="muted" style="text-align:center;font-size:14px;margin:0;">
+      <a href="{% url 'accounts:login' %}" style="color:var(--accent);">{% label "accounts.register.link.login" %}</a>
+    </p>
+  </form>
+{% endblock %}

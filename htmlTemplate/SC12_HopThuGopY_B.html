@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8">
+<title>Hòm thư góp ý | Kotoba</title>
+<link rel="stylesheet" href="style_B.css">
+</head><body>
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="mark">言</span>KOTOBA <span class="tag" style="margin-left:6px;">ADMIN</span></div>
+  <div class="navmeta">Admin<a class="pill ghost" href="SC01_DangNhap_B.html">Đăng xuất</a></div>
+</div></header>
+<div class="admin-layout">
+  <div class="sidebar">
+    <a href="SC07_QuanTriAdmin_B.html">Tổng quan</a>
+    <a href="#">Quản lý người dùng</a>
+    <a href="#">Quản lý từ vựng</a>
+    <a href="#">Quản lý chủ đề</a>
+    <a class="active" href="SC12_HopThuGopY_B.html">Hòm thư góp ý <span class="tag" style="margin-left:4px;background:var(--ink);color:#fff;border-color:transparent;">12</span></a>
+    <a href="#">Báo cáo lỗi</a>
+    <a href="SC03_TrangChu_B.html">← Về trang người dùng</a>
+  </div>
+  <div class="admin-content">
+    <div class="eyebrow">// content moderation</div>
+    <h1 style="font-size:26px;margin:0 0 6px;font-weight:700;">Hòm thư góp ý</h1>
+    <p class="muted" style="margin:0 0 20px;font-size:14px;">Duyệt từ mới, sửa nghĩa/cách dùng, và bình luận do người dùng gửi.</p>
+
+    <div class="grid cols-3" style="margin-bottom:20px;">
+      <div class="stat"><div class="num">12</div><div class="label">Chờ duyệt</div></div>
+      <div class="stat"><div class="num">284</div><div class="label">Đã duyệt (tháng này)</div></div>
+      <div class="stat"><div class="num">1.8 ngày</div><div class="label">Thời gian duyệt TB</div></div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button type="button" class="btn btn-primary" style="padding:8px 16px;font-size:13px;">Chờ duyệt (12)</button>
+      <button type="button" class="btn btn-outline" style="padding:8px 16px;font-size:13px;">Đã duyệt</button>
+      <button type="button" class="btn btn-outline" style="padding:8px 16px;font-size:13px;">Từ chối</button>
+      <button type="button" class="btn btn-outline" style="padding:8px 16px;font-size:13px;">Tất cả</button>
+    </div>
+
+    <div class="grid-gap" style="grid-template-columns:1fr 1.15fr;align-items:start;">
+      <div class="card" style="padding:0;">
+        <table>
+          <tr><th>LOẠI</th><th>NGƯỜI GỬI</th><th>NỘI DUNG</th><th>NGÀY</th></tr>
+          <tr style="background:var(--accent-soft);"><td><span class="tag">Từ mới</span></td><td>Dat Nguyen</td><td>見積もり (みつもり)</td><td class="muted" style="font-family:var(--mono);">10/09</td></tr>
+          <tr><td><span class="tag">Sửa nghĩa</span></td><td>Trần Thị B</td><td>承知しました</td><td class="muted" style="font-family:var(--mono);">10/09</td></tr>
+          <tr><td><span class="tag">Bình luận</span></td><td>Lê Văn C</td><td>お会計</td><td class="muted" style="font-family:var(--mono);">09/09</td></tr>
+          <tr><td><span class="tag">Từ mới</span></td><td>Nguyễn Văn A</td><td>打ち合わせ (うちあわせ)</td><td class="muted" style="font-family:var(--mono);">09/09</td></tr>
+          <tr><td><span class="tag">Bình luận</span></td><td>Dat Nguyen</td><td>美味しい</td><td class="muted" style="font-family:var(--mono);">08/09</td></tr>
+          <tr><td class="muted" colspan="4">… và 7 góp ý chờ duyệt khác</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <p class="muted" style="margin:0 0 4px;font-size:12.5px;font-family:var(--mono);">TỪ MỚI · GỬI BỞI DAT NGUYEN · 10/09/2026</p>
+        <h3 style="margin:0 0 18px;font-weight:700;">Xem chi tiết góp ý</h3>
+
+        <div class="grid-gap cols-2" style="margin-bottom:2px;">
+          <div class="field"><label>TỪ VỰNG (KANJI/KANA)</label><input type="text" value="見積もり"></div>
+          <div class="field"><label>CÁCH ĐỌC</label><input type="text" value="みつもり"></div>
+        </div>
+        <div class="field"><label>NGHĨA TIẾNG VIỆT</label><input type="text" value="báo giá, dự trù"></div>
+        <div class="grid-gap cols-2">
+          <div class="field"><label>CẤP ĐỘ BJT</label>
+            <select><option>J5</option><option>J4</option><option selected>J3</option><option>J2</option><option>J1</option></select>
+          </div>
+          <div class="field"><label>CHỦ ĐỀ</label>
+            <select><option selected>Công việc</option><option>Nhà hàng &amp; Ẩm thực</option></select>
+          </div>
+        </div>
+        <p class="muted" style="font-size:12px;margin:0 0 16px;">Admin có thể chỉnh lại nội dung trước khi duyệt — dữ liệu lưu vào hệ thống sẽ theo đúng các ô trên.</p>
+
+        <div class="field"><label>PHẢN HỒI CHO NGƯỜI GỬI</label><input type="text" placeholder="Ví dụ: Đã thêm vào chủ đề Công việc, cảm ơn bạn!"></div>
+
+        <div class="divider"></div>
+        <div style="display:flex;gap:10px;">
+          <a class="btn btn-primary" href="#" onclick="return false;" style="flex:1;text-align:center;">✅ Duyệt &amp; thêm vào hệ thống</a>
+          <a class="btn btn-outline" href="#" onclick="return false;" style="flex:1;text-align:center;">✕ Từ chối</a>
+        </div>
+        <p class="muted" style="font-size:12px;margin:10px 0 0;">Duyệt sẽ tự động cộng +10đ cho người gửi và cập nhật danh hiệu nếu đủ điều kiện.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<footer class="note">DESIGN B — STUDIO MONO — STATIC MOCKUP</footer>
+</body></html>

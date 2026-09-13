@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC01_DangNhap — port từ htmlTemplate/SC01_DangNhap_*.html{% endcomment %}
+
+{% block title %}{% label "accounts.login.title" %} | {% label "common.brand.name" %}{% endblock %}
+{% block wrap_attrs %} style="max-width:420px;"{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">{% label "accounts.login.eyebrow" %}</div>
+  <h1 class="serif" style="font-size:30px;margin:0 0 8px;">{% label "accounts.login.title" %}</h1>
+  <p class="muted" style="margin:0 0 32px;">{% label "accounts.login.subtitle" %}</p>
+
+  <form class="card" method="post" novalidate>
+    {% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+    {% for error in form.non_field_errors %}
+      <div class="flash error">{{ error }}</div>
+    {% endfor %}
+
+    {% include "partials/field.html" with field=form.identifier %}
+    {% include "partials/field.html" with field=form.password %}
+
+    <button type="submit" class="btn btn-primary btn-block">{% label "accounts.login.button.submit" %}</button>
+
+    <div class="divider"></div>
+    <p class="muted" style="text-align:center;font-size:14px;margin:0;">
+      <a href="{% url 'accounts:register' %}" style="color:var(--accent);">{% label "accounts.login.link.register" %}</a>
+    </p>
+  </form>
+{% endblock %}

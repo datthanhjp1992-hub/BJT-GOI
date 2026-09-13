@@ -1,0 +1,81 @@
+/* Design A - "Washi & Vermillion": warm traditional Japanese paper aesthetic */
+:root{
+  --bg:#FAF6EE;
+  --surface:#FFFFFF;
+  --ink:#24211D;
+  --ink-soft:#6b6455;
+  --accent:#B5432E;
+  --accent-dark:#8f3323;
+  --accent-soft:#f0d9cf;
+  --gold:#B8912B;
+  --teal:#3F6B63;
+  --border:#DCD3C0;
+  --serif: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --sans: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;}
+h1,h2,h3,.serif{font-family:var(--serif);}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+
+/* header */
+.topbar{border-bottom:1px solid var(--border);background:var(--surface);}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:72px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:22px;color:var(--ink);}
+.brand .mark{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-family:var(--serif);}
+nav.mainnav{display:flex;gap:28px;font-size:14.5px;}
+nav.mainnav a{padding:6px 2px;border-bottom:2px solid transparent;color:var(--ink-soft);}
+nav.mainnav a.active{color:var(--accent);border-color:var(--accent);}
+.navmeta{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--ink-soft);}
+.pill{padding:8px 18px;border-radius:3px;background:var(--accent);color:#fff;font-size:14px;}
+.pill.ghost{background:transparent;border:1px solid var(--border);color:var(--ink);}
+
+main{padding:52px 0 80px;}
+.stamp{position:relative;}
+.stamp::before{content:"";position:absolute;top:-6px;right:-6px;width:46px;height:46px;border:2px solid var(--accent);border-radius:50%;opacity:.25;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:28px;}
+.grid{display:grid;gap:20px;}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-2{grid-template-columns:1.4fr 1fr;}
+
+.btn{display:inline-block;padding:13px 26px;border-radius:3px;font-size:15px;cursor:pointer;border:1px solid transparent;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-dark);}
+.btn-outline{border-color:var(--ink);color:var(--ink);background:transparent;}
+.btn-block{display:block;width:100%;text-align:center;}
+
+label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:6px;}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:3px;background:#fff;font-size:15px;font-family:var(--sans);color:var(--ink);}
+input:focus,select:focus{outline:none;border-color:var(--accent);}
+.field{margin-bottom:18px;}
+
+.divider{height:1px;background:var(--border);margin:26px 0;}
+.eyebrow{color:var(--accent);font-size:13px;letter-spacing:.02em;margin-bottom:10px;}
+.muted{color:var(--ink-soft);}
+.tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12.5px;border:1px solid var(--border);color:var(--ink-soft);margin-right:6px;}
+.tag.level{background:var(--accent-soft);border-color:transparent;color:var(--accent-dark);}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+th{text-align:left;color:var(--ink-soft);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;}
+td{padding:14px 12px;border-bottom:1px solid var(--border);}
+tr:hover td{background:#fbf8f2;}
+
+.stat{padding:22px;border:1px solid var(--border);border-radius:4px;background:var(--surface);}
+.stat .num{font-family:var(--serif);font-size:34px;color:var(--accent-dark);}
+.stat .label{font-size:13.5px;color:var(--ink-soft);margin-top:4px;}
+
+.flashcard{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:60px 40px;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
+.flashcard .jp{font-family:var(--serif);font-size:52px;margin-bottom:14px;}
+.flashcard .reading{color:var(--ink-soft);margin-bottom:20px;}
+.progressbar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progressbar span{display:block;height:100%;background:var(--accent);}
+
+.sidebar{width:220px;border-right:1px solid var(--border);padding:32px 20px;}
+.sidebar a{display:block;padding:10px 14px;border-radius:3px;color:var(--ink-soft);margin-bottom:4px;font-size:14.5px;}
+.sidebar a.active{background:var(--accent-soft);color:var(--accent-dark);}
+.admin-layout{display:flex;}
+.admin-content{flex:1;padding:32px 36px;}
+
+footer.note{padding:20px 0;text-align:center;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--border);}
