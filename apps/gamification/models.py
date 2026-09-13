@@ -58,7 +58,6 @@ class Contribution(AuditableModel):
     proposed_word = models.CharField(max_length=100, blank=True)
     proposed_reading = models.CharField(max_length=150, blank=True)
     proposed_meaning_vi = models.CharField(max_length=255, blank=True)
-    proposed_bjt_level = models.CharField(max_length=3, blank=True)  # code trong CODE_TYPE_BJT_LEVEL
     proposed_topic = models.ForeignKey(Topic, null=True, blank=True, on_delete=models.SET_NULL)
 
     # "Bình luận": nội dung hiển thị công khai dưới từ vựng SAU KHI duyệt.

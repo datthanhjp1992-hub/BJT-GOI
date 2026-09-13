@@ -56,7 +56,6 @@ ghi vẫn ở Django admin — xem ghi chú đầu apps/admin_panel/views.py.{% 
           <tr>
             <th>{% label "admin.overview.table.user" %}</th>
             <th>{% label "common.field.email" %}</th>
-            <th>{% label "admin.overview.table.level" %}</th>
             <th>{% label "admin.overview.table.joined" %}</th>
             <th>{% label "common.field.status" %}</th>
             <th></th>
@@ -68,7 +67,6 @@ ghi vẫn ở Django admin — xem ghi chú đầu apps/admin_panel/views.py.{% 
                 {% if u.is_staff %}<span class="tag level">{% label "admin.overview.tag.staff" %}</span>{% endif %}
               </td>
               <td class="muted">{{ u.email|default:"—" }}</td>
-              <td><span class="tag">{{ u.target_bjt_level|code_name:bjt_level_code_type }}</span></td>
               <td class="muted">{{ u.date_joined|date:"d/m/Y" }}</td>
               <td>
                 {% if u.is_active %}

@@ -161,7 +161,6 @@ def approve_contribution(contribution, reviewed_by, admin_response=""):
                 word=contribution.proposed_word,
                 reading=contribution.proposed_reading,
                 meaning_vi=contribution.proposed_meaning_vi,
-                bjt_level=contribution.proposed_bjt_level or "J5",
             )
             if contribution.proposed_topic_id:
                 vocab.topics.add(contribution.proposed_topic_id)
@@ -173,8 +172,6 @@ def approve_contribution(contribution, reviewed_by, admin_response=""):
                 vocab.meaning_vi = contribution.proposed_meaning_vi
             if contribution.proposed_reading:
                 vocab.reading = contribution.proposed_reading
-            if contribution.proposed_bjt_level:
-                vocab.bjt_level = contribution.proposed_bjt_level
             vocab.save()
 
         action_code = _APPROVAL_ACTION_CODE_BY_TYPE.get(contribution.contribution_type_code)

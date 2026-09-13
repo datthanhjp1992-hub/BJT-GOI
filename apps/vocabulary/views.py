@@ -11,8 +11,6 @@ from django.core.paginator import Paginator
 from django.http import QueryDict
 from django.shortcuts import get_object_or_404, render
 
-from apps.core import mastercode
-from apps.core.constants import CODE_TYPE_BJT_LEVEL
 from apps.learning.models import UserVocabularyProgress
 
 from .models import Topic, Vocabulary
@@ -30,7 +28,7 @@ STATUS_MASTERED = "mastered"
 
 
 def _pagination_query(request):
-    """Chuỗi query giữ lại q/level khi bấm sang trang khác (bỏ `page`)."""
+    """Chuỗi query giữ lại từ khoá tìm kiếm khi bấm sang trang khác (bỏ `page`)."""
     params = QueryDict(mutable=True)
     params.update(request.GET)
     params.pop("page", None)
@@ -75,19 +73,16 @@ def vocabulary_list_view(request, topic_slug=None):
     """SC05_DanhSachTuVung."""
     topic = get_object_or_404(Topic, slug=topic_slug) if topic_slug else None
     query = (request.GET.get("q") or "").strip()
-    level = (request.GET.get("level") or "").strip()
 
     words = Vocabulary.objects.prefetch_related("topics")
     if topic is not None:
         words = words.filter(topics=topic)
-    if level:
-        words = words.filter(bjt_level=level)
 
     if query:
         # .search() trả về queryset ĐÃ cắt (slice) — mọi filter phải đứng trước.
         words = words.search(query, limit=SEARCH_LIMIT)
     else:
-        words = words.order_by("bjt_level", "word")
+        words = words.order_by("word")
 
     paginator = Paginator(words, PAGE_SIZE)
     page = paginator.get_page(request.GET.get("page"))
@@ -100,9 +95,6 @@ def vocabulary_list_view(request, topic_slug=None):
         "paginator": paginator,
         "total_count": paginator.count,
         "query": query,
-        "selected_level": level,
-        "level_choices": mastercode.get_choices(CODE_TYPE_BJT_LEVEL),
-        "bjt_level_code_type": CODE_TYPE_BJT_LEVEL,
         "pagination_query": _pagination_query(request),
         "active_nav": "vocabulary",
     }

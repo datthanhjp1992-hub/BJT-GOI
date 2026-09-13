@@ -294,7 +294,7 @@ footer{border-top:1px solid var(--line); padding-top:20px; font-size:12.5px; col
 <circle class="dot" cx="300" cy="948" r="3.5"/>
 <circle class="dot" cx="500" cy="928" r="3.5"/>
 <g class="tb tb-c">
-<rect class="bx" x="40" y="60" width="200" height="118" rx="5"/>
+<rect class="bx" x="40" y="60" width="200" height="138" rx="5"/>
 <path class="hd" d="M40 65 a5 5 0 0 1 5 -5 h190 a5 5 0 0 1 5 5 v33 h-200 z"/>
 <text class="tt tt-a" x="50" y="76">vocabulary_</text>
 <text class="tt" x="50" y="91">topic</text>
@@ -302,11 +302,13 @@ footer{border-top:1px solid var(--line); padding-top:20px; font-size:12.5px; col
 <text class="tag t-pk" x="231" y="112">PK</text>
 <text class="cn" x="50" y="132">name</text>
 <line class="rl" x1="40" y1="118" x2="240" y2="118"/>
-<text class="cn" x="50" y="152">slug</text>
-<text class="tag t-u" x="231" y="152">UQ</text>
+<text class="cn" x="50" y="152">name_ja</text>
 <line class="rl" x1="40" y1="138" x2="240" y2="138"/>
-<text class="cn" x="50" y="172">icon_emoji</text>
+<text class="cn" x="50" y="172">slug</text>
+<text class="tag t-u" x="231" y="172">UQ</text>
 <line class="rl" x1="40" y1="158" x2="240" y2="158"/>
+<text class="cn" x="50" y="192">icon_emoji</text>
+<line class="rl" x1="40" y1="178" x2="240" y2="178"/>
 </g>
 <g class="tb tb-c">
 <rect class="bx" x="40" y="220" width="200" height="158" rx="5"/>
@@ -321,11 +323,8 @@ footer{border-top:1px solid var(--line); padding-top:20px; font-size:12.5px; col
 <line class="rl" x1="40" y1="298" x2="240" y2="298"/>
 <text class="cn" x="50" y="332">meaning_vi</text>
 <line class="rl" x1="40" y1="318" x2="240" y2="318"/>
-<text class="cn" x="50" y="352">bjt_level</text>
-<text class="tag t-s" x="231" y="352">→MC</text>
+<text class="cn" x="50" y="352">audio_url</text>
 <line class="rl" x1="40" y1="338" x2="240" y2="338"/>
-<text class="cn" x="50" y="372">audio_url</text>
-<line class="rl" x1="40" y1="358" x2="240" y2="358"/>
 </g>
 <g class="tb tb-c">
 <rect class="bx" x="40" y="420" width="200" height="118" rx="5"/>
@@ -535,13 +534,10 @@ footer{border-top:1px solid var(--line); padding-top:20px; font-size:12.5px; col
 <text class="cn" x="860" y="152">ui_theme</text>
 <text class="tag t-s" x="1041" y="152">→MC</text>
 <line class="rl" x1="850" y1="138" x2="1050" y2="138"/>
-<text class="cn" x="860" y="172">target_bjt_level</text>
-<text class="tag t-s" x="1041" y="172">→MC</text>
+<text class="cn" x="860" y="172">daily_review_goal</text>
 <line class="rl" x1="850" y1="158" x2="1050" y2="158"/>
-<text class="cn" x="860" y="192">daily_review_goal</text>
+<text class="cn" x="860" y="192">total_points</text>
 <line class="rl" x1="850" y1="178" x2="1050" y2="178"/>
-<text class="cn" x="860" y="212">total_points</text>
-<line class="rl" x1="850" y1="198" x2="1050" y2="198"/>
 </g>
 <g class="tb tb-g">
 <rect class="bx" x="850" y="340" width="200" height="198" rx="5"/>
@@ -636,7 +632,6 @@ footer{border-top:1px solid var(--line); padding-top:20px; font-size:12.5px; col
       <table class="cols">
         <tr><th>Cột</th><th>Kiểu</th><th>Ghi chú</th></tr>
         <tr><td>ui_theme</td><td>char(1)</td><td>A / B / C <span class="pill p-mc">MC 06</span> mặc định 'A'</td></tr>
-        <tr><td>target_bjt_level</td><td>char(3)</td><td>mặc định 'J5' <span class="pill p-mc">MC 05</span></td></tr>
         <tr><td>daily_review_goal</td><td>smallint</td><td>mặc định 20</td></tr>
         <tr><td>daily_reminder_enabled</td><td>boolean</td><td>mặc định true</td></tr>
         <tr><td>weekly_email_summary_enabled</td><td>boolean</td><td>mặc định false</td></tr>
@@ -676,7 +671,6 @@ footer{border-top:1px solid var(--line); padding-top:20px; font-size:12.5px; col
         <tr><td>word</td><td>varchar(100)</td><td>dạng kanji/kana, vd 注文する</td></tr>
         <tr><td>reading</td><td>varchar(150)</td><td>furigana, vd ちゅうもんする</td></tr>
         <tr><td>meaning_vi</td><td>varchar(255)</td><td></td></tr>
-        <tr><td>bjt_level</td><td>char(3)</td><td>mặc định 'J5' <span class="pill p-mc">MC 05</span> có Index</td></tr>
         <tr><td>audio_url</td><td>varchar(200)</td><td>URLField — code ghi rõ "reserved for future use"</td></tr>
         <tr><td>topics</td><td>M2M</td><td>→ Topic, <code>through="vocabulary.VocabularyTopic"</code></td></tr>
         <tr><td colspan="3"><span class="pill p-uq">UNIQUE</span> (word, reading) — <code>uniq_vocab_word_reading</code></td></tr>
@@ -695,10 +689,14 @@ footer{border-top:1px solid var(--line); padding-top:20px; font-size:12.5px; col
     </article>
     <article class="spec">
       <header><h4>Topic</h4><span class="tbl">vocabulary_topic</span></header>
-      <p>Chủ đề phẳng, không phân cấp. <code>slug</code> unique, sắp xếp mặc định theo <code>name</code>.</p>
+      <p>Chủ đề phẳng, không phân cấp — và từ 13/09/2026 là cách phân loại DUY NHẤT của
+      từ vựng (cấp độ BJT J5..J1+ đã bỏ). <code>slug</code> unique, sắp xếp mặc định theo
+      <code>name</code>. Tên để hai ô riêng: <code>name</code> tiếng Việt, <code>name_ja</code>
+      tiếng Nhật — có tách mới sắp xếp và tìm kiếm được theo từng thứ tiếng.</p>
       <table class="cols">
         <tr><th>Cột</th><th>Kiểu</th><th>Ghi chú</th></tr>
-        <tr><td>name</td><td>varchar(100)</td><td></td></tr>
+        <tr><td>name</td><td>varchar(100)</td><td>tên tiếng Việt, vd 'Họp hành'</td></tr>
+        <tr><td>name_ja</td><td>varchar(100)</td><td>tên tiếng Nhật, vd '会議・打合せ' — để trống được</td></tr>
         <tr><td>slug</td><td>slug</td><td><span class="pill p-uq">UNIQUE</span></td></tr>
         <tr><td>icon_emoji</td><td>varchar(8)</td><td></td></tr>
         <tr><td>description</td><td>text</td><td></td></tr>
@@ -810,7 +808,6 @@ footer{border-top:1px solid var(--line); padding-top:20px; font-size:12.5px; col
         <tr><td>status_code</td><td>varchar(10)</td><td>mặc định '001' = chờ duyệt <span class="pill p-mc">MC 03</span> có Index</td></tr>
         <tr><td>target_vocabulary_id<span class="pill p-fk">FK</span></td><td>bigint</td><td>→ Vocabulary, <b>SET NULL</b>, nullable. Null = góp ý "Từ mới", hoặc góp ý mồ côi vì từ đã xoá — phân biệt bằng <code>contribution_type_code</code></td></tr>
         <tr><td>proposed_word / _reading / _meaning_vi</td><td>varchar</td><td>blank với loại "bình luận"</td></tr>
-        <tr><td>proposed_bjt_level</td><td>char(3)</td><td><span class="pill p-mc">MC 05</span></td></tr>
         <tr><td>proposed_topic_id<span class="pill p-fk">FK</span></td><td>bigint</td><td>→ Topic, SET NULL</td></tr>
         <tr><td>comment_text</td><td>text</td><td>hiển thị công khai sau khi duyệt</td></tr>
         <tr><td>reviewed_by_id<span class="pill p-fk">FK</span></td><td>bigint</td><td>→ User, SET NULL</td></tr>
@@ -913,12 +910,12 @@ footer{border-top:1px solid var(--line); padding-top:20px; font-size:12.5px; col
   <div class="tblwrap">
     <table class="list">
       <tr><th>Cột</th><th>code_type</th><th>Nội dung</th></tr>
+      <tr><td colspan="3"><b>code_type 05 (cấp độ BJT J5..J1+) đã ngừng dùng ngày 13/09/2026</b> —
+      từ vựng phân loại theo <code>vocabulary_topic</code>. Migration <code>core/0002</code> xoá các
+      row 05 còn sót; đừng tái sử dụng số 05 cho danh mục khác.</td></tr>
       <tr><td><code>accounts_user.ui_theme</code></td><td>06</td><td>A / B / C — ba style giao diện</td></tr>
-      <tr><td><code>accounts_user.target_bjt_level</code></td><td>05</td><td>J5 → J1+</td></tr>
-      <tr><td><code>vocabulary_vocabulary.bjt_level</code></td><td>05</td><td>J5 → J1+</td></tr>
       <tr><td><code>contribution.contribution_type_code</code></td><td>02</td><td>Từ mới / Sửa nghĩa / Bình luận</td></tr>
       <tr><td><code>contribution.status_code</code></td><td>03</td><td>Chờ duyệt / Đã duyệt / Từ chối</td></tr>
-      <tr><td><code>contribution.proposed_bjt_level</code></td><td>05</td><td>J5 → J1+</td></tr>
       <tr><td><code>pointrule.action_code</code></td><td>04</td><td>Loại hành động cộng điểm</td></tr>
       <tr><td><code>userpointtransaction.action_code</code></td><td>04</td><td>Loại hành động cộng điểm</td></tr>
       <tr><td><code>badgecategory.code_type</code> + <code>badgetier.code</code></td><td>01 · 07 · 08</td><td>Tên từng bậc danh hiệu — tra hai chặng qua category.code_type</td></tr>
@@ -1010,7 +1007,8 @@ ALLOWED_HOSTS=&lt;domain của bạn&gt;
     </div></li>
     <li><span class="sev s-md">VỪA</span><div>
       <h4>Không tìm được từ vựng ở quy mô lớn</h4>
-      <p><code>Vocabulary</code> chỉ có index trên <code>bjt_level</code>. Mọi tìm kiếm theo
+      <p>(Ghi nhận lúc rà soát, khi bảng còn cột <code>bjt_level</code> — cột này đã bỏ ngày
+      13/09/2026.) <code>Vocabulary</code> khi đó chỉ có một index duy nhất. Mọi tìm kiếm theo
       <code>word</code> hay <code>reading</code> sẽ quét toàn bảng. Supabase bật sẵn
       <code>pg_trgm</code> được, nên <code>GinIndex(OpClass("word", "gin_trgm_ops"))</code> là đường ngắn
       nhất, và nó chấp nhận cả trường hợp người học gõ thiếu kana.</p>

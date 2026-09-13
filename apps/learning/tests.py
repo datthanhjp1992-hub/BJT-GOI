@@ -31,11 +31,11 @@ class LearningTestCase(TestCase):
         )
         self.client.force_login(self.user)
 
-    def _make_topic(self, name, slug, words, level="J4"):
-        topic = Topic.objects.create(name=name, slug=slug)
+    def _make_topic(self, name, slug, words, name_ja=""):
+        topic = Topic.objects.create(name=name, slug=slug, name_ja=name_ja)
         for word in words:
             vocab = Vocabulary.objects.create(
-                word=word, reading=word, meaning_vi="nghĩa " + word, bjt_level=level,
+                word=word, reading=word, meaning_vi="nghĩa " + word,
             )
             VocabularyTopic.objects.create(vocabulary=vocab, topic=topic)
         return topic
@@ -122,7 +122,6 @@ class TopicInProgressTests(LearningTestCase):
         self.assertEqual(result["total"], 3)
         self.assertEqual(result["learned"], 0)
         self.assertEqual(result["percent"], 0)
-        self.assertEqual(result["level_code"], "J4")
 
     def test_falls_back_to_topic_with_most_progress(self):
         topic = self._make_topic("Du lịch", "du-lich", ["旅行", "空港"])
@@ -145,7 +144,6 @@ class SuggestedTopicTests(LearningTestCase):
         suggested = services.get_suggested_topics(self.user, limit=2)
         self.assertEqual([t.slug for t in suggested], ["cong-viec", "du-lich"])
         self.assertEqual(suggested[0].word_count, 2)
-        self.assertEqual(suggested[0].level_code, "J4")
 
     def test_ignores_topics_without_words(self):
         Topic.objects.create(name="Rỗng", slug="rong")

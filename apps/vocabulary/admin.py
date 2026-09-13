@@ -10,13 +10,13 @@ class ExampleSentenceInline(admin.TabularInline):
 
 @admin.register(Vocabulary)
 class VocabularyAdmin(admin.ModelAdmin):
-    list_display = ("word", "reading", "meaning_vi", "bjt_level", "updated_at")
-    list_filter = ("bjt_level", "topics")
+    list_display = ("word", "reading", "meaning_vi", "updated_at")
+    list_filter = ("topics",)
     search_fields = ("word", "reading", "meaning_vi")
     inlines = [ExampleSentenceInline]
 
 
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug")
+    list_display = ("name", "name_ja", "slug")
     prepopulated_fields = {"slug": ("name",)}

@@ -30,7 +30,6 @@ from django.views.decorators.http import require_POST
 
 from apps.core import dataio
 
-from apps.core.constants import CODE_TYPE_BJT_LEVEL
 from apps.core.properties import message
 from apps.gamification.models import Contribution
 from apps.vocabulary.models import Topic, Vocabulary
@@ -77,7 +76,6 @@ def overview_view(request):
         "stats": stats,
         "recent_users": User.objects.order_by("-date_joined")[:RECENT_USER_LIMIT],
         "display_name": (request.user.first_name or "").strip() or request.user.get_username(),
-        "bjt_level_code_type": CODE_TYPE_BJT_LEVEL,
         "active_admin_nav": "overview",
     }
     return render(request, "admin_panel/overview.html", context)

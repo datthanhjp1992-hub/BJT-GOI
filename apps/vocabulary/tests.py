@@ -40,9 +40,9 @@ class VocabularyTestCase(TestCase):
         self.client.force_login(self.user)
         self.topic = Topic.objects.create(name="Nhà hàng", slug="nha-hang")
 
-    def _word(self, word, reading, meaning, level="J4", topic=True):
+    def _word(self, word, reading, meaning, topic=True):
         vocab = Vocabulary.objects.create(
-            word=word, reading=reading, meaning_vi=meaning, bjt_level=level,
+            word=word, reading=reading, meaning_vi=meaning,
         )
         if topic:
             VocabularyTopic.objects.create(vocabulary=vocab, topic=self.topic)
@@ -84,15 +84,28 @@ class ListViewTests(VocabularyTestCase):
             404,
         )
 
-    def test_level_filter(self):
-        self._word("注文する", "ちゅうもんする", "gọi món", level="J4")
-        self._word("会計", "かいけい", "tính tiền", level="J3")
+    def test_topic_filter(self):
+        """Chủ đề là cách phân loại DUY NHẤT sau khi bỏ cấp độ BJT."""
+        self._word("注文する", "ちゅうもんする", "gọi món")           # chủ đề Nhà hàng
+        khac = Topic.objects.create(name="Họp hành", slug="hop-hanh", name_ja="会議・打合せ")
+        vocab = self._word("議事録", "ぎじろく", "biên bản họp", topic=False)
+        VocabularyTopic.objects.create(vocabulary=vocab, topic=khac)
 
-        response = self.client.get(reverse("vocabulary:index"), {"level": "J3"})
+        response = self.client.get(reverse("vocabulary:list", args=["hop-hanh"]))
         self.assertEqual(response.context["total_count"], 1)
-        self.assertEqual(response.context["selected_level"], "J3")
-        self.assertContains(response, "かいけい")
+        self.assertEqual(response.context["topic"], khac)
+        self.assertContains(response, "ぎじろく")
         self.assertNotContains(response, "ちゅうもんする")
+
+    def test_topic_shows_both_names(self):
+        """Tên Nhật và tên Việt để hai ô riêng, UI ghép lại khi hiển thị."""
+        khac = Topic.objects.create(name="Họp hành", slug="hop-hanh", name_ja="会議・打合せ")
+        self.assertEqual(khac.display_name, "会議・打合せ (Họp hành)")
+        self.assertEqual(Topic(name="Chỉ Việt").display_name, "Chỉ Việt")
+
+        response = self.client.get(reverse("vocabulary:list", args=["hop-hanh"]))
+        self.assertContains(response, "会議・打合せ")
+        self.assertContains(response, "Họp hành")
 
     def test_study_status_per_word(self):
         new = self._word("注文する", "ちゅうもんする", "gọi món")
@@ -129,11 +142,11 @@ class ListViewTests(VocabularyTestCase):
 
     def test_pagination_keeps_filters(self):
         for index in range(PAGE_SIZE + 3):
-            self._word("語%02d" % index, "ご%02d" % index, "nghĩa %02d" % index, level="J4")
+            self._word("語%02d" % index, "ご%02d" % index, "nghĩa %02d" % index)
 
-        first = self.client.get(reverse("vocabulary:index"), {"level": "J4"})
+        first = self.client.get(reverse("vocabulary:list", args=["nha-hang"]), {"page": 1})
         self.assertEqual(len(first.context["page_obj"].object_list), PAGE_SIZE)
-        self.assertIn("level=J4", first.context["pagination_query"])
+        self.assertNotIn("page=", first.context["pagination_query"])
 
         second = self.client.get(reverse("vocabulary:index"), {"level": "J4", "page": 2})
         self.assertEqual(len(second.context["page_obj"].object_list), 3)
@@ -155,12 +168,14 @@ class SearchTests(VocabularyTestCase):
         self.assertEqual(response.context["total_count"], 1)
         self.assertContains(response, "注文する")
 
-    def test_search_is_combined_with_level_filter(self):
-        self._word("注文する", "ちゅうもんする", "gọi món", level="J4")
-        self._word("注文書", "ちゅうもんしょ", "đơn đặt hàng", level="J3")
+    def test_search_is_combined_with_topic_filter(self):
+        self._word("注文する", "ちゅうもんする", "gọi món")            # chủ đề Nhà hàng
+        khac = Topic.objects.create(name="Họp hành", slug="hop-hanh", name_ja="会議・打合せ")
+        vocab = self._word("注文書", "ちゅうもんしょ", "đơn đặt hàng", topic=False)
+        VocabularyTopic.objects.create(vocabulary=vocab, topic=khac)
 
         response = self.client.get(
-            reverse("vocabulary:index"), {"q": "ちゅうもん", "level": "J3"}
+            reverse("vocabulary:list", args=["hop-hanh"]), {"q": "ちゅうもん"}
         )
         self.assertEqual(response.context["total_count"], 1)
         self.assertContains(response, "注文書")

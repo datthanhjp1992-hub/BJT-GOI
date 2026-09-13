@@ -2,12 +2,12 @@
 CODE_TYPE registry for MasterCode.
 
 Toàn bộ danh sách lựa chọn hiển thị trước đây định nghĩa cứng bằng
-`choices=[...]` (BJT level, UI theme, ...) nay chuyển sang bảng MasterCode
+`choices=[...]` (UI theme, kiểu phiên học, ...) nay chuyển sang bảng MasterCode
 (apps.core.models.MasterCode) — file này chỉ còn giữ lại các hằng số
 `code_type` (để không rải "05", "06"... dạng magic string khắp nơi) và vài
 hàm tiện lấy choices động cho Django (`choices=` chấp nhận callable).
 
-Không thêm `choices=[("J5", "..."), ...]` cứng ở đây hay ở model nào khác nữa
+Không thêm `choices=[("A", "..."), ...]` cứng ở đây hay ở model nào khác nữa
 — nếu cần thêm 1 danh sách lựa chọn mới, tạo `code_type` mới, seed dữ liệu
 trong `apps/core/management/commands/seed_mastercode.py`, rồi dùng
 `apps.core.mastercode.get_choices(CODE_TYPE_XXX)`.
@@ -15,7 +15,9 @@ trong `apps/core/management/commands/seed_mastercode.py`, rồi dùng
 from apps.core.mastercode import get_choices
 
 # --- Nội dung học tập ---
-CODE_TYPE_BJT_LEVEL = "05"       # J5, J4, J3, J2, J1, J1+
+# code_type "05" TRỐNG: trước đây là cấp độ BJT (J5..J1+). Bỏ ngày 13/09/2026 —
+# từ vựng phân loại theo CHỦ ĐỀ (vocabulary.Topic), không theo cấp độ nữa. Đừng
+# tái sử dụng "05" cho thứ khác, dữ liệu cũ trên Supabase có thể còn sót row.
 CODE_TYPE_UI_THEME = "06"        # A, B, C (Washi & Vermillion / Studio Mono / Genki Playful)
 CODE_TYPE_SESSION_TYPE = "09"    # flashcard, quiz (kieu phien hoc)
 
@@ -35,8 +37,16 @@ CODE_TYPE_BADGE_QUIZ = "08"           # Danh hiệu theo kết quả kiểm tra
 
 
 def bjt_level_choices():
-    """Dùng cho `choices=bjt_level_choices` trên field CharField (callable)."""
-    return get_choices(CODE_TYPE_BJT_LEVEL)
+    """ĐÃ BỎ — cấp độ BJT không còn là cách phân loại từ vựng (13/09/2026).
+
+    Hàm phải TỒN TẠI, không được xoá: `accounts/0001_initial.py` và
+    `vocabulary/0001_initial.py` tham chiếu thẳng tới nó, mà migration cũ thì
+    Django vẫn import mỗi lần dựng đồ thị migration. Xoá hàm này = mọi lệnh
+    manage.py chết với AttributeError.
+
+    Trả rỗng vì code_type "05" không còn được seed. ĐỪNG dùng cho field mới.
+    """
+    return []
 
 
 def ui_theme_choices():

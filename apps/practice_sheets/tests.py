@@ -102,10 +102,10 @@ class GeneratePdfTests(TestCase):
     def test_generates_a_real_pdf(self):
         words = [
             Vocabulary.objects.create(
-                word="注文する", reading="ちゅうもんする", meaning_vi="gọi món", bjt_level="J4",
+                word="注文する", reading="ちゅうもんする", meaning_vi="gọi món",
             ),
             Vocabulary.objects.create(
-                word="予約", reading="よやく", meaning_vi="đặt chỗ trước", bjt_level="J4",
+                word="予約", reading="よやく", meaning_vi="đặt chỗ trước",
             ),
         ]
         filename, content = pdf_generator.generate_practice_pdf(words)
@@ -135,7 +135,7 @@ class CreateViewTests(TestCase):
 
     def test_font_error_shows_message_instead_of_500(self):
         vocab = Vocabulary.objects.create(
-            word="予約", reading="よやく", meaning_vi="đặt chỗ", bjt_level="J4",
+            word="予約", reading="よやく", meaning_vi="đặt chỗ",
         )
         with mock.patch(
             "apps.practice_sheets.views.generate_practice_pdf",

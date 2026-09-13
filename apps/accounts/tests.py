@@ -17,7 +17,7 @@ User = get_user_model()
 class AccountsTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        # MasterCode nuôi choices của target_bjt_level / ui_theme — thiếu nó thì
+        # MasterCode nuôi choices của ui_theme — thiếu nó thì
         # <select> rỗng và form không validate được.
         call_command("seed_mastercode", verbosity=0)
 
@@ -116,7 +116,6 @@ class RegisterViewTests(AccountsTestCase):
             "email": "a@example.com",
             "password": "MatKhauRatManh123",
             "confirm_password": "MatKhauRatManh123",
-            "target_bjt_level": "J4",
         }
         data.update(overrides)
         return data
@@ -132,7 +131,6 @@ class RegisterViewTests(AccountsTestCase):
 
         user = User.objects.get(username="nguyenvana")
         self.assertTrue(user.check_password("MatKhauRatManh123"))
-        self.assertEqual(user.target_bjt_level, "J4")
         # Họ tên tiếng Việt giữ nguyên thứ tự, dồn vào first_name.
         self.assertEqual(user.first_name, "Nguyễn Văn A")
         self.assertEqual(user.last_name, "")

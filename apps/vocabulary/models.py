@@ -9,11 +9,22 @@ from django.db.models import F, Q
 from django.db.models.functions import Greatest
 
 from apps.core.models import AuditableModel
-from apps.core.constants import bjt_level_choices
 
 
 class Topic(AuditableModel):
-    name = models.CharField(max_length=100)
+    """1 chủ đề nghiệp vụ — đơn vị phân loại DUY NHẤT của từ vựng.
+
+    Từ vựng KHÔNG còn cấp độ BJT (J5..J1+): xem ghi chú ở apps/core/constants.py.
+    Tên để hai ô riêng thay vì nhét "会議・打合せ (Họp hành)" vào một chuỗi —
+    có tách mới sắp xếp và tìm kiếm được theo từng thứ tiếng, và sau này đổi
+    giao diện sang tiếng Nhật thì không phải sửa dữ liệu.
+    """
+
+    name = models.CharField(max_length=100, help_text="Tên tiếng Việt, vd 'Họp hành'.")
+    name_ja = models.CharField(
+        max_length=100, blank=True,
+        help_text="Tên tiếng Nhật, vd '会議・打合せ'. Để trống thì UI chỉ hiện tên tiếng Việt.",
+    )
     slug = models.SlugField(unique=True)
     icon_emoji = models.CharField(max_length=8, blank=True)
     description = models.TextField(blank=True)
@@ -21,8 +32,13 @@ class Topic(AuditableModel):
     class Meta:
         ordering = ["name"]
 
+    @property
+    def display_name(self):
+        """Tên đầy đủ để hiện ở UI và ở Django admin."""
+        return f"{self.name_ja} ({self.name})" if self.name_ja else self.name
+
     def __str__(self):
-        return self.name
+        return self.display_name
 
 
 class VocabularyQuerySet(models.QuerySet):
@@ -45,7 +61,7 @@ class VocabularyQuerySet(models.QuerySet):
                 )
             )
             .filter(Q(score__gte=min_similarity) | Q(word__icontains=q) | Q(reading__icontains=q))
-            .order_by("-score", "bjt_level")[:limit]
+            .order_by("-score", "word")[:limit]
         )
 
 
@@ -53,7 +69,6 @@ class Vocabulary(AuditableModel):
     word = models.CharField(max_length=100, help_text="Kanji/kana form, e.g. 注文する")
     reading = models.CharField(max_length=150, help_text="Furigana reading, e.g. ちゅうもんする")
     meaning_vi = models.CharField(max_length=255)
-    bjt_level = models.CharField(max_length=3, choices=bjt_level_choices, default="J5")
     audio_url = models.URLField(blank=True)  # reserved for future use
     topics = models.ManyToManyField(
         Topic, related_name="vocabularies", blank=True,
@@ -65,7 +80,6 @@ class Vocabulary(AuditableModel):
     class Meta:
         verbose_name_plural = "vocabularies"
         indexes = [
-            models.Index(fields=["bjt_level"]),
             # GIN trigram: tìm gần đúng và ILIKE '%...%' trên 表記 / よみ mà
             # không phải quét toàn bảng. Cần extension pg_trgm — bật ở
             # migration 0002_trigram_search.

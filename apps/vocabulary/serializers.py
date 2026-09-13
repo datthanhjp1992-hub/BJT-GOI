@@ -14,10 +14,10 @@ class VocabularySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Vocabulary
-        fields = ["id", "word", "reading", "meaning_vi", "bjt_level", "examples"]
+        fields = ["id", "word", "reading", "meaning_vi", "examples"]
 
 
 class TopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
-        fields = ["id", "name", "slug", "icon_emoji", "description"]
+        fields = ["id", "name", "name_ja", "slug", "icon_emoji", "description"]

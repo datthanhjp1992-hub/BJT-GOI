@@ -31,9 +31,9 @@ Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endco
     <div class="card stamp">
       <div class="eyebrow">{% label "learning.dashboard.section.continue" %}</div>
       {% if in_progress %}
-        <h3 class="serif" style="margin:0 0 6px;">{{ in_progress.topic.icon_emoji }} {{ in_progress.topic.name }}</h3>
+        <h3 class="serif" style="margin:0 0 6px;">{{ in_progress.topic.icon_emoji }} {{ in_progress.topic.display_name }}</h3>
         <p class="muted" style="margin:0 0 18px;">
-          {% message "learning.dashboard.hint.topic_progress" learned=in_progress.learned total=in_progress.total level=in_progress.level_code|code_name:bjt_level_code_type %}
+          {% message "learning.dashboard.hint.topic_progress" learned=in_progress.learned total=in_progress.total %}
         </p>
         <div class="progressbar" style="margin-bottom:20px;"><span style="width:{{ in_progress.percent }}%"></span></div>
         <a class="btn btn-primary" href="{% url 'learning:flashcard' in_progress.topic.slug %}">{% label "learning.dashboard.button.continue_learning" %}</a>
@@ -72,7 +72,7 @@ Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endco
     <div class="grid cols-3">
       {% for topic in suggested_topics %}
         <a class="card" href="{% url 'vocabulary:list' topic.slug %}">
-          <span class="tag level">{{ topic.level_code|code_name:bjt_level_code_type }}</span>
+          {% if topic.name_ja %}<span class="tag level">{{ topic.name_ja }}</span>{% endif %}
           <h3 class="serif" style="margin:12px 0 6px;">{{ topic.icon_emoji }} {{ topic.name }}</h3>
           <p class="muted" style="margin:0;">{% message "vocabulary.topic.hint.word_count" count=topic.word_count %}</p>
         </a>

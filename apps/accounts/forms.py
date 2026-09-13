@@ -6,10 +6,9 @@ Hai quy ước của repo được áp dụng triệt để ở đây:
 
 1. KHÔNG hardcode chuỗi tiếng Việt — mọi nhãn field lấy qua
    `apps.core.properties.label()`, mọi thông báo lỗi qua `.message()`.
-2. KHÔNG hardcode `choices=[...]` — `target_bjt_level` / `ui_theme` để
-   ModelForm tự lấy từ model, mà model lại lấy động từ MasterCode
-   (`apps.core.constants`). Vì vậy thêm một cấp BJT mới chỉ cần thêm 1 dòng
-   MasterCode, không phải sửa form này.
+2. KHÔNG hardcode `choices=[...]` — `ui_theme` để ModelForm tự lấy từ model,
+   mà model lại lấy động từ MasterCode (`apps.core.constants`). Vì vậy thêm một
+   lựa chọn mới chỉ cần thêm 1 dòng MasterCode, không phải sửa form này.
 
 Ghi chú về HỌ TÊN: `AbstractUser.get_full_name()` ghép "first_name last_name"
 theo thứ tự phương Tây, sai với tiếng Việt (Nguyễn Văn A). Nên toàn bộ họ tên
@@ -88,14 +87,11 @@ class RegisterForm(forms.ModelForm):
     password = forms.CharField(strip=False, widget=forms.PasswordInput)
     confirm_password = forms.CharField(strip=False, widget=forms.PasswordInput)
 
-    field_order = [
-        "full_name", "username", "email",
-        "password", "confirm_password", "target_bjt_level",
-    ]
+    field_order = ["full_name", "username", "email", "password", "confirm_password"]
 
     class Meta:
         model = User
-        fields = ["username", "email", "target_bjt_level"]
+        fields = ["username", "email"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -104,9 +100,6 @@ class RegisterForm(forms.ModelForm):
         self.fields["email"].label = label("accounts.register.field.email")
         self.fields["password"].label = label("accounts.register.field.password")
         self.fields["confirm_password"].label = label("common.field.confirm_password")
-        self.fields["target_bjt_level"].label = label(
-            "accounts.register.field.target_bjt_level"
-        )
         # Email trên AbstractUser mặc định blank=True; màn đăng ký thì bắt buộc.
         self.fields["email"].required = True
         _required_message(*self.fields.values())
@@ -155,19 +148,16 @@ class ProfileForm(forms.ModelForm):
 
     full_name = forms.CharField(max_length=150, strip=True, required=False)
 
-    field_order = ["full_name", "email", "target_bjt_level"]
+    field_order = ["full_name", "email"]
 
     class Meta:
         model = User
-        fields = ["email", "target_bjt_level"]
+        fields = ["email"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["full_name"].label = label("common.field.fullname")
         self.fields["email"].label = label("common.field.email")
-        self.fields["target_bjt_level"].label = label(
-            "accounts.register.field.target_bjt_level"
-        )
         if self.instance and self.instance.pk:
             self.fields["full_name"].initial = self.instance.first_name
         _required_message(*self.fields.values())

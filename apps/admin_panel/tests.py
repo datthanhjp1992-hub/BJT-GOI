@@ -64,7 +64,7 @@ class OverviewContentTests(AdminPanelTestCase):
     def test_stats_are_real_numbers(self):
         topic = Topic.objects.create(name="Nhà hàng", slug="nha-hang")
         vocab = Vocabulary.objects.create(
-            word="予約", reading="よやく", meaning_vi="đặt chỗ", bjt_level="J4",
+            word="予約", reading="よやく", meaning_vi="đặt chỗ",
         )
         Contribution.objects.create(
             user=self.learner, contribution_type_code="001",
@@ -163,7 +163,7 @@ class DataIoEngineTests(TestCase):
 
     def test_columns_drop_pk_and_audit_columns(self):
         headers = dataio.headers_for(Topic)
-        self.assertEqual(headers, ["name", "slug", "icon_emoji", "description"])
+        self.assertEqual(headers, ["name", "name_ja", "slug", "icon_emoji", "description"])
         for banned in ("id", "created_at", "created_by", "updated_at", "updated_by"):
             self.assertNotIn(banned, headers)
 
@@ -244,18 +244,19 @@ class DataImportViewTests(AdminPanelTestCase):
         )
         self.assertEqual(response.status_code, 200)
         body = response.content.decode("utf-8-sig").strip()
-        self.assertEqual(body, "name,slug,icon_emoji,description")
+        self.assertEqual(body, "name,name_ja,slug,icon_emoji,description")
 
     def test_xlsx_export_returns_current_rows(self):
-        Topic.objects.create(name="Nhà hàng", slug="nha-hang")
+        Topic.objects.create(name="Nhà hàng", slug="nha-hang", name_ja="レストラン")
         self.client.force_login(self.admin)
         response = self.client.get(
             reverse("admin_panel:data_export", args=["vocabulary.topic", "xlsx"])
         )
         self.assertEqual(response.status_code, 200)
         headers, rows = dataio.read_table(response.content, "x.xlsx")
-        self.assertEqual(headers, ["name", "slug", "icon_emoji", "description"])
-        self.assertEqual([r[1] for r in rows], ["nha-hang"])
+        self.assertEqual(headers, ["name", "name_ja", "slug", "icon_emoji", "description"])
+        self.assertEqual([r[1] for r in rows], ["レストラン"])
+        self.assertEqual([r[2] for r in rows], ["nha-hang"])
 
     # -- xem trước ----------------------------------------------------------
     def test_preview_classifies_rows_and_writes_nothing(self):
@@ -263,10 +264,10 @@ class DataImportViewTests(AdminPanelTestCase):
         self.client.force_login(self.admin)
         upload = csv_upload(
             "topics.csv",
-            ["name", "slug", "icon_emoji", "description"],
-            ["Sân bay", "san-bay", "", ""],          # mới
-            ["Nhà hàng", "nha-hang", "", ""],        # trùng slug -> bỏ qua
-            ["", "thieu-ten", "", ""],               # thiếu name -> lỗi
+            ["name", "name_ja", "slug", "icon_emoji", "description"],
+            ["Sân bay", "空港", "san-bay", "", ""],       # mới
+            ["Nhà hàng", "", "nha-hang", "", ""],         # trùng slug -> bỏ qua
+            ["", "", "thieu-ten", "", ""],                # thiếu name -> lỗi
         )
         response = self.client.post(self.topic_import_url, {"data_file": upload})
         report = response.context["report"]
@@ -299,9 +300,9 @@ class DataImportViewTests(AdminPanelTestCase):
             self.topic_import_url,
             csv_upload(
                 "topics.csv",
-                ["name", "slug", "icon_emoji", "description"],
-                ["Sân bay", "san-bay", "", ""],
-                ["Nhà hàng", "nha-hang", "", ""],
+                ["name", "name_ja", "slug", "icon_emoji", "description"],
+                ["Sân bay", "空港", "san-bay", "", ""],
+                ["Nhà hàng", "", "nha-hang", "", ""],
             ),
         )
         self.assertTrue(report.can_apply)
@@ -320,7 +321,7 @@ class DataImportViewTests(AdminPanelTestCase):
         self.client.force_login(self.admin)
         report, token = self._preview(
             self.topic_import_url,
-            csv_upload("t.csv", ["name", "slug", "icon_emoji", "description"], ["Sân bay", "san-bay", "", ""]),
+            csv_upload("t.csv", ["name", "name_ja", "slug", "icon_emoji", "description"], ["Sân bay", "空港", "san-bay", "", ""]),
         )
         self.client.post(
             reverse("admin_panel:data_import_confirm", args=["vocabulary.topic"]),
@@ -350,7 +351,7 @@ class DataImportViewTests(AdminPanelTestCase):
     # -- khoá ngoại theo khoá tự nhiên --------------------------------------
     def test_foreign_key_is_resolved_by_natural_key(self):
         vocab = Vocabulary.objects.create(
-            word="予約", reading="よやく", meaning_vi="đặt chỗ", bjt_level="J4",
+            word="予約", reading="よやく", meaning_vi="đặt chỗ",
         )
         self.client.force_login(self.admin)
         url = reverse("admin_panel:data_import", args=["vocabulary.examplesentence"])
@@ -422,7 +423,7 @@ class DataImportViewTests(AdminPanelTestCase):
         self.client.force_login(self.admin)
         report_html = self.client.post(
             self.topic_import_url,
-            {"data_file": csv_upload("t.csv", ["name", "slug", "icon_emoji", "description"], ["Sân bay", "san-bay", "", ""])},
+            {"data_file": csv_upload("t.csv", ["name", "name_ja", "slug", "icon_emoji", "description"], ["Sân bay", "空港", "san-bay", "", ""])},
         ).content.decode()
         for marker in TEMPLATE_MARKERS:
             self.assertNotIn(marker, report_html, msg=f'màn nhập còn sót "{marker}"')

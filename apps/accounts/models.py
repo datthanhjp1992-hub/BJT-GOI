@@ -1,13 +1,12 @@
 """
 Custom User model extended with app-specific profile fields:
 - ui_theme: which of the 3 mockup styles (A/B/C) the user picked in Settings
-- target_bjt_level: the BJT level the user is studying toward
 - total_points: tổng điểm đóng góp cộng đồng (denormalize từ
   apps.gamification.UserPointTransaction để không phải SUM() mỗi request —
   cập nhật trong apps.gamification.services.award_points() bằng F())
 - streak/số từ đã thuộc lấy động từ app learning, không lưu ở đây
 
-`ui_theme` và `target_bjt_level` KHÔNG hardcode choices=[...] — lấy động từ
+`ui_theme` KHÔNG hardcode choices=[...] — lấy động từ
 MasterCode qua apps.core.constants (xem file đó + docs/SPEC_GOP_Y_THANH_TICH.md
 mục 2). Django cho phép `choices=<callable>` nên vẫn khai báo bình thường ở
 field, chỉ khác là truyền hàm thay vì list cứng.
@@ -26,7 +25,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone as dj_timezone
 
-from apps.core.constants import bjt_level_choices, ui_theme_choices
+from apps.core.constants import ui_theme_choices
 from apps.core.models import AuditableModel
 
 
@@ -34,9 +33,6 @@ class User(AuditableModel, AbstractUser):
     ui_theme = models.CharField(
         max_length=1, choices=ui_theme_choices, default="A",
         help_text="Selected UI style, set from the Settings screen (SC08_CaiDat).",
-    )
-    target_bjt_level = models.CharField(
-        max_length=3, choices=bjt_level_choices, default="J5",
     )
     daily_review_goal = models.PositiveSmallIntegerField(default=20)
 

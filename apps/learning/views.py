@@ -6,7 +6,6 @@ Mọi truy vấn thống kê nằm ở `apps.learning.services`; view chỉ lắ
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
-from apps.core.constants import CODE_TYPE_BJT_LEVEL
 from apps.vocabulary.models import Vocabulary
 
 from . import services
@@ -26,7 +25,6 @@ def dashboard_view(request):
         "due_count": stats["due_today"],
         "in_progress": services.get_topic_in_progress(user),
         "suggested_topics": services.get_suggested_topics(user),
-        "bjt_level_code_type": CODE_TYPE_BJT_LEVEL,
         "active_nav": "home",
     }
     return render(request, "learning/dashboard.html", context)

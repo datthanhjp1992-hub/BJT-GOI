@@ -14,7 +14,6 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from apps.core.constants import (
-    CODE_TYPE_BJT_LEVEL,
     CODE_TYPE_UI_THEME,
     CODE_TYPE_CONTRIBUTION_TYPE,
     CODE_TYPE_CONTRIBUTION_STATUS,
@@ -27,14 +26,6 @@ from apps.core.constants import (
 
 # (code, code_name, mother_code, description, sort_order)
 SEED_DATA = {
-    CODE_TYPE_BJT_LEVEL: [
-        ("J5", "J5", None, "Sơ cấp", 1),
-        ("J4", "J4", None, "", 2),
-        ("J3", "J3", None, "Trung cấp", 3),
-        ("J2", "J2", None, "", 4),
-        ("J1", "J1", None, "Cao cấp", 5),
-        ("J1+", "J1+", None, "Cao cấp nâng cao", 6),
-    ],
     CODE_TYPE_UI_THEME: [
         ("A", "Washi & Vermillion", None, "", 1),
         ("B", "Studio Mono", None, "", 2),

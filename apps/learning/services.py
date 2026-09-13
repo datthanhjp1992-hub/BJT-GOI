@@ -12,7 +12,7 @@ from datetime import datetime, time, timedelta
 from django.db.models import Count, Q
 from django.db.models.functions import TruncDate
 
-from apps.vocabulary.models import Topic, Vocabulary
+from apps.vocabulary.models import Topic
 
 from .models import StudySession, UserVocabularyProgress
 
@@ -117,23 +117,6 @@ def get_learning_stats(user):
     return stats
 
 
-def _topic_level_map(topic_ids):
-    """{topic_id: mã cấp BJT chiếm đa số trong chủ đề} — gộp 1 query cho cả
-    danh sách thay vì hỏi từng chủ đề một."""
-    if not topic_ids:
-        return {}
-    rows = (
-        Vocabulary.objects.filter(topics__in=topic_ids)
-        .values("topics", "bjt_level")
-        .annotate(n=Count("pk"))
-        .order_by("topics", "-n")
-    )
-    level_of = {}
-    for row in rows:
-        level_of.setdefault(row["topics"], row["bjt_level"])
-    return level_of
-
-
 def get_topic_in_progress(user):
     """Chủ đề để nút "Học tiếp" trỏ tới, kèm tiến độ.
 
@@ -172,7 +155,6 @@ def get_topic_in_progress(user):
         "learned": learned,
         "total": total,
         "percent": round(learned * 100 / total) if total else 0,
-        "level_code": _topic_level_map([topic.pk]).get(topic.pk, ""),
     }
 
 
@@ -198,9 +180,6 @@ def get_suggested_topics(user, limit=3):
     if len(topics) < limit:
         topics += list(base.exclude(pk__in=[t.pk for t in topics])[: limit - len(topics)])
 
-    level_of = _topic_level_map([t.pk for t in topics])
-    for topic in topics:
-        topic.level_code = level_of.get(topic.pk, "")
     return topics
 
 
