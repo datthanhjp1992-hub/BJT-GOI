@@ -22,6 +22,8 @@ from apps.core.constants import (
     CODE_TYPE_BADGE_LEARNING,
     CODE_TYPE_BADGE_QUIZ,
     CODE_TYPE_SESSION_TYPE,
+    CODE_TYPE_SHEET_TYPE,
+    CODE_TYPE_RECALL_DIRECTION,
 )
 
 # (code, code_name, mother_code, description, sort_order)
@@ -34,6 +36,18 @@ SEED_DATA = {
     CODE_TYPE_SESSION_TYPE: [
         ("flashcard", "Flashcard", None, "Phiên học thẻ từ", 1),
         ("quiz", "Kiểm tra", None, "Phiên làm bài kiểm tra", 2),
+    ],
+    # SC10 — phiếu PDF. Mã dạng chữ để truy vấn tay còn đọc được, giống
+    # session_type. Thêm một loại phiếu mới ở đây KHÔNG đủ: phải viết thêm hàm
+    # vẽ tương ứng trong apps/practice_sheets/pdf_generator.py.
+    CODE_TYPE_SHEET_TYPE: [
+        ("writing", "Luyện viết ô kẻ", None, "Ô vuông kiểu genkoyoshi để tập viết tay", 1),
+        ("recall", "Ôn lại từ", None, "Liệt kê từ và chừa chỗ trống để tự viết lại", 2),
+    ],
+    CODE_TYPE_RECALL_DIRECTION: [
+        ("jp_vi", "Nhật → Việt", None, "Cho sẵn từ tiếng Nhật, chừa trống cách đọc và nghĩa", 1),
+        ("vi_jp", "Việt → Nhật", None, "Cho sẵn nghĩa tiếng Việt, chừa trống từ và cách đọc", 2),
+        ("mixed", "Trộn ngẫu nhiên", None, "Mỗi từ ngẫu nhiên một hướng trong cùng một phiếu", 3),
     ],
     CODE_TYPE_CONTRIBUTION_TYPE: [
         ("001", "Từ mới", None, "", 1),

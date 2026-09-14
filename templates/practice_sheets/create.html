@@ -1,5 +1,121 @@
 {% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC10 — tạo phiếu PDF. Một màn, hai loại phiếu.
+
+Hai tab nguồn từ ("Chọn từ có sẵn" / "Upload danh sách") là HAI FORM RIÊNG, mỗi
+form gửi ô ẩn `source` của chính nó. Gộp chung một form thì file đính kèm vẫn
+được gửi kèm cả khi người dùng đang ở tab chọn tay, và ngược lại — view lại phải
+đoán xem người ta thực sự muốn nguồn nào.
+
+Ô chọn loại phiếu và khối tuỳ chọn nằm TRONG cả hai form (include chung một
+partial) vì cùng một bộ tuỳ chọn áp cho cả hai nguồn.
+
+Chú thích nhiều dòng BẮT BUỘC dùng comment/endcomment — {# #} của Django chỉ có
+tác dụng trên MỘT dòng, viết tràn dòng là bị in thẳng ra HTML.{% endcomment %}
+
+{% block title %}{% label "practice_sheets.create.title" %} | {% label "common.brand.name" %}{% endblock %}
+
 {% block content %}
-  <!-- TODO: port SC10_LuyenVietPdf mockup: checkbox list of {{ words }},
-       POST to {% url 'practice_sheets:create' %} -->
+  <div class="eyebrow">{% label "practice_sheets.create.eyebrow" %}</div>
+  <h1 class="serif" style="font-size:28px;margin:0 0 8px;">{% label "practice_sheets.create.title" %}</h1>
+  <p class="muted" style="margin:0 0 24px;font-size:14px;">
+    {% message "practice_sheets.upload.hint.multi_page" %}
+  </p>
+
+  <div style="display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--border);">
+    <button type="button" id="tab-existing-btn" onclick="showSource('existing')" class="sheet-tab is-active">{% label "practice_sheets.create.tab.select_existing" %}</button>
+    <button type="button" id="tab-upload-btn" onclick="showSource('upload')" class="sheet-tab">{% label "practice_sheets.create.tab.upload" %}</button>
+  </div>
+
+  {# -------- Tab 1: chọn từ đã có trong hệ thống -------- #}
+  <form method="post" id="form-existing" action="{% url 'practice_sheets:create' %}">
+    {% csrf_token %}
+    <input type="hidden" name="source" value="existing">
+
+    <div class="eyebrow">{% label "practice_sheets.create.section.words" %}</div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="toolbar" style="margin-bottom:14px;">
+        <span class="muted" style="font-size:13px;">{% label "practice_sheets.create.field.topic_filter" %}:</span>
+        <a href="{% url 'practice_sheets:create' %}"{% if not selected_topic %} class="tag"{% endif %}>{% label "practice_sheets.create.field.all_topics" %}</a>
+        {% for topic in topics %}
+          <a href="?topic={{ topic.slug }}"{% if selected_topic == topic.slug %} class="tag"{% endif %}>{{ topic.name_ja|default:topic.name }}</a>
+        {% endfor %}
+      </div>
+
+      {% if words %}
+        <div class="toolbar" style="margin-bottom:10px;">
+          <button type="button" class="btn btn-outline" onclick="toggleAll(true)">{% label "practice_sheets.create.button.select_all" %}</button>
+          <button type="button" class="btn btn-outline" onclick="toggleAll(false)">{% label "practice_sheets.create.button.clear_all" %}</button>
+        </div>
+        <div style="max-height:340px;overflow:auto;display:grid;gap:8px;">
+          {% for word in words %}
+            <label class="checkbox-row" style="border:1px solid var(--border);border-radius:3px;padding:10px 12px;">
+              <input type="checkbox" name="word_ids" value="{{ word.pk }}">
+              <span class="serif" style="font-size:17px;">{{ word.word }}</span>
+              <span class="muted" style="font-size:13px;">{{ word.reading }} — {{ word.meaning_vi }}</span>
+            </label>
+          {% endfor %}
+        </div>
+        {% if word_total > word_limit %}
+          <p class="muted" style="font-size:12.5px;margin:10px 0 0;">
+            Đang hiện {{ word_limit }} / {{ word_total }} từ — lọc theo chủ đề để thu hẹp danh sách.
+          </p>
+        {% endif %}
+      {% else %}
+        <p class="muted" style="margin:0;font-size:14px;">Chưa có từ vựng nào khớp. Chọn chủ đề khác, hoặc dùng tab "{% label "practice_sheets.create.tab.upload" %}".</p>
+      {% endif %}
+    </div>
+
+    {% include "practice_sheets/_options.html" with form=form suffix="a" %}
+  </form>
+
+  {# -------- Tab 2: tải danh sách của riêng mình -------- #}
+  <form method="post" id="form-upload" action="{% url 'practice_sheets:create' %}" enctype="multipart/form-data" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="source" value="upload">
+
+    <div class="eyebrow">{% label "practice_sheets.create.section.words" %}</div>
+    <div class="card" style="margin-bottom:20px;">
+      <label for="word_file">{% label "practice_sheets.create.dropzone.hint" %}</label>
+      <input type="file" id="word_file" name="word_file" accept=".csv,.xlsx,.xlsm">
+      <p class="muted" style="font-size:12.5px;margin:8px 0 0;">{% label "practice_sheets.create.dropzone.accepted" %} · tối đa {{ max_words }} từ</p>
+      <div class="toolbar" style="margin-top:12px;">
+        <a href="{% url 'practice_sheets:template' 'xlsx' %}">{% label "practice_sheets.create.template.excel" %}</a>
+        <a href="{% url 'practice_sheets:template' 'csv' %}">{% label "practice_sheets.create.template.csv" %}</a>
+      </div>
+      <p class="muted" style="font-size:12.5px;margin:12px 0 0;">{% message "practice_sheets.upload.hint.file_is_not_saved" %}</p>
+    </div>
+
+    {% include "practice_sheets/_options.html" with form=form suffix="b" %}
+  </form>
+
+<script>
+// Không dùng framework nào: cả trang chỉ cần đổi hiển thị hai form và tích/bỏ
+// tích hàng loạt. Trang vẫn chạy đủ chức năng nếu JS tắt — chỉ là thấy cả hai
+// form cùng lúc.
+function showSource(name){
+  document.getElementById('form-existing').style.display = (name === 'existing') ? 'block' : 'none';
+  document.getElementById('form-upload').style.display   = (name === 'upload')   ? 'block' : 'none';
+  document.getElementById('tab-existing-btn').className = 'sheet-tab' + (name === 'existing' ? ' is-active' : '');
+  document.getElementById('tab-upload-btn').className   = 'sheet-tab' + (name === 'upload'   ? ' is-active' : '');
+}
+function toggleAll(state){
+  document.querySelectorAll('#form-existing input[name="word_ids"]').forEach(function(box){ box.checked = state; });
+}
+function syncSheetType(form){
+  var recall = form.querySelector('input[name="sheet_type"]:checked');
+  var isRecall = recall && recall.value === '{{ SHEET_TYPE_RECALL }}';
+  var w = form.querySelector('[data-options="writing"]');
+  var r = form.querySelector('[data-options="recall"]');
+  if (w) w.hidden = isRecall;
+  if (r) r.hidden = !isRecall;
+}
+document.querySelectorAll('form').forEach(function(form){
+  if (!form.querySelector('input[name="sheet_type"]')) return;
+  form.querySelectorAll('input[name="sheet_type"]').forEach(function(radio){
+    radio.addEventListener('change', function(){ syncSheetType(form); });
+  });
+  syncSheetType(form);
+});
+</script>
 {% endblock %}

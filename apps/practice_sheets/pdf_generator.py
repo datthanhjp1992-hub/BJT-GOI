@@ -24,9 +24,16 @@ Hoặc thả file .ttf/.ttc vào  <BASE_DIR>/assets/fonts/  — chỗ đó đư�
 """
 import io
 import os
+import random
 from pathlib import Path
 
 from django.conf import settings
+from apps.core.constants import (
+    RECALL_JP_TO_VI,
+    RECALL_MIXED,
+    RECALL_VI_TO_JP,
+    SHEET_TYPE_RECALL,
+)
 from django.core.files.base import ContentFile
 from PIL import Image, ImageDraw, ImageFont
 from reportlab.lib.colors import HexColor
@@ -74,7 +81,16 @@ _VI_FONTS = {
     ]),
 }
 
-_JP_FONT_FILENAMES = ["NotoSansCJK-Regular.ttc", "NotoSansJP-Regular.ttf", "NotoSansJP-Regular.otf"]
+# ipag.ttf (IPAGothic) là bản ĐANG ĐƯỢC KÈM trong assets/fonts/ — giấy phép
+# IPA Font License 1.0 cho phép phát hành lại kèm sản phẩm, và chữ kanji/kana
+# của nó rộng đều nhau nên rơi vào ô genkoyoshi rất cân. Vẫn dò Noto trước để
+# máy nào cài sẵn thì dùng bản quen mắt hơn.
+_JP_FONT_FILENAMES = [
+    "NotoSansCJK-Regular.ttc",
+    "NotoSansJP-Regular.ttf",
+    "NotoSansJP-Regular.otf",
+    "ipag.ttf",
+]
 _JP_FONT_SYSTEM_PATHS = [
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
     "/usr/share/fonts/opentype/noto/NotoSansCJKjp-Regular.otf",
@@ -93,7 +109,7 @@ GRID_LINE = HexColor("#DCD3C0")
 PAGE_W, PAGE_H = A4
 MARGIN = 40
 CELL = 40
-CELLS_PER_ROW = 10
+CELLS_PER_ROW = 12
 
 _jp_font_cache = {}
 _jp_font_path_cache = None
@@ -192,9 +208,82 @@ def _render_jp_text_image(text, px_size, rgba):
 
 
 def _draw_jp_string(c, x, y, text, px_size, rgba=(46, 42, 34, 255)):
+    """Vẽ chuỗi tiếng Nhật, trả về BỀ RỘNG đã vẽ để chuỗi sau nối tiếp được.
+
+    (x, y) là góc dưới-trái. Chữ Nhật phải đi qua Pillow chứ không vẽ thẳng
+    bằng reportlab — xem ghi chú font số 1 ở đầu file.
+    """
+    if not text:
+        return 0
     img = _render_jp_text_image(text, px_size, rgba)
     c.drawImage(ImageReader(img), x, y, width=img.width, height=img.height, mask="auto")
+    return img.width
 
+
+def _jp_text_width(text, px_size):
+    if not text:
+        return 0
+    return _render_jp_text_image(text, px_size, (0, 0, 0, 255)).width
+
+
+def _fit(text, font_name, size, max_width):
+    """Cắt bớt chuỗi Latin cho vừa bề rộng, thêm '…'. Nghĩa tiếng Việt dài quá
+    mà không cắt thì tràn ra ngoài lề và đè lên cột bên cạnh."""
+    text = text or ""
+    if pdfmetrics.stringWidth(text, font_name, size) <= max_width:
+        return text
+    while text and pdfmetrics.stringWidth(text + "…", font_name, size) > max_width:
+        text = text[:-1]
+    return text + "…"
+
+
+# ---------------------------------------------------------------------------
+# Khung trang dùng chung
+# ---------------------------------------------------------------------------
+
+CONTENT_W = PAGE_W - 2 * MARGIN
+
+
+BRAND = "毎日BJT"
+
+
+def _draw_page_frame(c, title, subtitle, page_number):
+    """Tiêu đề trang. Phần tên thương hiệu 毎日BJT phải vẽ BẰNG ẢNH.
+
+    DejaVu không có glyph kanji nên `drawString("… 毎日BJT")` in ra hai ô vuông
+    tofu — đúng lỗi đã thấy ở bản PDF đầu tiên. Chỉ phần chữ Latin mới đi qua
+    reportlab, phần tiếng Nhật đi qua Pillow như mọi chỗ khác trong file này.
+    """
+    c.setFillColor(INK)
+    c.setFont("DejaVu-Bold", 16)
+    c.drawString(MARGIN, PAGE_H - 40, title)
+    title_w = pdfmetrics.stringWidth(title, "DejaVu-Bold", 16)
+    _draw_jp_string(c, MARGIN + title_w + 8, PAGE_H - 42, BRAND, 16)
+    c.setStrokeColor(GRID_LINE)
+    c.setLineWidth(1)
+    c.line(MARGIN, PAGE_H - 48, PAGE_W - MARGIN, PAGE_H - 48)
+    c.setFont("DejaVu-Oblique", 9)
+    c.drawString(MARGIN, PAGE_H - 62, subtitle)
+    c.setFont("DejaVu", 8)
+    c.setFillColor(GUIDE)
+    c.drawRightString(PAGE_W - MARGIN, 24, str(page_number))
+    c.setFillColor(INK)
+
+
+def _blank_rule(c, x, y, width, label):
+    """Một dòng kẻ để viết tay, có nhãn ở đầu dòng."""
+    c.setFillColor(INK)
+    c.setFont("DejaVu", 9)
+    label_w = pdfmetrics.stringWidth(label, "DejaVu", 9)
+    c.drawString(x, y + 4, label)
+    c.setStrokeColor(GRID_LINE)
+    c.setLineWidth(0.7)
+    c.line(x + label_w + 6, y, x + width, y)
+
+
+# ---------------------------------------------------------------------------
+# Phiếu 1 — luyện viết ô kẻ (genkoyoshi)
+# ---------------------------------------------------------------------------
 
 def _draw_cell(c, x, y, size, guide_char=None):
     c.setStrokeColor(GRID_LINE)
@@ -213,55 +302,241 @@ def _draw_cell(c, x, y, size, guide_char=None):
         c.drawImage(ImageReader(img), cx, cy, width=img.width, height=img.height, mask="auto")
 
 
-def _draw_page_header(c, subtitle):
-    c.setFillColor(INK)
-    c.setFont("DejaVu-Bold", 16)
-    c.drawString(MARGIN, PAGE_H - 40, "Luyện viết từ vựng tiếng Nhật — BJT GOI")
-    c.setStrokeColor(GRID_LINE)
-    c.setLineWidth(1)
-    c.line(MARGIN, PAGE_H - 48, PAGE_W - MARGIN, PAGE_H - 48)
-    c.setFont("DejaVu-Oblique", 9)
-    c.drawString(MARGIN, PAGE_H - 62, subtitle)
+def _guide_chars_for(word, show_guide_character):
+    """Chữ mờ để đồ theo, xếp vào các ô ĐẦU của MỖI dòng.
 
-
-def generate_practice_pdf(words, lines_per_word=2, show_guide_character=True, show_reading_and_meaning=True):
+    Bản đầu chỉ đổ chữ mờ vào đúng một ô (dòng đầu, cột đầu) và chỉ lấy
+    `word[0]` — với 打ち合わせ thì người học chỉ được đồ mỗi chữ 打, bốn chữ còn
+    lại phải tự nhớ mặt chữ. Giờ đổ mờ cả từ, lặp lại ở đầu mỗi dòng để lúc nào
+    cũng có mẫu ngay bên trái chỗ đang viết.
     """
-    words: iterable of Vocabulary model instances (word, reading, meaning_vi)
-    Returns: (filename: str, ContentFile) ready to assign to a FileField
+    if not show_guide_character:
+        return []
+    return list(word)[:CELLS_PER_ROW]
+
+
+def generate_practice_pdf(
+    words,
+    lines_per_word=2,
+    show_guide_character=True,
+    show_reading_and_meaning=True,
+):
+    """Phiếu ô vuông để tập viết tay.
+
+    words: iterable các đối tượng có .word / .reading / .meaning_vi — nhận cả
+    Vocabulary lẫn WordItem (từ file người dùng tải lên).
+    Trả về (filename, ContentFile) gán thẳng được vào FileField.
     """
     # Tìm + đăng ký font tại đây, không phải lúc import module.
     _ensure_fonts_registered()
 
+    words = list(words)
+    lines_per_word = max(1, min(int(lines_per_word or 1), 5))
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
+
+    title = "Luyện viết từ vựng tiếng Nhật —"
     subtitle = f"{len(words)} từ đã chọn"
-    _draw_page_header(c, subtitle)
+    page_number = 1
+    _draw_page_frame(c, title, subtitle, page_number)
 
     top_y = PAGE_H - 94
     for item in words:
         needed = CELL * lines_per_word + 40
-        if top_y - needed < MARGIN:
+        if top_y - needed < MARGIN + 20:
             c.showPage()
-            _draw_page_header(c, subtitle)
-            top_y = PAGE_H - 74
+            page_number += 1
+            _draw_page_frame(c, title, subtitle, page_number)
+            top_y = PAGE_H - 94
 
         _draw_jp_string(c, MARGIN, top_y - 20, item.word, 16)
         if show_reading_and_meaning:
-            _draw_jp_string(c, MARGIN + 100, top_y - 17, item.reading, 12)
+            _draw_jp_string(c, MARGIN + 120, top_y - 17, item.reading or "", 12)
             c.setFillColor(INK)
             c.setFont("DejaVu", 10)
-            c.drawString(MARGIN + 250, top_y - 16, "- " + item.meaning_vi)
+            c.drawString(
+                MARGIN + 260,
+                top_y - 16,
+                _fit("— " + (item.meaning_vi or ""), "DejaVu", 10, CONTENT_W - 260),
+            )
 
+        guides = _guide_chars_for(item.word, show_guide_character)
         grid_top = top_y - 30
         for row in range(lines_per_word):
             y = grid_top - CELL * (row + 1)
             for col in range(CELLS_PER_ROW):
                 x = MARGIN + col * CELL
-                guide = item.word[0] if (row == 0 and col == 0 and show_guide_character) else None
-                _draw_cell(c, x, y, CELL, guide_char=guide)
+                _draw_cell(c, x, y, CELL, guide_char=guides[col] if col < len(guides) else None)
         top_y = grid_top - CELL * lines_per_word - 18
 
     c.save()
     buffer.seek(0)
     filename = "phieu_luyen_viet.pdf"
     return filename, ContentFile(buffer.read(), name=filename)
+
+
+# ---------------------------------------------------------------------------
+# Phiếu 2 — ôn lại từ
+# ---------------------------------------------------------------------------
+
+PROMPT_LINE_H = 26
+RULE_LINE_H = 24
+BLOCK_GAP = 12
+
+
+def _direction_plan(count, direction, rng):
+    """Hướng của TỪNG từ, chốt trước khi vẽ.
+
+    Ở chế độ trộn, chia xấp xỉ 50/50 rồi mới xáo vị trí, KHÔNG bốc ngẫu nhiên
+    từng từ: bốc từng từ thì 7 từ rất dễ ra 5 JP / 2 VN, phiếu lệch hẳn về một
+    phía và mất tác dụng của việc trộn.
+    """
+    if direction != RECALL_MIXED:
+        return [direction or RECALL_JP_TO_VI] * count
+    half = count // 2
+    plan = [RECALL_JP_TO_VI] * (count - half) + [RECALL_VI_TO_JP] * half
+    rng.shuffle(plan)
+    return plan
+
+
+def _draw_recall_block(c, x, y, number, item, direction, include_sentence_box):
+    """Vẽ một từ. Trả về chiều cao đã dùng.
+
+    (x, y) là góc TRÊN-trái của khối.
+    """
+    width = CONTENT_W
+    c.setFillColor(INK)
+    c.setFont("DejaVu-Bold", 11)
+    c.drawString(x, y - 13, f"{number:02d}.")
+    prompt_x = x + 26
+
+    if direction == RECALL_VI_TO_JP:
+        # Cho sẵn nghĩa tiếng Việt -> người học tự viết từ và cách đọc.
+        c.setFont("DejaVu", 12)
+        c.drawString(prompt_x, y - 13, _fit(item.meaning_vi or "(chưa có nghĩa)", "DejaVu", 12, width - 26))
+        rules = ["Từ:", "Cách đọc:"]
+    else:
+        # Cho sẵn từ tiếng Nhật -> người học tự viết cách đọc và nghĩa.
+        _draw_jp_string(c, prompt_x, y - 18, item.word, 18)
+        rules = ["Cách đọc:", "Nghĩa:"]
+
+    used = PROMPT_LINE_H
+    for label in rules:
+        _blank_rule(c, prompt_x, y - used - 14, width - 26, label)
+        used += RULE_LINE_H
+    if include_sentence_box:
+        _blank_rule(c, prompt_x, y - used - 14, width - 26, "Đặt câu:")
+        used += RULE_LINE_H
+    return used + BLOCK_GAP
+
+
+def _draw_answer_key(c, words, title, page_number):
+    c.showPage()
+    page_number += 1
+    _draw_page_frame(c, title, "Đáp án — gấp lại hoặc in riêng trang này", page_number)
+    y = PAGE_H - 100
+    for index, item in enumerate(words, start=1):
+        if y < MARGIN + 20:
+            c.showPage()
+            page_number += 1
+            _draw_page_frame(c, title, "Đáp án (tiếp)", page_number)
+            y = PAGE_H - 100
+        c.setFillColor(INK)
+        c.setFont("DejaVu-Bold", 9)
+        c.drawString(MARGIN, y, f"{index:02d}.")
+        cursor = MARGIN + 26
+        cursor += _draw_jp_string(c, cursor, y - 4, item.word, 13) + 6
+        if item.reading:
+            cursor += _draw_jp_string(c, cursor, y - 3, item.reading, 10, (120, 112, 96, 255)) + 6
+        c.setFillColor(INK)
+        c.setFont("DejaVu", 9)
+        c.drawString(cursor, y, _fit("— " + (item.meaning_vi or ""), "DejaVu", 9, PAGE_W - MARGIN - cursor))
+        y -= 20
+    return page_number
+
+
+def generate_recall_pdf(
+    words,
+    direction=RECALL_JP_TO_VI,
+    include_sentence_box=True,
+    include_answer_key=True,
+    shuffle_order=False,
+    seed=None,
+):
+    """Phiếu ôn lại từ: cho sẵn một vế, chừa chỗ trống để tự viết vế còn lại.
+
+    `seed` chỉ để test tái lập được thứ tự sau khi xáo trộn; trong ứng dụng cứ
+    để None cho mỗi lần in ra một thứ tự khác.
+    """
+    _ensure_fonts_registered()
+
+    words = list(words)
+    rng = random.Random(seed)
+    if shuffle_order:
+        rng.shuffle(words)
+    # Chốt hướng của TỪNG từ trước khi vẽ, để trang đáp án và trang câu hỏi
+    # không lệch nhau ở chế độ trộn.
+    directions = _direction_plan(len(words), direction, rng)
+
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+
+    title = "Ôn lại từ vựng —"
+    subtitle = f"{len(words)} từ · {_direction_label(direction)}"
+    page_number = 1
+    _draw_page_frame(c, title, subtitle, page_number)
+
+    y = PAGE_H - 94
+    block_h = PROMPT_LINE_H + RULE_LINE_H * (3 if include_sentence_box else 2) + BLOCK_GAP
+    for index, (item, item_direction) in enumerate(zip(words, directions), start=1):
+        if y - block_h < MARGIN + 20:
+            c.showPage()
+            page_number += 1
+            _draw_page_frame(c, title, subtitle, page_number)
+            y = PAGE_H - 94
+        y -= _draw_recall_block(c, MARGIN, y, index, item, item_direction, include_sentence_box)
+
+    if include_answer_key and words:
+        page_number = _draw_answer_key(c, words, title, page_number)
+
+    c.save()
+    buffer.seek(0)
+    filename = "phieu_on_tap.pdf"
+    return filename, ContentFile(buffer.read(), name=filename)
+
+
+def _direction_label(direction):
+    return {
+        RECALL_JP_TO_VI: "Nhật → Việt",
+        RECALL_VI_TO_JP: "Việt → Nhật",
+        RECALL_MIXED: "trộn hai hướng",
+    }.get(direction, "Nhật → Việt")
+
+
+# ---------------------------------------------------------------------------
+# Điểm vào dùng chung
+# ---------------------------------------------------------------------------
+
+def generate_sheet_pdf(sheet_type, words, **options):
+    """Chọn hàm vẽ theo loại phiếu.
+
+    Thêm một loại phiếu mới = thêm một code vào MasterCode code_type "10" VÀ
+    thêm một nhánh ở đây. Code lạ (dữ liệu cũ, hoặc ai đó seed thêm mà quên
+    viết hàm vẽ) rơi về phiếu luyện viết thay vì ném KeyError giữa lúc người
+    dùng đang bấm nút.
+    """
+    if sheet_type == SHEET_TYPE_RECALL:
+        return generate_recall_pdf(
+            words,
+            direction=options.get("recall_direction") or RECALL_JP_TO_VI,
+            include_sentence_box=options.get("include_sentence_box", True),
+            include_answer_key=options.get("include_answer_key", True),
+            shuffle_order=options.get("shuffle_order", False),
+            seed=options.get("seed"),
+        )
+    return generate_practice_pdf(
+        words,
+        lines_per_word=options.get("lines_per_word", 2),
+        show_guide_character=options.get("show_guide_character", True),
+        show_reading_and_meaning=options.get("show_reading_and_meaning", True),
+    )

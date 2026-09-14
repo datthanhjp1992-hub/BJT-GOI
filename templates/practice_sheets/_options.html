@@ -1,0 +1,84 @@
+{% load properties_tags %}
+{% comment %}Khối "loại phiếu + tuỳ chọn", include vào CẢ HAI form của SC10.
+
+`suffix` làm id của input khác nhau giữa hai form — trùng id thì click vào nhãn
+của form này lại tích ô của form kia.
+
+Hai khối tuỳ chọn dùng thuộc tính `hidden` chứ không phải style="display:none":
+JS ở create.html bật/tắt bằng `el.hidden`, và ô đang ẩn vẫn được gửi lên — view
+bỏ qua tuỳ chọn không hợp với loại phiếu, nên không cần disable.{% endcomment %}
+
+<div class="eyebrow">{% label "practice_sheets.create.section.sheet_type" %}</div>
+<div class="card" style="margin-bottom:20px;">
+  <div class="choice-grid" style="grid-template-columns:repeat(2,1fr);">
+    {% for value, display in form.fields.sheet_type.choices %}
+      <label class="choice-card">
+        <span class="choice-name">
+          <input type="radio" name="sheet_type" id="sheet_type_{{ suffix }}_{{ value }}" value="{{ value }}"{% if form.sheet_type.value|default:"writing" == value %} checked{% endif %}>
+          <strong>{{ display }}</strong>
+        </span>
+        <span class="muted" style="display:block;font-size:12.5px;margin-top:6px;">
+          {% if value == "recall" %}{% message "practice_sheets.create.hint.recall" %}{% else %}{% message "practice_sheets.create.hint.writing" %}{% endif %}
+        </span>
+      </label>
+    {% endfor %}
+  </div>
+  {% for error in form.sheet_type.errors %}<p class="error">{{ error }}</p>{% endfor %}
+</div>
+
+<div class="eyebrow">{% label "practice_sheets.create.section.options" %}</div>
+<div class="card" style="margin-bottom:20px;">
+
+  <div data-options="writing">
+    <div class="field">
+      <label for="lines_{{ suffix }}">{% label "practice_sheets.create.field.lines_per_word" %}</label>
+      <select name="lines_per_word" id="lines_{{ suffix }}">
+        {% for n in "12345"|make_list %}
+          <option value="{{ n }}"{% if form.lines_per_word.value|stringformat:"s" == n %} selected{% elif not form.lines_per_word.value and n == "2" %} selected{% endif %}>{{ n }} dòng</option>
+        {% endfor %}
+      </select>
+    </div>
+    <label class="checkbox-row">
+      <input type="checkbox" name="show_guide_character" id="guide_{{ suffix }}"{% if form.show_guide_character.value|default_if_none:True %} checked{% endif %}>
+      <span>{% label "practice_sheets.create.field.show_guide_character" %}</span>
+    </label>
+    <label class="checkbox-row">
+      <input type="checkbox" name="show_reading_and_meaning" id="meta_{{ suffix }}"{% if form.show_reading_and_meaning.value|default_if_none:True %} checked{% endif %}>
+      <span>{% label "practice_sheets.create.field.show_reading_and_meaning" %}</span>
+    </label>
+  </div>
+
+  {% comment %}Ba ô tick ĐỘC LẬP, không phải radio: tick cả hai hướng nghĩa là
+  trộn. Quy đổi hai ô hướng thành một mã jp_vi/vi_jp/mixed nằm ở
+  PracticeSheetForm._direction_code(), DB không đổi.{% endcomment %}
+  <div data-options="recall" hidden>
+    <div class="field">
+      <label>{% label "practice_sheets.create.field.recall_content" %}</label>
+      {% for error in form.non_field_errors %}<p class="error">{{ error }}</p>{% endfor %}
+      <label class="checkbox-row">
+        <input type="checkbox" name="direction_jp_vi" id="dirjp_{{ suffix }}"{% if form.direction_jp_vi.value|default_if_none:True %} checked{% endif %}>
+        <span>{% label "practice_sheets.create.field.direction_jp_vi" %}</span>
+      </label>
+      <label class="checkbox-row">
+        <input type="checkbox" name="direction_vi_jp" id="dirvi_{{ suffix }}"{% if form.direction_vi_jp.value %} checked{% endif %}>
+        <span>{% label "practice_sheets.create.field.direction_vi_jp" %}</span>
+      </label>
+      <label class="checkbox-row">
+        <input type="checkbox" name="include_answer_key" id="answers_{{ suffix }}"{% if form.include_answer_key.value|default_if_none:True %} checked{% endif %}>
+        <span>{% label "practice_sheets.create.field.include_answer_key" %}</span>
+      </label>
+      <p class="muted" style="font-size:12.5px;margin:6px 0 0;">{% message "practice_sheets.create.hint.both_directions" %}</p>
+    </div>
+    <label class="checkbox-row">
+      <input type="checkbox" name="include_sentence_box" id="sentence_{{ suffix }}"{% if form.include_sentence_box.value|default_if_none:True %} checked{% endif %}>
+      <span>{% label "practice_sheets.create.field.include_sentence_box" %}</span>
+    </label>
+    <label class="checkbox-row">
+      <input type="checkbox" name="shuffle_order" id="shuffle_{{ suffix }}"{% if form.shuffle_order.value %} checked{% endif %}>
+      <span>{% label "practice_sheets.create.field.shuffle_order" %}</span>
+    </label>
+  </div>
+
+  <div class="divider"></div>
+  <button type="submit" class="btn btn-primary btn-block">{% label "practice_sheets.create.button.generate" %}</button>
+</div>

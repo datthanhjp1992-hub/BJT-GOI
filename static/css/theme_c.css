@@ -120,3 +120,10 @@ input[type=checkbox],input[type=radio]{width:auto;padding:0;margin:0;flex:none;}
   .sidebar{width:auto;border-right:none;border-bottom:1px solid var(--border);padding:16px 20px;}
   .admin-content{padding:24px 20px;}
 }
+
+/* SC10 — hai tab nguồn từ (chọn sẵn / upload). Là <button> chứ không phải <a>
+   để bấm bằng bàn phím đúng cách; reset lại nền và viền mà theme áp cho button. */
+.sheet-tab{background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;
+  padding:10px 4px 12px;margin-right:20px;font-family:inherit;font-size:15px;color:var(--ink-soft);}
+.sheet-tab.is-active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600;}
+.sheet-tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}

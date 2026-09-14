@@ -21,6 +21,19 @@ from apps.core.mastercode import get_choices
 CODE_TYPE_UI_THEME = "06"        # A, B, C (Washi & Vermillion / Studio Mono / Genki Playful)
 CODE_TYPE_SESSION_TYPE = "09"    # flashcard, quiz (kieu phien hoc)
 
+# --- Phiếu luyện tập in ra PDF (SC10) ---
+CODE_TYPE_SHEET_TYPE = "10"       # writing, recall (loai phieu)
+CODE_TYPE_RECALL_DIRECTION = "11"  # jp_vi, vi_jp, mixed (huong on tap)
+
+# Mã cụ thể của hai code_type trên. Đây KHÔNG phải danh sách choices hardcode
+# (danh sách vẫn nằm trong MasterCode) — chỉ là hằng số để code khỏi rải chuỗi
+# "writing"/"vi_jp" khắp nơi, giống CONTRIBUTION_STATUS_PENDING bên admin_panel.
+SHEET_TYPE_WRITING = "writing"
+SHEET_TYPE_RECALL = "recall"
+RECALL_JP_TO_VI = "jp_vi"
+RECALL_VI_TO_JP = "vi_jp"
+RECALL_MIXED = "mixed"
+
 # --- Góp ý & kiểm duyệt (xem docs/SPEC_GOP_Y_THANH_TICH.md) ---
 CODE_TYPE_CONTRIBUTION_TYPE = "02"    # Từ mới / Sửa nghĩa / Bình luận
 CODE_TYPE_CONTRIBUTION_STATUS = "03"  # Chờ duyệt / Đã duyệt / Từ chối
@@ -58,3 +71,15 @@ def session_type_choices():
     "001"/"002" để code cũ lọc `session_type="quiz"` vẫn chạy, và để truy vấn
     tay trên Supabase còn đọc được."""
     return get_choices(CODE_TYPE_SESSION_TYPE)
+
+
+def sheet_type_choices():
+    """Loại phiếu PDF: ô kẻ luyện viết / phiếu ôn lại từ. Mã dạng chữ như
+    session_type để đọc được khi truy vấn tay."""
+    return get_choices(CODE_TYPE_SHEET_TYPE)
+
+
+def recall_direction_choices():
+    """Hướng ôn tập của phiếu 'ôn lại từ' — chỉ có nghĩa khi
+    sheet_type = SHEET_TYPE_RECALL."""
+    return get_choices(CODE_TYPE_RECALL_DIRECTION)
