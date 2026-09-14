@@ -3,8 +3,9 @@ Khu vực quản trị — SC07_QuanTriAdmin.
 
 PHẠM VI (cập nhật 13/09/2026):
 1. Bảng TỔNG QUAN — số liệu + người dùng mới nhất.
-2. NHẬP / XUẤT DỮ LIỆU bằng file CSV & Excel cho cả 18 bảng: tải file mẫu,
-   xuất dữ liệu hiện có, tải file lên và xem trước rồi mới ghi.
+2. NHẬP / XUẤT DỮ LIỆU bằng file CSV & Excel cho cả 18 bảng + một mẫu gộp
+   "Từ vựng đầy đủ": tải file mẫu, xuất dữ liệu hiện có, chọn chế độ ghi, tải
+   file lên và xem trước rồi mới ghi.
 
 Sửa/xoá TỪNG bản ghi vẫn đẩy sang Django admin ở `/admin/` — viết lại form
 CRUD từng bảng ở đây là làm lại thứ Django cho không. Cái Django admin làm dở
@@ -84,12 +85,12 @@ def overview_view(request):
 # ---------------------------------------------------------------------------
 # SC07b — Nhập / xuất dữ liệu bằng file CSV & Excel
 # ---------------------------------------------------------------------------
-# Luồng: tải mẫu -> điền -> tải lên -> XEM TRƯỚC (thêm N / trùng M / lỗi K)
-# -> bấm xác nhận mới ghi, trong MỘT transaction.
+# Luồng: tải mẫu -> điền -> chọn chế độ -> tải lên -> XEM TRƯỚC (thêm N / sửa M
+# / bỏ qua K / lỗi J) -> bấm xác nhận mới ghi, trong MỘT transaction.
 #
-# Chỉ THÊM MỚI. Dòng đã có (so theo khoá tự nhiên, xem apps/core/dataio.py) bị
-# bỏ qua; không sửa, không xoá bản ghi nào. Sửa/xoá từng dòng vẫn mở ở Django
-# admin — đó là lý do sidebar giữ nguyên các link sang /admin/.
+# BA CHẾ ĐỘ: chỉ thêm / thêm + cập nhật / chỉ cập nhật (xem apps/core/dataio.py).
+# KHÔNG có chế độ xoá — xoá từng dòng vẫn mở ở Django admin, đó là lý do sidebar
+# giữ nguyên các link sang /admin/.
 
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024
 IMPORT_TMP_DIRNAME = "admin_imports"
@@ -120,19 +121,50 @@ def _purge_old_uploads():
             pass
 
 
-def _resolve_model(model_label):
-    model = dataio.get_importable_model(model_label)
-    if model is None:
+def _resolve_dataset(dataset_label):
+    dataset = dataio.get_dataset(dataset_label)
+    if dataset is None:
         raise Http404(message("common.error.not_found"))
-    return model
+    return dataset
 
 
-def _require_perm(request, model, action):
+def _codenames(dataset, action):
+    return [
+        f"{model._meta.app_label}.{action}_{model._meta.model_name}"
+        for model in dataset.perm_models
+    ]
+
+
+def _has_all_perms(request, dataset, action):
+    return all(request.user.has_perm(code) for code in _codenames(dataset, action))
+
+
+def _require_perm(request, dataset, action):
     """staff_required đã chặn người ngoài; ở đây chặn thêm theo quyền từng bảng
-    để không phải staff nào cũng nhập được vào mọi bảng."""
-    codename = f"{model._meta.app_label}.{action}_{model._meta.model_name}"
-    if not request.user.has_perm(codename):
+    để không phải staff nào cũng nhập được vào mọi bảng.
+
+    Mẫu gộp ghi vào 3 bảng nên phải có quyền trên CẢ BA, không phải chỉ
+    vocabulary — nếu không thì quyền trên bảng câu ví dụ thành vô nghĩa.
+    """
+    if not _has_all_perms(request, dataset, action):
         raise PermissionDenied(message("common.error.permission_denied"))
+
+
+def _require_mode_perms(request, dataset, mode):
+    for action in dataio.MODE_PERMISSIONS[mode]:
+        _require_perm(request, dataset, action)
+
+
+def _available_modes(request, dataset):
+    """Chế độ nào thực sự dùng được: có khoá tự nhiên VÀ đủ quyền."""
+    modes = []
+    for mode in dataio.WRITE_MODES:
+        if mode != dataio.MODE_INSERT and not dataset.supports_update():
+            continue
+        if not all(_has_all_perms(request, dataset, action) for action in dataio.MODE_PERMISSIONS[mode]):
+            continue
+        modes.append(mode)
+    return modes
 
 
 def _file_response(payload, filename, fmt):
@@ -143,15 +175,17 @@ def _file_response(payload, filename, fmt):
 
 def _table_rows():
     rows = []
-    for model in dataio.importable_models():
+    for dataset in dataio.datasets():
         rows.append(
             {
-                "label": dataio.model_label(model),
-                "name": dataio.verbose_name(model),
-                "app": model._meta.app_label,
-                "count": model._default_manager.count(),
-                "columns": len(dataio.columns_for(model)),
-                "duplicate_key": ", ".join(dataio.duplicate_fields(model)),
+                "label": dataset.label,
+                "name": dataset.name,
+                "app": dataset.app,
+                "count": dataset.count(),
+                "columns": len(dataset.columns()),
+                "duplicate_key": ", ".join(dataset.natural_key()),
+                "is_composite": dataset.is_composite,
+                "supports_update": dataset.supports_update(),
             }
         )
     return rows
@@ -159,7 +193,7 @@ def _table_rows():
 
 @staff_required
 def data_index_view(request):
-    """Danh sách 18 bảng + lối vào tải mẫu / xuất / nhập."""
+    """Danh sách mẫu gộp + 18 bảng, mỗi dòng có lối tải mẫu / xuất / nhập."""
     context = {
         "tables": _table_rows(),
         "active_admin_nav": "data",
@@ -171,80 +205,125 @@ def data_index_view(request):
 @staff_required
 def data_template_view(request, model_label, fmt):
     """File mẫu: chỉ hàng tiêu đề (+ sheet Huong_dan với bản .xlsx)."""
-    model = _resolve_model(model_label)
-    _require_perm(request, model, "add")
+    dataset = _resolve_dataset(model_label)
+    # Tải mẫu để thêm HOẶC để cập nhật — có một trong hai quyền là đủ.
+    if not (_has_all_perms(request, dataset, "add") or _has_all_perms(request, dataset, "change")):
+        raise PermissionDenied(message("common.error.permission_denied"))
     if fmt not in CONTENT_TYPES:
         raise Http404
-    headers = dataio.headers_for(model)
+    headers = dataset.headers()
     if fmt == "csv":
         payload = dataio.write_csv(headers, [])
     else:
         payload = dataio.write_xlsx(
-            headers, [], guide_rows=dataio.guide_rows(model), sheet_title=model._meta.model_name
+            headers, [], guide_rows=dataset.guide_rows(), sheet_title=dataset.label.split(".")[-1]
         )
-    return _file_response(payload, f"mau_{model_label}.{fmt}", fmt)
+    return _file_response(payload, f"mau_{dataset.label}.{fmt}", fmt)
 
 
 @staff_required
 def data_export_view(request, model_label, fmt):
-    """Xuất toàn bộ dữ liệu hiện có, đúng bộ cột của file mẫu."""
-    model = _resolve_model(model_label)
-    _require_perm(request, model, "view")
+    """Xuất toàn bộ dữ liệu hiện có, đúng bộ cột của file mẫu.
+
+    File xuất ra nạp lại được ở chế độ "thêm + cập nhật" — đó là cách sửa hàng
+    loạt: xuất, sửa trong Excel, nạp lại.
+    """
+    dataset = _resolve_dataset(model_label)
+    _require_perm(request, dataset, "view")
     if fmt not in CONTENT_TYPES:
         raise Http404
-    headers = dataio.headers_for(model)
-    rows = dataio.export_rows(model)
+    headers = dataset.headers()
+    rows = dataset.export_rows()
     if fmt == "csv":
         payload = dataio.write_csv(headers, rows)
     else:
         payload = dataio.write_xlsx(
-            headers, rows, guide_rows=dataio.guide_rows(model), sheet_title=model._meta.model_name
+            headers, rows, guide_rows=dataset.guide_rows(), sheet_title=dataset.label.split(".")[-1]
         )
     stamp = timezone.localtime(timezone.now()).strftime("%Y%m%d_%H%M")
-    return _file_response(payload, f"{model_label}_{stamp}.{fmt}", fmt)
+    return _file_response(payload, f"{dataset.label}_{stamp}.{fmt}", fmt)
 
 
-def _import_context(model, extra=None):
+def _import_context(request, dataset, mode, extra=None):
     context = {
-        "model_label": dataio.model_label(model),
-        "model_name": dataio.verbose_name(model),
-        "columns": dataio.columns_for(model),
-        "duplicate_key": ", ".join(dataio.duplicate_fields(model)),
-        "m2m_notes": dataio.skipped_m2m_names(model),
+        "model_label": dataset.label,
+        "model_name": dataset.name,
+        "is_composite": dataset.is_composite,
+        "columns": dataset.columns(),
+        "duplicate_key": ", ".join(dataset.natural_key()),
+        "supports_update": dataset.supports_update(),
+        "m2m_notes": dataset.m2m_notes(),
         "max_rows": dataio.MAX_IMPORT_ROWS,
+        "mode": mode,
+        "available_modes": _available_modes(request, dataset),
+        "MODE_INSERT": dataio.MODE_INSERT,
+        "MODE_UPSERT": dataio.MODE_UPSERT,
+        "MODE_UPDATE": dataio.MODE_UPDATE,
         "active_admin_nav": "data",
     }
     context.update(extra or {})
     return context
 
 
+def _pick_mode(request, dataset, raw):
+    """Chế độ người dùng chọn, đã lọc qua khoá tự nhiên và quyền.
+
+    Không im lặng hạ cấp sang 'chỉ thêm': nếu chọn chế độ không dùng được thì
+    báo lỗi, vì âm thầm đổi chế độ ghi là cách chắc chắn nhất để admin tưởng
+    mình vừa cập nhật xong trong khi thực tế không có gì đổi.
+    """
+    mode = dataio.normalize_mode(raw)
+    if mode not in _available_modes(request, dataset):
+        if mode != dataio.MODE_INSERT and not dataset.supports_update():
+            raise dataio.DataFileError("admin.data.error.no_key_for_update")
+        raise PermissionDenied(message("common.error.permission_denied"))
+    return mode
+
+
 @staff_required
 def data_import_view(request, model_label):
-    """Bước 1: tải file lên -> xem trước. KHÔNG ghi gì ở bước này."""
-    model = _resolve_model(model_label)
-    _require_perm(request, model, "add")
+    """Bước 1: chọn chế độ + tải file lên -> xem trước. KHÔNG ghi gì ở bước này."""
+    dataset = _resolve_dataset(model_label)
+    if not _available_modes(request, dataset):
+        raise PermissionDenied(message("common.error.permission_denied"))
 
     if request.method != "POST":
-        return render(request, "admin_panel/data_import.html", _import_context(model))
+        default_mode = _available_modes(request, dataset)[0]
+        return render(
+            request, "admin_panel/data_import.html", _import_context(request, dataset, default_mode)
+        )
+
+    try:
+        mode = _pick_mode(request, dataset, request.POST.get("mode"))
+    except dataio.DataFileError as exc:
+        django_messages.error(request, message(exc.message_key, **exc.params))
+        return render(
+            request,
+            "admin_panel/data_import.html",
+            _import_context(request, dataset, dataio.MODE_INSERT),
+        )
 
     upload = request.FILES.get("data_file")
     if upload is None:
         django_messages.error(request, message("admin.data.error.no_file"))
-        return render(request, "admin_panel/data_import.html", _import_context(model))
+        return render(request, "admin_panel/data_import.html", _import_context(request, dataset, mode))
     if upload.size > MAX_UPLOAD_BYTES:
         django_messages.error(
             request,
             message("admin.data.error.file_too_large", max_mb=MAX_UPLOAD_BYTES // (1024 * 1024)),
         )
-        return render(request, "admin_panel/data_import.html", _import_context(model))
+        return render(request, "admin_panel/data_import.html", _import_context(request, dataset, mode))
 
     raw = upload.read()
     try:
         headers, rows = dataio.read_table(raw, upload.name)
-        report = dataio.analyze(model, headers, rows)
+        report = dataset.analyze(headers, rows, mode=mode)
     except dataio.DataFileError as exc:
         django_messages.error(request, message(exc.message_key, **exc.params))
-        return render(request, "admin_panel/data_import.html", _import_context(model))
+        return render(request, "admin_panel/data_import.html", _import_context(request, dataset, mode))
+
+    if report.fatal:
+        django_messages.error(request, message(report.fatal))
 
     token = ""
     if report.can_apply:
@@ -254,7 +333,8 @@ def data_import_view(request, model_label):
         (_import_tmp_dir() / token).write_bytes(raw)
         request.session[IMPORT_SESSION_KEY] = {
             "token": token,
-            "model": dataio.model_label(model),
+            "model": dataset.label,
+            "mode": mode,
             "filename": upload.name,
         }
 
@@ -262,7 +342,9 @@ def data_import_view(request, model_label):
         request,
         "admin_panel/data_import.html",
         _import_context(
-            model,
+            request,
+            dataset,
+            mode,
             {
                 "report": report,
                 "token": token,
@@ -282,37 +364,41 @@ def data_import_confirm_view(request, model_label):
     """Bước 2: đọc lại chính file đã xem trước rồi ghi, trong 1 transaction.
 
     Cố tình phân tích LẠI thay vì tin kết quả bước 1: giữa hai bước có thể có
-    người khác vừa thêm đúng bản ghi đó.
+    người khác vừa thêm đúng bản ghi đó. Chế độ ghi lấy từ SESSION chứ không
+    lấy từ form — nếu không, sửa một ô hidden là đổi được "chỉ thêm" đã xem
+    trước thành "ghi đè".
     """
-    model = _resolve_model(model_label)
-    _require_perm(request, model, "add")
+    dataset = _resolve_dataset(model_label)
 
     pending = request.session.get(IMPORT_SESSION_KEY) or {}
     token = request.POST.get("token", "")
-    if not token or pending.get("token") != token or pending.get("model") != dataio.model_label(model):
+    if not token or pending.get("token") != token or pending.get("model") != dataset.label:
         django_messages.error(request, message("admin.data.error.session_expired"))
-        return redirect("admin_panel:data_import", model_label=dataio.model_label(model))
+        return redirect("admin_panel:data_import", model_label=dataset.label)
+
+    mode = dataio.normalize_mode(pending.get("mode"))
+    _require_mode_perms(request, dataset, mode)
 
     path = _import_tmp_dir() / token
     if not path.exists():
         django_messages.error(request, message("admin.data.error.session_expired"))
-        return redirect("admin_panel:data_import", model_label=dataio.model_label(model))
+        return redirect("admin_panel:data_import", model_label=dataset.label)
 
     raw = path.read_bytes()
     try:
         headers, rows = dataio.read_table(raw, pending.get("filename") or token)
-        report = dataio.analyze(model, headers, rows)
+        report = dataset.analyze(headers, rows, mode=mode)
         if not report.can_apply:
             django_messages.error(request, message("admin.data.error.changed_since_preview"))
-            return redirect("admin_panel:data_import", model_label=dataio.model_label(model))
+            return redirect("admin_panel:data_import", model_label=dataset.label)
         with transaction.atomic():
-            created = dataio.apply_report(report, model)
+            result = dataset.apply(report)
     except dataio.DataFileError as exc:
         django_messages.error(request, message(exc.message_key, **exc.params))
-        return redirect("admin_panel:data_import", model_label=dataio.model_label(model))
+        return redirect("admin_panel:data_import", model_label=dataset.label)
     except IntegrityError as exc:
         django_messages.error(request, message("admin.data.error.integrity", detail=str(exc)))
-        return redirect("admin_panel:data_import", model_label=dataio.model_label(model))
+        return redirect("admin_panel:data_import", model_label=dataset.label)
     finally:
         request.session.pop(IMPORT_SESSION_KEY, None)
         try:
@@ -324,9 +410,19 @@ def data_import_confirm_view(request, model_label):
         request,
         message(
             "admin.data.success.imported",
-            created=created,
-            skipped=report.duplicate_count,
-            table=dataio.verbose_name(model),
+            created=result.get("created", 0),
+            updated=result.get("updated", 0),
+            skipped=report.skipped_count,
+            table=dataset.name,
         ),
     )
+    if dataset.is_composite:
+        django_messages.success(
+            request,
+            message(
+                "admin.data.success.imported_full_vocab",
+                topics=result.get("topics_linked", 0),
+                examples=result.get("examples_added", 0),
+            ),
+        )
     return redirect("admin_panel:data_index")

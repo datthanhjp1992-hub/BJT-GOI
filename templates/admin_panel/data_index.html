@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% load properties_tags %}
-{% comment %}SC07b — danh sách 18 bảng, mỗi bảng có lối tải mẫu / xuất / nhập.
+{% comment %}SC07b — mẫu gộp "Từ vựng đầy đủ" + 18 bảng, mỗi dòng có lối tải
+mẫu / xuất / nhập.
 
-Danh sách sinh từ apps/core/dataio.importable_models(): thêm model mới vào 6
-app nội bộ là nó tự xuất hiện ở đây, không phải sửa template.{% endcomment %}
+Danh sách sinh từ apps/core/dataio.datasets(): thêm model mới vào 6 app nội bộ
+là nó tự xuất hiện ở đây, không phải sửa template.{% endcomment %}
 
 {% block title %}{% label "admin.data.title" %} | {% label "common.brand.name" %}{% endblock %}
 {% block main_attrs %} style="padding:0;"{% endblock %}
@@ -35,6 +36,7 @@ app nội bộ là nó tự xuất hiện ở đây, không phải sửa templat
           <tr>
             <td>
               {{ table.name }}
+              {% if table.is_composite %}<span class="tag">{% label "admin.data.tag.composite" %}</span>{% endif %}
               <div class="muted" style="font-size:12px;">{{ table.label }}</div>
             </td>
             <td>{{ table.count }}</td>

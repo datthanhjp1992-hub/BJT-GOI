@@ -1,9 +1,9 @@
-﻿STT,Tu vung (Kanji/Kana),Cach doc (Furigana),Nghia tieng Viet,Cap do BJT (tuy chon)
-1,注文する,ちゅうもんする,"gọi món, đặt món",J4
-2,予約,よやく,đặt chỗ trước,J4
-3,お会計,おかいけい,tính tiền,J5
-4,美味しい,おいしい,ngon,J5
-5,メニュー,めにゅー,thực đơn,J5
-6,打ち合わせ,うちあわせ,"buổi họp, trao đổi công việc",J3
-7,見積もり,みつもり,"báo giá, dự trù",J3
-8,承知しました,しょうちしました,"tôi hiểu rồi (lịch sự, dùng khi trả lời cấp trên/khách hàng)",J2
+﻿word,reading,meaning_vi,audio_url,topics,example1_jp,example1_vi,example2_jp,example2_vi,example3_jp,example3_vi
+打ち合わせ,うちあわせ,"buổi họp, trao đổi công việc",,hop-hanh;ho-ren-so,明日の打ち合わせは10時からです。,Buổi họp ngày mai bắt đầu từ 10 giờ.,打ち合わせの資料を準備します。,Tôi sẽ chuẩn bị tài liệu cho buổi họp.,,
+見積もり,みつもり,"báo giá, dự trù",,ban-hang-dam-phan;dat-hang-giao-nhan,見積もりをお願いできますか。,Anh/chị cho tôi xin báo giá được không?,,,,
+承知しました,しょうちしました,"tôi hiểu rồi (lịch sự, dùng khi trả lời cấp trên/khách hàng)",,kinh-ngu;dien-thoai,承知しました。すぐに対応いたします。,Tôi hiểu rồi. Tôi sẽ xử lý ngay.,,,,
+納品,のうひん,"giao hàng, nộp hàng",,dat-hang-giao-nhan,納品は来週の月曜日です。,Việc giao hàng là vào thứ Hai tuần sau.,,,,
+請求書,せいきゅうしょ,"hoá đơn, giấy đề nghị thanh toán",,ke-toan-tai-chinh,請求書を送付いたします。,Tôi xin gửi hoá đơn.,,,,
+報告,ほうこく,báo cáo,,ho-ren-so,進捗を報告します。,Tôi xin báo cáo tiến độ.,,,,
+申し訳ございません,もうしわけございません,tôi vô cùng xin lỗi (mức lịch sự cao nhất),,xin-loi-khieu-nai;kinh-ngu,ご迷惑をおかけし、申し訳ございません。,Thành thật xin lỗi vì đã làm phiền quý vị.,,,,
+出張,しゅっちょう,đi công tác,,cong-tac-di-lai,来月大阪へ出張します。,Tháng sau tôi đi công tác Osaka.,,,,

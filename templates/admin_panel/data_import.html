@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 {% load properties_tags %}
-{% comment %}SC07b — nhập 1 bảng từ file.
+{% comment %}SC07b — nhập 1 bảng (hoặc mẫu gộp "Từ vựng đầy đủ") từ file.
 
 Hai bước trên cùng một template: chưa có `report` thì chỉ hiện form tải lên;
 có `report` thì hiện kết quả kiểm tra, và chỉ khi report.can_apply mới hiện nút
-xác nhận ghi.{% endcomment %}
+xác nhận ghi.
+
+Ô chọn chế độ là radio chứ không phải select: ba chế độ có hậu quả khác hẳn
+nhau nên phải đọc được cả ba cùng lúc, không giấu trong danh sách xổ xuống.
+Chế độ thật sự dùng để ghi lấy từ SESSION ở bước xác nhận, ô này chỉ là đầu
+vào của bước xem trước.{% endcomment %}
 
 {% block title %}{% label "admin.data.button.import" %} {{ model_name }} | {% label "common.brand.name" %}{% endblock %}
 {% block main_attrs %} style="padding:0;"{% endblock %}
@@ -24,7 +29,9 @@ xác nhận ghi.{% endcomment %}
     <p class="muted" style="margin:0 0 20px;font-size:13px;">{{ model_label }}</p>
 
     <div class="card" style="margin-bottom:20px;">
-      <p style="margin:0 0 8px;font-size:14px;">{% message "admin.data.hint.insert_only" %}</p>
+      {% if is_composite %}
+        <p style="margin:0 0 8px;font-size:14px;">{% message "admin.data.hint.full_vocab" %}</p>
+      {% endif %}
       {% if duplicate_key %}
         <p class="muted" style="margin:0;font-size:13px;">{% message "admin.data.hint.duplicate_key" fields=duplicate_key %}</p>
       {% else %}
@@ -39,6 +46,29 @@ xác nhận ghi.{% endcomment %}
     <div class="card" style="margin-bottom:24px;">
       <form method="post" enctype="multipart/form-data" action="{% url 'admin_panel:data_import' model_label %}">
         {% csrf_token %}
+
+        <div class="eyebrow" style="margin:0 0 8px;">{% label "admin.data.section.mode" %}</div>
+        <div class="choice-grid" style="margin-bottom:16px;">
+          {% for value in available_modes %}
+            <label class="choice-card">
+              <span class="choice-name">
+                <input type="radio" name="mode" value="{{ value }}"{% if value == mode %} checked{% endif %}>
+                {% if value == MODE_INSERT %}<strong>{% label "admin.data.mode.insert" %}</strong>
+                {% elif value == MODE_UPSERT %}<strong>{% label "admin.data.mode.upsert" %}</strong>
+                {% else %}<strong>{% label "admin.data.mode.update" %}</strong>{% endif %}
+              </span>
+              <span class="muted" style="display:block;font-size:12.5px;margin-top:6px;">
+                {% if value == MODE_INSERT %}{% message "admin.data.hint.mode_insert" %}
+                {% elif value == MODE_UPSERT %}{% message "admin.data.hint.mode_upsert" %}
+                {% else %}{% message "admin.data.hint.mode_update" %}{% endif %}
+              </span>
+            </label>
+          {% endfor %}
+        </div>
+        {% if not supports_update %}
+          <p class="muted" style="margin:0 0 12px;font-size:13px;">{% message "admin.data.hint.update_unavailable" %}</p>
+        {% endif %}
+
         <label for="data_file">{% label "admin.data.field.file" %}</label>
         <input type="file" id="data_file" name="data_file" accept=".csv,.xlsx,.xlsm" required>
         <div class="toolbar" style="margin-top:12px;">
@@ -53,14 +83,18 @@ xác nhận ghi.{% endcomment %}
       <div class="eyebrow">{% label "admin.data.section.preview" %}</div>
       <p class="muted" style="margin:0 0 12px;font-size:13px;">{{ source_filename }}</p>
 
-      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:20px;">
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:20px;">
         <div class="stat">
           <div class="num">{{ report.new_count }}</div>
           <div class="label">{% label "admin.data.stat.new" %}</div>
         </div>
         <div class="stat">
-          <div class="num">{{ report.duplicate_count }}</div>
-          <div class="label">{% label "admin.data.stat.duplicate" %}</div>
+          <div class="num">{{ report.update_count }}</div>
+          <div class="label">{% label "admin.data.stat.update" %}</div>
+        </div>
+        <div class="stat">
+          <div class="num">{{ report.skipped_count }}</div>
+          <div class="label">{% label "admin.data.stat.skipped" %}</div>
         </div>
         <div class="stat">
           <div class="num">{{ report.error_count }}</div>
@@ -76,6 +110,10 @@ xác nhận ghi.{% endcomment %}
 
       {% if report.unknown_columns %}
         <p class="muted" style="font-size:13px;">{% message "admin.data.hint.unknown_columns" columns=report.unknown_columns|join:", " %}</p>
+      {% endif %}
+
+      {% if report.ignored_columns %}
+        <p class="muted" style="font-size:13px;">{% message "admin.data.hint.ignored_columns" columns=report.ignored_columns|join:", " %}</p>
       {% endif %}
 
       {% if problem_rows %}
@@ -113,8 +151,12 @@ xác nhận ghi.{% endcomment %}
               <td>
                 {% if row.status == "new" %}
                   <span class="tag">{% label "admin.data.status.new" %}</span>
+                {% elif row.status == "update" %}
+                  <span class="tag">{% label "admin.data.status.update" %}</span>
                 {% elif row.status == "duplicate" %}
                   <span class="tag level">{% label "admin.data.status.duplicate" %}</span>
+                {% elif row.status == "missing" %}
+                  <span class="tag level">{% label "admin.data.status.missing" %}</span>
                 {% else %}
                   <span class="tag level">{% label "admin.data.status.error" %}</span>
                 {% endif %}
@@ -133,12 +175,12 @@ xác nhận ghi.{% endcomment %}
         <form method="post" action="{% url 'admin_panel:data_import_confirm' model_label %}">
           {% csrf_token %}
           <input type="hidden" name="token" value="{{ token }}">
-          <p class="muted" style="font-size:13px;">{% message "admin.data.hint.confirm" created=report.new_count skipped=report.duplicate_count %}</p>
+          <p class="muted" style="font-size:13px;">{% message "admin.data.hint.confirm" created=report.new_count updated=report.update_count skipped=report.skipped_count %}</p>
           <button type="submit">{% label "admin.data.button.confirm" %}</button>
         </form>
       {% elif report.error_count %}
         <p style="font-size:14px;">{% message "admin.data.error.has_errors" count=report.error_count %}</p>
-      {% elif not report.new_count %}
+      {% elif not report.write_count %}
         <p style="font-size:14px;">{% message "admin.data.error.nothing_to_import" %}</p>
       {% endif %}
     {% endif %}
@@ -153,8 +195,11 @@ xác nhận ghi.{% endcomment %}
         </tr>
         {% for column in columns %}
           <tr>
-            <td><code>{{ column.header }}</code></td>
-            <td>{% if column.required %}<span class="tag level">{% label "admin.data.column.required" %}</span>{% else %}<span class="muted">—</span>{% endif %}</td>
+            <td style="white-space:nowrap;">
+              <code>{{ column.header }}</code>
+              {% if column.is_key %}<span class="tag">{% label "admin.data.tag.key" %}</span>{% endif %}
+            </td>
+            <td style="white-space:nowrap;">{% if column.required %}<span class="tag level">{% label "admin.data.column.required" %}</span>{% else %}<span class="muted">—</span>{% endif %}</td>
             <td class="muted">{{ column.hint }}</td>
           </tr>
         {% endfor %}
