@@ -25,6 +25,7 @@ CODE_TYPE_SESSION_TYPE = "09"    # flashcard, quiz (kieu phien hoc)
 # apps.learning.views.flashcard_view) — cùng cách đặt hằng số như SHEET_TYPE_*
 # bên dưới, để không rải chuỗi "flashcard" khắp views/services.
 SESSION_TYPE_FLASHCARD = "flashcard"
+SESSION_TYPE_QUIZ = "quiz"
 
 # --- Phiếu luyện tập in ra PDF (SC10) ---
 CODE_TYPE_SHEET_TYPE = "10"       # writing, recall (loai phieu)

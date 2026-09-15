@@ -355,3 +355,140 @@ class FlashcardCommentTests(LearningTestCase):
 
         self.assertContains(response, "Đã duyệt")
         self.assertNotContains(response, "Chờ duyệt")
+
+
+class QuizChoicesTests(LearningTestCase):
+    """apps.learning.services.get_quiz_choices — nguồn 4 lựa chọn của SC06."""
+
+    def test_returns_correct_word_plus_distractors_from_same_topic(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約", "会計", "メニュー"])
+        word = topic.vocabularies.first()
+
+        choices = services.get_quiz_choices(word, topic)
+
+        self.assertEqual(len(choices), 4)
+        self.assertIn(word, choices)
+        self.assertEqual(len({c.pk for c in choices}), 4)  # không trùng đáp án
+
+    def test_fills_up_from_other_topics_when_topic_is_too_small(self):
+        topic = self._make_topic("Nhỏ", "nho", ["注文", "予約"])
+        self._make_topic("Khác", "khac", ["会計", "メニュー", "領収書"])
+        word = topic.vocabularies.first()
+
+        choices = services.get_quiz_choices(word, topic)
+
+        self.assertEqual(len(choices), 4)
+        self.assertIn(word, choices)
+
+    def test_returns_fewer_choices_when_the_whole_dictionary_is_too_small(self):
+        """Chỉ có 2 từ trong TOÀN BỘ từ điển -> không đủ 4 lựa chọn, trả về ít
+        hơn thay vì ném lỗi giữa lúc người học đang làm bài."""
+        topic = self._make_topic("Nhỏ", "nho", ["注文", "予約"])
+        word = topic.vocabularies.first()
+
+        choices = services.get_quiz_choices(word, topic)
+
+        self.assertEqual(len(choices), 2)
+        self.assertIn(word, choices)
+
+
+class QuizViewTests(LearningTestCase):
+    def test_requires_login(self):
+        self.client.logout()
+        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        url = reverse("learning:quiz", args=["nha-hang"])
+        self.assertRedirects(self.client.get(url), reverse("accounts:login") + "?next=" + url)
+
+    def test_404_for_unknown_topic(self):
+        response = self.client.get(reverse("learning:quiz", args=["khong-ton-tai"]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_session_complete_state_when_nothing_is_due(self):
+        self._make_topic("Rỗng", "rong", [])
+        response = self.client.get(reverse("learning:quiz", args=["rong"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.context["word"])
+
+    def test_shows_first_question_with_four_choices(self):
+        self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約", "会計", "メニュー"])
+        response = self.client.get(reverse("learning:quiz", args=["nha-hang"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["total"], 4)
+        self.assertEqual(response.context["position"], 1)
+        self.assertEqual(len(response.context["choices"]), 4)
+
+    def test_first_visit_creates_a_quiz_study_session(self):
+        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self.client.get(reverse("learning:quiz", args=["nha-hang"]))
+        self.assertEqual(
+            StudySession.objects.filter(user=self.user, session_type="quiz").count(), 1
+        )
+
+    def test_flashcard_and_quiz_sessions_of_the_same_topic_do_not_collide(self):
+        self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+        self.client.get(reverse("learning:quiz", args=["nha-hang"]))
+        self.assertEqual(
+            StudySession.objects.filter(user=self.user, session_type="flashcard").count(), 1
+        )
+        self.assertEqual(
+            StudySession.objects.filter(user=self.user, session_type="quiz").count(), 1
+        )
+
+
+class QuizAnswerTests(LearningTestCase):
+    def test_get_is_not_allowed(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        url = reverse("learning:quiz_answer", args=["nha-hang", vocab.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 405)
+
+    def test_correct_answer_advances_next_review_date(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        self.client.get(reverse("learning:quiz", args=["nha-hang"]))  # mở phiên
+        url = reverse("learning:quiz_answer", args=["nha-hang", vocab.pk])
+
+        response = self.client.post(url, {"choice": str(vocab.pk)})
+
+        self.assertRedirects(response, reverse("learning:quiz", args=["nha-hang"]))
+        progress = UserVocabularyProgress.objects.get(user=self.user, vocabulary=vocab)
+        self.assertGreater(progress.next_review_date, self.user.local_today())
+
+    def test_wrong_answer_resets_srs_level_and_counts_as_wrong(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        self.client.get(reverse("learning:quiz", args=["nha-hang"]))
+        url = reverse("learning:quiz_answer", args=["nha-hang", vocab.pk])
+
+        self.client.post(url, {"choice": "999999"})  # id không khớp -> sai
+
+        progress = UserVocabularyProgress.objects.get(user=self.user, vocabulary=vocab)
+        self.assertEqual(progress.srs_level, 0)
+        self.assertEqual(progress.wrong_count, 1)
+
+    def test_updates_the_open_quiz_session_counts(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        self.client.get(reverse("learning:quiz", args=["nha-hang"]))
+        url = reverse("learning:quiz_answer", args=["nha-hang", vocab.pk])
+
+        self.client.post(url, {"choice": str(vocab.pk)})
+
+        session = StudySession.objects.get(user=self.user, topic=topic, session_type="quiz")
+        self.assertEqual(session.words_reviewed, 1)
+        self.assertEqual(session.correct_answers, 1)
+
+    def test_finishing_the_queue_closes_the_session_and_flashes_the_score(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        self.client.get(reverse("learning:quiz", args=["nha-hang"]))
+        url = reverse("learning:quiz_answer", args=["nha-hang", vocab.pk])
+        self.client.post(url, {"choice": str(vocab.pk)})
+
+        response = self.client.get(reverse("learning:quiz", args=["nha-hang"]))
+
+        session = StudySession.objects.get(user=self.user, topic=topic, session_type="quiz")
+        self.assertIsNotNone(session.ended_at)
+        self.assertContains(response, "1/1")

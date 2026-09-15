@@ -1,4 +1,45 @@
 {% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}
+SC06_KiemTra — port từ htmlTemplate/SC06_KiemTra_*.html.
+
+Khác với mockup tĩnh (chọn đáp án xong mới bấm "Câu tiếp theo"), bản Django
+cho bấm thẳng vào 1 trong 4 đáp án là NỘP LUÔN câu đó — cùng ngôn ngữ thiết kế
+với SC04 (bấm nút Quên/Khó/Nhớ/Dễ là chấm điểm luôn, không có bước xác nhận
+riêng). Đúng/sai + đáp án đúng hiện bằng flash message (django.contrib.messages)
+ở đầu trang câu hỏi kế tiếp — xem apps.learning.views.quiz_answer_view.
+{% endcomment %}
+
+{% block title %}{% label "common.nav.quiz" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block wrap_attrs %} style="max-width:560px;"{% endblock %}
+
 {% block content %}
-  <!-- TODO: port SC06_KiemTra mockup, loop over {{ words }} -->
+  {% if word %}
+    <p class="muted" style="margin:0 0 10px;">
+      {% message "learning.quiz.hint.progress" topic=topic.display_name position=position total=total %}
+    </p>
+    <div class="progressbar" style="margin-bottom:32px;"><span style="width:{{ percent }}%"></span></div>
+
+    <div class="card">
+      <div class="eyebrow">{% label "learning.quiz.title.choose_meaning" %}</div>
+      <h2 class="serif" style="font-size:38px;margin:6px 0 30px;">{{ word.word }}</h2>
+      <div style="display:grid;gap:12px;">
+        {% for choice in choices %}
+          <form method="post" action="{% url 'learning:quiz_answer' topic.slug word.pk %}">
+            {% csrf_token %}
+            <button type="submit" name="choice" value="{{ choice.pk }}" class="btn btn-outline" style="width:100%;text-align:left;">
+              {{ choice.meaning_vi }}
+            </button>
+          </form>
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div class="card" style="text-align:center;padding:48px 32px;">
+      <h1 class="serif" style="margin:0 0 10px;">{% label "learning.quiz.title.session_complete" %}</h1>
+      <p class="muted" style="margin:0 0 20px;">{% message "learning.quiz.hint.session_complete" topic=topic.display_name %}</p>
+      <a class="btn btn-primary" href="{% url 'learning:dashboard' %}">{% label "common.button.back" %}</a>
+    </div>
+  {% endif %}
 {% endblock %}

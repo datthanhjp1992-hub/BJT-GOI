@@ -10,4 +10,5 @@ urlpatterns = [
     path("flashcard/review/<int:vocabulary_id>/", views.flashcard_review, name="flashcard_review"),
     path("flashcard/comment/<int:vocabulary_id>/", views.flashcard_comment, name="flashcard_comment"),
     path("quiz/<slug:topic_slug>/", views.quiz_view, name="quiz"),
+    path("quiz/<slug:topic_slug>/answer/<int:vocabulary_id>/", views.quiz_answer_view, name="quiz_answer"),
 ]

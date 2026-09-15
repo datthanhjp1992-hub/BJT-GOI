@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from apps.core.constants import SESSION_TYPE_FLASHCARD
+from apps.core.constants import SESSION_TYPE_FLASHCARD, SESSION_TYPE_QUIZ
 from apps.core.properties import message
 from apps.gamification.models import Contribution
 from apps.gamification.services import CONTRIBUTION_TYPE_COMMENT, STATUS_APPROVED
@@ -45,14 +45,23 @@ def _flashcard_session_keys(topic_slug):
     return f"flashcard_total_{topic_slug}", f"flashcard_session_id_{topic_slug}"
 
 
-def _close_flashcard_session(request, session_id_key):
+def _close_study_session(request, session_id_key):
     """Đóng StudySession đang mở (nếu có) khi hàng đợi đã hết, để lại mốc
-    ended_at cho lịch sử/streak sau này biết phiên kết thúc lúc nào."""
+    ended_at cho lịch sử/streak sau này biết phiên kết thúc lúc nào. Trả về
+    bản ghi đã đóng (hoặc None) để nơi gọi dựng thông báo tóm tắt nếu cần
+    (vd quiz_view hiện điểm số đúng/tổng)."""
     session_id = request.session.pop(session_id_key, None)
-    if session_id:
-        StudySession.objects.filter(pk=session_id, ended_at__isnull=True).update(
-            ended_at=timezone.now()
-        )
+    if not session_id:
+        return None
+    session = StudySession.objects.filter(pk=session_id).first()
+    if session and session.ended_at is None:
+        session.ended_at = timezone.now()
+        session.save(update_fields=["ended_at"])
+    return session
+
+
+def _close_flashcard_session(request, session_id_key):
+    _close_study_session(request, session_id_key)
 
 
 @login_required
@@ -151,8 +160,86 @@ def flashcard_comment(request, vocabulary_id):
     return redirect("learning:flashcard", topic_slug=topic_slug)
 
 
+def _quiz_session_keys(topic_slug):
+    """Giống `_flashcard_session_keys` nhưng khoá riêng namespace "quiz_" —
+    user có thể mở song song flashcard và quiz của CÙNG một chủ đề (hai tab)
+    mà không đụng phiên của nhau."""
+    return f"quiz_total_{topic_slug}", f"quiz_session_id_{topic_slug}"
+
+
 @login_required
 def quiz_view(request, topic_slug):
-    """SC06_KiemTra."""
-    words = Vocabulary.objects.filter(topics__slug=topic_slug)
-    return render(request, "learning/quiz.html", {"words": words})
+    """SC06_KiemTra — trắc nghiệm 4 đáp án, dùng CHUNG hàng đợi với SC04
+    (`services.get_flashcard_queue`): từ đến hạn ôn trước, hết thì tới từ
+    chưa học. Bấm thẳng vào 1 đáp án là nộp câu đó luôn (xem
+    `quiz_answer_view`) — không có bước "xác nhận" riêng như mockup tĩnh,
+    cùng ngôn ngữ thiết kế với 4 nút Quên/Khó/Nhớ/Dễ ở SC04."""
+    topic = get_object_or_404(Topic, slug=topic_slug)
+    total_key, session_id_key = _quiz_session_keys(topic.slug)
+    queue = services.get_flashcard_queue(request.user, topic)
+
+    if not queue:
+        # Hết từ cần kiểm tra — đóng phiên đang mở và báo điểm số nếu phiên
+        # đó thật sự có câu nào được trả lời (tránh flash "0/0" khi user mới
+        # mở màn lần đầu mà chủ đề đã hết hạn ôn sẵn từ trước).
+        session = _close_study_session(request, session_id_key)
+        request.session.pop(total_key, None)
+        if session and session.words_reviewed:
+            flash.success(request, message(
+                "learning.quiz.success.session_complete",
+                correct=session.correct_answers, total=session.words_reviewed,
+            ))
+        return render(request, "learning/quiz.html", {"topic": topic, "word": None})
+
+    total = request.session.get(total_key)
+    if not total or len(queue) > total:
+        total = len(queue)
+        request.session[total_key] = total
+        study_session = StudySession.objects.create(
+            user=request.user, topic=topic, session_type=SESSION_TYPE_QUIZ,
+            started_at=timezone.now(),
+        )
+        request.session[session_id_key] = study_session.pk
+
+    word = queue[0]
+    position = total - len(queue) + 1
+
+    context = {
+        "topic": topic,
+        "word": word,
+        "position": position,
+        "total": total,
+        "percent": round((position - 1) * 100 / total) if total else 0,
+        "choices": services.get_quiz_choices(word, topic),
+    }
+    return render(request, "learning/quiz.html", context)
+
+
+@login_required
+@require_POST
+def quiz_answer_view(request, topic_slug, vocabulary_id):
+    """Nộp 1 câu trắc nghiệm — mỗi nút đáp án ở quiz.html POST thẳng vào đây.
+    Đúng/sai quy đổi sang quality SM-2 (4 = nhớ tốt, 0 = quên) rồi dùng lại
+    NGUYÊN `review_word()` của SC04 — quiz và flashcard cùng một cơ chế SRS."""
+    vocab = get_object_or_404(Vocabulary, pk=vocabulary_id)
+    is_correct = request.POST.get("choice") == str(vocab.pk)
+    quality = 4 if is_correct else 0
+
+    progress, _ = UserVocabularyProgress.objects.get_or_create(
+        user=request.user, vocabulary=vocab
+    )
+    review_word(progress, quality)
+
+    _, session_id_key = _quiz_session_keys(topic_slug)
+    session_id = request.session.get(session_id_key)
+    if session_id:
+        StudySession.objects.filter(pk=session_id).update(
+            words_reviewed=F("words_reviewed") + 1,
+            correct_answers=F("correct_answers") + (1 if is_correct else 0),
+        )
+
+    if is_correct:
+        flash.success(request, message("learning.quiz.feedback.correct"))
+    else:
+        flash.error(request, message("learning.quiz.feedback.wrong", meaning=vocab.meaning_vi))
+    return redirect("learning:quiz", topic_slug=topic_slug)
