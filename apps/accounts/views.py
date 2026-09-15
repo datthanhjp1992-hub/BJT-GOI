@@ -16,6 +16,7 @@ from django.views.decorators.http import require_POST
 from apps.core import mastercode
 from apps.core.constants import CODE_TYPE_UI_THEME
 from apps.core.properties import message
+from apps.learning import services as learning_services
 
 from .forms import (
     LoginForm,
@@ -98,13 +99,28 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
-    """SC09_ThongTinCaNhan."""
+    """SC09_ThongTinCaNhan.
+
+    Số liệu (từ đã thuộc/ngày liên tục/điểm) và danh sách chủ đề gần đây tính
+    ở apps.learning.services — cùng nguồn với SC03 Trang chủ, view ở đây chỉ
+    lắp thêm context, không tự viết truy vấn (xem apps.learning.services để
+    biết vì sao get_recent_topics() khác get_topic_in_progress()).
+    """
     form = ProfileForm(request.POST or None, instance=request.user)
     if request.method == "POST" and form.is_valid():
         form.save()
         flash.success(request, message("common.success.saved"))
         return redirect("accounts:profile")
-    return render(request, "accounts/profile.html", {"form": form})
+
+    stats = learning_services.get_learning_stats(request.user)
+    context = {
+        "form": form,
+        "display_name": (request.user.first_name or "").strip() or request.user.get_username(),
+        "stats": stats,
+        "joined_date": request.user.date_joined.strftime("%m/%Y"),
+        "recent_topics": learning_services.get_recent_topics(request.user),
+    }
+    return render(request, "accounts/profile.html", context)
 
 
 @login_required

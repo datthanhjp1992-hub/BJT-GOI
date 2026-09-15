@@ -237,6 +237,48 @@ def get_suggested_topics(user, limit=3):
     return topics
 
 
+def get_recent_topics(user, limit=5):
+    """Chủ đề gần đây user có học/ôn (SC09 Hồ sơ cá nhân) — sắp xếp theo
+    StudySession MỚI NHẤT của mỗi chủ đề, kèm tiến độ (đã học/tổng số từ).
+
+    Khác `get_topic_in_progress()` (SC03) ở chỗ trả về NHIỀU chủ đề chứ không
+    chỉ 1 — dashboard chỉ cần điểm "học tiếp ở đâu", còn hồ sơ cần liệt kê cả
+    lịch sử gần đây.
+    """
+    topic_ids_in_order = (
+        StudySession.objects.filter(user=user, topic__isnull=False)
+        .order_by("-started_at")
+        .values_list("topic_id", flat=True)
+    )
+    # Khử trùng nhưng GIỮ THỨ TỰ xuất hiện đầu tiên (= gần đây nhất) — không
+    # dùng .distinct() vì nó không đảm bảo thứ tự trên cột đã annotate/order.
+    seen_ids = []
+    for topic_id in topic_ids_in_order:
+        if topic_id not in seen_ids:
+            seen_ids.append(topic_id)
+        if len(seen_ids) >= limit:
+            break
+
+    topics_by_id = Topic.objects.in_bulk(seen_ids)
+
+    result = []
+    for topic_id in seen_ids:
+        topic = topics_by_id.get(topic_id)
+        if topic is None:
+            continue  # chủ đề đã bị xoá sau khi StudySession được ghi
+        total = topic.vocabularies.count()
+        learned = UserVocabularyProgress.objects.filter(
+            user=user, vocabulary__topics=topic
+        ).count()
+        result.append({
+            "topic": topic,
+            "learned": learned,
+            "total": total,
+            "percent": round(learned * 100 / total) if total else 0,
+        })
+    return result
+
+
 def get_greeting_label_key(user):
     """Key label cho lời chào theo giờ ĐỊA PHƯƠNG của user."""
     hour = user.local_now().hour

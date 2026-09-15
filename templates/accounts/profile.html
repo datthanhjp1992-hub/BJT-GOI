@@ -1,5 +1,77 @@
 {% extends "base.html" %}
-{% block title %}Hồ sơ - BJT GOI{% endblock %}
+{% load properties_tags %}
+{% comment %}
+SC09_ThongTinCaNhan — port từ htmlTemplate/SC09_ThongTinCaNhan_*.html.
+
+Khác mockup ở hai chỗ, đều có lý do (giống ghi chú ở settings.html cho SC08):
+  1. Mockup còn ô "Trình độ mục tiêu (BJT)" trong khu "Thông tin tài khoản" và
+     cột "Cấp độ" trong bảng chủ đề gần đây — cấp độ BJT đã bị bỏ ngày
+     13/09/2026, từ vựng phân loại theo CHỦ ĐỀ. Ô đó bỏ hẳn (ProfileForm chỉ có
+     full_name + email); cột "Cấp độ" đổi thành cột "Tiến độ" (đã dùng cho ô
+     thứ 3 này rồi, nên bảng chỉ còn 2 cột: Chủ đề / Tiến độ).
+  2. Ô thống kê thứ 3 mockup ghi "Trình độ hiện tại (BJT)" — đổi thành
+     "Điểm đóng góp" (User.total_points), số liệu thật duy nhất còn hợp lý ở
+     vị trí đó và nối liền với nút "Điểm & danh hiệu" (xem TODO bên dưới).
+
+Nút "🏅 Điểm & danh hiệu" trong mockup trỏ sang SC13 (Thành tích) — **màn đó
+CHƯA được dựng** (chưa có URL `learning:achievements`/tương đương), nên nút
+này bị bỏ hẳn thay vì trỏ vào một `{% url %}` không tồn tại (sẽ làm nổ
+NoReverseMatch, sập cả trang). Thêm lại nút này khi SC13 có URL thật.
+{% endcomment %}
+
+{% block title %}{% label "accounts.profile.title" %} | {% label "common.brand.name" %}{% endblock %}
+{% block wrap_attrs %} style="max-width:760px;"{% endblock %}
+
 {% block content %}
-  <!-- TODO: port SC0x mockup markup for profile here, wiring {{ form }} fields -->
+  <div class="eyebrow">{% label "common.nav.profile" %}</div>
+  <h1 class="serif" style="font-size:28px;margin:0 0 28px;">{% label "accounts.profile.title" %}</h1>
+
+  <div class="card" style="display:flex;gap:22px;align-items:center;margin-bottom:22px;">
+    <div style="width:72px;height:72px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-family:var(--serif);flex:none;">
+      {{ display_name|slice:":1"|upper }}
+    </div>
+    <div>
+      <h2 class="serif" style="margin:0 0 4px;font-size:22px;">{{ display_name }}</h2>
+      <p class="muted" style="margin:0;">{{ user.email }} · {% message "accounts.profile.hint.joined" date=joined_date %}</p>
+    </div>
+  </div>
+
+  <div class="grid cols-3" style="margin-bottom:22px;">
+    <div class="stat"><div class="num">{{ stats.words_mastered }}</div><div class="label">{% label "accounts.profile.stat.words_mastered" %}</div></div>
+    <div class="stat"><div class="num">{{ stats.streak_days }}</div><div class="label">{% label "accounts.profile.stat.streak_days" %}</div></div>
+    <div class="stat"><div class="num">{{ user.total_points }}</div><div class="label">{% label "accounts.profile.stat.points" %}</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:22px;">
+    <h3 class="serif" style="margin:0 0 18px;">{% label "accounts.profile.section.account_info" %}</h3>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% for error in form.non_field_errors %}
+        <div class="flash error">{{ error }}</div>
+      {% endfor %}
+      {% for field in form %}
+        {% include "partials/field.html" with field=field %}
+      {% endfor %}
+      <button type="submit" class="btn btn-primary">{% label "common.button.save" %}</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3 class="serif" style="margin:0 0 14px;">{% label "accounts.profile.section.recent_topics" %}</h3>
+    {% if recent_topics %}
+      <table>
+        <tr><th>{% label "common.field.topic" %}</th><th>{% label "accounts.profile.table.progress" %}</th></tr>
+        {% for row in recent_topics %}
+          <tr>
+            <td><a href="{% url 'vocabulary:list' row.topic.slug %}">{{ row.topic.icon_emoji }} {{ row.topic.name }}</a></td>
+            <td>{{ row.learned }}/{{ row.total }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <p class="muted" style="margin:0;">{% label "common.empty.no_data" %}</p>
+    {% endif %}
+  </div>
+
+  <a class="btn btn-outline" style="margin-top:22px;" href="{% url 'accounts:settings' %}">{% label "accounts.profile.button.edit_settings" %}</a>
 {% endblock %}

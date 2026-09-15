@@ -13,6 +13,9 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.core.properties import message
+from apps.learning.models import StudySession, UserVocabularyProgress
+from apps.learning import services as learning_services
+from apps.vocabulary.models import Topic, Vocabulary, VocabularyTopic
 
 User = get_user_model()
 
@@ -330,6 +333,133 @@ class SettingsViewTests(AccountsTestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.daily_review_goal, 20)
         self.assertEqual(self.user.ui_theme, "A")
+
+
+class ProfileViewTests(AccountsTestCase):
+    """SC09_ThongTinCaNhan."""
+
+    PASSWORD = "MatKhauRatManh123"
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(
+            username="dat", email="dat@example.com", password=self.PASSWORD,
+            first_name="Nguyễn Thành Đạt",
+        )
+        self.client.force_login(self.user)
+        self.url = reverse("accounts:profile")
+
+    def _make_topic(self, name, slug, words):
+        topic = Topic.objects.create(name=name, slug=slug)
+        for word in words:
+            vocab = Vocabulary.objects.create(word=word, reading=word, meaning_vi="nghĩa " + word)
+            VocabularyTopic.objects.create(vocabulary=vocab, topic=topic)
+        return topic
+
+    def test_requires_login(self):
+        self.client.logout()
+        self.assertRedirects(
+            self.client.get(self.url), reverse("accounts:login") + "?next=" + self.url
+        )
+
+    def test_renders_for_brand_new_user(self):
+        """Chưa học gì cả thì trang vẫn phải ra 200, không 500 vì recent_topics rỗng."""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/profile.html")
+        self.assertEqual(response.context["recent_topics"], [])
+
+    def test_shows_stats_and_points(self):
+        self.user.total_points = 42
+        self.user.save(update_fields=["total_points"])
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        vocab = topic.vocabularies.first()
+        UserVocabularyProgress.objects.create(user=self.user, vocabulary=vocab, is_mastered=True)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.context["stats"]["words_mastered"], 1)
+        self.assertContains(response, "42")
+
+    def test_lists_recent_topics_newest_session_first(self):
+        older = self._make_topic("Gia đình", "gia-dinh", ["家族"])
+        newer = self._make_topic("Công việc", "cong-viec", ["会議", "報告"])
+        StudySession.objects.create(
+            user=self.user, topic=older, session_type="flashcard",
+            started_at=self.user.local_now() - __import__("datetime").timedelta(days=3),
+        )
+        StudySession.objects.create(
+            user=self.user, topic=newer, session_type="flashcard", started_at=self.user.local_now(),
+        )
+
+        response = self.client.get(self.url)
+
+        slugs = [row["topic"].slug for row in response.context["recent_topics"]]
+        self.assertEqual(slugs, ["cong-viec", "gia-dinh"])
+        self.assertEqual(response.context["recent_topics"][0]["total"], 2)
+
+    def test_does_not_show_the_removed_bjt_level_field(self):
+        """Cấp độ BJT đã bị bỏ 13/09/2026 — mockup SC09 còn sót ô này, form
+        thật không được có, xem apps.accounts.forms.ProfileForm."""
+        response = self.client.get(self.url)
+        self.assertNotContains(response, "Trình độ mục tiêu")
+
+    def test_updates_full_name_and_email(self):
+        response = self.client.post(self.url, {
+            "full_name": "Tên Mới", "email": "moi@example.com",
+        })
+        self.assertRedirects(response, self.url)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, "Tên Mới")
+        self.assertEqual(self.user.email, "moi@example.com")
+
+    def test_duplicate_email_is_rejected(self):
+        User.objects.create_user(username="khac", email="da-co@example.com", password=self.PASSWORD)
+        response = self.client.post(self.url, {
+            "full_name": self.user.first_name, "email": "da-co@example.com",
+        })
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, "dat@example.com")
+
+
+class RecentTopicsServiceTests(AccountsTestCase):
+    """apps.learning.services.get_recent_topics — nguồn dữ liệu của SC09."""
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(
+            username="dat", password="MatKhauRatManh123",
+        )
+
+    def _make_topic(self, name, slug, words):
+        topic = Topic.objects.create(name=name, slug=slug)
+        for word in words:
+            vocab = Vocabulary.objects.create(word=word, reading=word, meaning_vi="nghĩa " + word)
+            VocabularyTopic.objects.create(vocabulary=vocab, topic=topic)
+        return topic
+
+    def test_empty_when_user_has_no_sessions(self):
+        self.assertEqual(learning_services.get_recent_topics(self.user), [])
+
+    def test_deduplicates_repeated_sessions_of_the_same_topic(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        StudySession.objects.create(user=self.user, topic=topic, session_type="flashcard", started_at=self.user.local_now())
+        StudySession.objects.create(user=self.user, topic=topic, session_type="quiz", started_at=self.user.local_now())
+
+        result = learning_services.get_recent_topics(self.user)
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["topic"], topic)
+
+    def test_respects_limit(self):
+        for i in range(3):
+            topic = self._make_topic(f"Chủ đề {i}", f"chu-de-{i}", [f"単語{i}"])
+            StudySession.objects.create(user=self.user, topic=topic, session_type="flashcard", started_at=self.user.local_now())
+
+        result = learning_services.get_recent_topics(self.user, limit=2)
+
+        self.assertEqual(len(result), 2)
 
 
 class ThemeCssContractTests(TestCase):
