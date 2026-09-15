@@ -15,12 +15,13 @@ import logging
 from django.contrib import messages as flash
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.http import FileResponse
+from django.http import FileResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.core import dataio
 from apps.core.constants import SHEET_TYPE_RECALL
 from apps.core.properties import message
+from apps.core.utils import topic_filter_bar
 from apps.vocabulary.models import Topic, Vocabulary
 
 from .forms import SOURCE_UPLOAD, PracticeSheetForm
@@ -39,22 +40,43 @@ CONTENT_TYPES = {
 }
 
 
+def _selected_query(selected_topics):
+    """Query string của đúng các chủ đề đang chọn (dùng cho action của form)."""
+    params = QueryDict(mutable=True)
+    params.setlist("topic", [t.slug for t in selected_topics])
+    encoded = params.urlencode()
+    return ("?" + encoded) if encoded else ""
+
+
 def _picker_context(request):
-    """Danh sách từ để tích chọn, lọc theo chủ đề nếu có ?topic=<slug>.
+    """Danh sách từ để tích chọn, lọc theo chủ đề qua ?topic=<slug> (lặp được).
 
     Lọc theo CHỦ ĐỀ chứ không theo cấp độ BJT — cấp độ đã bị gỡ khỏi DB ngày
     13/09; mockup SC10 còn cột "Cấp độ" là bản cũ, đừng port ngược.
+
+    Chọn được NHIỀU chủ đề, quan hệ HOẶC — giống thanh lọc ở SC05. Dùng chung
+    `topic_filter_bar()` để hai màn không lệch hành vi.
     """
-    topic_slug = (request.GET.get("topic") or "").strip()
+    topics = list(Topic.objects.all().order_by("name"))
+    selected_topics, topic_filters, clear_query = topic_filter_bar(request, topics)
+
     words = Vocabulary.objects.all().order_by("word")
-    if topic_slug:
-        words = words.filter(topic_links__topic__slug=topic_slug)
+    if selected_topics:
+        # HOẶC: từ chỉ cần thuộc một trong các chủ đề đã chọn. `distinct()` vì
+        # join qua bảng nối nhân bản dòng khi một từ khớp nhiều chủ đề.
+        words = words.filter(topic_links__topic__in=selected_topics).distinct()
+
     return {
         "words": words[:WORD_PICKER_LIMIT],
         "word_total": words.count(),
         "word_limit": WORD_PICKER_LIMIT,
-        "topics": Topic.objects.all().order_by("name"),
-        "selected_topic": topic_slug,
+        "topics": topics,
+        "selected_topics": selected_topics,
+        "topic_filters": topic_filters,
+        "clear_query": clear_query,
+        # Form POST về đúng URL đang lọc, để lúc render lại (lỗi validate) danh
+        # sách từ không nhảy về "tất cả chủ đề".
+        "picker_action": request.path + _selected_query(selected_topics),
     }
 
 

@@ -30,7 +30,7 @@ from apps.core.constants import (
 from apps.core.properties import message
 from apps.practice_sheets import pdf_generator, wordsource
 from apps.practice_sheets.models import PracticeSheet, PracticeSheetWord
-from apps.vocabulary.models import Vocabulary
+from apps.vocabulary.models import Topic, Vocabulary, VocabularyTopic
 
 User = get_user_model()
 
@@ -142,6 +142,70 @@ class CreateViewTests(TestCase):
 
     def test_get_renders(self):
         self.assertEqual(self.client.get(reverse("practice_sheets:create")).status_code, 200)
+
+    # --- Thanh lọc chủ đề nhiều-lựa-chọn (15/09/2026) ---------------------
+
+    def _topic_word(self, slug, name, word, reading):
+        topic, _ = Topic.objects.get_or_create(slug=slug, defaults={"name": name})
+        vocab = Vocabulary.objects.create(word=word, reading=reading, meaning_vi=name)
+        VocabularyTopic.objects.create(vocabulary=vocab, topic=topic)
+        return topic, vocab
+
+    def test_picker_filters_by_several_topics_at_once(self):
+        """Chọn nhiều chủ đề = HOẶC, giống thanh lọc ở SC05."""
+        self._topic_word("nha-hang", "Nhà hàng", "注文する", "ちゅうもんする")
+        self._topic_word("hop-hanh", "Họp hành", "議事録", "ぎじろく")
+        Vocabulary.objects.create(word="孤児", reading="こじ", meaning_vi="từ mồ côi")
+
+        response = self.client.get(
+            reverse("practice_sheets:create"), {"topic": ["nha-hang", "hop-hanh"]}
+        )
+        self.assertEqual(response.context["word_total"], 2)
+        self.assertEqual(
+            {t.slug for t in response.context["selected_topics"]}, {"nha-hang", "hop-hanh"}
+        )
+        self.assertNotContains(response, "こじ")
+
+    def test_picker_does_not_count_a_word_twice(self):
+        """Từ thuộc hai chủ đề đang chọn vẫn chỉ hiện một lần (.distinct())."""
+        topic_a, vocab = self._topic_word("nha-hang", "Nhà hàng", "注文する", "ちゅうもんする")
+        topic_b, _ = Topic.objects.get_or_create(slug="hop-hanh", defaults={"name": "Họp hành"})
+        VocabularyTopic.objects.create(vocabulary=vocab, topic=topic_b)
+
+        response = self.client.get(
+            reverse("practice_sheets:create"), {"topic": ["nha-hang", "hop-hanh"]}
+        )
+        self.assertEqual(response.context["word_total"], 1)
+        self.assertEqual(len(response.context["words"]), 1)
+
+    def test_picker_filter_link_toggles(self):
+        self._topic_word("nha-hang", "Nhà hàng", "注文する", "ちゅうもんする")
+        self._topic_word("hop-hanh", "Họp hành", "議事録", "ぎじろく")
+
+        response = self.client.get(reverse("practice_sheets:create"), {"topic": ["nha-hang"]})
+        links = {f["topic"].slug: f for f in response.context["topic_filters"]}
+        self.assertTrue(links["nha-hang"]["is_selected"])
+        self.assertNotIn("topic=", links["nha-hang"]["query"])       # bấm lần 2 -> bỏ lọc
+        self.assertIn("topic=nha-hang", links["hop-hanh"]["query"])  # cộng dồn
+        self.assertIn("topic=hop-hanh", links["hop-hanh"]["query"])
+
+    def test_picker_form_action_keeps_the_filter(self):
+        """POST lỗi validate không được làm danh sách nhảy về 'tất cả chủ đề'."""
+        self._topic_word("nha-hang", "Nhà hàng", "注文する", "ちゅうもんする")
+
+        response = self.client.get(reverse("practice_sheets:create"), {"topic": ["nha-hang"]})
+        self.assertEqual(
+            response.context["picker_action"],
+            reverse("practice_sheets:create") + "?topic=nha-hang",
+        )
+
+    def test_picker_ignores_unknown_topic_slug(self):
+        Vocabulary.objects.create(word="予約", reading="よやく", meaning_vi="đặt chỗ")
+
+        response = self.client.get(reverse("practice_sheets:create"), {"topic": "khong-ton-tai"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["selected_topics"], [])
+        self.assertEqual(response.context["word_total"], 1)
 
     def test_font_error_shows_message_instead_of_500(self):
         vocab = Vocabulary.objects.create(

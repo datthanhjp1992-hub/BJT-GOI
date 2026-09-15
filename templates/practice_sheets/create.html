@@ -28,17 +28,27 @@ tác dụng trên MỘT dòng, viết tràn dòng là bị in thẳng ra HTML.{%
   </div>
 
   {# -------- Tab 1: chọn từ đã có trong hệ thống -------- #}
-  <form method="post" id="form-existing" action="{% url 'practice_sheets:create' %}">
+  <form method="post" id="form-existing" action="{{ picker_action }}">
     {% csrf_token %}
     <input type="hidden" name="source" value="existing">
 
     <div class="eyebrow">{% label "practice_sheets.create.section.words" %}</div>
     <div class="card" style="margin-bottom:20px;">
-      <div class="toolbar" style="margin-bottom:14px;">
+      {% comment %}Thanh lọc chủ đề: chọn được NHIỀU chủ đề (quan hệ HOẶC), bấm
+      lần hai lên một thẻ để bỏ chọn. Giống hệt SC05 — cùng dùng topic_filter_bar()
+      bên view nên hai màn không lệch hành vi.{% endcomment %}
+      <div class="toolbar filter-bar" role="group"
+           aria-label="{% label 'practice_sheets.create.field.topic_filter' %}"
+           style="margin-bottom:14px;">
         <span class="muted" style="font-size:13px;">{% label "practice_sheets.create.field.topic_filter" %}:</span>
-        <a href="{% url 'practice_sheets:create' %}"{% if not selected_topic %} class="tag"{% endif %}>{% label "practice_sheets.create.field.all_topics" %}</a>
-        {% for topic in topics %}
-          <a href="?topic={{ topic.slug }}"{% if selected_topic == topic.slug %} class="tag"{% endif %}>{{ topic.name_ja|default:topic.name }}</a>
+        <a class="tag tag-filter{% if not selected_topics %} is-active{% endif %}"
+           aria-pressed="{% if selected_topics %}false{% else %}true{% endif %}"
+           href="{% url 'practice_sheets:create' %}">{% label "practice_sheets.create.field.all_topics" %}</a>
+        {% for f in topic_filters %}
+          <a class="tag tag-filter{% if f.is_selected %} is-active{% endif %}"
+             aria-pressed="{% if f.is_selected %}true{% else %}false{% endif %}"
+             title="{% if f.is_selected %}{% label 'vocabulary.list.hint.filter_off' %}{% else %}{% label 'vocabulary.list.hint.filter_on' %}{% endif %}"
+             href="{% url 'practice_sheets:create' %}{{ f.query }}">{{ f.topic.icon_emoji }} {{ f.topic.name_ja|default:f.topic.name }}</a>
         {% endfor %}
       </div>
 

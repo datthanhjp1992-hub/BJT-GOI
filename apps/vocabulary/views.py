@@ -16,6 +16,7 @@ from django.core.paginator import Paginator
 from django.http import QueryDict
 from django.shortcuts import get_object_or_404, render
 
+from apps.core.utils import TOPIC_PARAM, topic_filter_bar
 from apps.learning.models import UserVocabularyProgress
 
 from .models import Topic, Vocabulary
@@ -26,9 +27,6 @@ PAGE_SIZE = 25
 # điểm trigram nên PHẢI cắt ở tầng SQL (nếu không Postgres phải chấm điểm cả
 # bảng); 200 là quá đủ cho người học lướt xem, quá số này thì gõ từ khoá rõ hơn.
 SEARCH_LIMIT = 200
-
-# Tên tham số chứa slug chủ đề trên query string (lặp lại được).
-TOPIC_PARAM = "topic"
 
 STATUS_NEW = "new"
 STATUS_LEARNING = "learning"
@@ -47,16 +45,6 @@ def _pagination_query(request, selected_slugs):
     params.setlist(TOPIC_PARAM, list(selected_slugs))
     encoded = params.urlencode()
     return ("&" + encoded) if encoded else ""
-
-
-def _topic_query(slugs, query):
-    """Query string cho một tập chủ đề (dùng cho link bật/tắt trên thanh lọc)."""
-    params = QueryDict(mutable=True)
-    if query:
-        params["q"] = query
-    params.setlist(TOPIC_PARAM, list(slugs))
-    encoded = params.urlencode()
-    return ("?" + encoded) if encoded else ""
 
 
 def _attach_study_status(user, words, fallback_topic=None):
@@ -100,17 +88,13 @@ def vocabulary_list_view(request, topic_slug=None):
     query = (request.GET.get("q") or "").strip()
 
     all_topics = list(Topic.objects.all())
-    topic_by_slug = {t.slug: t for t in all_topics}
-
-    requested = list(request.GET.getlist(TOPIC_PARAM))
-    if route_topic is not None:
-        requested.insert(0, route_topic.slug)
-
-    selected_slugs = []  # giữ thứ tự bấm, bỏ trùng và bỏ slug không tồn tại
-    for slug in requested:
-        if slug in topic_by_slug and slug not in selected_slugs:
-            selected_slugs.append(slug)
-    selected_topics = [topic_by_slug[slug] for slug in selected_slugs]
+    selected_topics, topic_filters, clear_query = topic_filter_bar(
+        request,
+        all_topics,
+        forced_slug=route_topic.slug if route_topic else None,
+        keep={"q": query},
+    )
+    selected_slugs = [t.slug for t in selected_topics]
 
     words = Vocabulary.objects.prefetch_related("topics")
     if selected_topics:
@@ -131,25 +115,12 @@ def vocabulary_list_view(request, topic_slug=None):
     only_topic = selected_topics[0] if len(selected_topics) == 1 else None
     _attach_study_status(request.user, page.object_list, fallback_topic=only_topic)
 
-    # Mỗi thẻ trên thanh lọc là một link BẬT/TẮT: đang chọn thì link bỏ nó ra,
-    # chưa chọn thì link thêm nó vào — bấm lần hai chính là bỏ lọc.
-    topic_filters = []
-    for t in all_topics:
-        is_selected = t.slug in selected_slugs
-        if is_selected:
-            next_slugs = [s for s in selected_slugs if s != t.slug]
-        else:
-            next_slugs = selected_slugs + [t.slug]
-        topic_filters.append(
-            {"topic": t, "is_selected": is_selected, "query": _topic_query(next_slugs, query)}
-        )
-
     context = {
         "topic": only_topic,  # tương thích ngược: template/test cũ đọc biến này
         "topics": all_topics,
         "selected_topics": selected_topics,
         "topic_filters": topic_filters,
-        "clear_query": _topic_query([], query),
+        "clear_query": clear_query,
         "page_obj": page,
         "paginator": paginator,
         "total_count": paginator.count,
