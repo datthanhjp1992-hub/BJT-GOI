@@ -8,5 +8,6 @@ urlpatterns = [
     path("dashboard/", views.dashboard_view, name="dashboard"),
     path("flashcard/<slug:topic_slug>/", views.flashcard_view, name="flashcard"),
     path("flashcard/review/<int:vocabulary_id>/", views.flashcard_review, name="flashcard_review"),
+    path("flashcard/comment/<int:vocabulary_id>/", views.flashcard_comment, name="flashcard_comment"),
     path("quiz/<slug:topic_slug>/", views.quiz_view, name="quiz"),
 ]

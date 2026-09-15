@@ -21,6 +21,11 @@ from apps.core.mastercode import get_choices
 CODE_TYPE_UI_THEME = "06"        # A, B, C (Washi & Vermillion / Studio Mono / Genki Playful)
 CODE_TYPE_SESSION_TYPE = "09"    # flashcard, quiz (kieu phien hoc)
 
+# Giá trị thật của CODE_TYPE_SESSION_TYPE, dùng khi tạo StudySession (xem
+# apps.learning.views.flashcard_view) — cùng cách đặt hằng số như SHEET_TYPE_*
+# bên dưới, để không rải chuỗi "flashcard" khắp views/services.
+SESSION_TYPE_FLASHCARD = "flashcard"
+
 # --- Phiếu luyện tập in ra PDF (SC10) ---
 CODE_TYPE_SHEET_TYPE = "10"       # writing, recall (loai phieu)
 CODE_TYPE_RECALL_DIRECTION = "11"  # jp_vi, vi_jp, mixed (huong on tap)

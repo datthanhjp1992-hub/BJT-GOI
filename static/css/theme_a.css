@@ -155,3 +155,12 @@ input[type=checkbox],input[type=radio]{width:auto;padding:0;margin:0;flex:none;}
   padding:10px 4px 12px;margin-right:20px;font-family:inherit;font-size:15px;color:var(--ink-soft);}
 .sheet-tab.is-active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600;}
 .sheet-tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+/* SC04 Flashcard — main.js toggle .is-flipped khi click .flashcard để lộ
+   nghĩa tiếng Việt; ẩn mặc định để người học tự đoán trước khi xem đáp án.
+   Tắt JS thì template có <noscript> hiện thẳng nghĩa — không khoá tính năng
+   cốt lõi chỉ vì thiếu JS, cùng tinh thần với SC10 điểm 9. */
+.flashcard{cursor:pointer;}
+.flashcard .meaning{display:none;font-size:20px;margin-top:2px;}
+.flashcard.is-flipped .meaning{display:block;}
+.flashcard.is-flipped .hint{display:none;}

@@ -12,6 +12,12 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.vocabulary.models import Topic, Vocabulary, VocabularyTopic
+from apps.gamification.models import Contribution
+from apps.gamification.services import (
+    CONTRIBUTION_TYPE_COMMENT,
+    STATUS_APPROVED,
+    STATUS_PENDING,
+)
 
 from . import services
 from .models import StudySession, UserVocabularyProgress
@@ -180,3 +186,172 @@ class DashboardViewTests(LearningTestCase):
         response = self.client.get(reverse("learning:dashboard"))
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.context["in_progress"])
+
+
+class FlashcardQueueTests(LearningTestCase):
+    """apps.learning.services.get_flashcard_queue — nguồn hàng đợi của SC04."""
+
+    def test_words_without_progress_are_new(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        queue = services.get_flashcard_queue(self.user, topic)
+        self.assertEqual(len(queue), 2)
+
+    def test_overdue_words_come_before_new_words(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約", "会計"])
+        words = list(topic.vocabularies.order_by("pk"))
+        self._progress(words[0], due_offset=-1)  # quá hạn -> xếp đầu
+        # words[1], words[2] chưa có progress -> "mới", xếp sau
+
+        queue = services.get_flashcard_queue(self.user, topic)
+        self.assertEqual(queue[0], words[0])
+        self.assertEqual(set(queue[1:]), {words[1], words[2]})
+
+    def test_not_yet_due_words_are_excluded(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        self._progress(vocab, due_offset=3)
+        self.assertEqual(services.get_flashcard_queue(self.user, topic), [])
+
+    def test_reviewing_removes_the_word_from_the_queue(self):
+        """review_word() luôn đẩy next_review_date sang ít nhất NGÀY MAI, nên
+        thẻ vừa ôn phải tự rời hàng đợi ở lần gọi kế tiếp — không cần lọc tay
+        thẻ "vừa ôn xong trong phiên này" ở get_flashcard_queue()."""
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        progress = UserVocabularyProgress.objects.create(user=self.user, vocabulary=vocab)
+        services.review_word(progress, 5)
+        self.assertEqual(services.get_flashcard_queue(self.user, topic), [])
+
+
+class FlashcardViewTests(LearningTestCase):
+    def test_requires_login(self):
+        self.client.logout()
+        url = reverse("learning:flashcard", args=["nha-hang"])
+        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self.assertRedirects(self.client.get(url), reverse("accounts:login") + "?next=" + url)
+
+    def test_404_for_unknown_topic(self):
+        response = self.client.get(reverse("learning:flashcard", args=["khong-ton-tai"]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_session_complete_state_when_nothing_is_due(self):
+        self._make_topic("Rỗng", "rong", [])
+        response = self.client.get(reverse("learning:flashcard", args=["rong"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.context["word"])
+
+    def test_shows_first_word_with_progress_counters(self):
+        self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        response = self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["total"], 2)
+        self.assertEqual(response.context["position"], 1)
+        self.assertContains(response, response.context["word"].word)
+
+    def test_first_visit_creates_a_study_session(self):
+        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+        self.assertEqual(
+            StudySession.objects.filter(user=self.user, session_type="flashcard").count(), 1
+        )
+
+    def test_reloading_the_page_reuses_the_same_session(self):
+        self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+        self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+        self.assertEqual(StudySession.objects.count(), 1)
+
+
+class FlashcardReviewTests(LearningTestCase):
+    def test_get_is_not_allowed(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        response = self.client.get(reverse("learning:flashcard_review", args=[vocab.pk]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_review_advances_next_review_date_and_redirects(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        self.client.get(reverse("learning:flashcard", args=["nha-hang"]))  # mở phiên
+
+        url = reverse("learning:flashcard_review", args=[vocab.pk])
+        response = self.client.post(url, {"quality": "de", "topic_slug": "nha-hang"})
+
+        self.assertRedirects(response, reverse("learning:flashcard", args=["nha-hang"]))
+        progress = UserVocabularyProgress.objects.get(user=self.user, vocabulary=vocab)
+        self.assertGreater(progress.next_review_date, self.user.local_today())
+
+    def test_review_updates_the_open_study_session_counts(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+        url = reverse("learning:flashcard_review", args=[vocab.pk])
+        self.client.post(url, {"quality": "de", "topic_slug": "nha-hang"})
+
+        session = StudySession.objects.get(user=self.user, topic=topic)
+        self.assertEqual(session.words_reviewed, 1)
+        self.assertEqual(session.correct_answers, 1)
+
+    def test_forgot_is_not_counted_as_correct(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+        url = reverse("learning:flashcard_review", args=[vocab.pk])
+        self.client.post(url, {"quality": "quen", "topic_slug": "nha-hang"})
+
+        session = StudySession.objects.get(user=self.user, topic=topic)
+        self.assertEqual(session.words_reviewed, 1)
+        self.assertEqual(session.correct_answers, 0)
+
+    def test_finishing_the_queue_closes_the_study_session(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+        url = reverse("learning:flashcard_review", args=[vocab.pk])
+        self.client.post(url, {"quality": "de", "topic_slug": "nha-hang"})
+        # Hàng đợi rỗng -> lần GET tiếp theo phải đóng phiên (ended_at có giá trị).
+        self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+
+        session = StudySession.objects.get(user=self.user, topic=topic)
+        self.assertIsNotNone(session.ended_at)
+
+
+class FlashcardCommentTests(LearningTestCase):
+    def test_submitting_creates_a_pending_contribution(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        url = reverse("learning:flashcard_comment", args=[vocab.pk])
+
+        self.client.post(url, {"comment_text": "Ghi chú test", "topic_slug": "nha-hang"})
+
+        contribution = Contribution.objects.get(target_vocabulary=vocab)
+        self.assertEqual(contribution.contribution_type_code, CONTRIBUTION_TYPE_COMMENT)
+        self.assertEqual(contribution.status_code, STATUS_PENDING)
+        self.assertEqual(contribution.comment_text, "Ghi chú test")
+        self.assertEqual(contribution.user, self.user)
+
+    def test_blank_comment_is_not_saved(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        url = reverse("learning:flashcard_comment", args=[vocab.pk])
+
+        self.client.post(url, {"comment_text": "   ", "topic_slug": "nha-hang"})
+
+        self.assertFalse(Contribution.objects.exists())
+
+    def test_only_approved_comments_show_on_the_flashcard_page(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        Contribution.objects.create(
+            user=self.user, contribution_type_code=CONTRIBUTION_TYPE_COMMENT,
+            target_vocabulary=vocab, comment_text="Chờ duyệt", status_code=STATUS_PENDING,
+        )
+        Contribution.objects.create(
+            user=self.user, contribution_type_code=CONTRIBUTION_TYPE_COMMENT,
+            target_vocabulary=vocab, comment_text="Đã duyệt", status_code=STATUS_APPROVED,
+        )
+
+        response = self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+
+        self.assertContains(response, "Đã duyệt")
+        self.assertNotContains(response, "Chờ duyệt")

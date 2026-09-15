@@ -12,7 +12,7 @@ from datetime import datetime, time, timedelta
 from django.db.models import Count, Q
 from django.db.models.functions import TruncDate
 
-from apps.vocabulary.models import Topic
+from apps.vocabulary.models import Topic, Vocabulary
 
 from .models import StudySession, UserVocabularyProgress
 
@@ -22,6 +22,32 @@ QUALITY_MAP = {
     "nho": 4,    # "Remembered" button
     "de": 5,     # "Easy" button
 }
+
+
+def get_flashcard_queue(user, topic):
+    """Hàng đợi ôn tập flashcard của 1 chủ đề (SC04).
+
+    Ưu tiên từ ĐẾN HẠN (next_review_date <= hôm nay theo giờ user, quá hạn lâu
+    nhất xếp trước), hết thì tới từ CHƯA HỌC LẦN NÀO (chưa có
+    UserVocabularyProgress) theo thứ tự bảng chữ cái.
+
+    Không cần tự loại thẻ vừa ôn khỏi hàng đợi: review_word() luôn đẩy
+    next_review_date sang ít nhất NGÀY MAI (interval_days >= 1 dù quality nào),
+    nên thẻ vừa ôn tự rời khỏi cả hai nhánh truy vấn ở lần gọi kế tiếp.
+    """
+    today = user.local_today()
+    due = (
+        Vocabulary.objects.filter(
+            topics=topic, progress__user=user, progress__next_review_date__lte=today,
+        )
+        .order_by("progress__next_review_date", "word")
+    )
+    new_words = (
+        Vocabulary.objects.filter(topics=topic)
+        .exclude(progress__user=user)
+        .order_by("word")
+    )
+    return list(due) + list(new_words)
 
 
 def review_word(progress, quality: int):

@@ -3,13 +3,21 @@ View của app learning: SC03 Trang chủ · SC04 Flashcard · SC06 Kiểm tra.
 
 Mọi truy vấn thống kê nằm ở `apps.learning.services`; view chỉ lắp context.
 """
+from django.contrib import messages as flash
 from django.contrib.auth.decorators import login_required
+from django.db.models import F
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from django.views.decorators.http import require_POST
 
-from apps.vocabulary.models import Vocabulary
+from apps.core.constants import SESSION_TYPE_FLASHCARD
+from apps.core.properties import message
+from apps.gamification.models import Contribution
+from apps.gamification.services import CONTRIBUTION_TYPE_COMMENT, STATUS_APPROVED
+from apps.vocabulary.models import Topic, Vocabulary
 
 from . import services
-from .models import UserVocabularyProgress
+from .models import StudySession, UserVocabularyProgress
 from .services import QUALITY_MAP, review_word
 
 
@@ -30,25 +38,117 @@ def dashboard_view(request):
     return render(request, "learning/dashboard.html", context)
 
 
+def _flashcard_session_keys(topic_slug):
+    """Hai khoá trong request.session để nhớ TỔNG số thẻ và bản ghi
+    StudySession của phiên flashcard đang chạy cho 1 chủ đề. Khoá theo
+    topic_slug nên user học nhiều chủ đề (tab khác nhau) không đụng nhau."""
+    return f"flashcard_total_{topic_slug}", f"flashcard_session_id_{topic_slug}"
+
+
+def _close_flashcard_session(request, session_id_key):
+    """Đóng StudySession đang mở (nếu có) khi hàng đợi đã hết, để lại mốc
+    ended_at cho lịch sử/streak sau này biết phiên kết thúc lúc nào."""
+    session_id = request.session.pop(session_id_key, None)
+    if session_id:
+        StudySession.objects.filter(pk=session_id, ended_at__isnull=True).update(
+            ended_at=timezone.now()
+        )
+
+
 @login_required
 def flashcard_view(request, topic_slug):
-    """SC04_HocTuVung."""
-    words = Vocabulary.objects.filter(topics__slug=topic_slug)
-    return render(
-        request, "learning/flashcard.html", {"words": words, "topic_slug": topic_slug}
-    )
+    """SC04_HocTuVung — 1 thẻ mỗi lần, ưu tiên từ đến hạn ôn rồi tới từ chưa
+    học. Xem apps.learning.services.get_flashcard_queue để biết vì sao không
+    cần tự loại thẻ vừa ôn ra khỏi hàng đợi."""
+    topic = get_object_or_404(Topic, slug=topic_slug)
+    total_key, session_id_key = _flashcard_session_keys(topic.slug)
+    queue = services.get_flashcard_queue(request.user, topic)
+
+    if not queue:
+        # Hết thẻ cần ôn (hoặc chủ đề chưa có từ nào) — đóng phiên đang mở và
+        # dọn khoá session để lần mở lại sau tính là một lượt ôn mới.
+        _close_flashcard_session(request, session_id_key)
+        request.session.pop(total_key, None)
+        return render(request, "learning/flashcard.html", {"topic": topic, "word": None})
+
+    total = request.session.get(total_key)
+    if not total or len(queue) > total:
+        # Chưa từng mở màn này (chưa có tổng), hoặc hàng đợi vừa dài ra so với
+        # lần tính trước (có thêm từ đến hạn/được thêm mới) — bắt đầu một
+        # phiên StudySession mới, tính lại tổng từ đây.
+        total = len(queue)
+        request.session[total_key] = total
+        study_session = StudySession.objects.create(
+            user=request.user, topic=topic, session_type=SESSION_TYPE_FLASHCARD,
+            started_at=timezone.now(),
+        )
+        request.session[session_id_key] = study_session.pk
+
+    word = queue[0]
+    position = total - len(queue) + 1
+
+    context = {
+        "topic": topic,
+        "word": word,
+        "position": position,
+        "total": total,
+        "percent": round((position - 1) * 100 / total) if total else 0,
+        "examples": word.examples.all()[:3],
+        "comments": Contribution.objects.filter(
+            target_vocabulary=word,
+            contribution_type_code=CONTRIBUTION_TYPE_COMMENT,
+            status_code=STATUS_APPROVED,
+        ).order_by("-created_at"),
+    }
+    return render(request, "learning/flashcard.html", context)
 
 
 @login_required
+@require_POST
 def flashcard_review(request, vocabulary_id):
     """Endpoint POST của 4 nút Quên/Khó/Nhớ/Dễ trên màn flashcard."""
     vocab = get_object_or_404(Vocabulary, pk=vocabulary_id)
+    topic_slug = request.POST.get("topic_slug", "")
+    quality = QUALITY_MAP.get(request.POST.get("quality"), 3)
+
     progress, _ = UserVocabularyProgress.objects.get_or_create(
         user=request.user, vocabulary=vocab
     )
-    quality_key = request.POST.get("quality")
-    review_word(progress, QUALITY_MAP.get(quality_key, 3))
-    return redirect("learning:flashcard", topic_slug=request.POST.get("topic_slug"))
+    review_word(progress, quality)
+
+    _, session_id_key = _flashcard_session_keys(topic_slug)
+    session_id = request.session.get(session_id_key)
+    if session_id:
+        # quality >= 3 ("Khó"/"Nhớ"/"Dễ") tính là nhớ đúng, khớp ngưỡng SM-2
+        # review_word() đang dùng để tăng srs_level.
+        StudySession.objects.filter(pk=session_id).update(
+            words_reviewed=F("words_reviewed") + 1,
+            correct_answers=F("correct_answers") + (1 if quality >= 3 else 0),
+        )
+    return redirect("learning:flashcard", topic_slug=topic_slug)
+
+
+@login_required
+@require_POST
+def flashcard_comment(request, vocabulary_id):
+    """Gửi bình luận cho 1 từ ngay trên màn flashcard — tạo Contribution loại
+    'Bình luận', trạng thái mặc định 'Chờ duyệt' (SC12 hòm thư sẽ có màn duyệt,
+    chưa dựng UI). Bình luận đã duyệt mới hiện công khai ở flashcard_view."""
+    vocab = get_object_or_404(Vocabulary, pk=vocabulary_id)
+    topic_slug = request.POST.get("topic_slug", "")
+    text = (request.POST.get("comment_text") or "").strip()
+
+    if text:
+        Contribution.objects.create(
+            user=request.user,
+            contribution_type_code=CONTRIBUTION_TYPE_COMMENT,
+            target_vocabulary=vocab,
+            comment_text=text,
+        )
+        flash.success(request, message("learning.flashcard.success.comment_submitted"))
+    else:
+        flash.error(request, message("common.validation.required"))
+    return redirect("learning:flashcard", topic_slug=topic_slug)
 
 
 @login_required

@@ -1,4 +1,99 @@
 {% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}
+SC04_HocTuVung — port từ htmlTemplate/SC04_HocTuVung_*.html.
+
+Hàng đợi (từ đến hạn -> từ chưa học), số thẻ/tổng và StudySession do
+apps.learning.views/services tính — template chỉ hiển thị. Lật thẻ xem nghĩa
+dùng class .is-flipped (static/js/main.js toggle khi click .flashcard); tắt
+JS thì <noscript> bên dưới hiện thẳng nghĩa, không khoá tính năng cốt lõi.
+{% endcomment %}
+
+{% block title %}{% label "common.nav.flashcard" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block wrap_attrs %} style="max-width:620px;"{% endblock %}
+
 {% block content %}
-  <!-- TODO: port SC04_HocTuVung mockup, loop over {{ words }} -->
+  {% if word %}
+    <p class="muted" style="margin:0 0 10px;">
+      {% message "learning.flashcard.hint.progress" topic=topic.display_name position=position total=total %}
+    </p>
+    <div class="progressbar" style="margin-bottom:28px;"><span style="width:{{ percent }}%"></span></div>
+
+    <div class="flashcard">
+      <div class="jp">{{ word.word }}</div>
+      <div class="reading">{{ word.reading }}</div>
+      <div class="meaning">{{ word.meaning_vi }}</div>
+      <p class="muted hint" style="font-size:14px;">{% label "learning.flashcard.hint.tap_to_reveal" %}</p>
+    </div>
+    <noscript><style>.flashcard .meaning{display:block!important}.flashcard .hint{display:none!important}</style></noscript>
+
+    {% if examples %}
+      <details style="margin-top:10px;">
+        <summary class="btn btn-outline" style="width:100%;text-align:center;list-style:none;">
+          📖 {% label "learning.flashcard.button.view_example" %}
+        </summary>
+        <div class="card" style="margin-top:10px;">
+          {% for ex in examples %}
+            <p style="margin:0 0 4px;">{{ ex.sentence_jp }}</p>
+            <p class="muted" style="margin:0 0 {% if not forloop.last %}16px{% else %}0{% endif %};">{{ ex.sentence_vi }}</p>
+          {% endfor %}
+        </div>
+      </details>
+    {% endif %}
+
+    <div class="divider"></div>
+    <p class="muted" style="text-align:center;margin-bottom:14px;">{% label "learning.flashcard.prompt.recall_level" %}</p>
+    <form method="post" action="{% url 'learning:flashcard_review' word.pk %}">
+      {% csrf_token %}
+      <input type="hidden" name="topic_slug" value="{{ topic.slug }}">
+      <div class="grid" style="grid-template-columns:repeat(4,1fr);">
+        <button class="btn" type="submit" name="quality" value="quen" style="background:#e8c4b8;color:#8f3323;">{% label "learning.flashcard.button.forgot" %}</button>
+        <button class="btn" type="submit" name="quality" value="kho" style="background:#f0e0c4;color:#8a6a1a;">{% label "learning.flashcard.button.hard" %}</button>
+        <button class="btn" type="submit" name="quality" value="nho" style="background:#dbe6d8;color:#2f4f47;">{% label "learning.flashcard.button.good" %}</button>
+        <button class="btn btn-primary" type="submit" name="quality" value="de">{% label "learning.flashcard.button.easy" %}</button>
+      </div>
+    </form>
+    <p style="text-align:center;margin-top:22px;">
+      <a href="{% url 'learning:dashboard' %}" class="muted">{% label "learning.flashcard.link.end_session" %}</a>
+    </p>
+
+    <div class="divider"></div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <h3 class="serif" style="margin:0;font-size:18px;">💬 {% label "learning.flashcard.section.comments" %}</h3>
+      <a href="{% url 'vocabulary:index' %}" class="muted" style="font-size:13px;text-decoration:underline;">{% label "learning.flashcard.link.suggest_fix" %} →</a>
+    </div>
+
+    {% if comments %}
+      <div style="display:grid;gap:12px;margin-bottom:14px;">
+        {% for c in comments %}
+          <div class="card" style="padding:16px 18px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <strong style="font-size:14px;">{{ c.user.first_name|default:c.user.get_username }}</strong>
+              <span class="muted" style="font-size:12px;">{{ c.created_at|date:"d/m/Y" }}</span>
+            </div>
+            <p style="margin:0;font-size:14px;">{{ c.comment_text }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted" style="margin-bottom:14px;">{% message "learning.flashcard.hint.no_comments_yet" %}</p>
+    {% endif %}
+
+    <form method="post" action="{% url 'learning:flashcard_comment' word.pk %}" class="card" style="padding:16px 18px;">
+      {% csrf_token %}
+      <input type="hidden" name="topic_slug" value="{{ topic.slug }}">
+      <label for="id_comment_text" style="margin-bottom:8px;">{% label "learning.flashcard.field.new_comment" %}</label>
+      <input type="text" id="id_comment_text" name="comment_text" maxlength="1000">
+      <button type="submit" class="btn btn-primary" style="margin-top:10px;padding:9px 18px;font-size:13.5px;">{% label "learning.flashcard.button.submit_comment" %}</button>
+      <p class="muted" style="font-size:12px;margin:8px 0 0;">{% message "learning.flashcard.hint.comment_note" %}</p>
+    </form>
+  {% else %}
+    <div class="card" style="text-align:center;padding:48px 32px;">
+      <h1 class="serif" style="margin:0 0 10px;">{% label "learning.flashcard.title.session_complete" %}</h1>
+      <p class="muted" style="margin:0 0 20px;">{% message "learning.flashcard.hint.session_complete" topic=topic.display_name %}</p>
+      <a class="btn btn-primary" href="{% url 'learning:dashboard' %}">{% label "common.button.back" %}</a>
+    </div>
+  {% endif %}
 {% endblock %}
