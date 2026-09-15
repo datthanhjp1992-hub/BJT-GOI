@@ -97,6 +97,95 @@ class ListViewTests(VocabularyTestCase):
         self.assertContains(response, "ぎじろく")
         self.assertNotContains(response, "ちゅうもんする")
 
+    def test_multi_topic_filter_is_union(self):
+        """Chọn nhiều chủ đề = HOẶC: từ chỉ cần thuộc MỘT trong số đó."""
+        self._word("注文する", "ちゅうもんする", "gọi món")            # chủ đề Nhà hàng
+        khac = Topic.objects.create(name="Họp hành", slug="hop-hanh")
+        vocab = self._word("議事録", "ぎじろく", "biên bản họp", topic=False)
+        VocabularyTopic.objects.create(vocabulary=vocab, topic=khac)
+        self._word("孤児", "こじ", "từ mồ côi", topic=False)
+
+        response = self.client.get(
+            reverse("vocabulary:index"), {"topic": ["nha-hang", "hop-hanh"]}
+        )
+        self.assertEqual(response.context["total_count"], 2)
+        self.assertEqual(
+            [t.slug for t in response.context["selected_topics"]], ["nha-hang", "hop-hanh"]
+        )
+        # Nhiều chủ đề thì không chủ đề nào là "chủ đề của trang".
+        self.assertIsNone(response.context["topic"])
+        self.assertNotContains(response, "こじ")
+
+    def test_word_in_two_selected_topics_is_not_duplicated(self):
+        """Join M2M nhân bản dòng — .distinct() phải chặn việc đếm hai lần."""
+        khac = Topic.objects.create(name="Họp hành", slug="hop-hanh")
+        vocab = self._word("注文する", "ちゅうもんする", "gọi món")    # đã có Nhà hàng
+        VocabularyTopic.objects.create(vocabulary=vocab, topic=khac)
+
+        response = self.client.get(
+            reverse("vocabulary:index"), {"topic": ["nha-hang", "hop-hanh"]}
+        )
+        self.assertEqual(response.context["total_count"], 1)
+
+    def test_filter_link_toggles_topic_on_and_off(self):
+        """Chưa chọn thì link THÊM chủ đề, đang chọn thì link BỎ chủ đề."""
+        khac = Topic.objects.create(name="Họp hành", slug="hop-hanh")
+
+        response = self.client.get(reverse("vocabulary:index"), {"topic": ["nha-hang"]})
+        links = {f["topic"].slug: f for f in response.context["topic_filters"]}
+        self.assertTrue(links["nha-hang"]["is_selected"])
+        self.assertNotIn("topic=", links["nha-hang"]["query"])          # bấm lần 2 -> bỏ lọc
+        self.assertFalse(links[khac.slug]["is_selected"])
+        self.assertIn("topic=nha-hang", links[khac.slug]["query"])      # cộng dồn, không thay thế
+        self.assertIn("topic=hop-hanh", links[khac.slug]["query"])
+
+    def test_filter_link_keeps_the_search_keyword(self):
+        response = self.client.get(
+            reverse("vocabulary:index"), {"q": "ちゅうもん", "topic": ["nha-hang"]}
+        )
+        for f in response.context["topic_filters"]:
+            self.assertIn("q=", f["query"])
+        self.assertIn("q=", response.context["clear_query"])
+
+    def test_unknown_topic_in_query_is_ignored_not_404(self):
+        """Slug rác trên query string chỉ bị lờ đi (khác slug rác trên route)."""
+        self._word("注文する", "ちゅうもんする", "gọi món")
+
+        response = self.client.get(reverse("vocabulary:index"), {"topic": "khong-ton-tai"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["selected_topics"], [])
+        self.assertEqual(response.context["total_count"], 1)
+
+    def test_route_topic_merges_with_query_topics(self):
+        """Link cũ /topic/<slug>/ vẫn chạy và cộng thêm được chủ đề khác."""
+        khac = Topic.objects.create(name="Họp hành", slug="hop-hanh")
+        vocab = self._word("議事録", "ぎじろく", "biên bản họp", topic=False)
+        VocabularyTopic.objects.create(vocabulary=vocab, topic=khac)
+        self._word("注文する", "ちゅうもんする", "gọi món")
+
+        response = self.client.get(
+            reverse("vocabulary:list", args=["nha-hang"]), {"topic": "hop-hanh"}
+        )
+        self.assertEqual(response.context["total_count"], 2)
+
+    def test_pagination_link_keeps_every_selected_topic(self):
+        khac = Topic.objects.create(name="Họp hành", slug="hop-hanh")
+        for i in range(PAGE_SIZE + 1):
+            vocab = self._word(f"語{i}", f"ご{i}", f"từ {i}", topic=False)
+            VocabularyTopic.objects.create(vocabulary=vocab, topic=khac)
+
+        response = self.client.get(
+            reverse("vocabulary:index"), {"topic": ["nha-hang", "hop-hanh"]}
+        )
+        self.assertIn("topic=nha-hang", response.context["pagination_query"])
+        self.assertIn("topic=hop-hanh", response.context["pagination_query"])
+        self.assertNotIn("page=", response.context["pagination_query"])
+
+    def test_search_form_keeps_selected_topics(self):
+        """Ô tìm kiếm phải mang theo chủ đề đang lọc (hidden input)."""
+        response = self.client.get(reverse("vocabulary:index"), {"topic": ["nha-hang"]})
+        self.assertContains(response, 'name="topic" value="nha-hang"')
+
     def test_topic_shows_both_names(self):
         """Tên Nhật và tên Việt để hai ô riêng, UI ghép lại khi hiển thị."""
         khac = Topic.objects.create(name="Họp hành", slug="hop-hanh", name_ja="会議・打合せ")

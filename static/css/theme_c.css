@@ -50,6 +50,17 @@ input:focus,select:focus{outline:none;border-color:var(--coral);}
 .muted{color:var(--ink-soft);}
 .tag{display:inline-block;padding:6px 14px;border-radius:20px;font-size:12.5px;font-weight:700;background:#F0EAFB;color:var(--ink-soft);margin-right:6px;}
 .tag.level{background:var(--yellow);color:#6b4d00;}
+/* Thẻ lọc chủ đề (SC05): bấm lần 1 = lọc, bấm lần 2 = bỏ lọc. */
+.filter-bar{gap:8px;}
+.tag-filter{cursor:pointer;user-select:none;margin-right:0;
+  transition:background .18s ease,color .18s ease,transform .14s ease,box-shadow .18s ease;}
+.tag-filter:hover{background:#E4D8FA;color:var(--ink);
+  transform:translateY(-2px);box-shadow:0 4px 10px rgba(46,31,61,.15);}
+.tag-filter:active{transform:translateY(0) scale(.97);box-shadow:none;}
+.tag-filter:focus-visible{outline:2px solid var(--coral);outline-offset:2px;}
+.tag-filter.is-active{background:var(--coral);color:#fff;}
+.tag-filter.is-active:hover{background:var(--coral-dark);color:#fff;}
+
 
 table{width:100%;border-collapse:collapse;font-size:14.5px;}
 th{text-align:left;color:var(--ink-soft);font-weight:700;padding:10px 14px;border-bottom:2px solid var(--border);font-size:13px;}

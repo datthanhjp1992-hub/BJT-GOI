@@ -4,29 +4,36 @@
 Từ vựng phân loại theo CHỦ ĐỀ, không còn cấp độ BJT (bỏ 13/09/2026) — thanh lọc
 dựng từ context `topics`, không liệt kê cứng chủ đề nào trong template.{% endcomment %}
 
-{% block title %}{% if topic %}{{ topic.display_name }}{% else %}{% label "vocabulary.list.title.all" %}{% endif %} | {% label "common.brand.name" %}{% endblock %}
+{% block title %}{% if selected_topics %}{% for t in selected_topics %}{{ t.display_name }}{% if not forloop.last %} + {% endif %}{% endfor %}{% else %}{% label "vocabulary.list.title.all" %}{% endif %} | {% label "common.brand.name" %}{% endblock %}
 
 {% block content %}
   <div class="eyebrow">{% label "vocabulary.list.eyebrow" %}</div>
   <h1 class="serif" style="font-size:28px;margin:0 0 24px;">
-    {% if topic %}{{ topic.icon_emoji }} {{ topic.display_name }}{% else %}{% label "vocabulary.list.title.all" %}{% endif %}
+    {% if selected_topics %}{% for t in selected_topics %}{{ t.icon_emoji }} {{ t.display_name }}{% if not forloop.last %} <span class="muted">+</span> {% endif %}{% endfor %}{% else %}{% label "vocabulary.list.title.all" %}{% endif %}
   </h1>
 
   {# --- Ô tìm kiếm: GET để người dùng bookmark/chia sẻ được kết quả --- #}
-  <form class="toolbar" method="get">
+  <form class="toolbar" method="get" action="{% url 'vocabulary:index' %}">
+    {# Giữ nguyên các chủ đề đang lọc khi bấm "Tìm" — nếu không, tìm kiếm sẽ âm thầm xoá bộ lọc. #}
+    {% for t in selected_topics %}<input type="hidden" name="topic" value="{{ t.slug }}">{% endfor %}
     <input class="grow" type="search" name="q" value="{{ query }}"
            aria-label="{% label 'vocabulary.list.field.search' %}"
            placeholder="{% label 'vocabulary.list.field.search' %}">
     <button type="submit" class="btn btn-primary">{% label "vocabulary.list.button.search" %}</button>
   </form>
 
-  {# --- Lọc theo chủ đề: giữ nguyên từ khoá đang tìm --- #}
-  <div class="toolbar" role="group" aria-label="{% label 'vocabulary.list.field.filter_topic' %}">
-    <a class="tag{% if not topic %} level{% endif %}"
-       href="{% url 'vocabulary:index' %}{% if query %}?q={{ query|urlencode }}{% endif %}">{% label "vocabulary.list.field.filter_all" %}</a>
-    {% for t in topics %}
-      <a class="tag{% if topic and topic.pk == t.pk %} level{% endif %}"
-         href="{% url 'vocabulary:list' t.slug %}{% if query %}?q={{ query|urlencode }}{% endif %}">{{ t.icon_emoji }} {{ t.name_ja|default:t.name }}</a>
+  {% comment %}Lọc theo chủ đề: chọn được NHIỀU chủ đề, bấm lần hai để bỏ chọn.
+  Mỗi thẻ là một link tự chứa (view dựng sẵn query string bật/tắt) nên thanh lọc
+  chạy đúng cả khi trình duyệt tắt JavaScript.{% endcomment %}
+  <div class="toolbar filter-bar" role="group" aria-label="{% label 'vocabulary.list.field.filter_topic' %}">
+    <a class="tag tag-filter{% if not selected_topics %} is-active{% endif %}"
+       aria-pressed="{% if selected_topics %}false{% else %}true{% endif %}"
+       href="{% url 'vocabulary:index' %}{{ clear_query }}">{% label "vocabulary.list.field.filter_all" %}</a>
+    {% for f in topic_filters %}
+      <a class="tag tag-filter{% if f.is_selected %} is-active{% endif %}"
+         aria-pressed="{% if f.is_selected %}true{% else %}false{% endif %}"
+         title="{% if f.is_selected %}{% label 'vocabulary.list.hint.filter_off' %}{% else %}{% label 'vocabulary.list.hint.filter_on' %}{% endif %}"
+         href="{% url 'vocabulary:index' %}{{ f.query }}">{{ f.topic.icon_emoji }} {{ f.topic.name_ja|default:f.topic.name }}</a>
     {% endfor %}
   </div>
 
