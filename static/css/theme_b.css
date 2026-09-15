@@ -64,6 +64,14 @@ input:focus,select:focus{outline:none;border-color:var(--accent);}
 .tag-filter.is-active:hover{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:2px 2px 0 var(--accent);}
 
 
+/* Lối tải/xuất/nhập ở bảng SC07b: vẫn là chữ, nhưng phải thấy rõ khi rê chuột. */
+.action-link{color:var(--ink-soft);border-bottom:1px solid transparent;
+  transition:color .14s ease,border-color .14s ease;}
+.action-link:hover{color:var(--accent);border-bottom-color:var(--accent);}
+.action-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+.action-link.is-primary{color:var(--accent);}
+.action-link.is-primary:hover{color:var(--ink);border-bottom-color:var(--ink);}
+.action-sep{color:var(--border);margin:0 3px;user-select:none;}
 table{width:100%;border-collapse:collapse;font-size:14px;}
 th{text-align:left;color:var(--ink-soft);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;font-family:var(--mono);}
 td{padding:13px 12px;border-bottom:1px solid var(--border);}

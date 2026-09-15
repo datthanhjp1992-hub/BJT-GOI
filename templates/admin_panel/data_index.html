@@ -49,11 +49,15 @@ là nó tự xuất hiện ở đây, không phải sửa template.{% endcomment
               {% endif %}
             </td>
             <td style="white-space:nowrap;">
-              <a href="{% url 'admin_panel:data_template' table.label 'csv' %}">{% label "admin.data.button.template_csv" %}</a> ·
-              <a href="{% url 'admin_panel:data_template' table.label 'xlsx' %}">{% label "admin.data.button.template_xlsx" %}</a> ·
-              <a href="{% url 'admin_panel:data_export' table.label 'csv' %}">{% label "admin.data.button.export_csv" %}</a> ·
-              <a href="{% url 'admin_panel:data_export' table.label 'xlsx' %}">{% label "admin.data.button.export_xlsx" %}</a> ·
-              <a href="{% url 'admin_panel:data_import' table.label %}"><strong>{% label "admin.data.button.import" %} →</strong></a>
+              <a class="action-link" href="{% url 'admin_panel:data_template' table.label 'csv' %}">{% label "admin.data.button.template_csv" %}</a>
+              <span class="action-sep" aria-hidden="true">·</span>
+              <a class="action-link" href="{% url 'admin_panel:data_template' table.label 'xlsx' %}">{% label "admin.data.button.template_xlsx" %}</a>
+              <span class="action-sep" aria-hidden="true">·</span>
+              <a class="action-link" href="{% url 'admin_panel:data_export' table.label 'csv' %}">{% label "admin.data.button.export_csv" %}</a>
+              <span class="action-sep" aria-hidden="true">·</span>
+              <a class="action-link" href="{% url 'admin_panel:data_export' table.label 'xlsx' %}">{% label "admin.data.button.export_xlsx" %}</a>
+              <span class="action-sep" aria-hidden="true">·</span>
+              <a class="action-link is-primary" href="{% url 'admin_panel:data_import' table.label %}"><strong>{% label "admin.data.button.import" %} →</strong></a>
             </td>
           </tr>
         {% endfor %}
