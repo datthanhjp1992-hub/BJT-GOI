@@ -69,12 +69,15 @@ dựng từ context `topics`, không liệt kê cứng chủ đề nào trong te
                 <span class="tag">{% label "vocabulary.list.tag.status.new" %}</span>
               {% endif %}
             </td>
-            <td>
+            <td style="white-space:nowrap;">
               {% if word.primary_topic %}
-                <a href="{% url 'learning:flashcard' word.primary_topic.slug %}">
+                <a class="action-link is-primary" href="{% url 'learning:flashcard' word.primary_topic.slug %}">
                   {% if word.study_status == "new" %}{% label "vocabulary.list.link.start" %}{% else %}{% label "vocabulary.list.link.review" %}{% endif %} →
                 </a>
+                <span class="action-sep" aria-hidden="true">·</span>
               {% endif %}
+              {% comment %}Báo lỗi mang sẵn id từ vựng nên form bên SC14 không bắt chọn lại từ.{% endcomment %}
+              <a class="action-link" href="{% url 'error_reports:create' %}?vocabulary={{ word.pk }}">{% label "error_report.form.link.report" %}</a>
             </td>
           </tr>
         {% endfor %}

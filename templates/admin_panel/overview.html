@@ -47,6 +47,10 @@ ghi vẫn ở Django admin — xem ghi chú đầu apps/admin_panel/views.py.{% 
         <div class="num">{{ stats.pending_contributions }}</div>
         <div class="label">{% label "admin.overview.stat.pending_contributions" %}</div>
       </div>
+      <div class="stat">
+        <div class="num">{{ stats.unresolved_reports }}</div>
+        <div class="label">{% label "admin.overview.stat.unresolved_reports" %}</div>
+      </div>
     </div>
 
     <div class="eyebrow">{% label "admin.overview.section.recent_users" %}</div>

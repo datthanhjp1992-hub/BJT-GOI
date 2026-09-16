@@ -152,7 +152,7 @@ class DataIoEngineTests(TestCase):
 
     def test_registry_covers_exactly_the_18_local_tables(self):
         models = dataio.importable_models()
-        self.assertEqual(len(models), 18, [dataio.model_label(m) for m in models])
+        self.assertEqual(len(models), 19, [dataio.model_label(m) for m in models])
         labels = {dataio.model_label(m) for m in models}
         self.assertIn("vocabulary.vocabulary", labels)
         self.assertIn("vocabulary.vocabularytopic", labels)
@@ -200,10 +200,10 @@ class DataIoEngineTests(TestCase):
         # UserPinnedBadge không khai ở NATURAL_KEYS -> lùi về unique_together.
         self.assertEqual(dataio.duplicate_fields(UserPinnedBadge), ("user", "category"))
 
-    def test_every_table_has_a_natural_key_except_the_two_log_tables(self):
+    def test_every_table_has_a_natural_key_except_the_log_tables(self):
         """Bảng không có khoá thì nhập lại cùng một file là nhân đôi dữ liệu.
 
-        Đúng hai bảng NHẬT KÝ được phép không có khoá, và chúng phải nằm trong
+        Đúng ba bảng NHẬT KÝ được phép không có khoá, và chúng phải nằm trong
         danh sách khai báo tường minh chứ không phải vô tình thiếu."""
         without = {
             dataio.model_label(m)
@@ -664,7 +664,7 @@ class FullVocabularyDatasetTests(AdminPanelTestCase):
     def test_it_shows_up_in_the_table_list(self):
         labels = [t["label"] for t in self.client.get(reverse("admin_panel:data_index")).context["tables"]]
         self.assertEqual(labels[0], self.label)
-        self.assertEqual(len(labels), 19)  # 18 bảng + 1 mẫu gộp
+        self.assertEqual(len(labels), 20)  # 19 bảng + 1 mẫu gộp
 
     def test_one_row_writes_word_topics_and_examples(self):
         report = self._run(

@@ -45,6 +45,20 @@ CODE_TYPE_CONTRIBUTION_TYPE = "02"    # Từ mới / Sửa nghĩa / Bình luận
 CODE_TYPE_CONTRIBUTION_STATUS = "03"  # Chờ duyệt / Đã duyệt / Từ chối
 CODE_TYPE_POINT_ACTION = "04"         # Loại hành động cộng điểm
 
+# --- Báo cáo lỗi nội dung (màn "Báo cáo lỗi" trong khu quản trị) ---
+# Tách hẳn khỏi Góp ý (code_type 02/03): góp ý là ĐỀ XUẤT thêm/sửa nội dung và
+# có cộng điểm; báo lỗi là BÁO HỎNG ("từ này sai cách đọc", "trang này vỡ"),
+# không cộng điểm, vòng đời chỉ có xử lý xong hay bỏ qua.
+CODE_TYPE_ERROR_TYPE = "12"      # Loại lỗi bị báo
+CODE_TYPE_ERROR_STATUS = "13"    # Trạng thái xử lý báo lỗi
+
+# Mã cụ thể của CODE_TYPE_ERROR_STATUS — hằng số để không rải "001"/"002"
+# trong truy vấn, giống CONTRIBUTION_STATUS_PENDING bên apps/admin_panel.
+ERROR_STATUS_PENDING = "001"    # Chờ xử lý
+ERROR_STATUS_FIXED = "002"      # Đã sửa
+ERROR_STATUS_DISMISSED = "003"  # Bỏ qua
+ERROR_STATUS_HANDLED_PARENT = "DA_XU_LY"  # mother_code gom 002 + 003
+
 # --- Danh hiệu (mỗi NHÓM danh hiệu có 1 code_type riêng — xem BadgeCategory) ---
 CODE_TYPE_BADGE_CONTRIBUTION = "01"   # Danh hiệu theo điểm đóng góp (Tân Binh -> Huyền Thoại)
 CODE_TYPE_BADGE_LEARNING = "07"       # Danh hiệu theo số từ đã học thuộc
@@ -89,3 +103,20 @@ def recall_direction_choices():
     """Hướng ôn tập của phiếu 'ôn lại từ' — chỉ có nghĩa khi
     sheet_type = SHEET_TYPE_RECALL."""
     return get_choices(CODE_TYPE_RECALL_DIRECTION)
+
+
+def error_type_choices():
+    """Loại lỗi người dùng chọn khi báo lỗi một từ vựng (sai nghĩa, sai cách
+    đọc, sai ví dụ...). Thuần dữ liệu hiển thị — thêm loại mới = thêm 1 dòng
+    trong seed_mastercode.py, KHÔNG phải sửa code."""
+    return get_choices(CODE_TYPE_ERROR_TYPE)
+
+
+def error_status_choices(include_parent=False):
+    """Trạng thái xử lý báo lỗi. Mặc định bỏ code cha "DA_XU_LY" — nó chỉ dùng
+    để gom nhóm khi lọc/thống kê, không bao giờ là trạng thái thật của một bản
+    ghi, nên không được xuất hiện trong <select>."""
+    rows = get_choices(CODE_TYPE_ERROR_STATUS)
+    if include_parent:
+        return rows
+    return [(code, name) for code, name in rows if code != ERROR_STATUS_HANDLED_PARENT]

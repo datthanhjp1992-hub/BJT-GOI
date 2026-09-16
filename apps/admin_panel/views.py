@@ -3,7 +3,9 @@ Khu vực quản trị — SC07_QuanTriAdmin.
 
 PHẠM VI (cập nhật 13/09/2026):
 1. Bảng TỔNG QUAN — số liệu + người dùng mới nhất.
-2. NHẬP / XUẤT DỮ LIỆU bằng file CSV & Excel cho cả 18 bảng + một mẫu gộp
+2. BÁO CÁO LỖI — danh sách báo lỗi người dùng gửi, xem chi tiết, đánh dấu
+   đã sửa / bỏ qua kèm phản hồi (model ở apps/error_reports).
+3. NHẬP / XUẤT DỮ LIỆU bằng file CSV & Excel cho cả 18 bảng + một mẫu gộp
    "Từ vựng đầy đủ": tải file mẫu, xuất dữ liệu hiện có, chọn chế độ ghi, tải
    file lên và xem trước rồi mới ghi.
 
@@ -23,15 +25,25 @@ from django.contrib import messages as django_messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from apps.core import dataio
 
+from apps.core.constants import (
+    ERROR_STATUS_DISMISSED,
+    ERROR_STATUS_FIXED,
+    ERROR_STATUS_PENDING,
+)
 from apps.core.properties import message
+from apps.error_reports import services as error_report_services
+from apps.error_reports.forms import ErrorReportActionForm
+from apps.error_reports.models import ErrorReport
 from apps.gamification.models import Contribution
 from apps.vocabulary.models import Topic, Vocabulary
 
@@ -62,6 +74,13 @@ def staff_required(view_func):
     return _wrapped
 
 
+def _pending_error_report_count():
+    """Số báo lỗi đang chờ xử lý — hiện thành badge cạnh mục "Báo cáo lỗi" trên
+    sidebar. Đặt ở đây thay vì context processor để KHÔNG bắt mọi request của
+    người học phải chịu thêm 1 câu COUNT chỉ vì admin cần con số đó."""
+    return ErrorReport.objects.filter(status_code=ERROR_STATUS_PENDING).count()
+
+
 @staff_required
 def overview_view(request):
     """SC07_QuanTriAdmin — tổng quan hệ thống."""
@@ -72,12 +91,16 @@ def overview_view(request):
         "pending_contributions": Contribution.objects.filter(
             status_code=CONTRIBUTION_STATUS_PENDING
         ).count(),
+        "unresolved_reports": ErrorReport.objects.filter(
+            status_code=ERROR_STATUS_PENDING
+        ).count(),
     }
     context = {
         "stats": stats,
         "recent_users": User.objects.order_by("-date_joined")[:RECENT_USER_LIMIT],
         "display_name": (request.user.first_name or "").strip() or request.user.get_username(),
         "active_admin_nav": "overview",
+        "pending_error_reports": _pending_error_report_count(),
     }
     return render(request, "admin_panel/overview.html", context)
 
@@ -197,6 +220,7 @@ def data_index_view(request):
     context = {
         "tables": _table_rows(),
         "active_admin_nav": "data",
+        "pending_error_reports": _pending_error_report_count(),
         "max_rows": dataio.MAX_IMPORT_ROWS,
     }
     return render(request, "admin_panel/data_index.html", context)
@@ -260,6 +284,7 @@ def _import_context(request, dataset, mode, extra=None):
         "MODE_UPSERT": dataio.MODE_UPSERT,
         "MODE_UPDATE": dataio.MODE_UPDATE,
         "active_admin_nav": "data",
+        "pending_error_reports": _pending_error_report_count(),
     }
     context.update(extra or {})
     return context
@@ -426,3 +451,115 @@ def data_import_confirm_view(request, model_label):
             ),
         )
     return redirect("admin_panel:data_index")
+
+
+# ---------------------------------------------------------------------------
+# SC14 — Báo cáo lỗi
+# ---------------------------------------------------------------------------
+# Một màn duy nhất, bố cục 2 cột như mockup SC12: trái là danh sách lọc theo
+# trạng thái, phải là chi tiết bản ghi đang chọn (?selected=<pk>). Không tách
+# thành 2 URL để admin duyệt liên tiếp nhiều báo lỗi mà không mất bộ lọc.
+#
+# Model/luồng trạng thái nằm ở apps/error_reports — view này chỉ điều phối.
+
+ERROR_REPORT_PAGE_SIZE = 30
+
+# Giá trị ?status= trên URL -> mã trạng thái thật trong DB. Dùng chữ trên URL
+# (?status=pending) thay vì mã ("001") để link còn đọc được và không lộ mã nội
+# bộ; "all" = không lọc.
+ERROR_REPORT_FILTERS = {
+    "pending": ERROR_STATUS_PENDING,
+    "fixed": ERROR_STATUS_FIXED,
+    "dismissed": ERROR_STATUS_DISMISSED,
+    "all": None,
+}
+ERROR_REPORT_DEFAULT_FILTER = "pending"
+
+
+@staff_required
+def error_report_list_view(request):
+    """Danh sách báo lỗi + chi tiết bản ghi đang chọn."""
+    status_key = request.GET.get("status") or ERROR_REPORT_DEFAULT_FILTER
+    if status_key not in ERROR_REPORT_FILTERS:
+        status_key = ERROR_REPORT_DEFAULT_FILTER
+    status_code = ERROR_REPORT_FILTERS[status_key]
+
+    reports = ErrorReport.objects.select_related("user", "vocabulary", "handled_by")
+    if status_code:
+        reports = reports.filter(status_code=status_code)
+
+    page = Paginator(reports, ERROR_REPORT_PAGE_SIZE).get_page(request.GET.get("page"))
+
+    # Bản ghi đang mở ở cột phải: ?selected=<pk>, mặc định là dòng đầu trang.
+    selected = None
+    selected_pk = request.GET.get("selected")
+    if selected_pk:
+        selected = next((r for r in page.object_list if str(r.pk) == str(selected_pk)), None)
+        if selected is None:
+            # Bấm từ trang khác / bản ghi vừa đổi trạng thái nên rơi khỏi bộ lọc
+            # hiện tại — vẫn mở chi tiết thay vì im lặng bỏ qua.
+            selected = (
+                ErrorReport.objects.select_related("user", "vocabulary", "handled_by")
+                .filter(pk=selected_pk)
+                .first()
+            )
+    if selected is None and page.object_list:
+        selected = page.object_list[0]
+
+    counts = {
+        "pending": ErrorReport.objects.filter(status_code=ERROR_STATUS_PENDING).count(),
+        "fixed": ErrorReport.objects.filter(status_code=ERROR_STATUS_FIXED).count(),
+        "dismissed": ErrorReport.objects.filter(status_code=ERROR_STATUS_DISMISSED).count(),
+    }
+    counts["all"] = ErrorReport.objects.count()
+
+    context = {
+        "page_obj": page,
+        "reports": page.object_list,
+        "selected": selected,
+        "status_key": status_key,
+        "counts": counts,
+        "active_admin_nav": "error_reports",
+        "pending_error_reports": _pending_error_report_count(),
+    }
+    return render(request, "admin_panel/error_report_list.html", context)
+
+
+@staff_required
+@require_POST
+def error_report_action_view(request, pk):
+    """Xử lý một báo lỗi: đã sửa / bỏ qua / mở lại.
+
+    Luôn redirect về đúng bộ lọc + bản ghi vừa thao tác, để admin không bị đá
+    về đầu danh sách sau mỗi lần bấm.
+    """
+    report = ErrorReport.objects.filter(pk=pk).first()
+    if report is None:
+        raise Http404
+
+    form = ErrorReportActionForm(request.POST)
+    status_key = request.POST.get("status") or ERROR_REPORT_DEFAULT_FILTER
+    if status_key not in ERROR_REPORT_FILTERS:
+        status_key = ERROR_REPORT_DEFAULT_FILTER
+    back = f"{reverse('admin_panel:error_report_list')}?status={status_key}&selected={report.pk}"
+
+    if not form.is_valid():
+        django_messages.error(request, message("error_report.action.error.invalid"))
+        return redirect(back)
+
+    action = form.cleaned_data["action"]
+    response_text = form.cleaned_data.get("admin_response", "")
+    try:
+        if action == ErrorReportActionForm.ACTION_FIX:
+            error_report_services.mark_fixed(report, request.user, response_text)
+            django_messages.success(request, message("error_report.action.success.fixed"))
+        elif action == ErrorReportActionForm.ACTION_DISMISS:
+            error_report_services.dismiss(report, request.user, response_text)
+            django_messages.success(request, message("error_report.action.success.dismissed"))
+        else:
+            error_report_services.reopen(report, request.user)
+            django_messages.success(request, message("error_report.action.success.reopened"))
+    except error_report_services.ErrorReportActionError as exc:
+        django_messages.error(request, str(exc))
+
+    return redirect(back)

@@ -24,6 +24,8 @@ from apps.core.constants import (
     CODE_TYPE_SESSION_TYPE,
     CODE_TYPE_SHEET_TYPE,
     CODE_TYPE_RECALL_DIRECTION,
+    CODE_TYPE_ERROR_TYPE,
+    CODE_TYPE_ERROR_STATUS,
 )
 
 # (code, code_name, mother_code, description, sort_order)
@@ -59,6 +61,26 @@ SEED_DATA = {
         ("002", "Đã duyệt", "DA_XU_LY", "", 2),
         ("003", "Từ chối", "DA_XU_LY", "", 3),
         ("DA_XU_LY", "Đã xử lý", None, "Code cha gom Đã duyệt + Từ chối, dùng để lọc/báo cáo", 0),
+    ],
+    # SC14 — Báo cáo lỗi. Loại lỗi là thuần dữ liệu hiển thị: thêm/bớt một
+    # loại ở đây là đủ, không phải sửa form hay view nào.
+    CODE_TYPE_ERROR_TYPE: [
+        ("001", "Sai nghĩa tiếng Việt", None, "", 1),
+        ("002", "Sai cách đọc / furigana", None, "", 2),
+        ("003", "Sai chữ Kanji / Kana", None, "", 3),
+        ("004", "Sai câu ví dụ", None, "", 4),
+        ("005", "Sai chủ đề phân loại", None, "", 5),
+        ("006", "Lỗi hiển thị / kỹ thuật", None, "Trang vỡ, bấm không ăn, chữ chồng nhau...", 6),
+        ("007", "Khác", None, "", 7),
+    ],
+    # Cùng dạng phân cấp như trạng thái góp ý: "DA_XU_LY" là code CHA gom
+    # "Đã sửa" + "Bỏ qua", dùng khi lọc "đã xử lý" mà không phải liệt kê tay
+    # từng mã con — xem apps/core/mastercode.get_children.
+    CODE_TYPE_ERROR_STATUS: [
+        ("001", "Chờ xử lý", None, "", 1),
+        ("002", "Đã sửa", "DA_XU_LY", "", 2),
+        ("003", "Bỏ qua", "DA_XU_LY", "Báo lỗi không đúng hoặc trùng với báo lỗi khác", 3),
+        ("DA_XU_LY", "Đã xử lý", None, "Code cha gom Đã sửa + Bỏ qua, dùng để lọc/thống kê", 0),
     ],
     CODE_TYPE_POINT_ACTION: [
         ("001", "Gửi góp ý từ mới", None, "+1 điểm", 1),

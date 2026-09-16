@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC14 — màn admin "Báo cáo lỗi".
+
+Bố cục 2 cột mượn nguyên từ mockup SC12_HopThuGopY (danh sách trái · chi tiết
+phải) vì hai màn cùng một kiểu thao tác: lướt danh sách rồi xử lý từng bản
+ghi. Bộ lọc là LINK (không phải JS) nên chạy cả khi tắt JavaScript, và trạng
+thái lọc nằm trên URL để admin bookmark/chia sẻ được.{% endcomment %}
+
+{% block title %}{% label "error_report.admin.title" %} | {% label "common.brand.name" %}{% endblock %}
+{% block main_attrs %} style="padding:0;"{% endblock %}
+
+{% block main %}
+<div class="admin-layout">
+
+  {% include "admin_panel/_sidebar.html" %}
+
+  <div class="admin-content">
+    {% include "partials/messages.html" %}
+
+    <div class="eyebrow">{% label "error_report.admin.eyebrow" %}</div>
+    <h1 class="serif" style="font-size:28px;margin:0 0 6px;">{% label "error_report.admin.title" %}</h1>
+    <p class="muted" style="margin:0 0 22px;font-size:14px;">{% message "error_report.admin.hint.intro" %}</p>
+
+    <div class="grid cols-3" style="margin-bottom:22px;">
+      <div class="stat"><div class="num">{{ counts.pending }}</div><div class="label">{% label "error_report.admin.stat.pending" %}</div></div>
+      <div class="stat"><div class="num">{{ counts.fixed }}</div><div class="label">{% label "error_report.admin.stat.fixed" %}</div></div>
+      <div class="stat"><div class="num">{{ counts.dismissed }}</div><div class="label">{% label "error_report.admin.stat.dismissed" %}</div></div>
+    </div>
+
+    <div class="toolbar filter-bar" role="group">
+      <a class="tag tag-filter{% if status_key == 'pending' %} is-active{% endif %}"
+         href="?status=pending">{% label "error_report.admin.filter.pending" %} ({{ counts.pending }})</a>
+      <a class="tag tag-filter{% if status_key == 'fixed' %} is-active{% endif %}"
+         href="?status=fixed">{% label "error_report.admin.filter.fixed" %}</a>
+      <a class="tag tag-filter{% if status_key == 'dismissed' %} is-active{% endif %}"
+         href="?status=dismissed">{% label "error_report.admin.filter.dismissed" %}</a>
+      <a class="tag tag-filter{% if status_key == 'all' %} is-active{% endif %}"
+         href="?status=all">{% label "error_report.admin.filter.all" %} ({{ counts.all }})</a>
+    </div>
+
+    {% if reports %}
+      <div class="grid" style="grid-template-columns:1fr 1.15fr;gap:20px;align-items:start;">
+
+        {# ---------- Cột trái: danh sách ---------- #}
+        <div class="card" style="padding:0;">
+          <table>
+            <tr>
+              <th>{% label "error_report.admin.table.type" %}</th>
+              <th>{% label "error_report.admin.table.reporter" %}</th>
+              <th>{% label "error_report.admin.table.word" %}</th>
+              <th>{% label "error_report.admin.table.sent_at" %}</th>
+            </tr>
+            {% for report in reports %}
+              <tr{% if selected and report.pk == selected.pk %} style="background:var(--accent-soft);"{% endif %}>
+                <td><a class="action-link" href="?status={{ status_key }}&selected={{ report.pk }}"><span class="tag">{{ report.error_type_name }}</span></a></td>
+                <td>{{ report.user.first_name|default:report.user.get_username }}</td>
+                <td class="serif">{% if report.vocabulary %}{{ report.vocabulary.word }}{% else %}<span class="muted">—</span>{% endif %}</td>
+                <td class="muted">{{ report.created_at|date:"d/m" }}</td>
+              </tr>
+            {% endfor %}
+          </table>
+
+          {% if page_obj.has_other_pages %}
+            <div class="pagination" style="padding:12px;">
+              {% if page_obj.has_previous %}
+                <a class="tag" href="?status={{ status_key }}&page={{ page_obj.previous_page_number }}">{% label "common.pagination.prev" %}</a>
+              {% endif %}
+              <span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+              {% if page_obj.has_next %}
+                <a class="tag" href="?status={{ status_key }}&page={{ page_obj.next_page_number }}">{% label "common.pagination.next" %}</a>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# ---------- Cột phải: chi tiết bản ghi đang chọn ---------- #}
+        {% if selected %}
+          <div class="card">
+            <p class="muted" style="margin:0 0 4px;font-size:13px;">
+              {{ selected.error_type_name }} ·
+              {{ selected.user.first_name|default:selected.user.get_username }} ·
+              {{ selected.created_at|date:"d/m/Y" }}
+            </p>
+            <h3 class="serif" style="margin:0 0 18px;">{% label "error_report.admin.detail.title" %}</h3>
+
+            {% if selected.vocabulary %}
+              <div class="field">
+                <label>{% label "error_report.admin.table.word" %}</label>
+                <p class="serif" style="margin:0;font-size:18px;">
+                  {{ selected.vocabulary.word }}
+                  {% if selected.vocabulary.reading %}<span class="muted" style="font-size:14px;">（{{ selected.vocabulary.reading }}）</span>{% endif %}
+                </p>
+                <p class="muted" style="margin:4px 0 0;font-size:13px;">{{ selected.vocabulary.meaning_vi }}</p>
+                <p style="margin:8px 0 0;">
+                  <a class="action-link is-primary" href="{% url 'admin:vocabulary_vocabulary_change' selected.vocabulary.pk %}">
+                    {% label "error_report.admin.link.edit_word" %} →
+                  </a>
+                </p>
+              </div>
+            {% endif %}
+
+            <div class="field">
+              <label>{% label "error_report.admin.detail.description" %}</label>
+              <p style="margin:0;white-space:pre-wrap;">{{ selected.description }}</p>
+            </div>
+
+            {% if selected.suggested_fix %}
+              <div class="field">
+                <label>{% label "error_report.admin.detail.suggested_fix" %}</label>
+                <p style="margin:0;">{{ selected.suggested_fix }}</p>
+              </div>
+            {% endif %}
+
+            {% if selected.page_path %}
+              <p class="muted" style="font-size:12.5px;margin:0 0 14px;">
+                {% label "error_report.admin.detail.page_path" %}: {{ selected.page_path }}
+              </p>
+            {% endif %}
+
+            <div class="divider"></div>
+
+            {% if selected.is_pending %}
+              <form method="post" action="{% url 'admin_panel:error_report_action' selected.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="{{ status_key }}">
+                <div class="field">
+                  <label for="id_admin_response">{% label "error_report.admin.field.admin_response" %}</label>
+                  <textarea id="id_admin_response" name="admin_response" rows="3"></textarea>
+                </div>
+                <p class="muted" style="font-size:12.5px;margin:0 0 14px;">{% message "error_report.admin.hint.dismiss_reason" %}</p>
+                <div style="display:flex;gap:10px;">
+                  <button type="submit" name="action" value="fix" class="btn btn-primary" style="flex:1;">{% label "error_report.admin.button.fix" %}</button>
+                  <button type="submit" name="action" value="dismiss" class="btn btn-outline" style="flex:1;">{% label "error_report.admin.button.dismiss" %}</button>
+                </div>
+              </form>
+            {% else %}
+              <p style="margin:0 0 8px;">
+                {% if selected.is_fixed %}
+                  <span class="tag">{% label "error_report.tag.status.fixed" %}</span>
+                {% else %}
+                  <span class="tag level">{% label "error_report.tag.status.dismissed" %}</span>
+                {% endif %}
+                {% if selected.handled_by %}
+                  <span class="muted" style="font-size:13px;">
+                    · {% label "error_report.admin.detail.handled_by" %}:
+                    {{ selected.handled_by.first_name|default:selected.handled_by.get_username }}
+                    · {{ selected.handled_at|date:"d/m/Y H:i" }}
+                  </span>
+                {% endif %}
+              </p>
+              {% if selected.admin_response %}
+                <div class="field">
+                  <label>{% label "error_report.admin.field.admin_response" %}</label>
+                  <p style="margin:0;white-space:pre-wrap;">{{ selected.admin_response }}</p>
+                </div>
+              {% endif %}
+              <form method="post" action="{% url 'admin_panel:error_report_action' selected.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="{{ status_key }}">
+                <button type="submit" name="action" value="reopen" class="btn btn-outline">{% label "error_report.admin.button.reopen" %}</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endif %}
+
+      </div>
+    {% else %}
+      <div class="card"><p class="muted" style="margin:0;">{% message "error_report.admin.empty" %}</p></div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

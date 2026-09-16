@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC14 — form người học gửi báo lỗi.
+
+Không có mockup HTML riêng cho màn này (htmlTemplate chỉ vẽ tới SC13), nên bố
+cục dựng lại từ đúng bộ class trong htmlTemplate/STYLE_GUIDE.md — card + field
++ btn, giống màn Cài đặt — để cả 3 theme A/B/C tự ăn CSS mà không phải thêm
+class mới.{% endcomment %}
+
+{% block title %}{% label "error_report.form.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block wrap_attrs %} style="max-width:720px;"{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">{% label "error_report.form.eyebrow" %}</div>
+  <h1 class="serif" style="font-size:28px;margin:0 0 6px;">{% label "error_report.form.title" %}</h1>
+  <p class="muted" style="margin:0 0 20px;font-size:14px;">{% message "error_report.form.hint.intro" %}</p>
+
+  <form method="post" action="{% url 'error_reports:create' %}">
+    {% csrf_token %}
+    {# Từ vựng đi kèm dạng hidden: link "🚩 Báo lỗi" ở SC05 đã mang sẵn id, người dùng không phải chọn lại. #}
+    {% if vocabulary %}<input type="hidden" name="vocabulary" value="{{ vocabulary.pk }}">{% endif %}
+
+    <div class="card">
+      {% if vocabulary %}
+        <div class="field">
+          <label>{% label "error_report.form.field.target_word" %}</label>
+          <p class="serif" style="margin:0;font-size:18px;">
+            {{ vocabulary.word }}
+            {% if vocabulary.reading %}<span class="muted" style="font-size:14px;">（{{ vocabulary.reading }}）</span>{% endif %}
+          </p>
+          <p class="muted" style="margin:4px 0 0;font-size:13px;">{{ vocabulary.meaning_vi }}</p>
+        </div>
+        <div class="divider"></div>
+      {% else %}
+        <p class="muted" style="margin:0 0 14px;font-size:13px;">{% label "error_report.form.link.general" %}</p>
+      {% endif %}
+
+      {% if form.non_field_errors %}
+        {% for err in form.non_field_errors %}<p class="muted" style="margin:0 0 10px;">{{ err }}</p>{% endfor %}
+      {% endif %}
+
+      <div class="field">
+        <label for="{{ form.error_type_code.id_for_label }}">{% label "error_report.form.field.error_type" %}</label>
+        {{ form.error_type_code }}
+        {% for err in form.error_type_code.errors %}<p class="muted" style="margin:4px 0 0;">{{ err }}</p>{% endfor %}
+      </div>
+
+      <div class="field">
+        <label for="{{ form.description.id_for_label }}">{% label "error_report.form.field.description" %}</label>
+        {{ form.description }}
+        {% for err in form.description.errors %}<p class="muted" style="margin:4px 0 0;">{{ err }}</p>{% endfor %}
+      </div>
+
+      <div class="field">
+        <label for="{{ form.suggested_fix.id_for_label }}">{% label "error_report.form.field.suggested_fix" %}</label>
+        {{ form.suggested_fix }}
+        {% for err in form.suggested_fix.errors %}<p class="muted" style="margin:4px 0 0;">{{ err }}</p>{% endfor %}
+      </div>
+
+      <div class="divider"></div>
+      <div style="display:flex;gap:10px;">
+        <button type="submit" class="btn btn-primary">{% label "error_report.form.button.submit" %}</button>
+        <a class="btn btn-outline" href="{% url 'error_reports:mine' %}">{% label "error_report.mine.title" %}</a>
+      </div>
+    </div>
+  </form>
+{% endblock %}

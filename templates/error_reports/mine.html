@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC14 — "Báo lỗi của tôi": người gửi theo dõi trạng thái + phản hồi.
+
+Tag trạng thái đọc từ thuộc tính is_pending/is_fixed/is_dismissed của model
+(so sánh mã ở Python), CHỮ hiển thị lấy từ label.properties — template không
+so sánh chuỗi mã "001" và cũng không in thẳng tiếng Việt.{% endcomment %}
+
+{% block title %}{% label "error_report.mine.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">{% label "error_report.mine.eyebrow" %}</div>
+  <h1 class="serif" style="font-size:28px;margin:0 0 6px;">{% label "error_report.mine.title" %}</h1>
+  <p class="muted" style="margin:0 0 20px;font-size:14px;">{% message "error_report.mine.hint.intro" %}</p>
+
+  <div class="toolbar">
+    <a class="btn btn-primary" href="{% url 'error_reports:create' %}">{% label "error_report.mine.button.new" %}</a>
+  </div>
+
+  {% if page_obj.object_list %}
+    <div class="card" style="padding:0;">
+      <table>
+        <tr>
+          <th>{% label "error_report.mine.table.type" %}</th>
+          <th>{% label "error_report.mine.table.word" %}</th>
+          <th>{% label "error_report.mine.table.description" %}</th>
+          <th>{% label "common.field.status" %}</th>
+          <th>{% label "error_report.mine.table.sent_at" %}</th>
+          <th>{% label "error_report.mine.table.admin_response" %}</th>
+        </tr>
+        {% for report in page_obj.object_list %}
+          <tr>
+            <td><span class="tag">{{ report.error_type_name }}</span></td>
+            <td class="serif">{% if report.vocabulary %}{{ report.vocabulary.word }}{% else %}<span class="muted">—</span>{% endif %}</td>
+            <td>{{ report.description|truncatechars:80 }}</td>
+            <td>
+              {% if report.is_fixed %}
+                <span class="tag">{% label "error_report.tag.status.fixed" %}</span>
+              {% elif report.is_dismissed %}
+                <span class="tag level">{% label "error_report.tag.status.dismissed" %}</span>
+              {% else %}
+                <span class="tag">{% label "error_report.tag.status.pending" %}</span>
+              {% endif %}
+            </td>
+            <td class="muted">{{ report.created_at|date:"d/m/Y" }}</td>
+            <td class="muted">{{ report.admin_response|default:"—" }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a class="tag" href="?page={{ page_obj.previous_page_number }}">{% label "common.pagination.prev" %}</a>
+        {% endif %}
+        <span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a class="tag" href="?page={{ page_obj.next_page_number }}">{% label "common.pagination.next" %}</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="card"><p class="muted" style="margin:0;">{% message "error_report.mine.empty" %}</p></div>
+  {% endif %}
+{% endblock %}

@@ -1,7 +1,7 @@
 """
 Engine nhập/xuất dữ liệu bằng file cho khu quản trị SC07b.
 
-Ý tưởng: KHÔNG viết tay 18 bộ form/parse. Cột của mỗi bảng được suy ra từ
+Ý tưởng: KHÔNG viết tay 19 bộ form/parse. Cột của mỗi bảng được suy ra từ
 `Model._meta` nên thêm/bớt field trong models.py là file mẫu, file xuất và
 trình nhập tự đổi theo — không có nơi thứ hai phải sửa.
 
@@ -45,7 +45,7 @@ from django.apps import apps as django_apps
 from django.core.exceptions import ValidationError
 from django.db import models
 
-# 6 app nội bộ = 18 bảng. django.contrib.auth KHÔNG đụng vào (quyết định của Dat,
+# 7 app nội bộ = 19 bảng. django.contrib.auth KHÔNG đụng vào (quyết định của Dat,
 # xem claude/db-schema-django.md).
 LOCAL_APP_LABELS = (
     "core",
@@ -54,6 +54,7 @@ LOCAL_APP_LABELS = (
     "learning",
     "practice_sheets",
     "gamification",
+    "error_reports",
 )
 
 AUDIT_FIELDS = ("created_by", "created_at", "updated_by", "updated_at")
@@ -136,11 +137,13 @@ NATURAL_KEYS = {
     "gamification.userpinnedbadge": ("user", "category"),
 }
 
-# Hai bảng NHẬT KÝ cố ý không có khoá tự nhiên, và đừng bịa ra một cái.
+# Ba bảng NHẬT KÝ cố ý không có khoá tự nhiên, và đừng bịa ra một cái.
 #   - Contribution: cùng một người gửi hai góp ý nội dung y hệt nhau vẫn là hai
 #     góp ý khác nhau (gửi lại sau khi bị từ chối).
 #   - UserPointTransaction: cùng một người được cộng cùng số điểm cho cùng hành
 #     động nhiều lần là chuyện bình thường.
+#   - ErrorReport: hai người báo cùng một lỗi trên cùng một từ, hoặc cùng một
+#     người báo lại sau khi lỗi tái phát, đều là hai bản ghi riêng.
 # Bịa khoá ở đây sẽ khiến chế độ "thêm + cập nhật" GHI ĐÈ một bản ghi lịch sử
 # hợp lệ. Thay vào đó: hai bảng này chỉ cho nhập ở chế độ THÊM MỚI, và màn nhập
 # cảnh báo rõ là nhập hai lần sẽ ra dữ liệu đôi.
@@ -148,6 +151,7 @@ TABLES_WITHOUT_NATURAL_KEY = frozenset(
     {
         "gamification.contribution",
         "gamification.userpointtransaction",
+        "error_reports.errorreport",
     }
 )
 
@@ -193,7 +197,7 @@ def _all_local_models():
 
 
 def importable_models():
-    """18 bảng, xếp theo thứ tự phụ thuộc: bảng bị tham chiếu đứng trước.
+    """19 bảng, xếp theo thứ tự phụ thuộc: bảng bị tham chiếu đứng trước.
 
     Nhập theo đúng thứ tự này thì khoá ngoại luôn dò ra. Vòng lặp tự tham chiếu
     (User.created_by trỏ về chính User) không tính là phụ thuộc.
@@ -221,7 +225,7 @@ def importable_models():
 
 
 def get_importable_model(label):
-    """Tra model theo nhãn 'app_label.modelname'. None nếu không nằm trong 18 bảng."""
+    """Tra model theo nhãn 'app_label.modelname'. None nếu không nằm trong 19 bảng."""
     label = (label or "").strip().lower()
     for model in _all_local_models():
         if model_label(model) == label:
@@ -1445,7 +1449,7 @@ class FullVocabularyDataset:
 
 
 def datasets():
-    """Mẫu gộp đứng đầu, rồi tới 18 bảng theo thứ tự phụ thuộc."""
+    """Mẫu gộp đứng đầu, rồi tới 19 bảng theo thứ tự phụ thuộc."""
     return [FullVocabularyDataset()] + [ModelDataset(m) for m in importable_models()]
 
 

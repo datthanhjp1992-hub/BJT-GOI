@@ -46,6 +46,11 @@ BJT-GOI/
 │   │   ├── pdf_generator.py        # port từ script mockup make_practice_pdf.py
 │   │   └── views.py
 │   │
+│   ├── error_reports/             # Báo cáo lỗi nội dung (SC14): người học báo lỗi,
+│   │   │                            #   admin xử lý ở khu quản trị
+│   │   ├── models.py                # ErrorReport
+│   │   └── services.py              # mark_fixed / dismiss / reopen (luồng trạng thái)
+│   │
 │   └── gamification/               # Góp ý (Contribution), Điểm, Danh hiệu nhiều nhóm (SC11-SC13)
 │       ├── models.py                # Contribution, PointRule, UserPointTransaction,
 │       │                            # BadgeCategory, BadgeTier, UserPinnedBadge
@@ -57,7 +62,8 @@ BJT-GOI/
 │   ├── accounts/
 │   ├── vocabulary/
 │   ├── learning/
-│   └── practice_sheets/
+│   ├── practice_sheets/
+│   └── error_reports/
 │
 ├── static/
 │   ├── css/theme_a.css          # 3 theme lấy từ bản mockup đã duyệt (Washi & Vermillion)

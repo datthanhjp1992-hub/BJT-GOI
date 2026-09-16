@@ -6,6 +6,8 @@ app_name = "admin_panel"
 
 urlpatterns = [
     path("", views.overview_view, name="overview"),
+    path("error-reports/", views.error_report_list_view, name="error_report_list"),
+    path("error-reports/<int:pk>/xu-ly/", views.error_report_action_view, name="error_report_action"),
     path("data/", views.data_index_view, name="data_index"),
     # Đặt trước route nhập để "mau.csv" / "xuat.xlsx" không bị nuốt mất.
     path("data/<str:model_label>/mau.<str:fmt>", views.data_template_view, name="data_template"),
