@@ -77,6 +77,8 @@ dựng từ context `topics`, không liệt kê cứng chủ đề nào trong te
                 <span class="action-sep" aria-hidden="true">·</span>
               {% endif %}
               {% comment %}Báo lỗi mang sẵn id từ vựng nên form bên SC14 không bắt chọn lại từ.{% endcomment %}
+              <a class="action-link" href="{% url 'gamification:form' %}?type=meaning&vocabulary={{ word.pk }}">{% label "contribution.form.link.suggest" %}</a>
+              <span class="action-sep" aria-hidden="true">·</span>
               <a class="action-link" href="{% url 'error_reports:create' %}?vocabulary={{ word.pk }}">{% label "error_report.form.link.report" %}</a>
             </td>
           </tr>

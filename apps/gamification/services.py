@@ -107,16 +107,23 @@ def award_points(user, action_code, points, contribution=None, note=""):
     request cộng điểm cùng lúc). Gọi hàm này thay vì tự tạo
     UserPointTransaction thẳng, để total_points luôn nhất quán với log.
     """
+    from django.contrib.auth import get_user_model
     from django.db import transaction
     from django.db.models import F
     from apps.gamification.models import UserPointTransaction
 
+    # get_user_model() chứ KHÔNG phải type(user): gọi từ view thì `user` là
+    # request.user, tức SimpleLazyObject bọc ngoài User — `type(user).objects`
+    # nổ AttributeError. Lỗi này nằm im từ đầu vì trước SC11 chưa view nào cộng
+    # điểm, chỉ có lệnh seed gọi tới.
     with transaction.atomic():
         UserPointTransaction.objects.create(
             user=user, action_code=action_code, points=points,
             contribution=contribution, note=note,
         )
-        type(user).objects.filter(pk=user.pk).update(total_points=F("total_points") + points)
+        get_user_model().objects.filter(pk=user.pk).update(
+            total_points=F("total_points") + points
+        )
     user.refresh_from_db(fields=["total_points"])
     return user.total_points
 
@@ -141,6 +148,48 @@ _APPROVAL_ACTION_CODE_BY_TYPE = {
     CONTRIBUTION_TYPE_EDIT_MEANING: "004",   # "Sửa nghĩa được duyệt"
     CONTRIBUTION_TYPE_COMMENT: "005",        # "Bình luận được duyệt"
 }
+
+
+# action_code ứng với việc GỬI góp ý (khác với DUYỆT ở dưới). Chỉ "Từ mới" và
+# "Sửa nghĩa" được cộng điểm lúc gửi (+1, xem spec mục 4) — bình luận thì
+# không, vì tần suất cao, cộng điểm lúc gửi là mời spam.
+_SUBMIT_ACTION_CODE_BY_TYPE = {
+    CONTRIBUTION_TYPE_NEW_WORD: "001",       # "Gửi góp ý từ mới"
+    CONTRIBUTION_TYPE_EDIT_MEANING: "003",   # "Gửi sửa nghĩa/cách dùng"
+}
+
+
+def submit_contribution(user, contribution_type_code, **fields):
+    """
+    Tạo 1 góp ý ở trạng thái Chờ duyệt + cộng điểm GỬI nếu loại đó có.
+
+    Mọi nơi tạo Contribution đều đi qua đây (màn SC11 lẫn ô bình luận nhanh ở
+    flashcard) để điểm gửi không bị sót ở một đường và cộng hai lần ở đường
+    kia. Số điểm tra từ PointRule, không hardcode.
+    """
+    from django.db import transaction
+
+    from apps.gamification.models import Contribution, PointRule
+
+    with transaction.atomic():
+        contribution = Contribution.objects.create(
+            user=user,
+            contribution_type_code=contribution_type_code,
+            status_code=STATUS_PENDING,
+            **fields,
+        )
+
+        action_code = _SUBMIT_ACTION_CODE_BY_TYPE.get(contribution_type_code)
+        if action_code:
+            rule = PointRule.objects.filter(action_code=action_code).first()
+            points = rule.points if rule else 0
+            if points:
+                award_points(
+                    user, action_code, points, contribution=contribution,
+                    note=f"Gửi góp ý #{contribution.pk}",
+                )
+
+    return contribution
 
 
 def approve_contribution(contribution, reviewed_by, admin_response=""):
@@ -200,8 +249,10 @@ def reject_contribution(contribution, reviewed_by, admin_response):
     """Từ chối góp ý — bắt buộc admin_response (lý do), không cộng điểm."""
     from django.utils import timezone
 
-    if not admin_response:
-        raise ValueError("Cần nhập lý do từ chối để phản hồi cho người gửi.")
+    from apps.core.properties import message
+
+    if not (admin_response or "").strip():
+        raise ValueError(message("contribution.reject.error.reason_required"))
 
     contribution.status_code = STATUS_REJECTED
     contribution.reviewed_by = reviewed_by

@@ -62,7 +62,10 @@ JS thì <noscript> bên dưới hiện thẳng nghĩa, không khoá tính năng 
 
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
       <h3 class="serif" style="margin:0;font-size:18px;">💬 {% label "learning.flashcard.section.comments" %}</h3>
-      <a href="{% url 'vocabulary:index' %}" class="muted" style="font-size:13px;text-decoration:underline;">{% label "learning.flashcard.link.suggest_fix" %} →</a>
+      {% comment %}Trước 16/09/2026 link này trỏ về {% url 'vocabulary:index' %} vì SC11
+      chưa dựng — bấm vào là quay lại trang từ vựng. Giờ trỏ thẳng vào form góp ý
+      "Sửa nghĩa", mang sẵn id từ đang học nên không phải chọn lại.{% endcomment %}
+      <a href="{% url 'gamification:form' %}?type=meaning&vocabulary={{ word.pk }}" class="muted" style="font-size:13px;text-decoration:underline;">{% label "learning.flashcard.link.suggest_fix" %} →</a>
     </div>
 
     {% if comments %}

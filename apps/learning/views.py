@@ -13,6 +13,7 @@ from django.views.decorators.http import require_POST
 from apps.core.constants import SESSION_TYPE_FLASHCARD, SESSION_TYPE_QUIZ
 from apps.core.properties import message
 from apps.gamification.models import Contribution
+from apps.gamification import services as gamification_services
 from apps.gamification.services import CONTRIBUTION_TYPE_COMMENT, STATUS_APPROVED
 from apps.vocabulary.models import Topic, Vocabulary
 
@@ -148,9 +149,12 @@ def flashcard_comment(request, vocabulary_id):
     text = (request.POST.get("comment_text") or "").strip()
 
     if text:
-        Contribution.objects.create(
-            user=request.user,
-            contribution_type_code=CONTRIBUTION_TYPE_COMMENT,
+        # Đi qua service chung của SC11 thay vì Contribution.objects.create()
+        # thẳng, để hai đường gửi bình luận (màn góp ý và ô nhanh ở đây) không
+        # lệch nhau về trạng thái/điểm khi luật thay đổi.
+        gamification_services.submit_contribution(
+            request.user,
+            CONTRIBUTION_TYPE_COMMENT,
             target_vocabulary=vocab,
             comment_text=text,
         )

@@ -5,7 +5,9 @@ PHẠM VI (cập nhật 13/09/2026):
 1. Bảng TỔNG QUAN — số liệu + người dùng mới nhất.
 2. BÁO CÁO LỖI — danh sách báo lỗi người dùng gửi, xem chi tiết, đánh dấu
    đã sửa / bỏ qua kèm phản hồi (model ở apps/error_reports).
-3. NHẬP / XUẤT DỮ LIỆU bằng file CSV & Excel cho cả 18 bảng + một mẫu gộp
+3. HÒM THƯ GÓP Ý (SC12) — duyệt/từ chối góp ý người dùng gửi, cộng điểm
+   theo PointRule (model + service ở apps/gamification).
+4. NHẬP / XUẤT DỮ LIỆU bằng file CSV & Excel cho cả 18 bảng + một mẫu gộp
    "Từ vựng đầy đủ": tải file mẫu, xuất dữ liệu hiện có, chọn chế độ ghi, tải
    file lên và xem trước rồi mới ghi.
 
@@ -44,6 +46,8 @@ from apps.core.properties import message
 from apps.error_reports import services as error_report_services
 from apps.error_reports.forms import ErrorReportActionForm
 from apps.error_reports.models import ErrorReport
+from apps.gamification import services as gamification_services
+from apps.gamification.forms import ContributionActionForm
 from apps.gamification.models import Contribution
 from apps.vocabulary.models import Topic, Vocabulary
 
@@ -562,4 +566,141 @@ def error_report_action_view(request, pk):
     except error_report_services.ErrorReportActionError as exc:
         django_messages.error(request, str(exc))
 
+    return redirect(back)
+
+
+# ---------------------------------------------------------------------------
+# SC12 — Hòm thư góp ý
+# ---------------------------------------------------------------------------
+# Cùng khuôn với màn Báo cáo lỗi ở trên (danh sách trái · chi tiết phải, lọc
+# bằng link) — hai màn cố ý giống nhau để admin không phải học hai cách thao
+# tác. Khác ở phần hành động: duyệt góp ý còn GHI vào Vocabulary và CỘNG ĐIỂM,
+# nên toàn bộ nằm trong apps/gamification/services.py chứ không viết ở đây.
+
+CONTRIBUTION_PAGE_SIZE = 30
+
+CONTRIBUTION_FILTERS = {
+    "pending": gamification_services.STATUS_PENDING,
+    "approved": gamification_services.STATUS_APPROVED,
+    "rejected": gamification_services.STATUS_REJECTED,
+    "all": None,
+}
+CONTRIBUTION_DEFAULT_FILTER = "pending"
+
+
+@staff_required
+def contribution_inbox_view(request):
+    """Danh sách góp ý + chi tiết bản ghi đang chọn."""
+    status_key = request.GET.get("status") or CONTRIBUTION_DEFAULT_FILTER
+    if status_key not in CONTRIBUTION_FILTERS:
+        status_key = CONTRIBUTION_DEFAULT_FILTER
+    status_code = CONTRIBUTION_FILTERS[status_key]
+
+    rows = Contribution.objects.select_related("user", "target_vocabulary", "proposed_topic", "reviewed_by")
+    if status_code:
+        rows = rows.filter(status_code=status_code)
+
+    page = Paginator(rows, CONTRIBUTION_PAGE_SIZE).get_page(request.GET.get("page"))
+
+    selected = None
+    selected_pk = request.GET.get("selected")
+    if selected_pk:
+        selected = next((c for c in page.object_list if str(c.pk) == str(selected_pk)), None)
+        if selected is None:
+            # Bản ghi vừa đổi trạng thái nên rơi khỏi bộ lọc hiện tại — vẫn mở
+            # chi tiết thay vì im lặng bỏ qua.
+            selected = (
+                Contribution.objects.select_related("user", "target_vocabulary", "proposed_topic", "reviewed_by")
+                .filter(pk=selected_pk)
+                .first()
+            )
+    if selected is None and page.object_list:
+        selected = page.object_list[0]
+
+    counts = {
+        key: (Contribution.objects.count() if code is None
+              else Contribution.objects.filter(status_code=code).count())
+        for key, code in CONTRIBUTION_FILTERS.items()
+    }
+
+    context = {
+        "page_obj": page,
+        "contributions": page.object_list,
+        "selected": selected,
+        "status_key": status_key,
+        "counts": counts,
+        "topics": Topic.objects.all(),
+        "type_new_word": gamification_services.CONTRIBUTION_TYPE_NEW_WORD,
+        "type_edit_meaning": gamification_services.CONTRIBUTION_TYPE_EDIT_MEANING,
+        "type_comment": gamification_services.CONTRIBUTION_TYPE_COMMENT,
+        "active_admin_nav": "contributions",
+        "pending_error_reports": _pending_error_report_count(),
+    }
+    return render(request, "admin_panel/contribution_inbox.html", context)
+
+
+@staff_required
+@require_POST
+def contribution_action_view(request, pk):
+    """Duyệt / từ chối một góp ý.
+
+    Admin được sửa lại nội dung đề xuất trước khi duyệt (mockup SC12): các ô
+    đó ghi đè `proposed_*` TRƯỚC khi gọi service, nên dữ liệu vào Vocabulary
+    đúng bằng những gì admin nhìn thấy trên màn hình.
+    """
+    contribution = Contribution.objects.filter(pk=pk).first()
+    if contribution is None:
+        raise Http404
+
+    status_key = request.POST.get("status") or CONTRIBUTION_DEFAULT_FILTER
+    if status_key not in CONTRIBUTION_FILTERS:
+        status_key = CONTRIBUTION_DEFAULT_FILTER
+    back = f"{reverse('admin_panel:contribution_inbox')}?status={status_key}&selected={contribution.pk}"
+
+    if contribution.status_code != gamification_services.STATUS_PENDING:
+        django_messages.error(request, message("contribution.action.error.already_reviewed"))
+        return redirect(back)
+
+    form = ContributionActionForm(request.POST)
+    if not form.is_valid():
+        django_messages.error(request, message("contribution.action.error.invalid"))
+        return redirect(back)
+
+    data = form.cleaned_data
+    response_text = (data.get("admin_response") or "").strip()
+
+    if data["action"] == ContributionActionForm.ACTION_REJECT:
+        try:
+            gamification_services.reject_contribution(contribution, request.user, response_text)
+        except ValueError as exc:
+            django_messages.error(request, str(exc))
+            return redirect(back)
+        django_messages.success(request, message("contribution.reject.success"))
+        return redirect(back)
+
+    # --- Duyệt ---
+    if contribution.contribution_type_code == gamification_services.CONTRIBUTION_TYPE_NEW_WORD:
+        contribution.proposed_word = (data.get("word") or contribution.proposed_word).strip()
+        contribution.proposed_reading = (data.get("reading") or contribution.proposed_reading).strip()
+        contribution.proposed_meaning_vi = (data.get("meaning_vi") or contribution.proposed_meaning_vi).strip()
+        if data.get("topic"):
+            contribution.proposed_topic = data["topic"]
+        if not (contribution.proposed_word and contribution.proposed_reading and contribution.proposed_meaning_vi):
+            django_messages.error(request, message("contribution.approve.error.missing_required_field"))
+            return redirect(back)
+
+    elif contribution.contribution_type_code == gamification_services.CONTRIBUTION_TYPE_EDIT_MEANING:
+        if data.get("meaning_vi"):
+            contribution.proposed_meaning_vi = data["meaning_vi"].strip()
+        if data.get("reading"):
+            contribution.proposed_reading = data["reading"].strip()
+        if contribution.target_vocabulary is None:
+            # Từ đích đã bị xoá (FK là SET_NULL) — duyệt sẽ không có gì để ghi.
+            django_messages.error(request, message("contribution.approve.error.target_gone"))
+            return redirect(back)
+
+    gamification_services.approve_contribution(contribution, request.user, response_text)
+    django_messages.success(
+        request, message("contribution.approve.success", points=contribution.points_awarded)
+    )
     return redirect(back)

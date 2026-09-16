@@ -18,6 +18,7 @@ trang chủ hoặc từ danh sách từ vựng.
       <a href="{% url 'learning:dashboard' %}"{% if active_nav == "home" %} class="active"{% endif %}>{% label "common.nav.home" %}</a>
       <a href="{% url 'vocabulary:index' %}"{% if active_nav == "vocabulary" %} class="active"{% endif %}>{% label "common.nav.vocabulary" %}</a>
       <a href="{% url 'practice_sheets:create' %}"{% if active_nav == "practice_sheet" %} class="active"{% endif %}>{% label "common.nav.practice_sheet" %}</a>
+      <a href="{% url 'gamification:form' %}"{% if active_nav == "contribution" %} class="active"{% endif %}>{% label "common.nav.contribution" %}</a>
     </nav>
     <div class="navmeta">
       {% if user.is_staff %}

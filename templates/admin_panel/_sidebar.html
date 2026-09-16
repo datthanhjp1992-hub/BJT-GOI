@@ -10,7 +10,7 @@ loạt từ file CSV/Excel.{% endcomment %}
   <a href="{% url 'admin:accounts_user_changelist' %}">{% label "common.nav.admin_users" %}</a>
   <a href="{% url 'admin:vocabulary_vocabulary_changelist' %}">{% label "common.nav.admin_vocabulary" %}</a>
   <a href="{% url 'admin:vocabulary_topic_changelist' %}">{% label "common.nav.admin_topics" %}</a>
-  <a href="{% url 'admin:gamification_contribution_changelist' %}">{% label "common.nav.admin_inbox" %}</a>
+  <a href="{% url 'admin_panel:contribution_inbox' %}"{% if active_admin_nav == 'contributions' %} class="active"{% endif %}>{% label "common.nav.admin_inbox" %}</a>
   <a href="{% url 'admin_panel:error_report_list' %}"{% if active_admin_nav == 'error_reports' %} class="active"{% endif %}>
     {% label "common.nav.admin_error_reports" %}
     {% comment %}Số báo lỗi chờ xử lý luôn hiện ở sidebar (mọi màn admin) — dựng

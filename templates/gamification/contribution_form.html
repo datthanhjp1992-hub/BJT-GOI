@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC11_GopYTuVung — port từ htmlTemplate/SC11_GopYTuVung_A.html.
+
+Khác mockup 2 chỗ, đều có lý do:
+1. Tab và nút chọn loại góp ý là LINK (`?tab=`, `?type=`) chứ không phải
+   `onclick` ẩn/hiện khối — xem ghi chú đầu apps/gamification/views.py.
+2. Bỏ ô "Cấp độ BJT" ở form Từ mới: cấp độ BJT đã gỡ khỏi DB 13/09/2026, từ
+   vựng phân loại theo CHỦ ĐỀ. Đây là chỗ mockup còn sót, cùng loại với ô đã bỏ
+   ở SC09.{% endcomment %}
+
+{% block title %}{% label "contribution.form.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block wrap_attrs %} style="max-width:760px;"{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">{% label "contribution.form.eyebrow" %}</div>
+  <h1 class="serif" style="font-size:28px;margin:0 0 8px;">{% label "contribution.form.title" %}</h1>
+  <p class="muted" style="margin:0 0 26px;font-size:14px;">{% message "contribution.form.hint.intro" %}</p>
+
+  {# --- Hai tab chính --- #}
+  <div class="toolbar filter-bar" role="group">
+    <a class="tag tag-filter{% if tab == 'new' %} is-active{% endif %}"
+       href="?type={{ type_key }}">✏️ {% label "contribution.form.tab.new" %}</a>
+    <a class="tag tag-filter{% if tab == 'mine' %} is-active{% endif %}"
+       href="?tab=mine">📋 {% label "contribution.form.tab.mine" %} ({{ mine_count }})</a>
+  </div>
+
+  {% if tab == "new" %}
+    {# --- Chọn loại góp ý --- #}
+    <div class="toolbar filter-bar" role="group" aria-label="{% label 'contribution.form.field.type' %}">
+      <a class="tag tag-filter{% if type_key == 'word' %} is-active{% endif %}" href="?type=word">🆕 {% label "contribution.form.type.new_word" %}</a>
+      <a class="tag tag-filter{% if type_key == 'meaning' %} is-active{% endif %}" href="?type=meaning">✏️ {% label "contribution.form.type.edit_meaning" %}</a>
+      <a class="tag tag-filter{% if type_key == 'comment' %} is-active{% endif %}" href="?type=comment">💬 {% label "contribution.form.type.comment" %}</a>
+    </div>
+
+    <form method="post" action="{% url 'gamification:submit' %}">
+      {% csrf_token %}
+      {# Loại đang soạn đi kèm form: view dựng lại đúng form này khi validate lỗi. #}
+      <input type="hidden" name="type" value="{{ type_key }}">
+
+      <div class="card">
+        {% for err in form.non_field_errors %}
+          <p class="muted" style="margin:0 0 10px;">{{ err }}</p>
+        {% endfor %}
+
+        {% for field in form %}
+          <div class="field">
+            <label for="{{ field.id_for_label }}">
+              {{ field.label }}{% if field.field.required %} *{% endif %}
+            </label>
+            {{ field }}
+            {% for err in field.errors %}<p class="muted" style="margin:4px 0 0;">{{ err }}</p>{% endfor %}
+          </div>
+        {% endfor %}
+
+        {% if type_key == "comment" %}
+          <p class="muted" style="font-size:12.5px;margin:0 0 14px;">
+            {% message "contribution.submit.hint.comment_visible_after_approval" %}
+          </p>
+        {% endif %}
+
+        <div class="divider"></div>
+        <button type="submit" class="btn btn-primary">{% label "contribution.form.button.submit" %}</button>
+        <p class="muted" style="font-size:12.5px;margin:10px 0 0;">{% message "contribution.form.hint.points" %}</p>
+      </div>
+    </form>
+
+  {% else %}
+    {# --- Tab "Góp ý của tôi" --- #}
+    {% if page_obj.object_list %}
+      <div class="card" style="padding:0;">
+        <table>
+          <tr>
+            <th>{% label "contribution.form.table.type" %}</th>
+            <th>{% label "contribution.form.table.content" %}</th>
+            <th>{% label "common.field.status" %}</th>
+            <th>{% label "contribution.form.table.admin_response" %}</th>
+            <th>{% label "contribution.form.table.sent_at" %}</th>
+          </tr>
+          {% for c in page_obj.object_list %}
+            <tr>
+              <td><span class="tag">{{ c.type_name }}</span></td>
+              <td class="serif">
+                {% if c.target_vocabulary %}{{ c.target_vocabulary.word }}
+                {% elif c.proposed_word %}{{ c.proposed_word }}{% if c.proposed_reading %} <span class="muted" style="font-size:13px;">（{{ c.proposed_reading }}）</span>{% endif %}
+                {% else %}<span class="muted">—</span>{% endif %}
+              </td>
+              <td>
+                {% comment %}So sánh MÃ ở model qua property, template không tự đối
+                chiếu chuỗi "001"/"002" — xem apps/gamification/models.py.{% endcomment %}
+                {% if c.status_code == "002" %}
+                  <span class="tag">{% label "common.tag.status.approved" %}{% if c.points_awarded %} · +{{ c.points_awarded }}đ{% endif %}</span>
+                {% elif c.status_code == "003" %}
+                  <span class="tag level">{% label "common.tag.status.rejected" %}</span>
+                {% else %}
+                  <span class="tag">{% label "common.tag.status.pending" %}</span>
+                {% endif %}
+              </td>
+              <td class="muted">{{ c.admin_response|default:"—" }}</td>
+              <td class="muted">{{ c.created_at|date:"d/m/Y" }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+
+      {% if page_obj.has_other_pages %}
+        <div class="pagination">
+          {% if page_obj.has_previous %}
+            <a class="tag" href="?tab=mine&page={{ page_obj.previous_page_number }}">{% label "common.pagination.prev" %}</a>
+          {% endif %}
+          <span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}
+            <a class="tag" href="?tab=mine&page={{ page_obj.next_page_number }}">{% label "common.pagination.next" %}</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="card"><p class="muted" style="margin:0;">{% message "contribution.mine.empty" %}</p></div>
+    {% endif %}
+  {% endif %}
+{% endblock %}

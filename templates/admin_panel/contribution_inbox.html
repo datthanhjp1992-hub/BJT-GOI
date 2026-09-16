@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC12_HopThuGopY — port từ htmlTemplate/SC12_HopThuGopY_A.html.
+
+Khác mockup: bỏ ô "Cấp độ BJT" ở khối chi tiết (cấp độ đã gỡ khỏi DB
+13/09/2026), và bộ lọc là LINK thay vì nút JS — giống màn Báo cáo lỗi.{% endcomment %}
+
+{% block title %}{% label "contribution.inbox.title" %} | {% label "common.brand.name" %}{% endblock %}
+{% block main_attrs %} style="padding:0;"{% endblock %}
+
+{% block main %}
+<div class="admin-layout">
+
+  {% include "admin_panel/_sidebar.html" %}
+
+  <div class="admin-content">
+    {% include "partials/messages.html" %}
+
+    <div class="eyebrow">{% label "contribution.inbox.eyebrow" %}</div>
+    <h1 class="serif" style="font-size:28px;margin:0 0 6px;">{% label "contribution.inbox.title" %}</h1>
+    <p class="muted" style="margin:0 0 22px;font-size:14px;">{% message "contribution.inbox.hint.intro" %}</p>
+
+    <div class="grid cols-3" style="margin-bottom:22px;">
+      <div class="stat"><div class="num">{{ counts.pending }}</div><div class="label">{% label "contribution.inbox.stat.pending" %}</div></div>
+      <div class="stat"><div class="num">{{ counts.approved }}</div><div class="label">{% label "contribution.inbox.filter.approved" %}</div></div>
+      <div class="stat"><div class="num">{{ counts.rejected }}</div><div class="label">{% label "contribution.inbox.filter.rejected" %}</div></div>
+    </div>
+
+    <div class="toolbar filter-bar" role="group">
+      <a class="tag tag-filter{% if status_key == 'pending' %} is-active{% endif %}" href="?status=pending">{% label "contribution.inbox.filter.pending" %} ({{ counts.pending }})</a>
+      <a class="tag tag-filter{% if status_key == 'approved' %} is-active{% endif %}" href="?status=approved">{% label "contribution.inbox.filter.approved" %}</a>
+      <a class="tag tag-filter{% if status_key == 'rejected' %} is-active{% endif %}" href="?status=rejected">{% label "contribution.inbox.filter.rejected" %}</a>
+      <a class="tag tag-filter{% if status_key == 'all' %} is-active{% endif %}" href="?status=all">{% label "contribution.inbox.filter.all" %} ({{ counts.all }})</a>
+    </div>
+
+    {% if contributions %}
+      <div class="grid" style="grid-template-columns:1fr 1.15fr;gap:20px;align-items:start;">
+
+        <div class="card" style="padding:0;">
+          <table>
+            <tr>
+              <th>{% label "contribution.form.table.type" %}</th>
+              <th>{% label "error_report.admin.table.reporter" %}</th>
+              <th>{% label "contribution.form.table.content" %}</th>
+              <th>{% label "error_report.admin.table.sent_at" %}</th>
+            </tr>
+            {% for c in contributions %}
+              <tr{% if selected and c.pk == selected.pk %} style="background:var(--accent-soft);"{% endif %}>
+                <td><a class="action-link" href="?status={{ status_key }}&selected={{ c.pk }}"><span class="tag">{{ c.type_name }}</span></a></td>
+                <td>{{ c.user.first_name|default:c.user.get_username }}</td>
+                <td class="serif">
+                  {% if c.target_vocabulary %}{{ c.target_vocabulary.word }}
+                  {% elif c.proposed_word %}{{ c.proposed_word }}
+                  {% else %}<span class="muted">—</span>{% endif %}
+                </td>
+                <td class="muted">{{ c.created_at|date:"d/m" }}</td>
+              </tr>
+            {% endfor %}
+          </table>
+
+          {% if page_obj.has_other_pages %}
+            <div class="pagination" style="padding:12px;">
+              {% if page_obj.has_previous %}
+                <a class="tag" href="?status={{ status_key }}&page={{ page_obj.previous_page_number }}">{% label "common.pagination.prev" %}</a>
+              {% endif %}
+              <span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+              {% if page_obj.has_next %}
+                <a class="tag" href="?status={{ status_key }}&page={{ page_obj.next_page_number }}">{% label "common.pagination.next" %}</a>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+
+        {% if selected %}
+          <div class="card">
+            <p class="muted" style="margin:0 0 4px;font-size:13px;">
+              {{ selected.type_name }} ·
+              {{ selected.user.first_name|default:selected.user.get_username }} ·
+              {{ selected.created_at|date:"d/m/Y" }}
+            </p>
+            <h3 class="serif" style="margin:0 0 18px;">{% label "contribution.inbox.detail.title" %}</h3>
+
+            <form method="post" action="{% url 'admin_panel:contribution_action' selected.pk %}">
+              {% csrf_token %}
+              <input type="hidden" name="status" value="{{ status_key }}">
+
+              {% if selected.contribution_type_code == type_new_word %}
+                {% comment %}Admin sửa được nội dung trước khi duyệt — dữ liệu ghi
+                vào Vocabulary theo đúng các ô dưới đây.{% endcomment %}
+                <div class="grid cols-2" style="gap:16px;">
+                  <div class="field"><label for="id_word">{% label "contribution.form.field.word" %}</label>
+                    <input type="text" id="id_word" name="word" value="{{ selected.proposed_word }}"></div>
+                  <div class="field"><label for="id_reading">{% label "contribution.form.field.reading" %}</label>
+                    <input type="text" id="id_reading" name="reading" value="{{ selected.proposed_reading }}"></div>
+                </div>
+                <div class="field"><label for="id_meaning_vi">{% label "contribution.form.field.meaning_vi" %}</label>
+                  <input type="text" id="id_meaning_vi" name="meaning_vi" value="{{ selected.proposed_meaning_vi }}"></div>
+                <div class="field"><label for="id_topic">{% label "contribution.form.field.topic" %}</label>
+                  <select id="id_topic" name="topic">
+                    <option value="">—</option>
+                    {% for t in topics %}
+                      <option value="{{ t.pk }}"{% if selected.proposed_topic_id == t.pk %} selected{% endif %}>{{ t.display_name }}</option>
+                    {% endfor %}
+                  </select></div>
+                <p class="muted" style="font-size:12.5px;margin:0 0 14px;">{% message "contribution.inbox.hint.editable_before_approve" %}</p>
+
+              {% elif selected.contribution_type_code == type_edit_meaning %}
+                <div class="field">
+                  <label>{% label "contribution.form.field.target_word" %}</label>
+                  {% if selected.target_vocabulary %}
+                    <p class="serif" style="margin:0;font-size:18px;">
+                      {{ selected.target_vocabulary.word }}
+                      <span class="muted" style="font-size:14px;">（{{ selected.target_vocabulary.reading }}）</span>
+                    </p>
+                    <p class="muted" style="margin:4px 0 0;font-size:13px;">{{ selected.target_vocabulary.meaning_vi }}</p>
+                  {% else %}
+                    <p class="muted" style="margin:0;">{% message "contribution.inbox.hint.target_gone" %}</p>
+                  {% endif %}
+                </div>
+                <div class="field"><label for="id_meaning_vi">{% label "contribution.form.field.proposed_meaning" %}</label>
+                  <input type="text" id="id_meaning_vi" name="meaning_vi" value="{{ selected.proposed_meaning_vi }}"></div>
+                <div class="field"><label for="id_reading">{% label "contribution.form.field.reading" %}</label>
+                  <input type="text" id="id_reading" name="reading" value="{{ selected.proposed_reading }}"></div>
+
+              {% else %}
+                <div class="field">
+                  <label>{% label "contribution.form.field.target_word" %}</label>
+                  <p class="serif" style="margin:0;font-size:18px;">
+                    {% if selected.target_vocabulary %}{{ selected.target_vocabulary.word }}{% else %}<span class="muted">—</span>{% endif %}
+                  </p>
+                </div>
+                <div class="field">
+                  <label>{% label "contribution.form.field.comment_text" %}</label>
+                  <p style="margin:0;white-space:pre-wrap;">{{ selected.comment_text }}</p>
+                </div>
+              {% endif %}
+
+              {% if selected.comment_text and selected.contribution_type_code != type_comment %}
+                <div class="field">
+                  <label>{% label "contribution.form.field.reason" %}</label>
+                  <p style="margin:0;white-space:pre-wrap;">{{ selected.comment_text }}</p>
+                </div>
+              {% endif %}
+
+              <div class="divider"></div>
+
+              {% if selected.status_code == "001" %}
+                <div class="field">
+                  <label for="id_admin_response">{% label "contribution.inbox.field.admin_response" %}</label>
+                  <textarea id="id_admin_response" name="admin_response" rows="3"></textarea>
+                </div>
+                <p class="muted" style="font-size:12.5px;margin:0 0 14px;">{% message "contribution.inbox.hint.reject_reason" %}</p>
+                <div style="display:flex;gap:10px;">
+                  <button type="submit" name="action" value="approve" class="btn btn-primary" style="flex:1;">✅ {% label "contribution.inbox.button.approve_and_add" %}</button>
+                  <button type="submit" name="action" value="reject" class="btn btn-outline" style="flex:1;">✕ {% label "common.button.reject" %}</button>
+                </div>
+              {% else %}
+                <p style="margin:0 0 8px;">
+                  {% if selected.status_code == "002" %}
+                    <span class="tag">{% label "common.tag.status.approved" %}{% if selected.points_awarded %} · +{{ selected.points_awarded }}đ{% endif %}</span>
+                  {% else %}
+                    <span class="tag level">{% label "common.tag.status.rejected" %}</span>
+                  {% endif %}
+                  {% if selected.reviewed_by %}
+                    <span class="muted" style="font-size:13px;">
+                      · {{ selected.reviewed_by.first_name|default:selected.reviewed_by.get_username }}
+                      · {{ selected.reviewed_at|date:"d/m/Y H:i" }}
+                    </span>
+                  {% endif %}
+                </p>
+                {% if selected.admin_response %}
+                  <div class="field">
+                    <label>{% label "contribution.inbox.field.admin_response" %}</label>
+                    <p style="margin:0;white-space:pre-wrap;">{{ selected.admin_response }}</p>
+                  </div>
+                {% endif %}
+              {% endif %}
+            </form>
+          </div>
+        {% endif %}
+
+      </div>
+    {% else %}
+      <div class="card"><p class="muted" style="margin:0;">{% message "contribution.inbox.empty" %}</p></div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

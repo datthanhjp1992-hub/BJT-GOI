@@ -10,6 +10,7 @@ urlpatterns = [
     path("learning/", include("apps.learning.urls")),
     path("practice-sheets/", include("apps.practice_sheets.urls")),
     path("error-reports/", include("apps.error_reports.urls")),
+    path("contributions/", include("apps.gamification.urls")),
     # "admin/" la Django admin (CRUD); "admin-panel/" la man tong quan SC07.
     path("admin-panel/", include("apps.admin_panel.urls")),
     path("", include("apps.learning.urls_home")),

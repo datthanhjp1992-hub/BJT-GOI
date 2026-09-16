@@ -110,9 +110,15 @@ class OverviewContentTests(AdminPanelTestCase):
             "admin:accounts_user_changelist",
             "admin:vocabulary_vocabulary_changelist",
             "admin:vocabulary_topic_changelist",
-            "admin:gamification_contribution_changelist",
         ):
             self.assertContains(response, reverse(url_name))
+
+    def test_sidebar_links_to_the_real_inbox_not_django_admin(self):
+        """Từ 16/09/2026 "Hòm thư góp ý" là màn tự viết (SC12), không còn đẩy
+        sang /admin/gamification/contribution/ nữa."""
+        response = self.client.get(self.url)
+        self.assertContains(response, reverse("admin_panel:contribution_inbox"))
+        self.assertNotContains(response, reverse("admin:gamification_contribution_changelist"))
 
     def test_greeting_uses_full_name(self):
         self.assertContains(self.client.get(self.url), "Nguyễn Thành Đạt")
