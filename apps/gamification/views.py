@@ -52,19 +52,39 @@ def _normalize_type(raw):
     return raw if raw in FORM_BY_TYPE else DEFAULT_TYPE
 
 
-def _initial_for(type_key, request):
-    """Điền sẵn từ vựng khi vào màn từ link "Góp ý sửa" (?vocabulary=<id>).
+# Tên field ẩn mang pk của từ bị khoá. CỐ Ý tách khỏi `target_vocabulary`:
+# nếu lấy luôn giá trị của chính ô đó thì sửa nó trên DevTools là "đổi được từ
+# khác" — vì lượt POST sẽ khoá theo đúng cái vừa bị sửa. Tách ra thì queryset
+# của form thu về đúng từ đã khoá và mọi giá trị khác bị validate đánh trượt.
+LOCK_FIELD = "locked_vocabulary"
+
+
+def _locked_vocabulary(request, type_key):
+    """Từ vựng bị KHOÁ cho lượt góp ý này, hoặc None.
+
+    Vào màn từ link "Góp ý" ở flashcard/SC05 thì người dùng đang nói về ĐÚNG từ
+    đó, nên ô chọn từ bị khoá lại: không đổi sang từ khác được (xem
+    `_TargetedForm` bên forms.py). Muốn góp ý cho từ khác thì vào màn Góp ý từ
+    thanh menu — ở đó ô chọn mở bình thường.
+
+    GET lấy từ `?vocabulary=`, POST lấy từ field ẩn `locked_vocabulary` mà
+    template gửi kèm, để lượt render lại sau khi validate lỗi vẫn giữ nguyên
+    trạng thái khoá.
 
     Id rác thì lờ đi chứ không 404 — người dùng sửa URL bằng tay không đáng
-    nhận trang lỗi, form vẫn dùng được bình thường.
+    nhận trang lỗi, form chỉ đơn giản mở lại ô chọn.
     """
     if type_key == TYPE_WORD:
-        return {}
-    vocabulary_id = request.GET.get("vocabulary")
+        return None  # "Từ mới" không gắn với từ nào sẵn có
+
+    if request.method == "POST":
+        vocabulary_id = request.POST.get(LOCK_FIELD)
+    else:
+        vocabulary_id = request.GET.get("vocabulary")
+
     if not vocabulary_id:
-        return {}
-    vocab = Vocabulary.objects.filter(pk=vocabulary_id).first()
-    return {"target_vocabulary": vocab} if vocab else {}
+        return None
+    return Vocabulary.objects.filter(pk=vocabulary_id).first()
 
 
 @login_required
@@ -79,10 +99,12 @@ def contribution_view(request):
     )
     page = Paginator(mine, PAGE_SIZE).get_page(request.GET.get("page"))
 
+    locked = _locked_vocabulary(request, type_key)
     context = {
-        "form": form_class(initial=_initial_for(type_key, request)),
+        "form": form_class(locked_vocabulary=locked),
         "type_key": type_key,
         "tab": tab,
+        "locked_vocabulary": locked,
         "page_obj": page,
         "mine_count": page.paginator.count,
         "active_nav": "contribution",
@@ -96,13 +118,15 @@ def contribution_submit_view(request):
     """Nhận form gửi góp ý. Lỗi validate thì render lại ĐÚNG loại đang soạn."""
     type_key = _normalize_type(request.POST.get("type"))
     form_class, type_code = FORM_BY_TYPE[type_key]
-    form = form_class(request.POST)
+    locked = _locked_vocabulary(request, type_key)
+    form = form_class(request.POST, locked_vocabulary=locked)
 
     if not form.is_valid():
         context = {
             "form": form,
             "type_key": type_key,
             "tab": TAB_NEW,
+            "locked_vocabulary": locked,
             "page_obj": Paginator(
                 Contribution.objects.filter(user=request.user), PAGE_SIZE
             ).get_page(1),

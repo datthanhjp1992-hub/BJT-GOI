@@ -45,7 +45,9 @@ class NewWordForm(forms.Form):
     topic = forms.ModelChoiceField(queryset=Topic.objects.none(), required=False)
     note = forms.CharField(max_length=1000, required=False, widget=forms.Textarea(attrs={"rows": 2}))
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, locked_vocabulary=None, **kwargs):
+        # "Từ mới" không gắn với từ nào sẵn có nên KHÔNG dùng locked_vocabulary
+        # — vẫn nhận tham số để view gọi cả ba form theo cùng một cách.
         super().__init__(*args, **kwargs)
         # Nạp queryset trong __init__, không ở cấp lớp: thân lớp chạy lúc import
         # module, trên DB trống (lần migrate đầu) truy vấn đó nổ. Cùng lý do với
@@ -76,7 +78,28 @@ class NewWordForm(forms.Form):
         }
 
 
-class EditMeaningForm(forms.Form):
+class _TargetedForm(forms.Form):
+    """Phần dùng chung cho 2 loại góp ý có gắn với một từ đã có.
+
+    `locked_vocabulary` = vào màn này từ link "Góp ý" ở flashcard/SC05, tức là
+    người dùng đang nói về ĐÚNG từ đó. Khi đó ô chọn từ bị KHOÁ: queryset thu
+    còn đúng một bản ghi (đổi id trên form cũng không qua được validate) và
+    widget đổi sang hidden — template hiện tên từ dưới dạng chữ, không phải
+    <select>. Muốn góp ý cho từ khác thì vào màn Góp ý từ thanh menu.
+    """
+
+    def _setup_target(self, locked_vocabulary):
+        field = self.fields["target_vocabulary"]
+        field.label = label("contribution.form.field.target_word")
+        if locked_vocabulary is not None:
+            field.queryset = Vocabulary.objects.filter(pk=locked_vocabulary.pk)
+            field.widget = forms.HiddenInput()
+            field.initial = locked_vocabulary
+        else:
+            field.queryset = _vocabulary_queryset()
+
+
+class EditMeaningForm(_TargetedForm):
     """Đề xuất sửa nghĩa / cách đọc của một từ đã có."""
 
     target_vocabulary = _VocabularyChoiceField(queryset=Vocabulary.objects.none())
@@ -84,10 +107,9 @@ class EditMeaningForm(forms.Form):
     proposed_reading = forms.CharField(max_length=150, required=False)
     reason = forms.CharField(max_length=1000, required=False, widget=forms.Textarea(attrs={"rows": 2}))
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, locked_vocabulary=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["target_vocabulary"].queryset = _vocabulary_queryset()
-        self.fields["target_vocabulary"].label = label("contribution.form.field.target_word")
+        self._setup_target(locked_vocabulary)
         self.fields["proposed_meaning_vi"].label = label("contribution.form.field.proposed_meaning")
         self.fields["proposed_reading"].label = label("contribution.form.field.reading")
         self.fields["reason"].label = label("contribution.form.field.reason")
@@ -102,16 +124,15 @@ class EditMeaningForm(forms.Form):
         }
 
 
-class CommentForm(forms.Form):
+class CommentForm(_TargetedForm):
     """Bình luận công khai dưới một từ (hiện sau khi admin duyệt)."""
 
     target_vocabulary = _VocabularyChoiceField(queryset=Vocabulary.objects.none())
     comment_text = forms.CharField(max_length=1000, widget=forms.Textarea(attrs={"rows": 3}))
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, locked_vocabulary=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["target_vocabulary"].queryset = _vocabulary_queryset()
-        self.fields["target_vocabulary"].label = label("contribution.form.field.target_word")
+        self._setup_target(locked_vocabulary)
         self.fields["comment_text"].label = label("contribution.form.field.comment_text")
 
     def clean_comment_text(self):

@@ -21,17 +21,20 @@ Khác mockup 2 chỗ, đều có lý do:
   {# --- Hai tab chính --- #}
   <div class="toolbar filter-bar" role="group">
     <a class="tag tag-filter{% if tab == 'new' %} is-active{% endif %}"
-       href="?type={{ type_key }}">✏️ {% label "contribution.form.tab.new" %}</a>
+       href="?type={{ type_key }}{% if locked_vocabulary %}&vocabulary={{ locked_vocabulary.pk }}{% endif %}">✏️ {% label "contribution.form.tab.new" %}</a>
     <a class="tag tag-filter{% if tab == 'mine' %} is-active{% endif %}"
        href="?tab=mine">📋 {% label "contribution.form.tab.mine" %} ({{ mine_count }})</a>
   </div>
 
   {% if tab == "new" %}
     {# --- Chọn loại góp ý --- #}
+    {% comment %}Đang khoá vào một từ thì link đổi loại phải MANG THEO `vocabulary`,
+    nếu không bấm "Bình luận" là mất từ và ô chọn mở lại. "Từ mới" cố ý không
+    mang — loại đó không gắn với từ nào sẵn có.{% endcomment %}
     <div class="toolbar filter-bar" role="group" aria-label="{% label 'contribution.form.field.type' %}">
       <a class="tag tag-filter{% if type_key == 'word' %} is-active{% endif %}" href="?type=word">🆕 {% label "contribution.form.type.new_word" %}</a>
-      <a class="tag tag-filter{% if type_key == 'meaning' %} is-active{% endif %}" href="?type=meaning">✏️ {% label "contribution.form.type.edit_meaning" %}</a>
-      <a class="tag tag-filter{% if type_key == 'comment' %} is-active{% endif %}" href="?type=comment">💬 {% label "contribution.form.type.comment" %}</a>
+      <a class="tag tag-filter{% if type_key == 'meaning' %} is-active{% endif %}" href="?type=meaning{% if locked_vocabulary %}&vocabulary={{ locked_vocabulary.pk }}{% endif %}">✏️ {% label "contribution.form.type.edit_meaning" %}</a>
+      <a class="tag tag-filter{% if type_key == 'comment' %} is-active{% endif %}" href="?type=comment{% if locked_vocabulary %}&vocabulary={{ locked_vocabulary.pk }}{% endif %}">💬 {% label "contribution.form.type.comment" %}</a>
     </div>
 
     <form method="post" action="{% url 'gamification:submit' %}">
@@ -44,7 +47,25 @@ Khác mockup 2 chỗ, đều có lý do:
           <p class="muted" style="margin:0 0 10px;">{{ err }}</p>
         {% endfor %}
 
-        {% for field in form %}
+        {% comment %}Ô chọn từ khi bị khoá là field ẩn (xem _TargetedForm) nên nằm ở
+        hidden_fields — phải render riêng, và hiện tên từ dưới dạng chữ.{% endcomment %}
+        {% if locked_vocabulary %}
+          <input type="hidden" name="locked_vocabulary" value="{{ locked_vocabulary.pk }}">
+          <div class="field">
+            <label>{% label "contribution.form.field.target_word" %}</label>
+            <p class="serif" style="margin:0;font-size:18px;">
+              {{ locked_vocabulary.word }}
+              {% if locked_vocabulary.reading %}<span class="muted" style="font-size:14px;">（{{ locked_vocabulary.reading }}）</span>{% endif %}
+            </p>
+            <p class="muted" style="margin:4px 0 0;font-size:13px;">{{ locked_vocabulary.meaning_vi }}</p>
+            <p class="muted" style="margin:6px 0 0;font-size:12.5px;">{% message "contribution.form.hint.locked" %}</p>
+          </div>
+          {% for err in form.target_vocabulary.errors %}<p class="muted" style="margin:4px 0 0;">{{ err }}</p>{% endfor %}
+        {% endif %}
+
+        {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+
+        {% for field in form.visible_fields %}
           <div class="field">
             <label for="{{ field.id_for_label }}">
               {{ field.label }}{% if field.field.required %} *{% endif %}

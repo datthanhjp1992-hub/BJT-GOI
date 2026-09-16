@@ -85,10 +85,55 @@ class SubmitTests(ContributionTestCase):
         self.client.force_login(self.learner)
         self.assertEqual(self.client.get(self.form_url, {"type": "xxx"}).context["type_key"], "word")
 
-    def test_link_from_flashcard_preselects_the_word(self):
+    def test_link_from_flashcard_locks_the_word(self):
+        """Vào từ màn học thì góp ý CHỈ cho đúng từ đó — ô chọn từ bị khoá."""
+        from django import forms as django_forms
+
         self.client.force_login(self.learner)
         response = self.client.get(self.form_url, {"type": "meaning", "vocabulary": self.word.pk})
-        self.assertEqual(response.context["form"].initial["target_vocabulary"], self.word)
+
+        self.assertEqual(response.context["locked_vocabulary"], self.word)
+        field = response.context["form"].fields["target_vocabulary"]
+        self.assertIsInstance(field.widget, django_forms.HiddenInput)
+        self.assertEqual(list(field.queryset), [self.word])
+        # Không còn <select> để đổi sang từ khác.
+        self.assertNotContains(response, '<select name="target_vocabulary"')
+
+    def test_open_from_menu_leaves_the_word_selectable(self):
+        """Vào thẳng từ thanh menu thì ngược lại: ô chọn mở bình thường."""
+        self.client.force_login(self.learner)
+        response = self.client.get(self.form_url, {"type": "meaning"})
+        self.assertIsNone(response.context["locked_vocabulary"])
+        self.assertContains(response, '<select name="target_vocabulary"')
+
+    def test_locked_form_refuses_a_different_word(self):
+        """Sửa id trên DevTools cũng không góp ý sang từ khác được."""
+        other = Vocabulary.objects.create(word="予約", reading="よやく", meaning_vi="đặt chỗ")
+        self.client.force_login(self.learner)
+        response = self.client.post(self.submit_url, {
+            "type": "meaning",
+            "locked_vocabulary": self.word.pk,     # đang khoá vào 注文する
+            "target_vocabulary": other.pk,         # nhưng gửi lên 予約
+            "proposed_meaning_vi": "đặt trước",
+        })
+        self.assertEqual(response.status_code, 200)  # render lại kèm lỗi
+        self.assertFalse(Contribution.objects.exists())
+
+    def test_locked_form_submits_the_locked_word(self):
+        self.client.force_login(self.learner)
+        self.client.post(self.submit_url, {
+            "type": "meaning",
+            "locked_vocabulary": self.word.pk,
+            "target_vocabulary": self.word.pk,
+            "proposed_meaning_vi": "đặt món, gọi món",
+        })
+        self.assertEqual(Contribution.objects.get().target_vocabulary, self.word)
+
+    def test_type_links_carry_the_locked_word(self):
+        """Bấm sang tab "Bình luận" không được làm mất từ đang khoá."""
+        self.client.force_login(self.learner)
+        response = self.client.get(self.form_url, {"type": "meaning", "vocabulary": self.word.pk})
+        self.assertContains(response, f"?type=comment&vocabulary={self.word.pk}")
 
     def test_unknown_vocabulary_id_does_not_break_the_form(self):
         self.client.force_login(self.learner)
