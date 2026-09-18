@@ -48,24 +48,24 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
     <label style="margin:0 0 6px;">{% label "vocabulary.list.field.filter_topic" %}</label>
     <details class="dropdown" id="topic-dropdown">
       <summary class="dropdown-toggle" aria-haspopup="true">
-        <span id="topic-dropdown-summary"
+        <span id="topic-dropdown-summary" data-dropdown-summary
               data-all="{% label 'vocabulary.list.option.all_topics' %}"
               data-suffix="{% label 'vocabulary.list.option.topics_selected_suffix' %}">{% if selected_topics %}{{ selected_topics|length }} {% label "vocabulary.list.option.topics_selected_suffix" %}{% else %}{% label "vocabulary.list.option.all_topics" %}{% endif %}</span>
       </summary>
       <div class="dropdown-panel">
         <div id="topic-search-box">
-          <input type="search" id="topic-search" autocomplete="off"
+          <input type="search" id="topic-search" data-dropdown-search autocomplete="off"
                  placeholder="{% label 'vocabulary.list.field.topic_search' %}"
                  aria-label="{% label 'vocabulary.list.field.topic_search' %}">
         </div>
         <div class="dropdown-actions">
-          <button type="button" class="action-link" style="background:none;border:0;padding:0;font:inherit;cursor:pointer;" onclick="toggleTopics(true)">{% label "vocabulary.list.button.select_all_topics" %}</button>
+          <button type="button" class="action-link" style="background:none;border:0;padding:0;font:inherit;cursor:pointer;" data-dropdown-check="1">{% label "vocabulary.list.button.select_all_topics" %}</button>
           <span class="action-sep" aria-hidden="true">·</span>
-          <button type="button" class="action-link" style="background:none;border:0;padding:0;font:inherit;cursor:pointer;" onclick="toggleTopics(false)">{% label "vocabulary.list.button.clear_topics" %}</button>
+          <button type="button" class="action-link" style="background:none;border:0;padding:0;font:inherit;cursor:pointer;" data-dropdown-check="0">{% label "vocabulary.list.button.clear_topics" %}</button>
         </div>
         <div class="dropdown-list" id="topic-list">
           {% for f in topic_filters %}
-            <label class="checkbox-row" data-topic-search="{{ f.topic.name }} {{ f.topic.name_ja }} {{ f.topic.slug }}">
+            <label class="checkbox-row" data-search="{{ f.topic.name }} {{ f.topic.name_ja }} {{ f.topic.slug }}">
               <input type="checkbox" name="topic" value="{{ f.topic.slug }}"{% if f.is_selected %} checked{% endif %}>
               {% comment %}Trong dropdown hiện ĐỦ cả hai tên (display_name) chứ không
               chỉ tên Nhật như thẻ lọc cũ — người dùng gõ tên Việt phải nhìn thấy
@@ -76,7 +76,7 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
             <p class="muted" style="margin:0;font-size:14px;">{% message "vocabulary.list.hint.no_topic" %}</p>
           {% endfor %}
         </div>
-        <p class="dropdown-empty" id="topic-empty" hidden>{% message "vocabulary.list.hint.topic_search_empty" %}</p>
+        <p class="dropdown-empty" id="topic-empty" data-dropdown-empty hidden>{% message "vocabulary.list.hint.topic_search_empty" %}</p>
       </div>
     </details>
     <noscript><style>#topic-search-box{display:none}</style></noscript>
@@ -190,79 +190,4 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
   {% else %}
     <div class="card"><p class="muted" style="margin:0;">{% message "vocabulary.list.empty" %}</p></div>
   {% endif %}
-
-<script>
-// Tiện ích cho ô chọn chủ đề. Trang vẫn lọc/học được đủ khi tắt JavaScript:
-// <details> tự mở/đóng, checkbox vẫn gửi theo form — chỉ mất ô tìm nhanh.
-(function () {
-  var dropdown = document.getElementById('topic-dropdown');
-  if (!dropdown) { return; }
-
-  var search  = document.getElementById('topic-search');
-  var empty   = document.getElementById('topic-empty');
-  var summary = document.getElementById('topic-dropdown-summary');
-  var rows    = Array.prototype.slice.call(
-    dropdown.querySelectorAll('#topic-list .checkbox-row')
-  );
-
-  // Bỏ dấu để gõ "hop hanh" vẫn ra "Họp hành" — người học hiếm khi gõ đủ dấu
-  // khi đang tìm nhanh. Kana/kanji không có dấu tổ hợp nên không bị ảnh hưởng.
-  function normalize(text) {
-    return (text || '').toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd');
-  }
-
-  function applySearch() {
-    var needle = normalize(search ? search.value : '').trim();
-    var shown = 0;
-    rows.forEach(function (row) {
-      var hit = !needle ||
-        normalize(row.getAttribute('data-topic-search')).indexOf(needle) !== -1;
-      row.hidden = !hit;
-      if (hit) { shown += 1; }
-    });
-    if (empty) { empty.hidden = shown !== 0; }
-  }
-
-  function refreshSummary() {
-    var checked = rows.filter(function (row) {
-      return row.querySelector('input').checked;
-    }).length;
-    summary.textContent = checked
-      ? checked + ' ' + summary.getAttribute('data-suffix')
-      : summary.getAttribute('data-all');
-  }
-
-  // "Chọn tất cả / Bỏ chọn hết" chỉ áp cho các chủ đề ĐANG HIỆN — khi đang gõ
-  // tìm kiếm thì đó mới là ý người dùng muốn.
-  window.toggleTopics = function (state) {
-    rows.forEach(function (row) {
-      if (!row.hidden) { row.querySelector('input').checked = state; }
-    });
-    refreshSummary();
-  };
-
-  if (search) {
-    search.addEventListener('input', applySearch);
-    // Enter trong ô tìm nhanh KHÔNG được submit cả form lọc.
-    search.addEventListener('keydown', function (event) {
-      if (event.key === 'Enter') { event.preventDefault(); }
-    });
-  }
-  dropdown.addEventListener('change', refreshSummary);
-  dropdown.addEventListener('toggle', function () {
-    if (dropdown.open && search) { search.focus(); }
-  });
-  // Bấm ra ngoài thì đóng lại, giống dropdown thật.
-  document.addEventListener('click', function (event) {
-    if (dropdown.open && !dropdown.contains(event.target)) { dropdown.open = false; }
-  });
-  document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && dropdown.open) { dropdown.open = false; }
-  });
-
-  refreshSummary();
-})();
-</script>
 {% endblock %}

@@ -28,30 +28,71 @@ tác dụng trên MỘT dòng, viết tràn dòng là bị in thẳng ra HTML.{%
   </div>
 
   {# -------- Tab 1: chọn từ đã có trong hệ thống -------- #}
+  <div class="eyebrow">{% label "practice_sheets.create.section.words" %}</div>
+
+  {% comment %}Bộ lọc là một form GET RIÊNG, đặt NGOÀI form POST bên dưới: HTML
+  không cho lồng form vào nhau, mà lọc thì phải nạp lại danh sách từ ở server
+  (kho từ vài nghìn, không thể đổ hết ra trình duyệt rồi lọc bằng JS).
+
+  Ô chọn chủ đề là dropdown nhiều-lựa-chọn có ô tìm nhanh, giống hệt SC05 —
+  hành vi nằm ở static/js/main.js (initDropdown) nên hai màn không lệch nhau.
+  Trước 18/09/2026 chỗ này là một dãy thẻ link: hơn trăm chủ đề trải kín màn
+  hình, không tìm nổi cái mình cần.{% endcomment %}
+  <form class="card" method="get" action="{% url 'practice_sheets:create' %}"
+        id="topic-filter-form" style="margin-bottom:16px;">
+    <div class="grid cols-2" style="align-items:start;">
+      <div>
+        <label style="margin:0 0 6px;">{% label "practice_sheets.create.field.topic_filter" %}</label>
+        <details class="dropdown" id="topic-dropdown">
+          <summary class="dropdown-toggle" aria-haspopup="true">
+            <span id="topic-dropdown-summary" data-dropdown-summary
+                  data-all="{% label 'practice_sheets.create.field.all_topics' %}"
+                  data-suffix="{% label 'practice_sheets.create.option.topics_selected_suffix' %}">{% if selected_topics %}{{ selected_topics|length }} {% label "practice_sheets.create.option.topics_selected_suffix" %}{% else %}{% label "practice_sheets.create.field.all_topics" %}{% endif %}</span>
+          </summary>
+          <div class="dropdown-panel">
+            <div id="topic-search-box">
+              {# Không có name -> chỉ lọc danh sách tại chỗ, không lẫn vào query string. #}
+              <input type="search" id="topic-search" data-dropdown-search autocomplete="off"
+                     placeholder="{% label 'practice_sheets.create.field.topic_search' %}"
+                     aria-label="{% label 'practice_sheets.create.field.topic_search' %}">
+            </div>
+            <div class="dropdown-actions">
+              <button type="button" class="action-link" style="background:none;border:0;padding:0;font:inherit;cursor:pointer;" data-dropdown-check="1">{% label "practice_sheets.create.button.select_all" %}</button>
+              <span class="action-sep" aria-hidden="true">·</span>
+              <button type="button" class="action-link" style="background:none;border:0;padding:0;font:inherit;cursor:pointer;" data-dropdown-check="0">{% label "practice_sheets.create.button.clear_all" %}</button>
+            </div>
+            <div class="dropdown-list" id="topic-list">
+              {% for f in topic_filters %}
+                <label class="checkbox-row" data-search="{{ f.topic.name }} {{ f.topic.name_ja }} {{ f.topic.slug }}">
+                  <input type="checkbox" name="topic" value="{{ f.topic.slug }}"{% if f.is_selected %} checked{% endif %}>
+                  <span>{{ f.topic.icon_emoji }} {{ f.topic.display_name }}</span>
+                </label>
+              {% empty %}
+                <p class="muted" style="margin:0;font-size:14px;">{% message "vocabulary.list.hint.no_topic" %}</p>
+              {% endfor %}
+            </div>
+            <p class="dropdown-empty" id="topic-empty" data-dropdown-empty hidden>{% message "practice_sheets.create.hint.topic_search_empty" %}</p>
+          </div>
+        </details>
+        <noscript><style>#topic-search-box{display:none}</style></noscript>
+      </div>
+      <div class="field" style="margin:0;">
+        <label for="id_word_q">{% label "practice_sheets.create.field.word_search" %}</label>
+        <input id="id_word_q" type="search" name="q" value="{{ word_query }}"
+               placeholder="{% label 'practice_sheets.create.hint.word_search_placeholder' %}">
+      </div>
+    </div>
+    <div class="toolbar" style="margin:16px 0 0;">
+      <button type="submit" class="btn btn-primary">{% label "practice_sheets.create.button.filter" %}</button>
+      <a class="btn btn-outline" href="{% url 'practice_sheets:create' %}">{% label "practice_sheets.create.button.reset" %}</a>
+    </div>
+  </form>
+
   <form method="post" id="form-existing" action="{{ picker_action }}">
     {% csrf_token %}
     <input type="hidden" name="source" value="existing">
 
-    <div class="eyebrow">{% label "practice_sheets.create.section.words" %}</div>
     <div class="card" style="margin-bottom:20px;">
-      {% comment %}Thanh lọc chủ đề: chọn được NHIỀU chủ đề (quan hệ HOẶC), bấm
-      lần hai lên một thẻ để bỏ chọn. Giống hệt SC05 — cùng dùng topic_filter_bar()
-      bên view nên hai màn không lệch hành vi.{% endcomment %}
-      <div class="toolbar filter-bar" role="group"
-           aria-label="{% label 'practice_sheets.create.field.topic_filter' %}"
-           style="margin-bottom:14px;">
-        <span class="muted" style="font-size:13px;">{% label "practice_sheets.create.field.topic_filter" %}:</span>
-        <a class="tag tag-filter{% if not selected_topics %} is-active{% endif %}"
-           aria-pressed="{% if selected_topics %}false{% else %}true{% endif %}"
-           href="{% url 'practice_sheets:create' %}">{% label "practice_sheets.create.field.all_topics" %}</a>
-        {% for f in topic_filters %}
-          <a class="tag tag-filter{% if f.is_selected %} is-active{% endif %}"
-             aria-pressed="{% if f.is_selected %}true{% else %}false{% endif %}"
-             title="{% if f.is_selected %}{% label 'vocabulary.list.hint.filter_off' %}{% else %}{% label 'vocabulary.list.hint.filter_on' %}{% endif %}"
-             href="{% url 'practice_sheets:create' %}{{ f.query }}">{{ f.topic.icon_emoji }} {{ f.topic.name_ja|default:f.topic.name }}</a>
-        {% endfor %}
-      </div>
-
       {% if words %}
         <div class="toolbar" style="margin-bottom:10px;">
           <button type="button" class="btn btn-outline" onclick="toggleAll(true)">{% label "practice_sheets.create.button.select_all" %}</button>
@@ -68,11 +109,11 @@ tác dụng trên MỘT dòng, viết tràn dòng là bị in thẳng ra HTML.{%
         </div>
         {% if word_total > word_limit %}
           <p class="muted" style="font-size:12.5px;margin:10px 0 0;">
-            Đang hiện {{ word_limit }} / {{ word_total }} từ — lọc theo chủ đề để thu hẹp danh sách.
+            {% message "practice_sheets.create.hint.word_list_truncated" shown=word_limit total=word_total %}
           </p>
         {% endif %}
       {% else %}
-        <p class="muted" style="margin:0;font-size:14px;">Chưa có từ vựng nào khớp. Chọn chủ đề khác, hoặc dùng tab "{% label "practice_sheets.create.tab.upload" %}".</p>
+        <p class="muted" style="margin:0;font-size:14px;">{% message "practice_sheets.create.hint.no_word_matches" %}</p>
       {% endif %}
     </div>
 
@@ -84,7 +125,6 @@ tác dụng trên MỘT dòng, viết tràn dòng là bị in thẳng ra HTML.{%
     {% csrf_token %}
     <input type="hidden" name="source" value="upload">
 
-    <div class="eyebrow">{% label "practice_sheets.create.section.words" %}</div>
     <div class="card" style="margin-bottom:20px;">
       <label for="word_file">{% label "practice_sheets.create.dropzone.hint" %}</label>
       <input type="file" id="word_file" name="word_file" accept=".csv,.xlsx,.xlsm">
@@ -104,6 +144,9 @@ tác dụng trên MỘT dòng, viết tràn dòng là bị in thẳng ra HTML.{%
 // tích hàng loạt. Trang vẫn chạy đủ chức năng nếu JS tắt — chỉ là thấy cả hai
 // form cùng lúc.
 function showSource(name){
+  // Form lọc chủ đề nằm NGOÀI #form-existing (không lồng form được) nên phải
+  // ẩn/hiện riêng, nếu không nó sẽ lơ lửng ở tab "Upload danh sách".
+  document.getElementById('topic-filter-form').style.display = (name === 'existing') ? 'block' : 'none';
   document.getElementById('form-existing').style.display = (name === 'existing') ? 'block' : 'none';
   document.getElementById('form-upload').style.display   = (name === 'upload')   ? 'block' : 'none';
   document.getElementById('tab-existing-btn').className = 'sheet-tab' + (name === 'existing' ? ' is-active' : '');

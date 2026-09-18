@@ -35,6 +35,16 @@ from apps.vocabulary.models import Topic, Vocabulary, VocabularyTopic
 User = get_user_model()
 
 
+
+def _pg_trgm_available():
+    """Nhánh tìm kiếm dùng TrigramSimilarity — không có extension thì bỏ qua
+    test đó, giống cách apps/vocabulary/tests.py đang làm."""
+    from django.db import connection
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT COUNT(*) FROM pg_extension WHERE extname = 'pg_trgm'")
+        return cursor.fetchone()[0] > 0
+
+
 class FontResolutionTests(TestCase):
     def setUp(self):
         # _ensure_fonts_registered() nhớ kết quả bằng cờ toàn cục; reset để mỗi
@@ -198,6 +208,43 @@ class CreateViewTests(TestCase):
             response.context["picker_action"],
             reverse("practice_sheets:create") + "?topic=nha-hang",
         )
+
+    def test_picker_topic_filter_is_a_searchable_dropdown(self):
+        """Chủ đề nằm trong dropdown có checkbox + ô tìm nhanh (giống SC05).
+
+        Trước 18/09/2026 là một dãy thẻ link — hơn trăm chủ đề trải kín màn hình.
+        """
+        self._topic_word("hop-hanh", "Họp hành", "議事録", "ぎじろく")
+
+        response = self.client.get(reverse("practice_sheets:create"))
+        self.assertContains(response, 'id="topic-filter-form"')
+        self.assertContains(response, 'id="topic-dropdown"')
+        self.assertContains(response, 'id="topic-search"')
+        self.assertContains(response, 'data-search="Họp hành  hop-hanh"')
+        self.assertContains(response, '<input type="checkbox" name="topic" value="hop-hanh">')
+        # Không còn dãy thẻ link lọc chủ đề.
+        self.assertNotContains(response, 'class="tag tag-filter')
+
+    def test_picker_filters_by_keyword(self):
+        """Ô "Tìm từ vựng" dùng chung selectors.filter_vocabulary với SC05."""
+        if not _pg_trgm_available():
+            self.skipTest("database đang chạy không có extension pg_trgm")
+        self._topic_word("nha-hang", "Nhà hàng", "注文する", "ちゅうもんする")
+        self._topic_word("hop-hanh", "Họp hành", "議事録", "ぎじろく")
+
+        response = self.client.get(reverse("practice_sheets:create"), {"q": "ちゅうもん"})
+        self.assertEqual(response.context["word_query"], "ちゅうもん")
+        self.assertEqual(
+            [w.word for w in response.context["words"]], ["注文する"]
+        )
+
+    def test_picker_form_action_keeps_the_keyword(self):
+        self._topic_word("nha-hang", "Nhà hàng", "注文する", "ちゅうもんする")
+        response = self.client.get(
+            reverse("practice_sheets:create"), {"topic": "nha-hang", "q": "abc"}
+        )
+        self.assertIn("topic=nha-hang", response.context["picker_action"])
+        self.assertIn("q=abc", response.context["picker_action"])
 
     def test_picker_ignores_unknown_topic_slug(self):
         Vocabulary.objects.create(word="予約", reading="よやく", meaning_vi="đặt chỗ")

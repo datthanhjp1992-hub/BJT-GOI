@@ -22,6 +22,7 @@ from apps.core import dataio
 from apps.core.constants import SHEET_TYPE_RECALL
 from apps.core.properties import message
 from apps.core.utils import topic_filter_bar
+from apps.vocabulary import selectors as vocab_selectors
 from apps.vocabulary.models import Topic, Vocabulary
 
 from .forms import SOURCE_UPLOAD, PracticeSheetForm
@@ -40,10 +41,12 @@ CONTENT_TYPES = {
 }
 
 
-def _selected_query(selected_topics):
-    """Query string của đúng các chủ đề đang chọn (dùng cho action của form)."""
+def _selected_query(selected_topics, query=""):
+    """Query string của đúng bộ lọc đang áp (dùng cho action của form POST)."""
     params = QueryDict(mutable=True)
     params.setlist("topic", [t.slug for t in selected_topics])
+    if query:
+        params["q"] = query
     encoded = params.urlencode()
     return ("?" + encoded) if encoded else ""
 
@@ -59,24 +62,27 @@ def _picker_context(request):
     """
     topics = list(Topic.objects.all().order_by("name"))
     selected_topics, topic_filters, clear_query = topic_filter_bar(request, topics)
+    query = (request.GET.get("q") or "").strip()
 
-    words = Vocabulary.objects.all().order_by("word")
-    if selected_topics:
-        # HOẶC: từ chỉ cần thuộc một trong các chủ đề đã chọn. `distinct()` vì
-        # join qua bảng nối nhân bản dòng khi một từ khớp nhiều chủ đề.
-        words = words.filter(topic_links__topic__in=selected_topics).distinct()
+    # Dùng CHUNG bộ lọc với SC05 (apps.vocabulary.selectors) thay vì tự viết lại
+    # điều kiện: hai màn cùng nói "chủ đề + từ khoá" thì phải cho ra cùng tập từ.
+    words = vocab_selectors.filter_vocabulary(
+        request.user, topics=selected_topics, query=query
+    )
+    word_total = words.count()
 
     return {
         "words": words[:WORD_PICKER_LIMIT],
-        "word_total": words.count(),
+        "word_total": word_total,
         "word_limit": WORD_PICKER_LIMIT,
+        "word_query": query,
         "topics": topics,
         "selected_topics": selected_topics,
         "topic_filters": topic_filters,
         "clear_query": clear_query,
         # Form POST về đúng URL đang lọc, để lúc render lại (lỗi validate) danh
         # sách từ không nhảy về "tất cả chủ đề".
-        "picker_action": request.path + _selected_query(selected_topics),
+        "picker_action": request.path + _selected_query(selected_topics, query),
     }
 
 

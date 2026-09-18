@@ -202,7 +202,7 @@ class ListViewTests(VocabularyTestCase):
         response = self.client.get(reverse("vocabulary:index"))
         self.assertContains(response, 'id="topic-dropdown"')
         self.assertContains(response, 'id="topic-search"')
-        self.assertContains(response, 'data-topic-search="Họp hành 会議・打合せ hop-hanh"')
+        self.assertContains(response, 'data-search="Họp hành 会議・打合せ hop-hanh"')
         self.assertContains(response, '<input type="checkbox" name="topic" value="hop-hanh">')
 
     def test_dropdown_search_box_is_not_submitted(self):
