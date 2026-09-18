@@ -492,3 +492,159 @@ class QuizAnswerTests(LearningTestCase):
         session = StudySession.objects.get(user=self.user, topic=topic, session_type="quiz")
         self.assertIsNotNone(session.ended_at)
         self.assertContains(response, "1/1")
+
+
+class StudySessionViewTests(LearningTestCase):
+    """Phiên học theo BỘ LỌC của SC05 (nút "Bắt đầu học")."""
+
+    def _start(self, **data):
+        return self.client.post(reverse("learning:study_start"), data)
+
+    def test_requires_login(self):
+        self.client.logout()
+        url = reverse("learning:study")
+        self.assertRedirects(self.client.get(url), reverse("accounts:login") + "?next=" + url)
+
+    def test_start_is_post_only(self):
+        self.assertEqual(self.client.get(reverse("learning:study_start")).status_code, 405)
+
+    def test_queue_merges_every_selected_topic(self):
+        self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        self._make_topic("Họp hành", "hop-hanh", ["議事録"])
+        self._make_topic("Gia đình", "gia-dinh", ["家族"])
+
+        response = self._start(topic=["nha-hang", "hop-hanh"], limit="0")
+        self.assertRedirects(response, reverse("learning:study"))
+
+        page = self.client.get(reverse("learning:study"))
+        self.assertEqual(page.context["total"], 3)
+        self.assertEqual(len(self.client.session["study_queue"]), 3)
+
+    def test_no_topic_selected_means_every_word(self):
+        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self._make_topic("Họp hành", "hop-hanh", ["議事録"])
+
+        self._start(limit="0")
+        self.assertEqual(len(self.client.session["study_queue"]), 2)
+
+    def test_session_limit_caps_the_queue(self):
+        self._make_topic("Nhà hàng", "nha-hang", ["語1", "語2", "語3", "語4"])
+
+        self._start(topic="nha-hang", limit="10")
+        self.assertEqual(len(self.client.session["study_queue"]), 4)
+
+        self._start(topic="nha-hang", limit="20")
+        self.assertEqual(len(self.client.session["study_queue"]), 4)
+
+        self.client.post(reverse("learning:study_start"), {"topic": "nha-hang", "limit": "10"})
+        queue = self.client.session["study_queue"]
+        self.assertLessEqual(len(queue), 10)
+
+    def test_due_words_come_before_new_ones(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        due = topic.vocabularies.get(word="予約")
+        self._progress(due, due_offset=-3)
+
+        self._start(topic="nha-hang", limit="0")
+        self.assertEqual(self.client.session["study_queue"][0], due.pk)
+
+    def test_status_filter_is_honoured(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        learned = topic.vocabularies.get(word="予約")
+        self._progress(learned, due_offset=1)
+
+        self._start(topic="nha-hang", status="new", limit="0")
+        queue = self.client.session["study_queue"]
+        self.assertEqual(queue, [topic.vocabularies.get(word="注文").pk])
+
+    def test_empty_result_flashes_and_goes_back(self):
+        self._make_topic("Rỗng", "rong", [])
+        response = self._start(topic="rong")
+        self.assertRedirects(response, reverse("vocabulary:index"))
+        self.assertFalse(self.client.session.get("study_queue"))
+
+    def test_start_creates_a_study_session(self):
+        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self._make_topic("Họp hành", "hop-hanh", ["議事録"])
+
+        self._start(topic="nha-hang")
+        session = StudySession.objects.get(user=self.user)
+        self.assertEqual(session.topic.slug, "nha-hang")
+
+        # Nhiều chủ đề -> không gán chủ đề nào cho phiên.
+        self._start(topic=["nha-hang", "hop-hanh"])
+        latest = StudySession.objects.order_by("-pk").first()
+        self.assertIsNone(latest.topic)
+
+    def test_reviewing_advances_the_queue_and_counts(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        self._start(topic="nha-hang", limit="0")
+        first_id = self.client.session["study_queue"][0]
+
+        response = self.client.post(
+            reverse("learning:study_review", args=[first_id]), {"quality": "nho"}
+        )
+        self.assertRedirects(response, reverse("learning:study"))
+        self.assertNotIn(first_id, self.client.session["study_queue"])
+
+        session = StudySession.objects.get(user=self.user, topic=topic)
+        self.assertEqual(session.words_reviewed, 1)
+        self.assertEqual(session.correct_answers, 1)
+        self.assertTrue(
+            UserVocabularyProgress.objects.filter(
+                user=self.user, vocabulary_id=first_id
+            ).exists()
+        )
+
+    def test_position_counter_walks_forward(self):
+        self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        self._start(topic="nha-hang", limit="0")
+
+        self.assertEqual(self.client.get(reverse("learning:study")).context["position"], 1)
+        first_id = self.client.session["study_queue"][0]
+        self.client.post(reverse("learning:study_review", args=[first_id]), {"quality": "de"})
+
+        page = self.client.get(reverse("learning:study"))
+        self.assertEqual(page.context["position"], 2)
+        self.assertEqual(page.context["total"], 2)
+
+    def test_finishing_the_queue_closes_the_session(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self._start(topic="nha-hang", limit="0")
+        vocab_id = self.client.session["study_queue"][0]
+        self.client.post(reverse("learning:study_review", args=[vocab_id]), {"quality": "de"})
+
+        response = self.client.get(reverse("learning:study"))
+        self.assertIsNone(response.context["word"])
+        self.assertIsNotNone(StudySession.objects.get(user=self.user, topic=topic).ended_at)
+        self.assertIsNone(self.client.session.get("study_queue"))
+
+    def test_end_button_closes_the_session_early(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        self._start(topic="nha-hang", limit="0")
+
+        response = self.client.post(reverse("learning:study_end"))
+        self.assertRedirects(response, reverse("learning:dashboard"))
+        self.assertIsNone(self.client.session.get("study_queue"))
+        self.assertIsNotNone(StudySession.objects.get(user=self.user, topic=topic).ended_at)
+
+    def test_report_and_suggest_links_live_on_the_study_page(self):
+        """Góp ý + báo lỗi đã chuyển từ bảng SC05 sang màn học chi tiết."""
+        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self._start(topic="nha-hang", limit="0")
+
+        response = self.client.get(reverse("learning:study"))
+        word = response.context["word"]
+        self.assertContains(response, reverse("error_reports:create") + "?vocabulary=%s" % word.pk)
+        self.assertContains(response, reverse("gamification:form") + "?type=meaning&vocabulary=%s" % word.pk)
+
+    def test_deleted_word_is_skipped_not_crashed(self):
+        self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        self._start(topic="nha-hang", limit="0")
+        gone_id = self.client.session["study_queue"][0]
+        Vocabulary.objects.filter(pk=gone_id).delete()
+
+        response = self.client.get(reverse("learning:study"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.context["word"])
+        self.assertNotEqual(response.context["word"].pk, gone_id)

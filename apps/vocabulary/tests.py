@@ -11,6 +11,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.management import call_command
 from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.test import TestCase
 from django.urls import reverse
 
@@ -18,6 +19,7 @@ from apps.core.properties import label, message
 from apps.learning.models import UserVocabularyProgress
 
 from .models import Topic, Vocabulary, VocabularyTopic
+from .selectors import DEFAULT_SESSION_LIMIT
 from .views import PAGE_SIZE
 
 User = get_user_model()
@@ -48,6 +50,16 @@ class VocabularyTestCase(TestCase):
             VocabularyTopic.objects.create(vocabulary=vocab, topic=self.topic)
         return vocab
 
+    def _filtered(self, url=None, **params):
+        """GET màn danh sách ở trạng thái ĐÃ BẤM LỌC.
+
+        Từ 18/09/2026 trang không tự nạp dữ liệu nữa: không có cờ `filtered`
+        (và không có tham số lọc nào) thì view trả về trang trống. Test nào
+        cần bảng kết quả phải đi qua helper này.
+        """
+        params.setdefault("filtered", "1")
+        return self.client.get(url or reverse("vocabulary:index"), params)
+
 
 class ListViewTests(VocabularyTestCase):
     def test_requires_login(self):
@@ -60,7 +72,7 @@ class ListViewTests(VocabularyTestCase):
         self._word("予約", "よやく", "đặt chỗ trước")
         self._word("孤児", "こじ", "từ không thuộc chủ đề nào", topic=False)
 
-        response = self.client.get(reverse("vocabulary:index"))
+        response = self._filtered()
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "vocabulary/list.html")
         self.assertEqual(response.context["total_count"], 3)
@@ -105,9 +117,7 @@ class ListViewTests(VocabularyTestCase):
         VocabularyTopic.objects.create(vocabulary=vocab, topic=khac)
         self._word("孤児", "こじ", "từ mồ côi", topic=False)
 
-        response = self.client.get(
-            reverse("vocabulary:index"), {"topic": ["nha-hang", "hop-hanh"]}
-        )
+        response = self._filtered(topic=["nha-hang", "hop-hanh"])
         self.assertEqual(response.context["total_count"], 2)
         self.assertEqual(
             [t.slug for t in response.context["selected_topics"]], ["nha-hang", "hop-hanh"]
@@ -122,16 +132,14 @@ class ListViewTests(VocabularyTestCase):
         vocab = self._word("注文する", "ちゅうもんする", "gọi món")    # đã có Nhà hàng
         VocabularyTopic.objects.create(vocabulary=vocab, topic=khac)
 
-        response = self.client.get(
-            reverse("vocabulary:index"), {"topic": ["nha-hang", "hop-hanh"]}
-        )
+        response = self._filtered(topic=["nha-hang", "hop-hanh"])
         self.assertEqual(response.context["total_count"], 1)
 
     def test_filter_link_toggles_topic_on_and_off(self):
         """Chưa chọn thì link THÊM chủ đề, đang chọn thì link BỎ chủ đề."""
         khac = Topic.objects.create(name="Họp hành", slug="hop-hanh")
 
-        response = self.client.get(reverse("vocabulary:index"), {"topic": ["nha-hang"]})
+        response = self._filtered(topic=["nha-hang"])
         links = {f["topic"].slug: f for f in response.context["topic_filters"]}
         self.assertTrue(links["nha-hang"]["is_selected"])
         self.assertNotIn("topic=", links["nha-hang"]["query"])          # bấm lần 2 -> bỏ lọc
@@ -140,9 +148,7 @@ class ListViewTests(VocabularyTestCase):
         self.assertIn("topic=hop-hanh", links[khac.slug]["query"])
 
     def test_filter_link_keeps_the_search_keyword(self):
-        response = self.client.get(
-            reverse("vocabulary:index"), {"q": "ちゅうもん", "topic": ["nha-hang"]}
-        )
+        response = self._filtered(q="ちゅうもん", topic=["nha-hang"])
         for f in response.context["topic_filters"]:
             self.assertIn("q=", f["query"])
         self.assertIn("q=", response.context["clear_query"])
@@ -151,7 +157,7 @@ class ListViewTests(VocabularyTestCase):
         """Slug rác trên query string chỉ bị lờ đi (khác slug rác trên route)."""
         self._word("注文する", "ちゅうもんする", "gọi món")
 
-        response = self.client.get(reverse("vocabulary:index"), {"topic": "khong-ton-tai"})
+        response = self._filtered(topic="khong-ton-tai")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["selected_topics"], [])
         self.assertEqual(response.context["total_count"], 1)
@@ -174,16 +180,14 @@ class ListViewTests(VocabularyTestCase):
             vocab = self._word(f"語{i}", f"ご{i}", f"từ {i}", topic=False)
             VocabularyTopic.objects.create(vocabulary=vocab, topic=khac)
 
-        response = self.client.get(
-            reverse("vocabulary:index"), {"topic": ["nha-hang", "hop-hanh"]}
-        )
+        response = self._filtered(topic=["nha-hang", "hop-hanh"])
         self.assertIn("topic=nha-hang", response.context["pagination_query"])
         self.assertIn("topic=hop-hanh", response.context["pagination_query"])
         self.assertNotIn("page=", response.context["pagination_query"])
 
     def test_search_form_keeps_selected_topics(self):
         """Ô tìm kiếm phải mang theo chủ đề đang lọc (hidden input)."""
-        response = self.client.get(reverse("vocabulary:index"), {"topic": ["nha-hang"]})
+        response = self._filtered(topic=["nha-hang"])
         self.assertContains(response, 'name="topic" value="nha-hang"')
 
     def test_topic_shows_both_names(self):
@@ -205,7 +209,7 @@ class ListViewTests(VocabularyTestCase):
             user=self.user, vocabulary=mastered, is_mastered=True
         )
 
-        response = self.client.get(reverse("vocabulary:index"))
+        response = self._filtered()
         status_by_id = {w.pk: w.study_status for w in response.context["page_obj"].object_list}
         self.assertEqual(status_by_id[new.pk], "new")
         self.assertEqual(status_by_id[learning.pk], "learning")
@@ -217,17 +221,110 @@ class ListViewTests(VocabularyTestCase):
         other = User.objects.create_user(username="khac", password="x")
         UserVocabularyProgress.objects.create(user=other, vocabulary=vocab, is_mastered=True)
 
-        response = self.client.get(reverse("vocabulary:index"))
+        response = self._filtered()
         self.assertEqual(response.context["page_obj"].object_list[0].study_status, "new")
 
     def test_orphan_word_has_no_review_link(self):
         self._word("孤児", "こじ", "từ mồ côi", topic=False)
-        response = self.client.get(reverse("vocabulary:index"))
+        response = self._filtered()
         self.assertIsNone(response.context["page_obj"].object_list[0].primary_topic)
 
     def test_empty_state(self):
-        response = self.client.get(reverse("vocabulary:index"))
+        """Đã lọc nhưng không khớp từ nào -> báo rỗng."""
+        response = self._filtered(q="")
         self.assertContains(response, message("vocabulary.list.empty"))
+
+    def test_page_is_blank_until_the_user_filters(self):
+        """Vào trang trần: hiện khu bộ lọc, KHÔNG truy vấn bảng từ vựng."""
+        self._word("注文する", "ちゅうもんする", "gọi món")
+
+        with CaptureQueriesContext(connection) as captured:
+            response = self.client.get(reverse("vocabulary:index"))
+
+        self.assertFalse(response.context["is_filtered"])
+        self.assertIsNone(response.context["page_obj"])
+        self.assertContains(response, message("vocabulary.list.hint.not_filtered"))
+        self.assertNotContains(response, "ちゅうもんする")
+        # Điều kiện cốt lõi: không có câu SQL nào đụng vào bảng từ vựng.
+        vocabulary_table = Vocabulary._meta.db_table
+        self.assertEqual(
+            [q["sql"] for q in captured.captured_queries if vocabulary_table in q["sql"]],
+            [],
+        )
+
+    def test_topic_route_loads_data_without_the_flag(self):
+        """Link cũ /vocabulary/topic/<slug>/ tự nó đã là một bộ lọc."""
+        self._word("注文する", "ちゅうもんする", "gọi món")
+        response = self.client.get(reverse("vocabulary:list", args=["nha-hang"]))
+        self.assertTrue(response.context["is_filtered"])
+        self.assertContains(response, "ちゅうもんする")
+
+    def test_status_filter_new_only(self):
+        new = self._word("注文する", "ちゅうもんする", "gọi món")
+        learning = self._word("予約", "よやく", "đặt chỗ")
+        mastered = self._word("会計", "かいけい", "tính tiền")
+        UserVocabularyProgress.objects.create(user=self.user, vocabulary=learning)
+        UserVocabularyProgress.objects.create(
+            user=self.user, vocabulary=mastered, is_mastered=True
+        )
+
+        response = self._filtered(status="new")
+        self.assertEqual(
+            [w.pk for w in response.context["page_obj"].object_list], [new.pk]
+        )
+
+    def test_status_filter_accepts_several_values(self):
+        self._word("注文する", "ちゅうもんする", "gọi món")
+        learning = self._word("予約", "よやく", "đặt chỗ")
+        mastered = self._word("会計", "かいけい", "tính tiền")
+        UserVocabularyProgress.objects.create(user=self.user, vocabulary=learning)
+        UserVocabularyProgress.objects.create(
+            user=self.user, vocabulary=mastered, is_mastered=True
+        )
+
+        response = self._filtered(status=["learning", "mastered"])
+        self.assertEqual(
+            sorted(w.pk for w in response.context["page_obj"].object_list),
+            sorted([learning.pk, mastered.pk]),
+        )
+
+    def test_status_filter_is_per_user(self):
+        """"Chưa học" phải xét tiến độ của CHÍNH người đang đăng nhập."""
+        vocab = self._word("注文する", "ちゅうもんする", "gọi món")
+        other = User.objects.create_user(username="khac", password="x")
+        UserVocabularyProgress.objects.create(user=other, vocabulary=vocab)
+
+        response = self._filtered(status="new")
+        self.assertEqual(response.context["total_count"], 1)
+
+    def test_unknown_status_is_ignored(self):
+        self._word("注文する", "ちゅうもんする", "gọi món")
+        response = self._filtered(status="rac")
+        self.assertEqual(response.context["selected_statuses"], [])
+        self.assertEqual(response.context["total_count"], 1)
+
+    def test_session_limit_falls_back_to_default(self):
+        response = self._filtered(limit="999")
+        self.assertEqual(response.context["session_limit"], DEFAULT_SESSION_LIMIT)
+        response = self._filtered(limit="50")
+        self.assertEqual(response.context["session_limit"], 50)
+
+    def test_table_shows_50_rows_per_page(self):
+        self.assertEqual(PAGE_SIZE, 50)
+        for index in range(PAGE_SIZE + 2):
+            self._word("語%03d" % index, "ご%03d" % index, "nghĩa %03d" % index)
+
+        response = self._filtered()
+        self.assertEqual(len(response.context["page_obj"].object_list), 50)
+        self.assertEqual(response.context["paginator"].num_pages, 2)
+
+    def test_start_study_button_carries_the_filter(self):
+        self._word("注文する", "ちゅうもんする", "gọi món")
+        response = self._filtered(topic="nha-hang", status="new", limit="10")
+        self.assertContains(response, reverse("learning:study_start"))
+        self.assertContains(response, '<input type="hidden" name="topic" value="nha-hang">', html=False)
+        self.assertContains(response, '<input type="hidden" name="status" value="new">', html=False)
+        self.assertContains(response, '<input type="hidden" name="limit" value="10">', html=False)
 
     def test_pagination_keeps_filters(self):
         for index in range(PAGE_SIZE + 3):
@@ -237,7 +334,7 @@ class ListViewTests(VocabularyTestCase):
         self.assertEqual(len(first.context["page_obj"].object_list), PAGE_SIZE)
         self.assertNotIn("page=", first.context["pagination_query"])
 
-        second = self.client.get(reverse("vocabulary:index"), {"level": "J4", "page": 2})
+        second = self._filtered(page=2)
         self.assertEqual(len(second.context["page_obj"].object_list), 3)
         # `page` không được lặp lại trong querystring phân trang.
         self.assertNotIn("page=", second.context["pagination_query"])
@@ -253,7 +350,7 @@ class SearchTests(VocabularyTestCase):
         self._word("注文する", "ちゅうもんする", "gọi món")
         self._word("会計", "かいけい", "tính tiền")
 
-        response = self.client.get(reverse("vocabulary:index"), {"q": "ちゅうもん"})
+        response = self._filtered(q="ちゅうもん")
         self.assertEqual(response.context["total_count"], 1)
         self.assertContains(response, "注文する")
 

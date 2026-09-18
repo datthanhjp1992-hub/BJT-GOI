@@ -3,10 +3,20 @@
 {% comment %}
 SC04_HocTuVung — port từ htmlTemplate/SC04_HocTuVung_*.html.
 
-Hàng đợi (từ đến hạn -> từ chưa học), số thẻ/tổng và StudySession do
-apps.learning.views/services tính — template chỉ hiển thị. Lật thẻ xem nghĩa
-dùng class .is-flipped (static/js/main.js toggle khi click .flashcard); tắt
-JS thì <noscript> bên dưới hiện thẳng nghĩa, không khoá tính năng cốt lõi.
+MỘT template, HAI lối vào (xem apps/learning/views.py):
+  * flashcard_view  — học một chủ đề (link từ trang chủ).
+  * study_view      — học theo bộ lọc của SC05, hàng đợi gộp nhiều chủ đề.
+Hai view truyền cùng bộ khoá `review_action` / `topic_slug_value` /
+`scope_label` nên template không phải biết mình đang ở chế độ nào.
+
+Từ 18/09/2026, GÓP Ý và BÁO LỖI nằm ở đây (màn chi tiết của từng từ) chứ
+không còn ở cột thao tác của bảng SC05 — báo lỗi ngay lúc đang nhìn thấy từ
+thì đúng ngữ cảnh hơn, và bảng danh sách nhẹ đi một cột.
+
+Hàng đợi, số thẻ/tổng và StudySession do view tính — template chỉ hiển thị.
+Lật thẻ xem nghĩa dùng class .is-flipped (static/js/main.js toggle khi click
+.flashcard); tắt JS thì <noscript> bên dưới hiện thẳng nghĩa, không khoá
+tính năng cốt lõi.
 {% endcomment %}
 
 {% block title %}{% label "common.nav.flashcard" %} | {% label "common.brand.name" %}{% endblock %}
@@ -16,7 +26,7 @@ JS thì <noscript> bên dưới hiện thẳng nghĩa, không khoá tính năng 
 {% block content %}
   {% if word %}
     <p class="muted" style="margin:0 0 10px;">
-      {% message "learning.flashcard.hint.progress" topic=topic.display_name position=position total=total %}
+      {% message "learning.flashcard.hint.progress" topic=scope_label position=position total=total %}
     </p>
     <div class="progressbar" style="margin-bottom:28px;"><span style="width:{{ percent }}%"></span></div>
 
@@ -27,6 +37,12 @@ JS thì <noscript> bên dưới hiện thẳng nghĩa, không khoá tính năng 
       <p class="muted hint" style="font-size:14px;">{% label "learning.flashcard.hint.tap_to_reveal" %}</p>
     </div>
     <noscript><style>.flashcard .meaning{display:block!important}.flashcard .hint{display:none!important}</style></noscript>
+
+    {% if word.topics.all %}
+      <p class="muted" style="text-align:center;margin:10px 0 0;font-size:13px;">
+        {% for t in word.topics.all %}<span class="tag">{{ t.name_ja|default:t.name }}</span> {% endfor %}
+      </p>
+    {% endif %}
 
     {% if examples %}
       <details style="margin-top:10px;">
@@ -44,9 +60,9 @@ JS thì <noscript> bên dưới hiện thẳng nghĩa, không khoá tính năng 
 
     <div class="divider"></div>
     <p class="muted" style="text-align:center;margin-bottom:14px;">{% label "learning.flashcard.prompt.recall_level" %}</p>
-    <form method="post" action="{% url 'learning:flashcard_review' word.pk %}">
+    <form method="post" action="{{ review_action }}">
       {% csrf_token %}
-      <input type="hidden" name="topic_slug" value="{{ topic.slug }}">
+      <input type="hidden" name="topic_slug" value="{{ topic_slug_value }}">
       <div class="grid" style="grid-template-columns:repeat(4,1fr);">
         <button class="btn" type="submit" name="quality" value="quen" style="background:#e8c4b8;color:#8f3323;">{% label "learning.flashcard.button.forgot" %}</button>
         <button class="btn" type="submit" name="quality" value="kho" style="background:#f0e0c4;color:#8a6a1a;">{% label "learning.flashcard.button.hard" %}</button>
@@ -54,19 +70,31 @@ JS thì <noscript> bên dưới hiện thẳng nghĩa, không khoá tính năng 
         <button class="btn btn-primary" type="submit" name="quality" value="de">{% label "learning.flashcard.button.easy" %}</button>
       </div>
     </form>
-    <p style="text-align:center;margin-top:22px;">
-      <a href="{% url 'learning:dashboard' %}" class="muted">{% label "learning.flashcard.link.end_session" %}</a>
-    </p>
+
+    <div style="text-align:center;margin-top:22px;">
+      {% if is_study_session %}
+        {% comment %}Phiên theo bộ lọc phải đóng StudySession và dọn hàng đợi
+        trong request.session, nên "kết thúc" là POST chứ không phải link.{% endcomment %}
+        <form method="post" action="{% url 'learning:study_end' %}" style="margin:0;">
+          {% csrf_token %}
+          <button type="submit" class="action-link" style="background:none;border:0;padding:0;font:inherit;cursor:pointer;">{% label "learning.flashcard.link.end_session" %}</button>
+        </form>
+      {% else %}
+        <a href="{% url 'learning:dashboard' %}" class="muted">{% label "learning.flashcard.link.end_session" %}</a>
+      {% endif %}
+    </div>
 
     <div class="divider"></div>
 
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <h3 class="serif" style="margin:0;font-size:18px;">💬 {% label "learning.flashcard.section.comments" %}</h3>
-      {% comment %}Trước 16/09/2026 link này trỏ về {% url 'vocabulary:index' %} vì SC11
-      chưa dựng — bấm vào là quay lại trang từ vựng. Giờ trỏ thẳng vào form góp ý
-      "Sửa nghĩa", mang sẵn id từ đang học nên không phải chọn lại.{% endcomment %}
-      <a href="{% url 'gamification:form' %}?type=meaning&vocabulary={{ word.pk }}" class="muted" style="font-size:13px;text-decoration:underline;">{% label "learning.flashcard.link.suggest_fix" %} →</a>
+    {% comment %}Khu "phản hồi về từ này" — chuyển từ SC05 sang (18/09/2026).
+    Góp ý sửa nghĩa và báo lỗi đều mang sẵn id từ đang học nên hai form bên
+    SC11/SC14 không bắt người dùng chọn lại từ.{% endcomment %}
+    <div class="toolbar" style="justify-content:center;margin-bottom:18px;">
+      <a class="btn btn-outline" href="{% url 'gamification:form' %}?type=meaning&vocabulary={{ word.pk }}">{% label "contribution.form.link.suggest" %}</a>
+      <a class="btn btn-outline" href="{% url 'error_reports:create' %}?vocabulary={{ word.pk }}">{% label "error_report.form.link.report" %}</a>
     </div>
+
+    <h3 class="serif" style="margin:0 0 14px;font-size:18px;">💬 {% label "learning.flashcard.section.comments" %}</h3>
 
     {% if comments %}
       <div style="display:grid;gap:12px;margin-bottom:14px;">
@@ -86,7 +114,7 @@ JS thì <noscript> bên dưới hiện thẳng nghĩa, không khoá tính năng 
 
     <form method="post" action="{% url 'learning:flashcard_comment' word.pk %}" class="card" style="padding:16px 18px;">
       {% csrf_token %}
-      <input type="hidden" name="topic_slug" value="{{ topic.slug }}">
+      <input type="hidden" name="topic_slug" value="{{ topic_slug_value }}">
       <label for="id_comment_text" style="margin-bottom:8px;">{% label "learning.flashcard.field.new_comment" %}</label>
       <input type="text" id="id_comment_text" name="comment_text" maxlength="1000">
       <button type="submit" class="btn btn-primary" style="margin-top:10px;padding:9px 18px;font-size:13.5px;">{% label "learning.flashcard.button.submit_comment" %}</button>
@@ -95,8 +123,11 @@ JS thì <noscript> bên dưới hiện thẳng nghĩa, không khoá tính năng 
   {% else %}
     <div class="card" style="text-align:center;padding:48px 32px;">
       <h1 class="serif" style="margin:0 0 10px;">{% label "learning.flashcard.title.session_complete" %}</h1>
-      <p class="muted" style="margin:0 0 20px;">{% message "learning.flashcard.hint.session_complete" topic=topic.display_name %}</p>
-      <a class="btn btn-primary" href="{% url 'learning:dashboard' %}">{% label "common.button.back" %}</a>
+      <p class="muted" style="margin:0 0 20px;">{% message "learning.flashcard.hint.session_complete" topic=scope_label %}</p>
+      <div class="toolbar" style="justify-content:center;">
+        <a class="btn btn-primary" href="{% url 'learning:dashboard' %}">{% label "common.button.back" %}</a>
+        <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "learning.flashcard.link.pick_more" %}</a>
+      </div>
     </div>
   {% endif %}
 {% endblock %}

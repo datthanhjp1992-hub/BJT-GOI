@@ -1,47 +1,104 @@
 {% extends "base.html" %}
 {% load properties_tags mastercode_tags %}
 {% comment %}SC05_DanhSachTuVung — port từ htmlTemplate/SC05_DanhSachTuVung_*.html.
-Từ vựng phân loại theo CHỦ ĐỀ, không còn cấp độ BJT (bỏ 13/09/2026) — thanh lọc
-dựng từ context `topics`, không liệt kê cứng chủ đề nào trong template.{% endcomment %}
+
+Bố cục mới (18/09/2026), xem apps/vocabulary/views.py để biết lý do:
+  1. KHU BỘ LỌC riêng ở đầu trang — một form GET duy nhất (chủ đề, từ khoá,
+     trạng thái học, số từ mỗi phiên).
+  2. Vào trang chưa bấm "Lọc" thì KHÔNG hiện bảng và view cũng không truy vấn.
+  3. Bảng kết quả 50 dòng/trang, phân trang ngay dưới bảng.
+  4. Nút "Bắt đầu học" nằm DƯỚI CHÂN BẢNG, học toàn bộ từ khớp bộ lọc — mỗi
+     dòng không còn link "Học ngay/Ôn tập" riêng nữa.
+  5. Góp ý & báo lỗi đã chuyển vào màn học chi tiết (learning/flashcard.html),
+     không còn ở cột thao tác của bảng này.
+
+Form lọc là GET nên bookmark/chia sẻ/back đều đúng và trang vẫn chạy khi tắt
+JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không bắt buộc.{% endcomment %}
 
 {% block title %}{% if selected_topics %}{% for t in selected_topics %}{{ t.display_name }}{% if not forloop.last %} + {% endif %}{% endfor %}{% else %}{% label "vocabulary.list.title.all" %}{% endif %} | {% label "common.brand.name" %}{% endblock %}
 
 {% block content %}
   <div class="eyebrow">{% label "vocabulary.list.eyebrow" %}</div>
-  <h1 class="serif" style="font-size:28px;margin:0 0 24px;">
+  <h1 class="serif" style="font-size:28px;margin:0 0 20px;">
     {% if selected_topics %}{% for t in selected_topics %}{{ t.icon_emoji }} {{ t.display_name }}{% if not forloop.last %} <span class="muted">+</span> {% endif %}{% endfor %}{% else %}{% label "vocabulary.list.title.all" %}{% endif %}
   </h1>
 
-  {# --- Ô tìm kiếm: GET để người dùng bookmark/chia sẻ được kết quả --- #}
-  <form class="toolbar" method="get" action="{% url 'vocabulary:index' %}">
-    {# Giữ nguyên các chủ đề đang lọc khi bấm "Tìm" — nếu không, tìm kiếm sẽ âm thầm xoá bộ lọc. #}
-    {% for t in selected_topics %}<input type="hidden" name="topic" value="{{ t.slug }}">{% endfor %}
-    <input class="grow" type="search" name="q" value="{{ query }}"
-           aria-label="{% label 'vocabulary.list.field.search' %}"
-           placeholder="{% label 'vocabulary.list.field.search' %}">
-    <button type="submit" class="btn btn-primary">{% label "vocabulary.list.button.search" %}</button>
+  {# ===================== 1. KHU BỘ LỌC ===================== #}
+  <div class="eyebrow">{% label "vocabulary.list.section.filter" %}</div>
+  <form class="card" id="filter-form" method="get" action="{% url 'vocabulary:index' %}" style="margin-bottom:24px;">
+    {% comment %}Cờ này là thứ nói cho view biết "người dùng đã bấm Lọc" — không
+    có nó (và không có tham số lọc nào) thì view không truy vấn từ vựng.{% endcomment %}
+    <input type="hidden" name="filtered" value="1">
+
+    <div class="field">
+      <label for="id_q">{% label "vocabulary.list.field.search" %}</label>
+      <input id="id_q" type="search" name="q" value="{{ query }}"
+             placeholder="{% label 'vocabulary.list.hint.search_placeholder' %}">
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <label style="margin:0;">{% label "vocabulary.list.field.filter_topic" %}</label>
+      <span class="muted" style="font-size:12.5px;">
+        <button type="button" class="action-link" style="background:none;border:0;padding:0;font:inherit;cursor:pointer;" onclick="toggleTopics(true)">{% label "vocabulary.list.button.select_all_topics" %}</button>
+        <span class="action-sep" aria-hidden="true">·</span>
+        <button type="button" class="action-link" style="background:none;border:0;padding:0;font:inherit;cursor:pointer;" onclick="toggleTopics(false)">{% label "vocabulary.list.button.clear_topics" %}</button>
+      </span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin:10px 0 0;">
+      {% for f in topic_filters %}
+        <label class="checkbox-row" style="border:1px solid var(--border);border-radius:3px;padding:9px 12px;margin:0;">
+          <input type="checkbox" name="topic" value="{{ f.topic.slug }}"{% if f.is_selected %} checked{% endif %}>
+          <span>{{ f.topic.icon_emoji }} {{ f.topic.name_ja|default:f.topic.name }}</span>
+        </label>
+      {% empty %}
+        <p class="muted" style="margin:0;font-size:14px;">{% message "vocabulary.list.hint.no_topic" %}</p>
+      {% endfor %}
+    </div>
+    <p class="muted" style="font-size:12.5px;margin:8px 0 0;">{% message "vocabulary.list.hint.topic_is_or" %}</p>
+
+    <div class="divider"></div>
+
+    <div class="grid cols-2" style="align-items:start;">
+      <div>
+        <label style="margin-bottom:10px;">{% label "vocabulary.list.field.status" %}</label>
+        {% for s in status_filters %}
+          <label class="checkbox-row">
+            <input type="checkbox" name="status" value="{{ s.code }}"{% if s.is_selected %} checked{% endif %}>
+            <span>{% label s.label_key %}</span>
+          </label>
+        {% endfor %}
+      </div>
+      <div class="field" style="margin:0;">
+        <label for="id_limit">{% label "vocabulary.list.field.session_limit" %}</label>
+        <select id="id_limit" name="limit">
+          {% for choice in limit_choices %}
+            <option value="{{ choice }}"{% if choice == session_limit %} selected{% endif %}>
+              {% if choice %}{{ choice }}{% else %}{% label "vocabulary.list.option.limit_all" %}{% endif %}
+            </option>
+          {% endfor %}
+        </select>
+        <p class="muted" style="font-size:12.5px;margin:8px 0 0;">{% message "vocabulary.list.hint.session_limit" %}</p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="toolbar" style="margin:0;">
+      <button type="submit" class="btn btn-primary">{% label "vocabulary.list.button.filter" %}</button>
+      <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "vocabulary.list.button.reset" %}</a>
+    </div>
   </form>
 
-  {% comment %}Lọc theo chủ đề: chọn được NHIỀU chủ đề, bấm lần hai để bỏ chọn.
-  Mỗi thẻ là một link tự chứa (view dựng sẵn query string bật/tắt) nên thanh lọc
-  chạy đúng cả khi trình duyệt tắt JavaScript.{% endcomment %}
-  <div class="toolbar filter-bar" role="group" aria-label="{% label 'vocabulary.list.field.filter_topic' %}">
-    <a class="tag tag-filter{% if not selected_topics %} is-active{% endif %}"
-       aria-pressed="{% if selected_topics %}false{% else %}true{% endif %}"
-       href="{% url 'vocabulary:index' %}{{ clear_query }}">{% label "vocabulary.list.field.filter_all" %}</a>
-    {% for f in topic_filters %}
-      <a class="tag tag-filter{% if f.is_selected %} is-active{% endif %}"
-         aria-pressed="{% if f.is_selected %}true{% else %}false{% endif %}"
-         title="{% if f.is_selected %}{% label 'vocabulary.list.hint.filter_off' %}{% else %}{% label 'vocabulary.list.hint.filter_on' %}{% endif %}"
-         href="{% url 'vocabulary:index' %}{{ f.query }}">{{ f.topic.icon_emoji }} {{ f.topic.name_ja|default:f.topic.name }}</a>
-    {% endfor %}
-  </div>
+  {# ===================== 2. KẾT QUẢ ===================== #}
+  {% if not is_filtered %}
+    <div class="card"><p class="muted" style="margin:0;">{% message "vocabulary.list.hint.not_filtered" %}</p></div>
+  {% elif page_obj.object_list %}
+    <p class="muted" style="margin:0 0 16px;font-size:14px;">
+      {% message "vocabulary.list.hint.result_count" count=total_count %}
+    </p>
 
-  <p class="muted" style="margin:0 0 16px;font-size:14px;">
-    {% message "vocabulary.list.hint.result_count" count=total_count %}
-  </p>
-
-  {% if page_obj.object_list %}
     <div class="card" style="padding:0;">
       <table>
         <tr>
@@ -50,7 +107,6 @@ dựng từ context `topics`, không liệt kê cứng chủ đề nào trong te
           <th>{% label "vocabulary.list.table.meaning" %}</th>
           <th>{% label "vocabulary.list.table.topics" %}</th>
           <th>{% label "vocabulary.list.table.status" %}</th>
-          <th></th>
         </tr>
         {% for word in page_obj.object_list %}
           <tr>
@@ -69,18 +125,6 @@ dựng từ context `topics`, không liệt kê cứng chủ đề nào trong te
                 <span class="tag">{% label "vocabulary.list.tag.status.new" %}</span>
               {% endif %}
             </td>
-            <td style="white-space:nowrap;">
-              {% if word.primary_topic %}
-                <a class="action-link is-primary" href="{% url 'learning:flashcard' word.primary_topic.slug %}">
-                  {% if word.study_status == "new" %}{% label "vocabulary.list.link.start" %}{% else %}{% label "vocabulary.list.link.review" %}{% endif %} →
-                </a>
-                <span class="action-sep" aria-hidden="true">·</span>
-              {% endif %}
-              {% comment %}Báo lỗi mang sẵn id từ vựng nên form bên SC14 không bắt chọn lại từ.{% endcomment %}
-              <a class="action-link" href="{% url 'gamification:form' %}?type=meaning&vocabulary={{ word.pk }}">{% label "contribution.form.link.suggest" %}</a>
-              <span class="action-sep" aria-hidden="true">·</span>
-              <a class="action-link" href="{% url 'error_reports:create' %}?vocabulary={{ word.pk }}">{% label "error_report.form.link.report" %}</a>
-            </td>
           </tr>
         {% endfor %}
       </table>
@@ -97,7 +141,36 @@ dựng từ context `topics`, không liệt kê cứng chủ đề nào trong te
         {% endif %}
       </div>
     {% endif %}
+
+    {% comment %}Nút bắt đầu học: POST (không phải link GET) vì nó TẠO một
+    StudySession và chốt hàng đợi vào session — thao tác có tác dụng phụ thì
+    không được nằm sau một cái link. Bộ lọc đi kèm dưới dạng input ẩn để
+    learning:study_start dựng lại đúng tập từ đang hiện trong bảng.{% endcomment %}
+    <form method="post" action="{% url 'learning:study_start' %}" class="card" style="margin-top:20px;">
+      {% csrf_token %}
+      {% for t in selected_topics %}<input type="hidden" name="topic" value="{{ t.slug }}">{% endfor %}
+      {% for s in selected_statuses %}<input type="hidden" name="status" value="{{ s }}">{% endfor %}
+      <input type="hidden" name="q" value="{{ query }}">
+      <input type="hidden" name="limit" value="{{ session_limit }}">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;">
+        <p class="muted" style="margin:0;font-size:14px;">
+          {% if session_limit %}
+            {% message "vocabulary.list.hint.start_study" count=total_count limit=session_limit %}
+          {% else %}
+            {% message "vocabulary.list.hint.start_study_all" count=total_count %}
+          {% endif %}
+        </p>
+        <button type="submit" class="btn btn-primary">{% label "vocabulary.list.button.start_study" %}</button>
+      </div>
+    </form>
   {% else %}
     <div class="card"><p class="muted" style="margin:0;">{% message "vocabulary.list.empty" %}</p></div>
   {% endif %}
+
+<script>
+// Tiện ích nhỏ, không bắt buộc: trang vẫn lọc/học được đủ khi tắt JavaScript.
+function toggleTopics(state){
+  document.querySelectorAll('#filter-form input[name="topic"]').forEach(function(box){ box.checked = state; });
+}
+</script>
 {% endblock %}

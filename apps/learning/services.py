@@ -287,3 +287,58 @@ def get_greeting_label_key(user):
     if hour < 18:
         return "learning.dashboard.eyebrow.afternoon"
     return "learning.dashboard.eyebrow.evening"
+
+
+# =============================================================================
+# Hàng đợi học cho phiên NHIỀU CHỦ ĐỀ (bắt đầu từ SC05 — nút "Bắt đầu học")
+# -----------------------------------------------------------------------------
+# Khác `get_flashcard_queue` ở chỗ nguồn vào là TẬP TỪ ĐÃ LỌC (nhiều chủ đề,
+# có thể kèm từ khoá và trạng thái) chứ không phải một Topic. Thứ tự ưu tiên
+# vẫn giữ nguyên tinh thần SRS: đến hạn -> chưa học -> còn lại.
+# =============================================================================
+
+# Trần số từ đọc lên để xếp hàng đợi. Người học lọc ra cả nghìn từ vẫn chỉ
+# học được vài chục trong một lượt, nên không cần kéo cả kho về Python.
+STUDY_SOURCE_CAP = 2000
+
+_BUCKET_DUE = 0      # đến hạn ôn — học trước tiên
+_BUCKET_NEW = 1      # chưa học lần nào
+_BUCKET_LATER = 2    # đã học nhưng chưa tới hạn — chỉ học khi hai nhóm trên hết
+
+
+def build_study_queue(user, words, limit=0):
+    """Danh sách id từ vựng theo thứ tự học, cắt theo `limit` (0 = không giới hạn).
+
+    `words` là queryset đã qua `apps.vocabulary.selectors.filter_vocabulary()`.
+    Trả về LIST ID chứ không phải object vì hàng đợi được cất trong
+    `request.session` (phải JSON-serializable) và từ có thể bị sửa/xoá giữa
+    chừng — view nạp lại từng từ khi hiển thị.
+    """
+    ordered_ids = [word.pk for word in words[:STUDY_SOURCE_CAP]]
+    if not ordered_ids:
+        return []
+
+    today = user.local_today()
+    progress_by_id = dict(
+        UserVocabularyProgress.objects.filter(
+            user=user, vocabulary_id__in=ordered_ids
+        ).values_list("vocabulary_id", "next_review_date")
+    )
+
+    def sort_key(item):
+        index, vocab_id = item
+        if vocab_id not in progress_by_id:
+            return (_BUCKET_NEW, index, index)
+        due_date = progress_by_id[vocab_id]
+        if due_date is None:
+            # Có tiến độ nhưng chưa được xếp lịch — coi như đến hạn ngay.
+            return (_BUCKET_DUE, 0, index)
+        if due_date <= today:
+            return (_BUCKET_DUE, due_date.toordinal(), index)
+        return (_BUCKET_LATER, due_date.toordinal(), index)
+
+    queue = [
+        vocab_id
+        for _, vocab_id in sorted(enumerate(ordered_ids), key=sort_key)
+    ]
+    return queue[:limit] if limit else queue
