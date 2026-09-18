@@ -190,6 +190,27 @@ class ListViewTests(VocabularyTestCase):
         response = self._filtered(topic=["nha-hang"])
         self.assertContains(response, 'name="topic" value="nha-hang"')
 
+    def test_topic_filter_is_a_searchable_dropdown(self):
+        """Chủ đề nằm trong dropdown <details> có checkbox + ô tìm nhanh.
+
+        Ô tìm chạy bằng JS nên test chỉ canh phần server phải dựng đúng: khung
+        dropdown, ô tìm, và data-topic-search chứa cả tên Việt / tên Nhật /
+        slug để gõ kiểu nào cũng ra.
+        """
+        Topic.objects.create(name="Họp hành", slug="hop-hanh", name_ja="会議・打合せ")
+
+        response = self.client.get(reverse("vocabulary:index"))
+        self.assertContains(response, 'id="topic-dropdown"')
+        self.assertContains(response, 'id="topic-search"')
+        self.assertContains(response, 'data-topic-search="Họp hành 会議・打合せ hop-hanh"')
+        self.assertContains(response, '<input type="checkbox" name="topic" value="hop-hanh">')
+
+    def test_dropdown_search_box_is_not_submitted(self):
+        """Ô tìm nhanh không có name -> không lẫn vào query string của form lọc."""
+        response = self.client.get(reverse("vocabulary:index"))
+        self.assertNotContains(response, 'id="topic-search" name=')
+        self.assertNotContains(response, 'name="topic-search"')
+
     def test_topic_shows_both_names(self):
         """Tên Nhật và tên Việt để hai ô riêng, UI ghép lại khi hiển thị."""
         khac = Topic.objects.create(name="Họp hành", slug="hop-hanh", name_ja="会議・打合せ")
