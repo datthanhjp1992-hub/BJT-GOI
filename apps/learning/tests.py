@@ -11,6 +11,7 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 
+from apps.vocabulary import selectors as vocab_selectors
 from apps.vocabulary.models import Topic, Vocabulary, VocabularyTopic
 from apps.gamification.models import Contribution
 from apps.gamification.services import (
@@ -648,3 +649,332 @@ class StudySessionViewTests(LearningTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.context["word"])
         self.assertNotEqual(response.context["word"].pk, gone_id)
+
+
+# =============================================================================
+# SC15 — Ôn tập
+# =============================================================================
+
+
+class ReviewTestCase(LearningTestCase):
+    """Tiện ích dựng tiến độ học với đủ các tham số SC15 quan tâm."""
+
+    def _learned(self, vocab, *, due_offset=None, mastered=False,
+                 srs_level=0, correct=0, wrong=0):
+        return UserVocabularyProgress.objects.create(
+            user=self.user,
+            vocabulary=vocab,
+            is_mastered=mastered,
+            srs_level=srs_level,
+            correct_count=correct,
+            wrong_count=wrong,
+            next_review_date=(
+                None if due_offset is None
+                else self.user.local_today() + timedelta(days=due_offset)
+            ),
+        )
+
+
+class StudiedVocabularySelectorTests(ReviewTestCase):
+    """`selectors.studied_vocabulary()` — trái tim của SC15."""
+
+    def setUp(self):
+        super().setUp()
+        self.topic = self._make_topic("Họp hành", "hop-hanh", ["会議", "議事録", "稟議", "決裁", "契約"])
+        self.words = {v.word: v for v in Vocabulary.objects.all()}
+
+    def test_never_returns_a_word_the_user_has_not_studied(self):
+        """Khác hẳn SC05: từ chưa có tiến độ KHÔNG bao giờ lọt vào trang ôn tập."""
+        self._learned(self.words["会議"], due_offset=0)
+        result = vocab_selectors.studied_vocabulary(self.user, scope=vocab_selectors.SCOPE_DUE)
+        self.assertEqual([v.word for v in result], ["会議"])
+
+    def test_another_users_progress_does_not_count(self):
+        other = User.objects.create_user(username="khac", password="MatKhauRatManh123")
+        UserVocabularyProgress.objects.create(
+            user=other, vocabulary=self.words["会議"], next_review_date=other.local_today(),
+        )
+        result = vocab_selectors.studied_vocabulary(self.user, scope=vocab_selectors.SCOPE_DUE)
+        self.assertEqual(list(result), [])
+
+    def test_due_scope_covers_overdue_today_and_unscheduled(self):
+        self._learned(self.words["会議"], due_offset=-3)   # quá hạn
+        self._learned(self.words["議事録"], due_offset=0)   # hôm nay
+        self._learned(self.words["稟議"], due_offset=None)  # có tiến độ, chưa xếp lịch
+        self._learned(self.words["決裁"], due_offset=5)     # chưa đến hạn
+
+        result = vocab_selectors.studied_vocabulary(self.user, scope=vocab_selectors.SCOPE_DUE)
+        self.assertEqual(sorted(v.word for v in result), sorted(["会議", "議事録", "稟議"]))
+
+    def test_upcoming_scope_excludes_words_already_due(self):
+        self._learned(self.words["会議"], due_offset=0)     # đến hạn -> KHÔNG phải "sắp"
+        self._learned(self.words["議事録"], due_offset=3)    # trong 7 ngày
+        self._learned(self.words["稟議"], due_offset=30)     # quá xa
+
+        result = vocab_selectors.studied_vocabulary(self.user, scope=vocab_selectors.SCOPE_UPCOMING)
+        self.assertEqual([v.word for v in result], ["議事録"])
+
+    def test_leech_scope_needs_more_wrong_than_right_and_at_least_two(self):
+        self._learned(self.words["会議"], correct=2, wrong=7)   # hay quên
+        self._learned(self.words["議事録"], correct=0, wrong=1)  # sai đúng 1 lần -> chưa tính
+        self._learned(self.words["稟議"], correct=5, wrong=3)    # đúng nhiều hơn sai
+
+        result = vocab_selectors.studied_vocabulary(self.user, scope=vocab_selectors.SCOPE_LEECH)
+        self.assertEqual([v.word for v in result], ["会議"])
+
+    def test_topic_filter_applies_on_top_of_the_scope(self):
+        other_topic = self._make_topic("Điện thoại", "dien-thoai", ["電話"])
+        self._learned(self.words["会議"], due_offset=0)
+        self._learned(Vocabulary.objects.get(word="電話"), due_offset=0)
+
+        result = vocab_selectors.studied_vocabulary(
+            self.user, topics=[other_topic], scope=vocab_selectors.SCOPE_DUE
+        )
+        self.assertEqual([v.word for v in result], ["電話"])
+
+    def test_unknown_scope_falls_back_to_due_instead_of_crashing(self):
+        self.assertEqual(vocab_selectors.clean_review_scope("linh-tinh"), vocab_selectors.SCOPE_DUE)
+
+    def test_only_extra_scopes_skip_the_schedule(self):
+        self.assertTrue(vocab_selectors.touches_schedule(vocab_selectors.SCOPE_DUE))
+        self.assertTrue(vocab_selectors.touches_schedule(vocab_selectors.SCOPE_LEECH))
+        self.assertFalse(vocab_selectors.touches_schedule(vocab_selectors.SCOPE_UPCOMING))
+        self.assertFalse(vocab_selectors.touches_schedule(vocab_selectors.SCOPE_MASTERED))
+
+
+class ReviewStatsServiceTests(ReviewTestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.topic = self._make_topic("Họp hành", "hop-hanh", ["会議", "議事録", "稟議", "決裁"])
+        self.words = {v.word: v for v in Vocabulary.objects.all()}
+
+    def test_overview_counts_and_rounds_minutes_up(self):
+        self._learned(self.words["会議"], due_offset=-2)
+        self._learned(self.words["議事録"], due_offset=0)
+        self._learned(self.words["稟議"], due_offset=4)
+        self._learned(self.words["決裁"], due_offset=9, mastered=True, srs_level=6)
+
+        overview = services.get_review_overview(self.user)
+        self.assertEqual(overview["studied"], 4)
+        self.assertEqual(overview["overdue"], 1)
+        self.assertEqual(overview["due_today"], 1)
+        self.assertEqual(overview["due_total"], 2)
+        self.assertEqual(overview["upcoming"], 1)
+        self.assertEqual(overview["mastered"], 1)
+        # 2 từ x 20 giây = 40 giây -> "khoảng 1 phút", không phải 0.
+        self.assertEqual(overview["minutes"], 1)
+        self.assertEqual(overview["overdue_percent"] + overview["due_today_percent"], 100)
+
+    def test_overview_of_a_brand_new_user_is_all_zero(self):
+        overview = services.get_review_overview(self.user)
+        self.assertEqual(overview["studied"], 0)
+        self.assertEqual(overview["minutes"], 0)
+        # Không được chia cho 0 khi chưa có từ nào đến hạn.
+        self.assertEqual(overview["overdue_percent"], 0)
+
+    def test_memory_bands_split_by_srs_level(self):
+        self._learned(self.words["会議"], srs_level=0)
+        self._learned(self.words["議事録"], srs_level=3)
+        self._learned(self.words["稟議"], srs_level=5)
+        self._learned(self.words["決裁"], srs_level=9)
+
+        bands = {row["key"]: row for row in services.get_memory_distribution(self.user)}
+        self.assertEqual(bands["fresh"]["count"], 1)
+        self.assertEqual(bands["learning"]["count"], 1)
+        self.assertEqual(bands["mastered"]["count"], 2)
+        self.assertEqual(sum(row["count"] for row in bands.values()), 4)
+
+    def test_calendar_puts_overdue_first_and_unscheduled_words_on_today(self):
+        self._learned(self.words["会議"], due_offset=-5)
+        self._learned(self.words["議事録"], due_offset=None)
+        self._learned(self.words["稟議"], due_offset=2)
+
+        buckets = services.get_review_calendar(self.user, days=7)
+        self.assertEqual(len(buckets), 8)          # 1 cột quá hạn + 7 ngày
+        self.assertTrue(buckets[0]["is_overdue"])
+        self.assertEqual(buckets[0]["count"], 1)
+        self.assertTrue(buckets[1]["is_today"])
+        self.assertEqual(buckets[1]["count"], 1)   # từ chưa xếp lịch nằm ở hôm nay
+        self.assertEqual(buckets[3]["count"], 1)
+        self.assertEqual(max(b["percent"] for b in buckets), 100)
+
+    def test_topic_rows_sort_the_most_overdue_topic_first(self):
+        quiet = self._make_topic("Giao hàng", "giao-hang", ["納品"])
+        self._learned(self.words["会議"], due_offset=0)
+        self._learned(self.words["議事録"], due_offset=0)
+        self._learned(Vocabulary.objects.get(word="納品"), due_offset=30)
+
+        rows = services.get_topic_review_rows(self.user)
+        self.assertEqual([row["topic"].slug for row in rows], ["hop-hanh", "giao-hang"])
+        self.assertEqual(rows[0]["due"], 2)
+        self.assertEqual(rows[0]["learned"], 2)
+        self.assertEqual(rows[0]["total"], 4)
+        self.assertEqual(rows[0]["percent"], 50)
+        self.assertEqual(rows[1]["due"], 0)
+        self.assertEqual(quiet.slug, rows[1]["topic"].slug)
+
+    def test_topic_rows_skip_topics_the_user_never_touched(self):
+        self._make_topic("Chưa học", "chua-hoc", ["未習"])
+        self._learned(self.words["会議"], due_offset=0)
+        rows = services.get_topic_review_rows(self.user)
+        self.assertEqual([row["topic"].slug for row in rows], ["hop-hanh"])
+
+
+class RecordExtraReviewTests(ReviewTestCase):
+    """Ôn thêm ngoài lịch KHÔNG được đụng vào lịch SM-2."""
+
+    def setUp(self):
+        super().setUp()
+        self._make_topic("Họp hành", "hop-hanh", ["会議"])
+        self.word = Vocabulary.objects.get(word="会議")
+
+    def test_extra_review_keeps_the_schedule_untouched(self):
+        progress = self._learned(self.word, due_offset=12, srs_level=4, correct=4)
+        before = (progress.next_review_date, progress.srs_level,
+                  progress.interval_days, progress.ease_factor)
+
+        services.record_extra_review(progress, 5)
+        progress.refresh_from_db()
+
+        self.assertEqual(progress.correct_count, 5)
+        self.assertEqual(
+            (progress.next_review_date, progress.srs_level,
+             progress.interval_days, progress.ease_factor),
+            before,
+            msg="Ôn thêm không được đẩy lịch — xem services.record_extra_review",
+        )
+
+    def test_extra_review_counts_a_wrong_answer(self):
+        progress = self._learned(self.word, due_offset=12, srs_level=4)
+        services.record_extra_review(progress, 0)
+        progress.refresh_from_db()
+        self.assertEqual(progress.wrong_count, 1)
+        self.assertEqual(progress.srs_level, 4)
+
+
+class ReviewViewTests(ReviewTestCase):
+
+    def setUp(self):
+        super().setUp()
+        self._make_topic("Họp hành", "hop-hanh", ["会議", "議事録"])
+        self.words = {v.word: v for v in Vocabulary.objects.all()}
+
+    def test_requires_login(self):
+        self.client.logout()
+        url = reverse("learning:review")
+        self.assertRedirects(self.client.get(url), reverse("accounts:login") + "?next=" + url)
+
+    def test_brand_new_user_gets_the_empty_state_not_a_crash(self):
+        response = self.client.get(reverse("learning:review"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["overview"]["studied"], 0)
+
+    def test_shows_how_many_words_are_due(self):
+        self._learned(self.words["会議"], due_offset=-1)
+        self._learned(self.words["議事録"], due_offset=0)
+        response = self.client.get(reverse("learning:review"))
+        self.assertEqual(response.context["overview"]["due_total"], 2)
+
+    def test_tabs_switch_the_panel_through_the_query_string(self):
+        """Ba tab là ba góc nhìn đổi bằng ?view= — không cần JavaScript."""
+        self._learned(self.words["会議"], due_offset=0)
+
+        topic_view = self.client.get(reverse("learning:review"))
+        self.assertEqual(topic_view.context["active_view"], "topic")
+        self.assertTrue(topic_view.context["topic_rows"])
+        self.assertFalse(topic_view.context["calendar"])
+
+        calendar_view = self.client.get(reverse("learning:review") + "?view=calendar")
+        self.assertEqual(calendar_view.context["active_view"], "calendar")
+        self.assertTrue(calendar_view.context["calendar"])
+        self.assertFalse(calendar_view.context["topic_rows"])
+
+    def test_unknown_view_falls_back_to_the_topic_tab(self):
+        response = self.client.get(reverse("learning:review") + "?view=linh-tinh")
+        self.assertEqual(response.context["active_view"], "topic")
+
+
+class ReviewStartTests(ReviewTestCase):
+
+    def setUp(self):
+        super().setUp()
+        self._make_topic("Họp hành", "hop-hanh", ["会議", "議事録", "稟議"])
+        self.words = {v.word: v for v in Vocabulary.objects.all()}
+
+    def _start(self, **data):
+        return self.client.post(reverse("learning:review_start"), data)
+
+    def test_start_is_post_only(self):
+        self.assertEqual(self.client.get(reverse("learning:review_start")).status_code, 405)
+
+    def test_due_scope_builds_the_queue_and_marks_the_session_as_scheduled(self):
+        self._learned(self.words["会議"], due_offset=-1)
+        self._learned(self.words["議事録"], due_offset=0)
+        self._learned(self.words["稟議"], due_offset=20)
+
+        response = self._start(scope="due", limit="0")
+        self.assertRedirects(response, reverse("learning:study"))
+        self.assertEqual(len(self.client.session["study_queue"]), 2)
+        self.assertTrue(self.client.session["study_touch_schedule"])
+
+    def test_empty_group_says_so_instead_of_opening_an_empty_session(self):
+        response = self._start(scope="leech")
+        self.assertRedirects(response, reverse("learning:review"))
+        self.assertNotIn("study_queue", self.client.session)
+
+    def test_quiz_mode_goes_to_the_queue_based_quiz(self):
+        self._learned(self.words["会議"], due_offset=0)
+        response = self._start(scope="due", mode="quiz", limit="0")
+        self.assertRedirects(response, reverse("learning:study_quiz"))
+
+        page = self.client.get(reverse("learning:study_quiz"))
+        self.assertEqual(page.status_code, 200)
+        self.assertEqual(page.context["word"].word, "会議")
+        self.assertTrue(page.context["choices"])
+
+    def test_extra_review_session_does_not_move_the_schedule(self):
+        """Ôn nhóm "sắp đến hạn" rồi trả lời -> lịch ôn giữ nguyên."""
+        progress = self._learned(self.words["会議"], due_offset=5, srs_level=3)
+        self._start(scope="upcoming", limit="0")
+        self.assertFalse(self.client.session["study_touch_schedule"])
+
+        self.client.post(
+            reverse("learning:study_review", args=[self.words["会議"].pk]), {"quality": "de"},
+        )
+        progress.refresh_from_db()
+        self.assertEqual(progress.next_review_date, self.user.local_today() + timedelta(days=5))
+        self.assertEqual(progress.srs_level, 3)
+        self.assertEqual(progress.correct_count, 1)
+
+    def test_due_review_session_does_move_the_schedule(self):
+        progress = self._learned(self.words["会議"], due_offset=0, srs_level=1)
+        self._start(scope="due", limit="0")
+
+        self.client.post(
+            reverse("learning:study_review", args=[self.words["会議"].pk]), {"quality": "de"},
+        )
+        progress.refresh_from_db()
+        self.assertGreater(progress.next_review_date, self.user.local_today())
+        self.assertEqual(progress.srs_level, 2)
+
+    def test_session_from_sc05_still_updates_the_schedule(self):
+        """Luồng cũ (SC05) không có cờ nào -> mặc định vẫn là ôn chính thức."""
+        progress = self._learned(self.words["会議"], due_offset=0, srs_level=1)
+        self.client.post(reverse("learning:study_start"), {"topic": "hop-hanh", "limit": "0"})
+        self.client.post(
+            reverse("learning:study_review", args=[self.words["会議"].pk]), {"quality": "nho"},
+        )
+        progress.refresh_from_db()
+        self.assertEqual(progress.srs_level, 2)
+
+    def test_quiz_answer_counts_into_the_session(self):
+        self._learned(self.words["会議"], due_offset=0)
+        self._start(scope="due", mode="quiz", limit="0")
+        self.client.post(
+            reverse("learning:study_quiz_answer", args=[self.words["会議"].pk]),
+            {"choice": str(self.words["会議"].pk)},
+        )
+        session = StudySession.objects.filter(user=self.user).latest("started_at")
+        self.assertEqual(session.words_reviewed, 1)
+        self.assertEqual(session.correct_answers, 1)

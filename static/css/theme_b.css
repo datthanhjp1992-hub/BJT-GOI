@@ -181,3 +181,59 @@ input[type=checkbox],input[type=radio]{width:auto;padding:0;margin:0;flex:none;}
 .dropdown-list .checkbox-row{margin:0;padding:7px 8px;border-radius:0;}
 .dropdown-list .checkbox-row:hover{background:var(--accent-soft);}
 .dropdown-empty{margin:10px 2px 2px;font-size:13.5px;color:var(--ink-soft);}
+
+
+/* =============================================================================
+   SC15 — Ôn tập (19/09/2026)
+   Khối đầu trang là MỘT hàng đợi dựng sẵn + một nút; mọi tuỳ chọn nằm trong
+   <details>. Không có class nào ở đây trùng chức năng với class cũ — thanh
+   `.queuebar` là thanh CHIA HAI ĐOẠN (quá hạn / đến hạn hôm nay), khác
+   `.progressbar` vốn chỉ có một đoạn "đã xong bao nhiêu %".
+   ========================================================================== */
+.review-hero{display:flex;flex-wrap:wrap;gap:32px;align-items:center;}
+.review-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px;}
+.tabrow{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* Thanh hàng đợi: 2px khe giữa hai đoạn để hai mảng màu không dính vào nhau
+   khi đoạn sau chỉ là bản nhạt màu của đoạn trước. */
+.queuebar{display:flex;gap:2px;height:10px;margin-bottom:10px;}
+.queuebar > span{display:block;height:100%;background:var(--accent);border-radius:0;}
+.queuebar > span.soft{opacity:.32;}
+.queuelegend{display:flex;flex-wrap:wrap;gap:20px;margin:0;font-size:13.5px;}
+.swatch-dot{display:inline-block;width:9px;height:9px;margin-right:6px;background:var(--accent);}
+.swatch-dot.soft{opacity:.32;}
+
+/* <details> tuỳ chỉnh: bỏ mũi tên mặc định của cả Chrome lẫn Safari. */
+.review-options > summary{cursor:pointer;padding-top:16px;font-size:14px;color:var(--ink-soft);list-style:none;}
+.review-options > summary::-webkit-details-marker{display:none;}
+.checkbox-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:2px 16px;}
+
+/* Mỗi thẻ "ôn thêm" là một <form> POST — nút nằm dưới cùng dù đoạn mô tả dài
+   ngắn khác nhau, nhờ vậy ba thẻ thẳng hàng nút. */
+.deck{display:flex;flex-direction:column;align-items:flex-start;}
+.deck .tag{align-self:flex-start;}
+
+.band-row{display:flex;align-items:center;gap:16px;margin-bottom:18px;}
+.band-row:last-child{margin-bottom:0;}
+.band-head{display:flex;justify-content:space-between;gap:12px;margin:0 0 6px;font-size:14px;}
+
+/* Biểu đồ lịch: cột dựng bằng <i> cao theo % — không thư viện JS nào. */
+.daybar{display:flex;align-items:flex-end;gap:12px;height:130px;}
+.daybar > div{flex:1;height:100%;display:flex;align-items:flex-end;}
+.daybar i{display:block;width:100%;background:var(--accent);border-radius:0 0 0 0;min-height:2px;}
+.daybar i.soft{opacity:.32;}
+.daybar-labels{display:flex;gap:12px;margin-top:8px;text-align:center;font-size:13px;}
+.daybar-labels > div{flex:1;display:flex;flex-direction:column;gap:2px;}
+.daybar-labels span{font-size:12.5px;}
+
+/* Nút "Ôn →" trong bảng là <button> (POST tạo phiên học) nhưng phải TRÔNG như
+   một link — thao tác có tác dụng phụ thì không được nằm sau một cái <a>. */
+.linklike{background:none;border:0;padding:0;font:inherit;color:var(--accent);cursor:pointer;}
+.linklike:hover{text-decoration:underline;}
+
+@media (max-width:720px){
+  .review-hero{gap:20px;}
+  .review-hero > div{flex:1 1 100%;}
+  .review-hero .btn{display:block;width:100%;text-align:center;}
+  .daybar-labels{font-size:11.5px;}
+}

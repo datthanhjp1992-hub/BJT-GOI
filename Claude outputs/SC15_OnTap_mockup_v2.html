@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC15 Ôn tập — phương án 2</title>
+<style id="css-A">
+/* Design A - "Washi & Vermillion": warm traditional Japanese paper aesthetic */
+:root{
+  --bg:#FAF6EE;
+  --surface:#FFFFFF;
+  --ink:#24211D;
+  --ink-soft:#6b6455;
+  --accent:#B5432E;
+  --accent-dark:#8f3323;
+  --accent-soft:#f0d9cf;
+  --gold:#B8912B;
+  --teal:#3F6B63;
+  --border:#DCD3C0;
+  --serif: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --sans: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;}
+h1,h2,h3,.serif{font-family:var(--serif);}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+
+/* header */
+.topbar{border-bottom:1px solid var(--border);background:var(--surface);}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:72px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:22px;color:var(--ink);}
+.brand .mark{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-family:var(--serif);}
+nav.mainnav{display:flex;gap:28px;font-size:14.5px;}
+nav.mainnav a{padding:6px 2px;border-bottom:2px solid transparent;color:var(--ink-soft);}
+nav.mainnav a.active{color:var(--accent);border-color:var(--accent);}
+.navmeta{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--ink-soft);}
+.pill{padding:8px 18px;border-radius:3px;background:var(--accent);color:#fff;font-size:14px;}
+.pill.ghost{background:transparent;border:1px solid var(--border);color:var(--ink);}
+
+main{padding:52px 0 80px;}
+.stamp{position:relative;}
+.stamp::before{content:"";position:absolute;top:-6px;right:-6px;width:46px;height:46px;border:2px solid var(--accent);border-radius:50%;opacity:.25;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:28px;}
+.grid{display:grid;gap:20px;}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-2{grid-template-columns:1.4fr 1fr;}
+
+.btn{display:inline-block;padding:13px 26px;border-radius:3px;font-size:15px;cursor:pointer;border:1px solid transparent;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-dark);}
+.btn-outline{border-color:var(--ink);color:var(--ink);background:transparent;}
+.btn-block{display:block;width:100%;text-align:center;}
+
+label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:6px;}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:3px;background:#fff;font-size:15px;font-family:var(--sans);color:var(--ink);}
+input:focus,select:focus{outline:none;border-color:var(--accent);}
+.field{margin-bottom:18px;}
+
+.divider{height:1px;background:var(--border);margin:26px 0;}
+.eyebrow{color:var(--accent);font-size:13px;letter-spacing:.02em;margin-bottom:10px;}
+.muted{color:var(--ink-soft);}
+.tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12.5px;border:1px solid var(--border);color:var(--ink-soft);margin-right:6px;}
+.tag.level{background:var(--accent-soft);border-color:transparent;color:var(--accent-dark);}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+th{text-align:left;color:var(--ink-soft);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;}
+td{padding:14px 12px;border-bottom:1px solid var(--border);}
+tr:hover td{background:#fbf8f2;}
+
+.stat{padding:22px;border:1px solid var(--border);border-radius:4px;background:var(--surface);}
+.stat .num{font-family:var(--serif);font-size:34px;color:var(--accent-dark);}
+.stat .label{font-size:13.5px;color:var(--ink-soft);margin-top:4px;}
+
+.flashcard{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:60px 40px;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
+.flashcard .jp{font-family:var(--serif);font-size:52px;margin-bottom:14px;}
+.flashcard .reading{color:var(--ink-soft);margin-bottom:20px;}
+.progressbar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progressbar span{display:block;height:100%;background:var(--accent);}
+
+.sidebar{width:220px;border-right:1px solid var(--border);padding:32px 20px;}
+.sidebar a{display:block;padding:10px 14px;border-radius:3px;color:var(--ink-soft);margin-bottom:4px;font-size:14.5px;}
+.sidebar a.active{background:var(--accent-soft);color:var(--accent-dark);}
+.admin-layout{display:flex;}
+.admin-content{flex:1;padding:32px 36px;}
+
+footer.note{padding:20px 0;text-align:center;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--border);}
+
+</style>
+<style id="css-B" disabled>
+/* Design B - "Studio Mono": modern minimal, grid-based, flat */
+:root{
+  --bg:#F2F3EF;
+  --surface:#FFFFFF;
+  --ink:#14141A;
+  --ink-soft:#6b6c72;
+  --accent:#3B4FC7;
+  --accent-soft:#e4e7fb;
+  --sage:#5C7A6A;
+  --border:#DCDDD7;
+  --sans:-apple-system,"Segoe UI",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;letter-spacing:-0.01em;}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1120px;margin:0 auto;padding:0 32px;}
+
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;}
+.brand{font-weight:700;font-size:17px;display:flex;align-items:center;gap:8px;}
+.brand .mark{width:26px;height:26px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--mono);}
+nav.mainnav{display:flex;gap:26px;font-size:14px;}
+nav.mainnav a{color:var(--ink-soft);padding:4px 0;border-bottom:2px solid transparent;}
+nav.mainnav a.active{color:var(--ink);border-color:var(--accent);}
+.navmeta{display:flex;align-items:center;gap:14px;font-size:13.5px;color:var(--ink-soft);}
+.pill{padding:9px 18px;background:var(--ink);color:#fff;font-size:13.5px;}
+.pill.ghost{background:transparent;border:1px solid var(--border);color:var(--ink);}
+
+main{padding:48px 0 90px;}
+.card{background:var(--surface);border:1px solid var(--border);padding:26px;}
+.grid{display:grid;gap:1px;background:var(--border);border:1px solid var(--border);}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-2{grid-template-columns:1.4fr 1fr;}
+.grid > *{background:var(--surface);}
+.grid-gap{display:grid;gap:16px;}
+.grid-gap.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid-gap.cols-2{grid-template-columns:1.4fr 1fr;}
+
+.btn{display:inline-block;padding:12px 24px;font-size:14.5px;cursor:pointer;border:1px solid var(--ink);}
+.btn-primary{background:var(--ink);color:#fff;}
+.btn-primary:hover{background:var(--accent);border-color:var(--accent);}
+.btn-outline{background:transparent;color:var(--ink);}
+.btn-block{display:block;width:100%;text-align:center;}
+
+label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;text-transform:none;}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--border);background:#fff;font-size:15px;font-family:var(--sans);color:var(--ink);}
+input:focus,select:focus{outline:none;border-color:var(--accent);}
+.field{margin-bottom:16px;}
+
+.divider{height:1px;background:var(--border);margin:26px 0;}
+.eyebrow{color:var(--ink-soft);font-size:13px;margin-bottom:8px;font-family:var(--mono);}
+.muted{color:var(--ink-soft);}
+.tag{display:inline-block;padding:3px 10px;font-size:12px;border:1px solid var(--border);color:var(--ink-soft);margin-right:6px;font-family:var(--mono);}
+.tag.level{background:var(--accent-soft);border-color:transparent;color:var(--accent);}
+
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th{text-align:left;color:var(--ink-soft);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;font-family:var(--mono);}
+td{padding:13px 12px;border-bottom:1px solid var(--border);}
+tr:hover td{background:#fafafa;}
+
+.stat{padding:24px;border:1px solid var(--border);background:var(--surface);}
+.stat .num{font-family:var(--mono);font-size:32px;font-weight:700;}
+.stat .label{font-size:13px;color:var(--ink-soft);margin-top:6px;}
+
+.flashcard{background:var(--surface);border:1px solid var(--border);padding:64px 40px;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.flashcard .jp{font-size:50px;margin-bottom:14px;font-weight:600;}
+.flashcard .reading{color:var(--ink-soft);margin-bottom:20px;font-family:var(--mono);}
+.progressbar{height:3px;background:var(--border);overflow:hidden;}
+.progressbar span{display:block;height:100%;background:var(--accent);}
+
+.sidebar{width:220px;border-right:1px solid var(--border);padding:32px 20px;}
+.sidebar a{display:block;padding:9px 12px;color:var(--ink-soft);margin-bottom:2px;font-size:14px;}
+.sidebar a.active{background:var(--accent-soft);color:var(--accent);}
+.admin-layout{display:flex;}
+.admin-content{flex:1;padding:32px 36px;}
+
+footer.note{padding:20px 0;text-align:center;color:var(--ink-soft);font-size:12.5px;border-top:1px solid var(--border);font-family:var(--mono);}
+
+</style>
+<style id="css-C" disabled>
+/* Design C - "Genki Playful": bright, rounded, gamified for casual learners */
+:root{
+  --bg:#F6F1FF;
+  --surface:#FFFFFF;
+  --ink:#2E1F3D;
+  --ink-soft:#7a6f8c;
+  --coral:#FF6F61;
+  --coral-dark:#e5564a;
+  --yellow:#FFC93C;
+  --sky:#4FB6E8;
+  --mint:#3FC1A2;
+  --border:#E8DFFB;
+  --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+
+.topbar{background:var(--surface);border-bottom:2px solid var(--border);}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:74px;}
+.brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:800;}
+.brand .mark{width:38px;height:38px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;}
+nav.mainnav{display:flex;gap:8px;font-size:14.5px;font-weight:600;}
+nav.mainnav a{padding:9px 16px;border-radius:20px;color:var(--ink-soft);}
+nav.mainnav a.active{color:#fff;background:var(--coral);}
+.navmeta{display:flex;align-items:center;gap:14px;font-size:14px;font-weight:600;}
+.pill{padding:10px 22px;border-radius:20px;background:var(--coral);color:#fff;font-weight:700;}
+.pill.ghost{background:var(--surface);border:2px solid var(--border);color:var(--ink);}
+
+main{padding:44px 0 90px;}
+.card{background:var(--surface);border:2px solid var(--border);border-radius:22px;padding:28px;}
+.grid{display:grid;gap:18px;}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-2{grid-template-columns:1.4fr 1fr;}
+
+.btn{display:inline-block;padding:14px 26px;border-radius:18px;font-size:15px;font-weight:700;cursor:pointer;border:2px solid transparent;}
+.btn-primary{background:var(--coral);color:#fff;}
+.btn-primary:hover{background:var(--coral-dark);}
+.btn-outline{border-color:var(--ink);color:var(--ink);background:transparent;}
+.btn-block{display:block;width:100%;text-align:center;}
+
+label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:6px;font-weight:600;}
+input,select{width:100%;padding:13px 16px;border:2px solid var(--border);border-radius:14px;background:#fff;font-size:15px;font-family:var(--sans);color:var(--ink);}
+input:focus,select:focus{outline:none;border-color:var(--coral);}
+.field{margin-bottom:18px;}
+
+.divider{height:2px;background:var(--border);margin:26px 0;border-radius:2px;}
+.eyebrow{color:var(--coral);font-size:14px;font-weight:800;margin-bottom:8px;}
+.muted{color:var(--ink-soft);}
+.tag{display:inline-block;padding:6px 14px;border-radius:20px;font-size:12.5px;font-weight:700;background:#F0EAFB;color:var(--ink-soft);margin-right:6px;}
+.tag.level{background:var(--yellow);color:#6b4d00;}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+th{text-align:left;color:var(--ink-soft);font-weight:700;padding:10px 14px;border-bottom:2px solid var(--border);font-size:13px;}
+td{padding:14px;border-bottom:1px solid var(--border);}
+tr:hover td{background:#faf7ff;}
+
+.stat{padding:24px;border:2px solid var(--border);border-radius:20px;background:var(--surface);text-align:center;}
+.stat .num{font-size:36px;font-weight:800;color:var(--coral);}
+.stat .label{font-size:13.5px;color:var(--ink-soft);margin-top:4px;font-weight:600;}
+
+.flashcard{background:var(--surface);border:3px solid var(--coral);border-radius:28px;padding:56px 40px;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 10px 0 var(--border);}
+.flashcard .jp{font-size:54px;margin-bottom:14px;font-weight:800;}
+.flashcard .reading{color:var(--ink-soft);margin-bottom:20px;font-weight:600;}
+.progressbar{height:12px;background:var(--border);border-radius:20px;overflow:hidden;}
+.progressbar span{display:block;height:100%;background:linear-gradient(90deg,var(--coral),var(--yellow));border-radius:20px;}
+
+.sidebar{width:220px;border-right:2px solid var(--border);padding:32px 20px;}
+.sidebar a{display:block;padding:11px 16px;border-radius:16px;color:var(--ink-soft);margin-bottom:6px;font-size:14.5px;font-weight:600;}
+.sidebar a.active{background:var(--coral);color:#fff;}
+.admin-layout{display:flex;}
+.admin-content{flex:1;padding:32px 36px;}
+
+footer.note{padding:20px 0;text-align:center;color:var(--ink-soft);font-size:13px;font-weight:600;}
+
+</style>
+<style>#themebar{position:sticky;top:0;z-index:99;display:flex;gap:8px;align-items:center;padding:8px 14px;background:#111;color:#fff;font:14px system-ui,sans-serif;}</style>
+</head><body>
+<div id="themebar"><strong style="margin-right:8px;">SC15 — Ôn tập · phương án 2</strong><button data-theme="A" style="font:inherit;padding:6px 14px;border:1px solid #666;background:#fff;color:#111;cursor:pointer;">Theme A</button><button data-theme="B" style="font:inherit;padding:6px 14px;border:1px solid #666;background:#222;color:#fff;cursor:pointer;">Theme B</button><button data-theme="C" style="font:inherit;padding:6px 14px;border:1px solid #666;background:#222;color:#fff;cursor:pointer;">Theme C</button><span style="opacity:.7;margin-left:auto;">bản mẫu tĩnh · số liệu là ví dụ</span></div>
+
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="mark">毎</span>毎日BJT</div>
+  <nav class="mainnav">
+    <a href="SC03_TrangChu_A.html">Trang chủ</a>
+    <a href="SC05_DanhSachTuVung_A.html">Từ vựng</a>
+    <a href="SC04_HocTuVung_A.html">Flashcard</a>
+    <a href="SC06_KiemTra_A.html">Kiểm tra</a>
+    <a class="active" href="SC15_OnTap_A.html">Ôn tập</a>
+    <a href="SC10_LuyenVietPdf_A.html">Luyện viết</a>
+  </nav>
+  <div class="navmeta"><a href="SC09_ThongTinCaNhan_A.html">Dat</a> <a class="pill ghost" href="SC08_CaiDat_A.html">⚙️</a> <a class="pill ghost" href="SC01_DangNhap_A.html">Đăng xuất</a></div>
+</div></header>
+<main>
+  <div class="wrap">
+
+    <div class="eyebrow">Ôn tập</div>
+    <h1 class="serif" style="font-size:32px;margin:0 0 22px;">Hôm nay bạn có 18 từ cần ôn</h1>
+
+    <!-- ========== HERO: một hàng đợi dựng sẵn, một nút ========== -->
+    <div class="card stamp" style="margin-bottom:34px;">
+      <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:center;">
+
+        <div style="flex:1 1 340px;min-width:280px;">
+          <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px;">
+            <span class="serif" style="font-size:46px;line-height:1;">18</span>
+            <span class="muted" style="font-size:15px;">từ · khoảng 6 phút</span>
+          </div>
+
+          <div style="display:flex;gap:2px;height:10px;margin-bottom:10px;">
+            <div style="width:33%;background:var(--accent);border-radius:3px 0 0 3px;"></div>
+            <div style="width:67%;background:var(--accent);opacity:.32;border-radius:0 3px 3px 0;"></div>
+          </div>
+          <div style="display:flex;gap:20px;font-size:13.5px;">
+            <span><span style="display:inline-block;width:9px;height:9px;background:var(--accent);margin-right:6px;"></span>6 quá hạn</span>
+            <span><span style="display:inline-block;width:9px;height:9px;background:var(--accent);opacity:.32;margin-right:6px;"></span>12 đến hạn hôm nay</span>
+          </div>
+        </div>
+
+        <div style="flex:0 0 auto;text-align:right;">
+          <a class="btn btn-primary" href="SC04_HocTuVung_A.html" style="font-size:17px;padding:16px 38px;">Bắt đầu ôn</a>
+          <p class="muted" style="margin:10px 0 0;font-size:13px;">Flashcard · tất cả chủ đề</p>
+        </div>
+      </div>
+
+      <div class="divider" style="margin:24px 0 0;"></div>
+      <details>
+        <summary style="cursor:pointer;padding:16px 0 0;font-size:14px;color:var(--ink-soft);list-style:none;">⚙️ Tuỳ chỉnh phiên ôn này</summary>
+        <div style="padding-top:20px;">
+          <div class="field">
+            <label>Chủ đề</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <label class="tag level" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox" checked>Tất cả</label>
+              <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox">会議・打合せ</label>
+              <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox">電話応対</label>
+              <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox">経理・財務</label>
+              <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox">契約</label>
+            </div>
+          </div>
+          <div class="grid" style="grid-template-columns:1fr 1fr auto;gap:16px;align-items:end;">
+            <div class="field" style="margin:0;"><label>Số từ</label><select><option>10</option><option selected>20</option><option>50</option><option>Tất cả</option></select></div>
+            <div class="field" style="margin:0;"><label>Hình thức</label><select><option selected>Flashcard</option><option>Trắc nghiệm</option></select></div>
+            <a class="btn btn-outline" href="SC04_HocTuVung_A.html">Áp dụng</a>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- ========== ÔN THÊM: 3 hàng đợi bấm-là-chạy ========== -->
+    <div class="eyebrow">Ôn thêm — bấm là chạy ngay</div>
+    <div class="grid cols-3" style="margin-bottom:34px;">
+      <a class="card" href="SC04_HocTuVung_A.html" style="display:flex;flex-direction:column;">
+        <div style="font-size:24px;line-height:1;margin-bottom:12px;">🔁</div>
+        <h3 class="serif" style="margin:0 0 6px;font-size:19px;">Hay quên</h3>
+        <p class="muted" style="margin:0 0 14px;font-size:14px;flex:1;">23 từ bạn sai nhiều hơn đúng. Nhóm này nên ôn trước khi nó rơi khỏi trí nhớ.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <strong style="font-size:15px;">Ôn 23 từ →</strong>
+        </div>
+      </a>
+      <a class="card" href="SC04_HocTuVung_A.html" style="display:flex;flex-direction:column;">
+        <div style="font-size:24px;line-height:1;margin-bottom:12px;">🗓</div>
+        <h3 class="serif" style="margin:0 0 6px;font-size:19px;">Sắp đến hạn</h3>
+        <p class="muted" style="margin:0 0 14px;font-size:14px;flex:1;">54 từ sẽ đến hạn trong 7 ngày tới. Ôn trước để ngày mai nhẹ hơn.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <strong style="font-size:15px;">Ôn 54 từ →</strong>
+        </div><span class="tag" style="margin:10px 0 0;">Không đổi lịch ôn</span>
+      </a>
+      <a class="card" href="SC04_HocTuVung_A.html" style="display:flex;flex-direction:column;">
+        <div style="font-size:24px;line-height:1;margin-bottom:12px;">⭐</div>
+        <h3 class="serif" style="margin:0 0 6px;font-size:19px;">Đã thuộc</h3>
+        <p class="muted" style="margin:0 0 14px;font-size:14px;flex:1;">96 từ đã thuộc. Kiểm tra lại cho chắc, nhất là trước kỳ thi.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <strong style="font-size:15px;">Ôn 96 từ →</strong>
+        </div><span class="tag" style="margin:10px 0 0;">Không đổi lịch ôn</span>
+      </a>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ========== THỐNG KÊ: một khu, ba góc nhìn ========== -->
+    <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:4px;">Toàn bộ từ đã học</div>
+        <h2 class="serif" style="margin:0;font-size:24px;">247 từ đang theo dõi</h2>
+      </div>
+      <div style="display:flex;gap:8px;" id="tabs">
+        <a class="tag level" href="#" data-tab="topic" style="cursor:pointer;">Theo chủ đề</a>
+        <a class="tag" href="#" data-tab="memory" style="cursor:pointer;">Theo độ nhớ</a>
+        <a class="tag" href="#" data-tab="calendar" style="cursor:pointer;">Lịch sắp tới</a>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0;" id="panel-topic">
+      <table>
+        <tr><th>Chủ đề</th><th>Đã học</th><th>Đến hạn</th><th style="width:200px;">Tiến độ</th><th></th></tr>
+        <tr><td>会議・打合せ (Họp hành)</td><td>58 / 72</td><td><strong>9</strong></td><td><div class="progressbar"><span style="width:80%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_A.html">Ôn →</a></td></tr>
+        <tr><td>電話応対 (Điện thoại)</td><td>41 / 55</td><td><strong>6</strong></td><td><div class="progressbar"><span style="width:74%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_A.html">Ôn →</a></td></tr>
+        <tr><td>経理・財務 (Kế toán – Tài chính)</td><td>33 / 60</td><td>3</td><td><div class="progressbar"><span style="width:55%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_A.html">Ôn →</a></td></tr>
+        <tr><td>契約 (Hợp đồng)</td><td>27 / 48</td><td class="muted">—</td><td><div class="progressbar"><span style="width:56%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_A.html">Ôn →</a></td></tr>
+        <tr><td>納品・配送 (Giao hàng)</td><td>19 / 40</td><td class="muted">—</td><td><div class="progressbar"><span style="width:48%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_A.html">Ôn →</a></td></tr>
+      </table>
+    </div>
+
+    <div class="card" id="panel-memory" hidden>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;">
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;"><span>Mới nhớ · trả lời đúng 0–1 lần</span><span class="muted">88 từ</span></div>
+          <div class="progressbar"><span style="width:36%"></span></div>
+        </div>
+        <a class="btn btn-outline" href="SC04_HocTuVung_A.html" style="padding:9px 18px;font-size:14px;">Ôn</a>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;">
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;"><span>Đang nhớ · đúng 2–4 lần</span><span class="muted">63 từ</span></div>
+          <div class="progressbar"><span style="width:26%"></span></div>
+        </div>
+        <a class="btn btn-outline" href="SC04_HocTuVung_A.html" style="padding:9px 18px;font-size:14px;">Ôn</a>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;"><span>Đã thuộc · đúng từ 5 lần trở lên</span><span class="muted">96 từ</span></div>
+          <div class="progressbar"><span style="width:38%"></span></div>
+        </div>
+        <a class="btn btn-outline" href="SC04_HocTuVung_A.html" style="padding:9px 18px;font-size:14px;">Ôn</a>
+      </div>
+    </div>
+
+    <div class="card" id="panel-calendar" hidden>
+      <div style="display:flex;align-items:flex-end;gap:12px;height:130px;">
+        <div style="flex:1;"><div style="height:29%;background:var(--accent);border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:86%;background:var(--accent);border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:62%;background:var(--accent);opacity:.32;border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:100%;background:var(--accent);opacity:.32;border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:48%;background:var(--accent);opacity:.32;border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:76%;background:var(--accent);opacity:.32;border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:33%;background:var(--accent);opacity:.32;border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:57%;background:var(--accent);opacity:.32;border-radius:3px 3px 0 0;"></div></div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px;font-size:14px;text-align:center;">
+        <div style="flex:1;"><strong>6</strong></div><div style="flex:1;"><strong>18</strong></div><div style="flex:1;">13</div><div style="flex:1;">21</div><div style="flex:1;">10</div><div style="flex:1;">16</div><div style="flex:1;">7</div><div style="flex:1;">12</div>
+      </div>
+      <div class="muted" style="display:flex;gap:12px;margin-top:2px;font-size:12.5px;text-align:center;">
+        <div style="flex:1;">Quá hạn</div><div style="flex:1;">Hôm nay</div><div style="flex:1;">T3</div><div style="flex:1;">T4</div><div style="flex:1;">T5</div><div style="flex:1;">T6</div><div style="flex:1;">T7</div><div style="flex:1;">CN</div>
+      </div>
+      <p class="muted" style="margin:18px 0 0;font-size:13.5px;">Ngày cao nhất là T4 với 21 từ — có thể ôn trước một phần hôm nay cho đỡ dồn.</p>
+    </div>
+
+    <p class="muted" style="margin:14px 0 0;font-size:13px;">Một từ thuộc nhiều chủ đề được đếm ở mọi dòng liên quan, nên tổng các dòng có thể lớn hơn 247.</p>
+
+    <div class="divider"></div>
+
+    <!-- ========== BỘ ÔN TẬP ========== -->
+    <div class="eyebrow">Bộ ôn tập của bạn</div>
+    <div class="grid cols-3">
+      <a class="card" href="SC04_HocTuVung_A.html"><h3 class="serif" style="margin:0 0 6px;font-size:18px;">Từ hay quên tuần này</h3><p class="muted" style="margin:0;font-size:14px;">24 từ · sửa 2 ngày trước</p></a>
+      <a class="card" href="SC04_HocTuVung_A.html"><h3 class="serif" style="margin:0 0 6px;font-size:18px;">Chuẩn bị họp tháng 10</h3><p class="muted" style="margin:0;font-size:14px;">30 từ · sửa hôm qua</p></a>
+      <a class="card" href="SC05_DanhSachTuVung_A.html" style="display:flex;align-items:center;justify-content:center;color:var(--ink-soft);">+ Tạo bộ mới từ bộ lọc</a>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ========== HAI TRẠNG THÁI KHÁC CỦA KHỐI ĐẦU TRANG ========== -->
+    <div class="eyebrow">Tham khảo — khối đầu trang ở hai trạng thái khác</div>
+    <div class="grid cols-2" style="grid-template-columns:1fr 1fr;">
+      <div class="card">
+        <div style="font-size:24px;margin-bottom:10px;">🎉</div>
+        <h3 class="serif" style="margin:0 0 6px;">Hôm nay ôn xong rồi</h3>
+        <p class="muted" style="margin:0 0 18px;font-size:14px;">Bạn đã ôn 18/18 từ đến hạn. Chuỗi 13 ngày liên tục. Từ tiếp theo đến hạn vào ngày mai.</p>
+        <a class="btn btn-outline" href="SC15_OnTap_A.html">Ôn thêm 54 từ sắp đến hạn</a>
+      </div>
+      <div class="card">
+        <div style="font-size:24px;margin-bottom:10px;">🌱</div>
+        <h3 class="serif" style="margin:0 0 6px;">Chưa có gì để ôn</h3>
+        <p class="muted" style="margin:0 0 18px;font-size:14px;">Trang này chỉ hiện những từ bạn đã học ít nhất một lần. Học vài từ đầu tiên rồi quay lại đây.</p>
+        <a class="btn btn-primary" href="SC05_DanhSachTuVung_A.html">Chọn từ để học</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+<footer class="note" id="theme-note"></footer>
+<style>
+input[type=checkbox],input[type=radio]{width:auto;padding:0;}
+details>summary::-webkit-details-marker{display:none;}
+a.card{display:block;color:inherit;}
+a.card:hover{border-color:var(--accent);}
+#tabs a{user-select:none;}
+</style>
+<script>
+document.querySelectorAll("#tabs a").forEach(function(a){
+  a.addEventListener("click", function(e){
+    e.preventDefault();
+    document.querySelectorAll("#tabs a").forEach(function(b){ b.className = "tag"; });
+    a.className = "tag level";
+    ["topic","memory","calendar"].forEach(function(k){
+      document.getElementById("panel-"+k).hidden = (k !== a.dataset.tab);
+    });
+  });
+});
+</script>
+
+<script>
+var NAMES = {"A": "Thiết kế A — Washi & Vermillion", "B": "Thiết kế B — Studio Mono", "C": "Thiết kế C — Genki Playful"};
+function apply(t){
+  ["A","B","C"].forEach(function(k){ document.getElementById("css-"+k).disabled = (k!==t); });
+  document.querySelectorAll("#themebar button").forEach(function(b){
+    var on = b.dataset.theme===t;
+    b.style.background = on ? "#fff" : "#222";
+    b.style.color = on ? "#111" : "#fff";
+  });
+  document.getElementById("theme-note").textContent = NAMES[t] + " · Bản mẫu tĩnh SC15 — Ôn tập (phương án 2)";
+}
+document.querySelectorAll("#themebar button").forEach(function(b){
+  b.addEventListener("click", function(){ apply(b.dataset.theme); });
+});
+apply("A");
+</script>
+</body></html>

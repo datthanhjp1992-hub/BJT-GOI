@@ -8,7 +8,9 @@ Bộ lọc từ vựng dùng CHUNG cho hai nơi:
 Hai nơi PHẢI cho ra cùng một tập từ, nếu không người học sẽ thấy bảng một
 đằng còn học một nẻo. Vì vậy mọi logic lọc nằm ở đây, không viết lại ở view.
 """
-from django.db.models import Exists, OuterRef, Q
+from datetime import timedelta
+
+from django.db.models import Exists, F, OuterRef, Q
 
 from apps.core.utils import TOPIC_PARAM
 from apps.learning.models import UserVocabularyProgress
@@ -139,4 +141,86 @@ def filter_vocabulary(user, topics=(), query="", statuses=(), search_limit=SEARC
     query = (query or "").strip()
     if query:
         return words.search(query, limit=search_limit)
+    return words.order_by("word")
+
+
+# =============================================================================
+# SC15 — Ôn tập: chỉ những từ NGƯỜI DÙNG ĐÃ HỌC
+# -----------------------------------------------------------------------------
+# Khác hẳn `filter_vocabulary()` ở trên (SC05 duyệt CẢ KHO từ, kể cả từ chưa
+# học): ở đây điều kiện bắt buộc là từ phải có một dòng
+# `UserVocabularyProgress` của chính user. Vì vậy hàm nằm riêng thay vì thêm
+# một cờ nữa vào filter_vocabulary — hai màn hỏi hai câu hỏi khác nhau.
+# =============================================================================
+
+REVIEW_SCOPE_PARAM = "scope"
+
+SCOPE_DUE = "due"              # quá hạn + đến hạn hôm nay
+SCOPE_LEECH = "leech"          # hay sai (sai nhiều hơn đúng)
+SCOPE_UPCOMING = "upcoming"    # sẽ đến hạn trong N ngày tới (CHƯA đến hạn)
+SCOPE_MASTERED = "mastered"    # đã thuộc
+REVIEW_SCOPES = (SCOPE_DUE, SCOPE_LEECH, SCOPE_UPCOMING, SCOPE_MASTERED)
+
+# Số ngày của nhóm "sắp đến hạn".
+UPCOMING_DAYS = 7
+
+# Sai 1 lần chưa đủ để gọi là "hay quên" — ngưỡng này lọc bớt nhiễu.
+LEECH_MIN_WRONG = 2
+
+# Hai phạm vi này là ÔN THÊM ngoài lịch: người học chủ động ôn sớm những từ
+# chưa đến hạn. Ôn chúng KHÔNG được đẩy `next_review_date` (xem
+# `apps.learning.services.record_extra_review` và ghi chú ở
+# `apps.learning.views.review_start_view`) — nếu đẩy, ôn 3 lượt trong một tối
+# sẽ thổi `interval_days` lên vô lý và từ đó biến mất khỏi lịch ôn thật.
+SCOPES_WITHOUT_SCHEDULE = (SCOPE_UPCOMING, SCOPE_MASTERED)
+
+
+def clean_review_scope(raw):
+    """Mã phạm vi lạ (người dùng sửa URL/form bằng tay) rơi về "đến hạn"."""
+    return raw if raw in REVIEW_SCOPES else SCOPE_DUE
+
+
+def touches_schedule(scope):
+    """Ôn theo phạm vi này có được cập nhật lịch SM-2 không?"""
+    return clean_review_scope(scope) not in SCOPES_WITHOUT_SCHEDULE
+
+
+def progress_filter_for_scope(user, scope):
+    """Điều kiện lọc trên `UserVocabularyProgress` ứng với một phạm vi ôn.
+
+    Trả về một `Q` để cả `studied_vocabulary()` (dựng hàng đợi) và
+    `apps.learning.services.get_review_overview()` (đếm số) dùng CHUNG một
+    định nghĩa — nếu hai nơi tự viết điều kiện riêng thì con số trên thẻ và
+    số từ thật sự ôn được sẽ lệch nhau mà không ai nhận ra.
+    """
+    today = user.local_today()
+    scope = clean_review_scope(scope)
+    if scope == SCOPE_LEECH:
+        return Q(wrong_count__gt=F("correct_count"), wrong_count__gte=LEECH_MIN_WRONG)
+    if scope == SCOPE_UPCOMING:
+        return Q(
+            next_review_date__gt=today,
+            next_review_date__lte=today + timedelta(days=UPCOMING_DAYS),
+        )
+    if scope == SCOPE_MASTERED:
+        return Q(is_mastered=True)
+    # SCOPE_DUE: `next_review_date` null nghĩa là có tiến độ nhưng chưa được
+    # xếp lịch — coi như đến hạn ngay, giống `build_study_queue()`.
+    return Q(next_review_date__lte=today) | Q(next_review_date__isnull=True)
+
+
+def studied_vocabulary(user, topics=(), scope=SCOPE_DUE):
+    """Từ ĐÃ HỌC của `user` khớp phạm vi ôn, sắp theo hạn ôn gần nhất trước.
+
+    Trả về queryset `Vocabulary` (không phải `UserVocabularyProgress`) để
+    `apps.learning.services.build_study_queue()` dùng lại được nguyên vẹn.
+    """
+    progress = UserVocabularyProgress.objects.filter(
+        user=user, vocabulary=OuterRef("pk")
+    ).filter(progress_filter_for_scope(user, scope))
+
+    words = Vocabulary.objects.prefetch_related("topics").filter(Exists(progress))
+    topics = list(topics)
+    if topics:
+        words = words.filter(topics__in=topics).distinct()
     return words.order_by("word")

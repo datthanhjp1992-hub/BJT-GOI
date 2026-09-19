@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}
+SC15_OnTap — port từ htmlTemplate/SC15_OnTap_*.html (phương án 2).
+
+Ba quyết định thiết kế của màn này, đừng "sửa" lại nếu chưa đọc:
+
+1. ĐẦU TRANG LÀ MỘT HÀNG ĐỢI DỰNG SẴN, KHÔNG PHẢI MỘT CÁI FORM. Người vào
+   trang Ôn tập chỉ có một ý định: ôn ngay. Mọi tuỳ chọn nằm trong <details>
+   "Tuỳ chỉnh" và dùng chung ĐÚNG form đó — bấm nút chính là áp dụng luôn
+   những gì đang chọn bên trong, không có nút "Áp dụng" thứ hai.
+2. BA THẺ "ÔN THÊM" LÀ BA FORM BẤM-LÀ-CHẠY, không phải radio phải chọn rồi
+   mới bấm. Mỗi thẻ tự nói vì sao nên ôn nhóm đó.
+3. KHÔNG CÓ Ô TICK "cập nhật SM-2". Phạm vi ôn tự quyết (xem
+   apps.vocabulary.selectors.SCOPES_WITHOUT_SCHEDULE); thẻ nào không đẩy lịch
+   thì mang sẵn nhãn "Không đổi lịch ôn". Người học đọc một nhãn thay vì phải
+   ra một quyết định kỹ thuật về thuật toán.
+
+Ba bảng thống kê là BA GÓC NHÌN của cùng một khu, chuyển bằng ?view= (link
+thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmark được.
+{% endcomment %}
+
+{% block title %}{% label "common.nav.review" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">{% label "learning.review.eyebrow" %}</div>
+
+  {% if overview.studied %}
+    <h1 class="serif" style="font-size:32px;margin:0 0 6px;">
+      {% if overview.due_total %}
+        {% message "learning.review.title.due" count=overview.due_total %}
+      {% else %}
+        {% label "learning.review.title.all_caught_up" %}
+      {% endif %}
+    </h1>
+    <p class="muted" style="margin:0 0 22px;">{% message "learning.review.hint.intro" %}</p>
+
+    <div class="card stamp" style="margin-bottom:34px;">
+      {% if overview.due_total %}
+        {% comment %}Một form duy nhất cho cả khối: nút chính nộp luôn những
+        gì đang chọn trong <details> bên dưới.{% endcomment %}
+        <form method="post" action="{% url 'learning:review_start' %}">
+          {% csrf_token %}
+          <input type="hidden" name="scope" value="due">
+
+          <div class="review-hero">
+            <div style="flex:1 1 320px;">
+              <p style="margin:0 0 16px;display:flex;align-items:baseline;gap:12px;">
+                <span class="serif" style="font-size:46px;line-height:1;">{{ overview.due_total }}</span>
+                <span class="muted">{% message "learning.review.hint.minutes" minutes=overview.minutes %}</span>
+              </p>
+
+              <div class="queuebar">
+                <span style="width:{{ overview.overdue_percent }}%"></span>
+                <span class="soft" style="width:{{ overview.due_today_percent }}%"></span>
+              </div>
+              <p class="queuelegend">
+                <span><i class="swatch-dot"></i>{{ overview.overdue }} {% label "learning.review.legend.overdue" %}</span>
+                <span><i class="swatch-dot soft"></i>{{ overview.due_today }} {% label "learning.review.legend.due_today" %}</span>
+              </p>
+            </div>
+
+            <div style="flex:0 0 auto;">
+              <button type="submit" class="btn btn-primary" style="font-size:17px;padding:16px 38px;">
+                {% label "learning.review.button.start" %}
+              </button>
+            </div>
+          </div>
+
+          <div class="divider" style="margin:24px 0 0;"></div>
+          <details class="review-options">
+            <summary>{% label "learning.review.button.customize" %}</summary>
+            <div style="padding-top:20px;">
+              <label style="margin:0 0 8px;">{% label "learning.review.field.topic" %}</label>
+              <div class="checkbox-grid">
+                {% for topic in topics %}
+                  <label class="checkbox-row">
+                    <input type="checkbox" name="topic" value="{{ topic.slug }}">
+                    <span>{{ topic.icon_emoji }} {{ topic.display_name }}</span>
+                  </label>
+                {% empty %}
+                  <p class="muted" style="margin:0;font-size:14px;">{% message "vocabulary.list.hint.no_topic" %}</p>
+                {% endfor %}
+              </div>
+
+              <div class="grid cols-2" style="margin-top:18px;">
+                <div class="field" style="margin:0;">
+                  <label for="id_limit">{% label "learning.review.field.limit" %}</label>
+                  <select id="id_limit" name="limit">
+                    {% for choice in limit_choices %}
+                      <option value="{{ choice }}"{% if choice == session_limit %} selected{% endif %}>
+                        {% if choice %}{{ choice }}{% else %}{% label "learning.review.option.limit_all" %}{% endif %}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="field" style="margin:0;">
+                  <label for="id_mode">{% label "learning.review.field.mode" %}</label>
+                  <select id="id_mode" name="mode">
+                    <option value="flashcard">{% label "learning.review.option.flashcard" %}</option>
+                    <option value="quiz">{% label "learning.review.option.quiz" %}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </details>
+        </form>
+      {% else %}
+        <p style="font-size:24px;margin:0 0 8px;">🎉</p>
+        <h2 class="serif" style="margin:0 0 6px;font-size:22px;">{% label "learning.review.title.all_caught_up" %}</h2>
+        <p class="muted" style="margin:0;">{% message "learning.review.hint.all_caught_up" %}</p>
+      {% endif %}
+    </div>
+
+    <div class="eyebrow">{% label "learning.review.section.decks" %}</div>
+    <div class="grid cols-3" style="margin-bottom:34px;">
+      {% for deck in decks %}
+        <form method="post" action="{% url 'learning:review_start' %}" class="card deck">
+          {% csrf_token %}
+          <input type="hidden" name="scope" value="{{ deck.scope }}">
+          <input type="hidden" name="limit" value="{{ session_limit }}">
+          <p style="font-size:24px;line-height:1;margin:0 0 12px;">{{ deck.emoji }}</p>
+          <h3 class="serif" style="margin:0 0 6px;font-size:19px;">{% label deck.label_key %}</h3>
+          <p class="muted" style="margin:0 0 16px;font-size:14px;flex:1;">{% message deck.hint_key count=deck.count %}</p>
+          {% comment %}Nhãn "không đổi lịch ôn" đứng TRƯỚC nút, không phải sau:
+          nút phải là thứ cuối cùng của mọi thẻ thì ba thẻ mới thẳng hàng nút
+          dù đoạn mô tả dài ngắn khác nhau.{% endcomment %}
+          {% if deck.is_extra %}<span class="tag" style="margin:0 0 12px;">{% label "learning.review.tag.extra" %}</span>{% endif %}
+          {% if deck.count %}
+            <button type="submit" class="btn btn-outline">{% message "learning.review.button.start_deck" count=deck.count %}</button>
+          {% else %}
+            <p class="muted" style="margin:0;font-size:14px;">{% message "learning.review.hint.deck_empty" %}</p>
+          {% endif %}
+        </form>
+      {% endfor %}
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="review-head">
+      <div>
+        <div class="eyebrow" style="margin-bottom:4px;">{% label "learning.review.section.all" %}</div>
+        <h2 class="serif" style="margin:0;font-size:24px;">{% message "learning.review.hint.studied_total" count=overview.studied %}</h2>
+      </div>
+      <div class="tabrow">
+        <a class="tag{% if active_view == 'topic' %} level{% endif %}" href="?view=topic">{% label "learning.review.tab.topic" %}</a>
+        <a class="tag{% if active_view == 'memory' %} level{% endif %}" href="?view=memory">{% label "learning.review.tab.memory" %}</a>
+        <a class="tag{% if active_view == 'calendar' %} level{% endif %}" href="?view=calendar">{% label "learning.review.tab.calendar" %}</a>
+      </div>
+    </div>
+
+    {% if active_view == "topic" %}
+      <div class="card" style="padding:0;">
+        <table>
+          <tr>
+            <th>{% label "learning.review.table.topic" %}</th>
+            <th>{% label "learning.review.table.learned" %}</th>
+            <th>{% label "learning.review.table.due" %}</th>
+            <th style="width:200px;">{% label "learning.review.table.progress" %}</th>
+            <th></th>
+          </tr>
+          {% for row in topic_rows %}
+            <tr>
+              <td>{{ row.topic.icon_emoji }} {{ row.topic.display_name }}</td>
+              <td>{{ row.learned }} / {{ row.total }}</td>
+              <td>{% if row.due %}<strong>{{ row.due }}</strong>{% else %}<span class="muted">—</span>{% endif %}</td>
+              <td><div class="progressbar"><span style="width:{{ row.percent }}%"></span></div></td>
+              <td style="text-align:right;">
+                <form method="post" action="{% url 'learning:review_start' %}" style="margin:0;">
+                  {% csrf_token %}
+                  <input type="hidden" name="scope" value="due">
+                  <input type="hidden" name="topic" value="{{ row.topic.slug }}">
+                  <input type="hidden" name="limit" value="{{ session_limit }}">
+                  <button type="submit" class="linklike">{% label "learning.review.button.review_topic" %}</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <p class="muted" style="margin:14px 0 0;font-size:13px;">
+        {% message "learning.review.hint.topic_overlap" count=overview.studied %}
+      </p>
+    {% elif active_view == "memory" %}
+      <div class="card">
+        {% for band in memory_rows %}
+          <div class="band-row">
+            <div style="flex:1;">
+              <p class="band-head"><span>{% label band.label_key %}</span><span class="muted">{{ band.count }}</span></p>
+              <div class="progressbar"><span style="width:{{ band.percent }}%"></span></div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="card">
+        <div class="daybar">
+          {% for bucket in calendar %}
+            <div>
+              <i class="{% if not bucket.is_overdue and not bucket.is_today %}soft{% endif %}" style="height:{{ bucket.percent }}%"></i>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="daybar-labels">
+          {% for bucket in calendar %}
+            <div>
+              <strong>{{ bucket.count }}</strong>
+              <span class="muted">
+                {% if bucket.is_overdue %}{% label "learning.review.column.overdue" %}
+                {% elif bucket.is_today %}{% label "learning.review.column.today" %}
+                {% else %}{{ bucket.date|date:"d/m" }}{% endif %}
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="divider"></div>
+
+    <div class="eyebrow">{% label "learning.review.section.wordlists" %}</div>
+    <div class="grid cols-3">
+      {% for wordlist in wordlists %}
+        <div class="card">
+          <h3 class="serif" style="margin:0 0 6px;font-size:18px;">{{ wordlist.name }}</h3>
+          <p class="muted" style="margin:0;font-size:14px;">
+            {% message "learning.review.hint.wordlist_count" count=wordlist.words.count %}
+          </p>
+        </div>
+      {% empty %}
+        <div class="card">
+          <p class="muted" style="margin:0 0 14px;font-size:14px;">{% message "learning.review.hint.no_wordlist" %}</p>
+          <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "learning.review.button.new_wordlist" %}</a>
+        </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <h1 class="serif" style="font-size:30px;margin:0 0 20px;">{% label "learning.review.title.empty" %}</h1>
+    <div class="card">
+      <p style="font-size:24px;margin:0 0 8px;">🌱</p>
+      <p class="muted" style="margin:0 0 20px;">{% message "learning.review.hint.empty" %}</p>
+      <a class="btn btn-primary" href="{% url 'vocabulary:index' %}">{% label "learning.review.button.browse" %}</a>
+    </div>
+  {% endif %}
+{% endblock %}

@@ -7,6 +7,9 @@ sáng — đúng với các trang ngoài luồng chính (đăng nhập, đăng k
 Flashcard và Kiểm tra KHÔNG có mặt ở đây vì route của chúng bắt buộc phải có
 slug chủ đề (learning:flashcard cần topic_slug) — người dùng vào hai màn đó từ
 trang chủ hoặc từ danh sách từ vựng.
+
+"Ôn tập" (SC15) thì CÓ mặt: route learning:review không cần tham số nào, và
+đó là màn người học quay lại mỗi ngày.
 {% endcomment %}
 <header class="topbar"><div class="wrap">
   <a class="brand" href="{% url 'learning:dashboard' %}">
@@ -17,6 +20,7 @@ trang chủ hoặc từ danh sách từ vựng.
     <nav class="mainnav">
       <a href="{% url 'learning:dashboard' %}"{% if active_nav == "home" %} class="active"{% endif %}>{% label "common.nav.home" %}</a>
       <a href="{% url 'vocabulary:index' %}"{% if active_nav == "vocabulary" %} class="active"{% endif %}>{% label "common.nav.vocabulary" %}</a>
+      <a href="{% url 'learning:review' %}"{% if active_nav == "review" %} class="active"{% endif %}>{% label "common.nav.review" %}</a>
       <a href="{% url 'practice_sheets:create' %}"{% if active_nav == "practice_sheet" %} class="active"{% endif %}>{% label "common.nav.practice_sheet" %}</a>
       <a href="{% url 'gamification:form' %}"{% if active_nav == "contribution" %} class="active"{% endif %}>{% label "common.nav.contribution" %}</a>
     </nav>

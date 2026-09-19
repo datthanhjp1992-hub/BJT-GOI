@@ -28,7 +28,13 @@ tính năng cốt lõi.
     <p class="muted" style="margin:0 0 10px;">
       {% message "learning.flashcard.hint.progress" topic=scope_label position=position total=total %}
     </p>
-    <div class="progressbar" style="margin-bottom:28px;"><span style="width:{{ percent }}%"></span></div>
+    <div class="progressbar" style="margin-bottom:{% if is_extra_review %}8px{% else %}28px{% endif %};"><span style="width:{{ percent }}%"></span></div>
+    {% comment %}Lượt "ôn thêm" của SC15 (từ chưa đến hạn / đã thuộc) chỉ ghi
+    nhận đúng-sai, không đẩy lịch SM-2 — nói thẳng ra để người học không tưởng
+    mình vừa làm xô lệch lịch ôn.{% endcomment %}
+    {% if is_extra_review %}
+      <p class="muted" style="margin:0 0 24px;font-size:13px;">{% message "learning.review.hint.extra_review" %}</p>
+    {% endif %}
 
     <div class="flashcard">
       <div class="jp">{{ word.word }}</div>

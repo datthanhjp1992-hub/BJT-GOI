@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ôn tập | 毎日BJT</title>
+<link rel="stylesheet" href="style_C.css">
+</head><body>
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="mark">毎</span>毎日BJT</div>
+  <nav class="mainnav">
+    <a href="SC03_TrangChu_C.html">Trang chủ</a>
+    <a href="SC05_DanhSachTuVung_C.html">Từ vựng</a>
+    <a href="SC04_HocTuVung_C.html">Flashcard</a>
+    <a href="SC06_KiemTra_C.html">Kiểm tra</a>
+    <a class="active" href="SC15_OnTap_C.html">Ôn tập</a>
+    <a href="SC10_LuyenVietPdf_C.html">Luyện viết</a>
+  </nav>
+  <div class="navmeta"><a href="SC09_ThongTinCaNhan_C.html">Dat</a> <a class="pill ghost" href="SC08_CaiDat_C.html">⚙️</a> <a class="pill ghost" href="SC01_DangNhap_C.html">Đăng xuất</a></div>
+</div></header>
+<main>
+  <div class="wrap">
+
+    <div class="eyebrow">Ôn tập</div>
+    <h1 class="serif" style="font-size:32px;margin:0 0 22px;">Hôm nay bạn có 18 từ cần ôn</h1>
+
+    <!-- ========== HERO: một hàng đợi dựng sẵn, một nút ========== -->
+    <div class="card stamp" style="margin-bottom:34px;">
+      <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:center;">
+
+        <div style="flex:1 1 340px;min-width:280px;">
+          <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px;">
+            <span class="serif" style="font-size:46px;line-height:1;">18</span>
+            <span class="muted" style="font-size:15px;">từ · khoảng 6 phút</span>
+          </div>
+
+          <div style="display:flex;gap:2px;height:10px;margin-bottom:10px;">
+            <div style="width:33%;background:var(--accent);border-radius:3px 0 0 3px;"></div>
+            <div style="width:67%;background:var(--accent);opacity:.32;border-radius:0 3px 3px 0;"></div>
+          </div>
+          <div style="display:flex;gap:20px;font-size:13.5px;">
+            <span><span style="display:inline-block;width:9px;height:9px;background:var(--accent);margin-right:6px;"></span>6 quá hạn</span>
+            <span><span style="display:inline-block;width:9px;height:9px;background:var(--accent);opacity:.32;margin-right:6px;"></span>12 đến hạn hôm nay</span>
+          </div>
+        </div>
+
+        <div style="flex:0 0 auto;text-align:right;">
+          <a class="btn btn-primary" href="SC04_HocTuVung_C.html" style="font-size:17px;padding:16px 38px;">Bắt đầu ôn</a>
+          <p class="muted" style="margin:10px 0 0;font-size:13px;">Flashcard · tất cả chủ đề</p>
+        </div>
+      </div>
+
+      <div class="divider" style="margin:24px 0 0;"></div>
+      <details>
+        <summary style="cursor:pointer;padding:16px 0 0;font-size:14px;color:var(--ink-soft);list-style:none;">⚙️ Tuỳ chỉnh phiên ôn này</summary>
+        <div style="padding-top:20px;">
+          <div class="field">
+            <label>Chủ đề</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <label class="tag level" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox" checked>Tất cả</label>
+              <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox">会議・打合せ</label>
+              <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox">電話応対</label>
+              <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox">経理・財務</label>
+              <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox">契約</label>
+            </div>
+          </div>
+          <div class="grid" style="grid-template-columns:1fr 1fr auto;gap:16px;align-items:end;">
+            <div class="field" style="margin:0;"><label>Số từ</label><select><option>10</option><option selected>20</option><option>50</option><option>Tất cả</option></select></div>
+            <div class="field" style="margin:0;"><label>Hình thức</label><select><option selected>Flashcard</option><option>Trắc nghiệm</option></select></div>
+            <a class="btn btn-outline" href="SC04_HocTuVung_C.html">Áp dụng</a>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- ========== ÔN THÊM: 3 hàng đợi bấm-là-chạy ========== -->
+    <div class="eyebrow">Ôn thêm — bấm là chạy ngay</div>
+    <div class="grid cols-3" style="margin-bottom:34px;">
+      <a class="card" href="SC04_HocTuVung_C.html" style="display:flex;flex-direction:column;">
+        <div style="font-size:24px;line-height:1;margin-bottom:12px;">🔁</div>
+        <h3 class="serif" style="margin:0 0 6px;font-size:19px;">Hay quên</h3>
+        <p class="muted" style="margin:0 0 14px;font-size:14px;flex:1;">23 từ bạn sai nhiều hơn đúng. Nhóm này nên ôn trước khi nó rơi khỏi trí nhớ.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <strong style="font-size:15px;">Ôn 23 từ →</strong>
+        </div>
+      </a>
+      <a class="card" href="SC04_HocTuVung_C.html" style="display:flex;flex-direction:column;">
+        <div style="font-size:24px;line-height:1;margin-bottom:12px;">🗓</div>
+        <h3 class="serif" style="margin:0 0 6px;font-size:19px;">Sắp đến hạn</h3>
+        <p class="muted" style="margin:0 0 14px;font-size:14px;flex:1;">54 từ sẽ đến hạn trong 7 ngày tới. Ôn trước để ngày mai nhẹ hơn.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <strong style="font-size:15px;">Ôn 54 từ →</strong>
+        </div><span class="tag" style="margin:10px 0 0;">Không đổi lịch ôn</span>
+      </a>
+      <a class="card" href="SC04_HocTuVung_C.html" style="display:flex;flex-direction:column;">
+        <div style="font-size:24px;line-height:1;margin-bottom:12px;">⭐</div>
+        <h3 class="serif" style="margin:0 0 6px;font-size:19px;">Đã thuộc</h3>
+        <p class="muted" style="margin:0 0 14px;font-size:14px;flex:1;">96 từ đã thuộc. Kiểm tra lại cho chắc, nhất là trước kỳ thi.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <strong style="font-size:15px;">Ôn 96 từ →</strong>
+        </div><span class="tag" style="margin:10px 0 0;">Không đổi lịch ôn</span>
+      </a>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ========== THỐNG KÊ: một khu, ba góc nhìn ========== -->
+    <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:4px;">Toàn bộ từ đã học</div>
+        <h2 class="serif" style="margin:0;font-size:24px;">247 từ đang theo dõi</h2>
+      </div>
+      <div style="display:flex;gap:8px;" id="tabs">
+        <a class="tag level" href="#" data-tab="topic" style="cursor:pointer;">Theo chủ đề</a>
+        <a class="tag" href="#" data-tab="memory" style="cursor:pointer;">Theo độ nhớ</a>
+        <a class="tag" href="#" data-tab="calendar" style="cursor:pointer;">Lịch sắp tới</a>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0;" id="panel-topic">
+      <table>
+        <tr><th>Chủ đề</th><th>Đã học</th><th>Đến hạn</th><th style="width:200px;">Tiến độ</th><th></th></tr>
+        <tr><td>会議・打合せ (Họp hành)</td><td>58 / 72</td><td><strong>9</strong></td><td><div class="progressbar"><span style="width:80%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_C.html">Ôn →</a></td></tr>
+        <tr><td>電話応対 (Điện thoại)</td><td>41 / 55</td><td><strong>6</strong></td><td><div class="progressbar"><span style="width:74%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_C.html">Ôn →</a></td></tr>
+        <tr><td>経理・財務 (Kế toán – Tài chính)</td><td>33 / 60</td><td>3</td><td><div class="progressbar"><span style="width:55%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_C.html">Ôn →</a></td></tr>
+        <tr><td>契約 (Hợp đồng)</td><td>27 / 48</td><td class="muted">—</td><td><div class="progressbar"><span style="width:56%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_C.html">Ôn →</a></td></tr>
+        <tr><td>納品・配送 (Giao hàng)</td><td>19 / 40</td><td class="muted">—</td><td><div class="progressbar"><span style="width:48%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_C.html">Ôn →</a></td></tr>
+      </table>
+    </div>
+
+    <div class="card" id="panel-memory" hidden>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;">
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;"><span>Mới nhớ · trả lời đúng 0–1 lần</span><span class="muted">88 từ</span></div>
+          <div class="progressbar"><span style="width:36%"></span></div>
+        </div>
+        <a class="btn btn-outline" href="SC04_HocTuVung_C.html" style="padding:9px 18px;font-size:14px;">Ôn</a>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;">
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;"><span>Đang nhớ · đúng 2–4 lần</span><span class="muted">63 từ</span></div>
+          <div class="progressbar"><span style="width:26%"></span></div>
+        </div>
+        <a class="btn btn-outline" href="SC04_HocTuVung_C.html" style="padding:9px 18px;font-size:14px;">Ôn</a>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;"><span>Đã thuộc · đúng từ 5 lần trở lên</span><span class="muted">96 từ</span></div>
+          <div class="progressbar"><span style="width:38%"></span></div>
+        </div>
+        <a class="btn btn-outline" href="SC04_HocTuVung_C.html" style="padding:9px 18px;font-size:14px;">Ôn</a>
+      </div>
+    </div>
+
+    <div class="card" id="panel-calendar" hidden>
+      <div style="display:flex;align-items:flex-end;gap:12px;height:130px;">
+        <div style="flex:1;"><div style="height:29%;background:var(--accent);border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:86%;background:var(--accent);border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:62%;background:var(--accent);opacity:.32;border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:100%;background:var(--accent);opacity:.32;border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:48%;background:var(--accent);opacity:.32;border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:76%;background:var(--accent);opacity:.32;border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:33%;background:var(--accent);opacity:.32;border-radius:3px 3px 0 0;"></div></div>
+        <div style="flex:1;"><div style="height:57%;background:var(--accent);opacity:.32;border-radius:3px 3px 0 0;"></div></div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px;font-size:14px;text-align:center;">
+        <div style="flex:1;"><strong>6</strong></div><div style="flex:1;"><strong>18</strong></div><div style="flex:1;">13</div><div style="flex:1;">21</div><div style="flex:1;">10</div><div style="flex:1;">16</div><div style="flex:1;">7</div><div style="flex:1;">12</div>
+      </div>
+      <div class="muted" style="display:flex;gap:12px;margin-top:2px;font-size:12.5px;text-align:center;">
+        <div style="flex:1;">Quá hạn</div><div style="flex:1;">Hôm nay</div><div style="flex:1;">T3</div><div style="flex:1;">T4</div><div style="flex:1;">T5</div><div style="flex:1;">T6</div><div style="flex:1;">T7</div><div style="flex:1;">CN</div>
+      </div>
+      <p class="muted" style="margin:18px 0 0;font-size:13.5px;">Ngày cao nhất là T4 với 21 từ — có thể ôn trước một phần hôm nay cho đỡ dồn.</p>
+    </div>
+
+    <p class="muted" style="margin:14px 0 0;font-size:13px;">Một từ thuộc nhiều chủ đề được đếm ở mọi dòng liên quan, nên tổng các dòng có thể lớn hơn 247.</p>
+
+    <div class="divider"></div>
+
+    <!-- ========== BỘ ÔN TẬP ========== -->
+    <div class="eyebrow">Bộ ôn tập của bạn</div>
+    <div class="grid cols-3">
+      <a class="card" href="SC04_HocTuVung_C.html"><h3 class="serif" style="margin:0 0 6px;font-size:18px;">Từ hay quên tuần này</h3><p class="muted" style="margin:0;font-size:14px;">24 từ · sửa 2 ngày trước</p></a>
+      <a class="card" href="SC04_HocTuVung_C.html"><h3 class="serif" style="margin:0 0 6px;font-size:18px;">Chuẩn bị họp tháng 10</h3><p class="muted" style="margin:0;font-size:14px;">30 từ · sửa hôm qua</p></a>
+      <a class="card" href="SC05_DanhSachTuVung_C.html" style="display:flex;align-items:center;justify-content:center;color:var(--ink-soft);">+ Tạo bộ mới từ bộ lọc</a>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ========== HAI TRẠNG THÁI KHÁC CỦA KHỐI ĐẦU TRANG ========== -->
+    <div class="eyebrow">Tham khảo — khối đầu trang ở hai trạng thái khác</div>
+    <div class="grid cols-2" style="grid-template-columns:1fr 1fr;">
+      <div class="card">
+        <div style="font-size:24px;margin-bottom:10px;">🎉</div>
+        <h3 class="serif" style="margin:0 0 6px;">Hôm nay ôn xong rồi</h3>
+        <p class="muted" style="margin:0 0 18px;font-size:14px;">Bạn đã ôn 18/18 từ đến hạn. Chuỗi 13 ngày liên tục. Từ tiếp theo đến hạn vào ngày mai.</p>
+        <a class="btn btn-outline" href="SC15_OnTap_C.html">Ôn thêm 54 từ sắp đến hạn</a>
+      </div>
+      <div class="card">
+        <div style="font-size:24px;margin-bottom:10px;">🌱</div>
+        <h3 class="serif" style="margin:0 0 6px;">Chưa có gì để ôn</h3>
+        <p class="muted" style="margin:0 0 18px;font-size:14px;">Trang này chỉ hiện những từ bạn đã học ít nhất một lần. Học vài từ đầu tiên rồi quay lại đây.</p>
+        <a class="btn btn-primary" href="SC05_DanhSachTuVung_C.html">Chọn từ để học</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+<footer class="note">Thiết kế C — Genki Playful · Bản mẫu tĩnh SC15 — Ôn tập (phương án 2)</footer>
+<style>
+input[type=checkbox],input[type=radio]{width:auto;padding:0;}
+details>summary::-webkit-details-marker{display:none;}
+a.card{display:block;color:inherit;}
+a.card:hover{border-color:var(--accent);}
+#tabs a{user-select:none;}
+</style>
+<script>
+document.querySelectorAll("#tabs a").forEach(function(a){
+  a.addEventListener("click", function(e){
+    e.preventDefault();
+    document.querySelectorAll("#tabs a").forEach(function(b){ b.className = "tag"; });
+    a.className = "tag level";
+    ["topic","memory","calendar"].forEach(function(k){
+      document.getElementById("panel-"+k).hidden = (k !== a.dataset.tab);
+    });
+  });
+});
+</script>
+</body></html>

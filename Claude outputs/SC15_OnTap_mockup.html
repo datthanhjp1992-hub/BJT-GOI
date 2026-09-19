@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC15 Ôn tập — bản mẫu</title>
+<style id="css-A">
+/* Design A - "Washi & Vermillion": warm traditional Japanese paper aesthetic */
+:root{
+  --bg:#FAF6EE;
+  --surface:#FFFFFF;
+  --ink:#24211D;
+  --ink-soft:#6b6455;
+  --accent:#B5432E;
+  --accent-dark:#8f3323;
+  --accent-soft:#f0d9cf;
+  --gold:#B8912B;
+  --teal:#3F6B63;
+  --border:#DCD3C0;
+  --serif: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --sans: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;}
+h1,h2,h3,.serif{font-family:var(--serif);}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+
+/* header */
+.topbar{border-bottom:1px solid var(--border);background:var(--surface);}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:72px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:22px;color:var(--ink);}
+.brand .mark{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-family:var(--serif);}
+nav.mainnav{display:flex;gap:28px;font-size:14.5px;}
+nav.mainnav a{padding:6px 2px;border-bottom:2px solid transparent;color:var(--ink-soft);}
+nav.mainnav a.active{color:var(--accent);border-color:var(--accent);}
+.navmeta{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--ink-soft);}
+.pill{padding:8px 18px;border-radius:3px;background:var(--accent);color:#fff;font-size:14px;}
+.pill.ghost{background:transparent;border:1px solid var(--border);color:var(--ink);}
+
+main{padding:52px 0 80px;}
+.stamp{position:relative;}
+.stamp::before{content:"";position:absolute;top:-6px;right:-6px;width:46px;height:46px;border:2px solid var(--accent);border-radius:50%;opacity:.25;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:28px;}
+.grid{display:grid;gap:20px;}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-2{grid-template-columns:1.4fr 1fr;}
+
+.btn{display:inline-block;padding:13px 26px;border-radius:3px;font-size:15px;cursor:pointer;border:1px solid transparent;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-dark);}
+.btn-outline{border-color:var(--ink);color:var(--ink);background:transparent;}
+.btn-block{display:block;width:100%;text-align:center;}
+
+label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:6px;}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:3px;background:#fff;font-size:15px;font-family:var(--sans);color:var(--ink);}
+input:focus,select:focus{outline:none;border-color:var(--accent);}
+.field{margin-bottom:18px;}
+
+.divider{height:1px;background:var(--border);margin:26px 0;}
+.eyebrow{color:var(--accent);font-size:13px;letter-spacing:.02em;margin-bottom:10px;}
+.muted{color:var(--ink-soft);}
+.tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12.5px;border:1px solid var(--border);color:var(--ink-soft);margin-right:6px;}
+.tag.level{background:var(--accent-soft);border-color:transparent;color:var(--accent-dark);}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+th{text-align:left;color:var(--ink-soft);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;}
+td{padding:14px 12px;border-bottom:1px solid var(--border);}
+tr:hover td{background:#fbf8f2;}
+
+.stat{padding:22px;border:1px solid var(--border);border-radius:4px;background:var(--surface);}
+.stat .num{font-family:var(--serif);font-size:34px;color:var(--accent-dark);}
+.stat .label{font-size:13.5px;color:var(--ink-soft);margin-top:4px;}
+
+.flashcard{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:60px 40px;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
+.flashcard .jp{font-family:var(--serif);font-size:52px;margin-bottom:14px;}
+.flashcard .reading{color:var(--ink-soft);margin-bottom:20px;}
+.progressbar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progressbar span{display:block;height:100%;background:var(--accent);}
+
+.sidebar{width:220px;border-right:1px solid var(--border);padding:32px 20px;}
+.sidebar a{display:block;padding:10px 14px;border-radius:3px;color:var(--ink-soft);margin-bottom:4px;font-size:14.5px;}
+.sidebar a.active{background:var(--accent-soft);color:var(--accent-dark);}
+.admin-layout{display:flex;}
+.admin-content{flex:1;padding:32px 36px;}
+
+footer.note{padding:20px 0;text-align:center;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--border);}
+
+</style>
+<style id="css-B" disabled>
+/* Design B - "Studio Mono": modern minimal, grid-based, flat */
+:root{
+  --bg:#F2F3EF;
+  --surface:#FFFFFF;
+  --ink:#14141A;
+  --ink-soft:#6b6c72;
+  --accent:#3B4FC7;
+  --accent-soft:#e4e7fb;
+  --sage:#5C7A6A;
+  --border:#DCDDD7;
+  --sans:-apple-system,"Segoe UI",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;letter-spacing:-0.01em;}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1120px;margin:0 auto;padding:0 32px;}
+
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;}
+.brand{font-weight:700;font-size:17px;display:flex;align-items:center;gap:8px;}
+.brand .mark{width:26px;height:26px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--mono);}
+nav.mainnav{display:flex;gap:26px;font-size:14px;}
+nav.mainnav a{color:var(--ink-soft);padding:4px 0;border-bottom:2px solid transparent;}
+nav.mainnav a.active{color:var(--ink);border-color:var(--accent);}
+.navmeta{display:flex;align-items:center;gap:14px;font-size:13.5px;color:var(--ink-soft);}
+.pill{padding:9px 18px;background:var(--ink);color:#fff;font-size:13.5px;}
+.pill.ghost{background:transparent;border:1px solid var(--border);color:var(--ink);}
+
+main{padding:48px 0 90px;}
+.card{background:var(--surface);border:1px solid var(--border);padding:26px;}
+.grid{display:grid;gap:1px;background:var(--border);border:1px solid var(--border);}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-2{grid-template-columns:1.4fr 1fr;}
+.grid > *{background:var(--surface);}
+.grid-gap{display:grid;gap:16px;}
+.grid-gap.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid-gap.cols-2{grid-template-columns:1.4fr 1fr;}
+
+.btn{display:inline-block;padding:12px 24px;font-size:14.5px;cursor:pointer;border:1px solid var(--ink);}
+.btn-primary{background:var(--ink);color:#fff;}
+.btn-primary:hover{background:var(--accent);border-color:var(--accent);}
+.btn-outline{background:transparent;color:var(--ink);}
+.btn-block{display:block;width:100%;text-align:center;}
+
+label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;text-transform:none;}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--border);background:#fff;font-size:15px;font-family:var(--sans);color:var(--ink);}
+input:focus,select:focus{outline:none;border-color:var(--accent);}
+.field{margin-bottom:16px;}
+
+.divider{height:1px;background:var(--border);margin:26px 0;}
+.eyebrow{color:var(--ink-soft);font-size:13px;margin-bottom:8px;font-family:var(--mono);}
+.muted{color:var(--ink-soft);}
+.tag{display:inline-block;padding:3px 10px;font-size:12px;border:1px solid var(--border);color:var(--ink-soft);margin-right:6px;font-family:var(--mono);}
+.tag.level{background:var(--accent-soft);border-color:transparent;color:var(--accent);}
+
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th{text-align:left;color:var(--ink-soft);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;font-family:var(--mono);}
+td{padding:13px 12px;border-bottom:1px solid var(--border);}
+tr:hover td{background:#fafafa;}
+
+.stat{padding:24px;border:1px solid var(--border);background:var(--surface);}
+.stat .num{font-family:var(--mono);font-size:32px;font-weight:700;}
+.stat .label{font-size:13px;color:var(--ink-soft);margin-top:6px;}
+
+.flashcard{background:var(--surface);border:1px solid var(--border);padding:64px 40px;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.flashcard .jp{font-size:50px;margin-bottom:14px;font-weight:600;}
+.flashcard .reading{color:var(--ink-soft);margin-bottom:20px;font-family:var(--mono);}
+.progressbar{height:3px;background:var(--border);overflow:hidden;}
+.progressbar span{display:block;height:100%;background:var(--accent);}
+
+.sidebar{width:220px;border-right:1px solid var(--border);padding:32px 20px;}
+.sidebar a{display:block;padding:9px 12px;color:var(--ink-soft);margin-bottom:2px;font-size:14px;}
+.sidebar a.active{background:var(--accent-soft);color:var(--accent);}
+.admin-layout{display:flex;}
+.admin-content{flex:1;padding:32px 36px;}
+
+footer.note{padding:20px 0;text-align:center;color:var(--ink-soft);font-size:12.5px;border-top:1px solid var(--border);font-family:var(--mono);}
+
+</style>
+<style id="css-C" disabled>
+/* Design C - "Genki Playful": bright, rounded, gamified for casual learners */
+:root{
+  --bg:#F6F1FF;
+  --surface:#FFFFFF;
+  --ink:#2E1F3D;
+  --ink-soft:#7a6f8c;
+  --coral:#FF6F61;
+  --coral-dark:#e5564a;
+  --yellow:#FFC93C;
+  --sky:#4FB6E8;
+  --mint:#3FC1A2;
+  --border:#E8DFFB;
+  --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+
+.topbar{background:var(--surface);border-bottom:2px solid var(--border);}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:74px;}
+.brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:800;}
+.brand .mark{width:38px;height:38px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;}
+nav.mainnav{display:flex;gap:8px;font-size:14.5px;font-weight:600;}
+nav.mainnav a{padding:9px 16px;border-radius:20px;color:var(--ink-soft);}
+nav.mainnav a.active{color:#fff;background:var(--coral);}
+.navmeta{display:flex;align-items:center;gap:14px;font-size:14px;font-weight:600;}
+.pill{padding:10px 22px;border-radius:20px;background:var(--coral);color:#fff;font-weight:700;}
+.pill.ghost{background:var(--surface);border:2px solid var(--border);color:var(--ink);}
+
+main{padding:44px 0 90px;}
+.card{background:var(--surface);border:2px solid var(--border);border-radius:22px;padding:28px;}
+.grid{display:grid;gap:18px;}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-2{grid-template-columns:1.4fr 1fr;}
+
+.btn{display:inline-block;padding:14px 26px;border-radius:18px;font-size:15px;font-weight:700;cursor:pointer;border:2px solid transparent;}
+.btn-primary{background:var(--coral);color:#fff;}
+.btn-primary:hover{background:var(--coral-dark);}
+.btn-outline{border-color:var(--ink);color:var(--ink);background:transparent;}
+.btn-block{display:block;width:100%;text-align:center;}
+
+label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:6px;font-weight:600;}
+input,select{width:100%;padding:13px 16px;border:2px solid var(--border);border-radius:14px;background:#fff;font-size:15px;font-family:var(--sans);color:var(--ink);}
+input:focus,select:focus{outline:none;border-color:var(--coral);}
+.field{margin-bottom:18px;}
+
+.divider{height:2px;background:var(--border);margin:26px 0;border-radius:2px;}
+.eyebrow{color:var(--coral);font-size:14px;font-weight:800;margin-bottom:8px;}
+.muted{color:var(--ink-soft);}
+.tag{display:inline-block;padding:6px 14px;border-radius:20px;font-size:12.5px;font-weight:700;background:#F0EAFB;color:var(--ink-soft);margin-right:6px;}
+.tag.level{background:var(--yellow);color:#6b4d00;}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+th{text-align:left;color:var(--ink-soft);font-weight:700;padding:10px 14px;border-bottom:2px solid var(--border);font-size:13px;}
+td{padding:14px;border-bottom:1px solid var(--border);}
+tr:hover td{background:#faf7ff;}
+
+.stat{padding:24px;border:2px solid var(--border);border-radius:20px;background:var(--surface);text-align:center;}
+.stat .num{font-size:36px;font-weight:800;color:var(--coral);}
+.stat .label{font-size:13.5px;color:var(--ink-soft);margin-top:4px;font-weight:600;}
+
+.flashcard{background:var(--surface);border:3px solid var(--coral);border-radius:28px;padding:56px 40px;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 10px 0 var(--border);}
+.flashcard .jp{font-size:54px;margin-bottom:14px;font-weight:800;}
+.flashcard .reading{color:var(--ink-soft);margin-bottom:20px;font-weight:600;}
+.progressbar{height:12px;background:var(--border);border-radius:20px;overflow:hidden;}
+.progressbar span{display:block;height:100%;background:linear-gradient(90deg,var(--coral),var(--yellow));border-radius:20px;}
+
+.sidebar{width:220px;border-right:2px solid var(--border);padding:32px 20px;}
+.sidebar a{display:block;padding:11px 16px;border-radius:16px;color:var(--ink-soft);margin-bottom:6px;font-size:14.5px;font-weight:600;}
+.sidebar a.active{background:var(--coral);color:#fff;}
+.admin-layout{display:flex;}
+.admin-content{flex:1;padding:32px 36px;}
+
+footer.note{padding:20px 0;text-align:center;color:var(--ink-soft);font-size:13px;font-weight:600;}
+
+</style>
+<style>input[type=checkbox],input[type=radio]{width:auto;padding:0;}
+#themebar{position:sticky;top:0;z-index:99;display:flex;gap:8px;align-items:center;padding:8px 14px;background:#111;color:#fff;font:14px system-ui,sans-serif;}</style>
+</head><body>
+<div id="themebar"><strong style="margin-right:8px;">SC15 — Ôn tập</strong><button data-theme="A" style="font:inherit;padding:6px 14px;border:1px solid #999;background:#222;color:#fff;cursor:pointer;border-radius:3px;">Theme A</button><button data-theme="B" style="font:inherit;padding:6px 14px;border:1px solid #999;background:#fff;color:#222;cursor:pointer;border-radius:3px;">Theme B</button><button data-theme="C" style="font:inherit;padding:6px 14px;border:1px solid #999;background:#fff;color:#222;cursor:pointer;border-radius:3px;">Theme C</button><span style="opacity:.7;margin-left:auto;">bản mẫu tĩnh, dữ liệu là ví dụ</span></div>
+
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="mark">毎</span>毎日BJT</div>
+  <nav class="mainnav">
+    <a href="SC03_TrangChu_A.html">Trang chủ</a>
+    <a href="SC05_DanhSachTuVung_A.html">Từ vựng</a>
+    <a href="SC04_HocTuVung_A.html">Flashcard</a>
+    <a href="SC06_KiemTra_A.html">Kiểm tra</a>
+    <a class="active" href="SC15_OnTap_A.html">Ôn tập</a>
+    <a href="SC10_LuyenVietPdf_A.html">Luyện viết</a>
+  </nav>
+  <div class="navmeta"><a href="SC09_ThongTinCaNhan_A.html">Dat</a> <a class="pill ghost" href="SC08_CaiDat_A.html">⚙️</a> <a class="pill ghost" href="SC01_DangNhap_A.html">Đăng xuất</a></div>
+</div></header>
+<main>
+  <div class="wrap">
+    <div class="eyebrow">Ôn tập</div>
+    <h1 class="serif" style="font-size:30px;margin:0 0 8px;">Ôn lại những từ bạn đã học</h1>
+    <p class="muted" style="margin:0 0 28px;max-width:640px;">Trang này chỉ thống kê các từ bạn đã từng học ít nhất một lần. Muốn xem toàn bộ kho từ (kể cả từ chưa học), vào <a href="SC05_DanhSachTuVung_A.html" style="text-decoration:underline;">Từ vựng</a>.</p>
+
+    <div class="grid cols-3" style="grid-template-columns:repeat(4,1fr);margin-bottom:28px;">
+      <div class="stat"><div class="num">247</div><div class="label">Từ đã học</div></div>
+      <div class="stat"><div class="num">18</div><div class="label">Đến hạn hôm nay</div></div>
+      <div class="stat"><div class="num">96</div><div class="label">Đã thuộc</div></div>
+      <div class="stat"><div class="num">12</div><div class="label">Ngày học liên tục 🔥</div></div>
+    </div>
+
+    <div class="grid cols-2" style="margin-bottom:8px;">
+
+      <div class="card stamp">
+        <div class="eyebrow">Tạo lượt ôn tập</div>
+        <h3 class="serif" style="margin:0 0 20px;">Chọn nhóm từ muốn ôn</h3>
+
+        <div class="field">
+          <label>Phạm vi ôn</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <label class="tag level" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="radio" name="scope" checked style="width:auto;padding:0;">Đến hạn hôm nay (18)</label>
+            <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="radio" name="scope" style="width:auto;padding:0;">Quá hạn (6)</label>
+            <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="radio" name="scope" style="width:auto;padding:0;">7 ngày tới (54)</label>
+            <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="radio" name="scope" style="width:auto;padding:0;">Từ hay sai (23)</label>
+            <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="radio" name="scope" style="width:auto;padding:0;">Đã thuộc (96)</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Chủ đề</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox" checked style="width:auto;padding:0;">Tất cả chủ đề</label>
+            <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox" style="width:auto;padding:0;">会議・打合せ</label>
+            <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox" style="width:auto;padding:0;">電話応対</label>
+            <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox" style="width:auto;padding:0;">経理・財務</label>
+            <label class="tag" style="margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;"><input type="checkbox" style="width:auto;padding:0;">契約</label>
+          </div>
+        </div>
+
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="field" style="margin-bottom:0;">
+            <label>Số từ mỗi lượt</label>
+            <select><option>10 từ</option><option selected>20 từ</option><option>50 từ</option><option>100 từ</option><option>Tất cả</option></select>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>Hình thức</label>
+            <select><option selected>Flashcard</option><option>Trắc nghiệm 4 đáp án</option></select>
+          </div>
+        </div>
+
+        <div class="field" style="margin:18px 0 6px;">
+          <label style="display:inline-flex;align-items:flex-start;gap:9px;margin:0;cursor:pointer;">
+            <input type="checkbox" checked style="width:auto;padding:0;margin-top:3px;">
+            <span>Cập nhật lịch ôn (SM-2) sau lượt này</span>
+          </label>
+          <p class="muted" style="margin:6px 0 0 27px;font-size:13px;">Bỏ tick = <strong>ôn tự do</strong>: chỉ ghi nhận kết quả, không đẩy lịch ôn. Nên bỏ tick khi ôn lại từ chưa đến hạn hoặc từ đã thuộc, tránh làm sai khoảng cách lặp lại.</p>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
+          <a class="btn btn-primary" href="SC04_HocTuVung_A.html">Bắt đầu ôn 18 từ</a>
+          <a class="btn btn-outline" href="SC15_OnTap_A.html">Lưu thành bộ ôn tập</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Lịch ôn sắp tới</div>
+        <h3 class="serif" style="margin:0 0 22px;">7 ngày tới</h3>
+        <div style="display:flex;align-items:flex-end;gap:10px;height:150px;">
+          <div style="flex:1;text-align:center;"><div style="height:36%;background:var(--accent, #B5432E);opacity:.55;"></div></div>
+          <div style="flex:1;text-align:center;"><div style="height:86%;background:var(--accent, #B5432E);"></div></div>
+          <div style="flex:1;text-align:center;"><div style="height:64%;background:var(--accent, #B5432E);opacity:.55;"></div></div>
+          <div style="flex:1;text-align:center;"><div style="height:100%;background:var(--accent, #B5432E);opacity:.55;"></div></div>
+          <div style="flex:1;text-align:center;"><div style="height:50%;background:var(--accent, #B5432E);opacity:.55;"></div></div>
+          <div style="flex:1;text-align:center;"><div style="height:78%;background:var(--accent, #B5432E);opacity:.55;"></div></div>
+          <div style="flex:1;text-align:center;"><div style="height:36%;background:var(--accent, #B5432E);opacity:.55;"></div></div>
+          <div style="flex:1;text-align:center;"><div style="height:57%;background:var(--accent, #B5432E);opacity:.55;"></div></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:8px;font-size:12.5px;text-align:center;" class="muted">
+          <div style="flex:1;">Quá<br>hạn</div><div style="flex:1;">Hôm<br>nay</div><div style="flex:1;">T3</div><div style="flex:1;">T4</div><div style="flex:1;">T5</div><div style="flex:1;">T6</div><div style="flex:1;">T7</div><div style="flex:1;">CN</div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:6px;font-size:13px;text-align:center;">
+          <div style="flex:1;">6</div><div style="flex:1;"><strong>18</strong></div><div style="flex:1;">13</div><div style="flex:1;">21</div><div style="flex:1;">10</div><div style="flex:1;">16</div><div style="flex:1;">7</div><div style="flex:1;">12</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="eyebrow">Độ nhớ</div>
+        <h3 class="serif" style="margin:0 0 20px;">247 từ đang theo dõi</h3>
+
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;"><span>Mới nhớ (0–1 lần đúng)</span><span class="muted">88 từ</span></div>
+          <div class="progressbar"><span style="width:36%"></span></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;"><span>Đang nhớ (2–4 lần đúng)</span><span class="muted">63 từ</span></div>
+          <div class="progressbar"><span style="width:26%"></span></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;"><span>Đã thuộc (5 lần đúng trở lên)</span><span class="muted">96 từ</span></div>
+          <div class="progressbar"><span style="width:38%"></span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Cần chú ý</div>
+        <h3 class="serif" style="margin:0 0 14px;">Từ hay sai nhất</h3>
+        <table>
+          <tr><th>Từ</th><th>Nghĩa</th><th style="text-align:right;">Sai / Đúng</th></tr>
+          <tr><td class="serif">稟議 <span class="muted" style="font-size:12.5px;">りんぎ</span></td><td>tờ trình xin phê duyệt</td><td style="text-align:right;">7 / 2</td></tr>
+          <tr><td class="serif">見積書 <span class="muted" style="font-size:12.5px;">みつもりしょ</span></td><td>bản báo giá</td><td style="text-align:right;">5 / 3</td></tr>
+          <tr><td class="serif">棚卸し <span class="muted" style="font-size:12.5px;">たなおろし</span></td><td>kiểm kê hàng tồn</td><td style="text-align:right;">4 / 2</td></tr>
+          <tr><td class="serif">納期 <span class="muted" style="font-size:12.5px;">のうき</span></td><td>thời hạn giao hàng</td><td style="text-align:right;">4 / 5</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="eyebrow">Tiến độ theo chủ đề</div>
+    <div class="card" style="padding:0;margin-bottom:28px;">
+      <table>
+        <tr><th>Chủ đề</th><th>Đã học</th><th>Đến hạn</th><th>Đã thuộc</th><th style="width:180px;">Tiến độ</th><th></th></tr>
+        <tr><td>会議・打合せ (Họp hành)</td><td>58 / 72</td><td><span class="tag level">9</span></td><td>21</td><td><div class="progressbar"><span style="width:80%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_A.html">Ôn →</a></td></tr>
+        <tr><td>電話応対 (Điện thoại)</td><td>41 / 55</td><td><span class="tag level">6</span></td><td>18</td><td><div class="progressbar"><span style="width:74%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_A.html">Ôn →</a></td></tr>
+        <tr><td>経理・財務 (Kế toán – Tài chính)</td><td>33 / 60</td><td><span class="tag">3</span></td><td>12</td><td><div class="progressbar"><span style="width:55%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_A.html">Ôn →</a></td></tr>
+        <tr><td>契約 (Hợp đồng)</td><td>27 / 48</td><td><span class="tag">0</span></td><td>19</td><td><div class="progressbar"><span style="width:56%"></span></div></td><td style="text-align:right;"><a href="SC04_HocTuVung_A.html">Ôn →</a></td></tr>
+      </table>
+    </div>
+    <p class="muted" style="margin:-16px 0 28px;font-size:13px;">Một từ thuộc nhiều chủ đề sẽ được đếm ở tất cả các dòng, nên tổng các dòng có thể lớn hơn 247.</p>
+
+    <div class="eyebrow">Bộ ôn tập đã lưu</div>
+    <div class="grid cols-3">
+      <div class="card"><span class="tag level">24 từ</span><h3 class="serif" style="margin:12px 0 6px;">Từ hay quên tuần này</h3><p class="muted" style="margin:0 0 16px;">Cập nhật 2 ngày trước</p><a class="btn btn-outline" href="SC04_HocTuVung_A.html">Ôn bộ này</a></div>
+      <div class="card"><span class="tag level">30 từ</span><h3 class="serif" style="margin:12px 0 6px;">Chuẩn bị họp tháng 10</h3><p class="muted" style="margin:0 0 16px;">Cập nhật hôm qua</p><a class="btn btn-outline" href="SC04_HocTuVung_A.html">Ôn bộ này</a></div>
+      <div class="card" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;"><p class="muted" style="margin:0 0 14px;">Lưu bộ từ đang lọc để ôn lại nhiều lần hoặc in ra phiếu PDF.</p><a class="btn btn-primary" href="SC15_OnTap_A.html">+ Tạo bộ mới</a></div>
+    </div>
+  </div>
+</main>
+<footer class="note" id="theme-note"></footer>
+
+<script>
+var NAMES = {"A":"Thiết kế A — Washi & Vermillion","B":"Thiết kế B — Studio Mono","C":"Thiết kế C — Genki Playful"};
+function apply(t){
+  ["A","B","C"].forEach(function(k){ document.getElementById("css-"+k).disabled = (k!==t); });
+  document.querySelectorAll("#themebar button").forEach(function(b){
+    var on = b.dataset.theme===t;
+    b.style.background = on ? "#222" : "#fff"; b.style.color = on ? "#fff" : "#222";
+  });
+  document.getElementById("theme-note").textContent = NAMES[t] + " · Bản mẫu tĩnh SC15 — Ôn tập";
+}
+document.querySelectorAll("#themebar button").forEach(function(b){
+  b.addEventListener("click", function(){ apply(b.dataset.theme); });
+});
+apply("A");
+</script>
+</body></html>

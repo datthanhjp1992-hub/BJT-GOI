@@ -1,5 +1,6 @@
 """
-View của app learning: SC03 Trang chủ · SC04 Flashcard · SC06 Kiểm tra.
+View của app learning: SC03 Trang chủ · SC04 Flashcard · SC06 Kiểm tra ·
+SC15 Ôn tập.
 
 Mọi truy vấn thống kê nằm ở `apps.learning.services`; view chỉ lắp context.
 """
@@ -12,7 +13,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from apps.core.constants import SESSION_TYPE_FLASHCARD, SESSION_TYPE_QUIZ
-from apps.core.properties import message
+from apps.core.properties import label, message
 from apps.gamification.models import Contribution
 from apps.gamification import services as gamification_services
 from apps.gamification.services import CONTRIBUTION_TYPE_COMMENT, STATUS_APPROVED
@@ -20,8 +21,8 @@ from apps.vocabulary import selectors as vocab_selectors
 from apps.vocabulary.models import Topic, Vocabulary
 
 from . import services
-from .models import StudySession, UserVocabularyProgress
-from .services import QUALITY_MAP, review_word
+from .models import StudySession, UserVocabularyProgress, UserWordlist
+from .services import QUALITY_MAP, record_extra_review, review_word
 
 
 @login_required
@@ -206,7 +207,9 @@ def quiz_view(request, topic_slug):
                 "learning.quiz.success.session_complete",
                 correct=session.correct_answers, total=session.words_reviewed,
             ))
-        return render(request, "learning/quiz.html", {"topic": topic, "word": None})
+        return render(request, "learning/quiz.html", {
+            "topic": topic, "word": None, "scope_label": topic.display_name,
+        })
 
     total = request.session.get(total_key)
     if not total or len(queue) > total:
@@ -228,6 +231,8 @@ def quiz_view(request, topic_slug):
         "total": total,
         "percent": round((position - 1) * 100 / total) if total else 0,
         "choices": services.get_quiz_choices(word, topic),
+        "scope_label": topic.display_name,
+        "answer_action": reverse("learning:quiz_answer", args=[topic.slug, word.pk]),
     }
     return render(request, "learning/quiz.html", context)
 
@@ -275,13 +280,68 @@ STUDY_QUEUE_KEY = "study_queue"
 STUDY_TOTAL_KEY = "study_total"
 STUDY_SESSION_ID_KEY = "study_session_id"
 STUDY_SCOPE_KEY = "study_scope"
+# Phiên này có được đẩy lịch SM-2 không. False = "ôn thêm" ngoài lịch
+# (SC15, xem apps.vocabulary.selectors.SCOPES_WITHOUT_SCHEDULE).
+STUDY_TOUCH_SCHEDULE_KEY = "study_touch_schedule"
+# Flashcard hay trắc nghiệm — quyết định màn nào hiển thị hàng đợi.
+STUDY_MODE_KEY = "study_mode"
 
 
 def _clear_study_session(request):
     request.session.pop(STUDY_QUEUE_KEY, None)
     request.session.pop(STUDY_TOTAL_KEY, None)
     request.session.pop(STUDY_SCOPE_KEY, None)
+    request.session.pop(STUDY_TOUCH_SCHEDULE_KEY, None)
+    request.session.pop(STUDY_MODE_KEY, None)
     return _close_study_session(request, STUDY_SESSION_ID_KEY)
+
+
+def _touches_schedule(request):
+    """Phiên đang mở có cập nhật lịch SM-2 không (mặc định: CÓ).
+
+    Mặc định phải là True để mọi phiên cũ đang nằm trong session của người
+    dùng (bắt đầu từ SC05 trước khi có SC15) vẫn chấm điểm như trước.
+    """
+    return request.session.get(STUDY_TOUCH_SCHEDULE_KEY, True)
+
+
+def _grade_word(request, vocab, quality):
+    """Chấm một từ của phiên theo hàng đợi, tôn trọng cờ "ôn thêm"."""
+    progress, _ = UserVocabularyProgress.objects.get_or_create(
+        user=request.user, vocabulary=vocab
+    )
+    if _touches_schedule(request):
+        review_word(progress, quality)
+    else:
+        record_extra_review(progress, quality)
+
+    session_id = request.session.get(STUDY_SESSION_ID_KEY)
+    if session_id:
+        StudySession.objects.filter(pk=session_id).update(
+            words_reviewed=F("words_reviewed") + 1,
+            correct_answers=F("correct_answers") + (1 if quality >= 3 else 0),
+        )
+
+    # Bỏ đúng từ vừa ôn khỏi hàng đợi (không dựa vào vị trí đầu: người dùng
+    # bấm nút hai lần / back rồi gửi lại vẫn không làm lệch hàng đợi).
+    queue = list(request.session.get(STUDY_QUEUE_KEY) or [])
+    if vocab.pk in queue:
+        queue.remove(vocab.pk)
+        request.session[STUDY_QUEUE_KEY] = queue
+
+
+def _next_queue_word(request):
+    """Từ kế tiếp của hàng đợi, bỏ qua những từ đã bị xoá khỏi từ điển."""
+    queue = list(request.session.get(STUDY_QUEUE_KEY) or [])
+    word = None
+    while queue and word is None:
+        # Từ có thể đã bị xoá sau khi hàng đợi được chốt — bỏ qua, đừng 404
+        # giữa lúc người ta đang học.
+        word = Vocabulary.objects.filter(pk=queue[0]).first()
+        if word is None:
+            queue.pop(0)
+            request.session[STUDY_QUEUE_KEY] = queue
+    return word, queue
 
 
 def _scope_label(topics):
@@ -331,24 +391,18 @@ def study_start_view(request):
     request.session[STUDY_TOTAL_KEY] = len(queue)
     request.session[STUDY_SESSION_ID_KEY] = study_session.pk
     request.session[STUDY_SCOPE_KEY] = _scope_label(topics)
+    # Phiên bắt đầu từ SC05 luôn là ôn "chính thức": chấm điểm và đẩy lịch.
+    request.session[STUDY_TOUCH_SCHEDULE_KEY] = True
+    request.session[STUDY_MODE_KEY] = SESSION_TYPE_FLASHCARD
     return redirect("learning:study")
 
 
 @login_required
 def study_view(request):
     """Màn học một thẻ của phiên theo bộ lọc — dùng CHUNG template với SC04."""
-    queue = list(request.session.get(STUDY_QUEUE_KEY) or [])
-    total = request.session.get(STUDY_TOTAL_KEY) or len(queue)
+    total = request.session.get(STUDY_TOTAL_KEY) or len(request.session.get(STUDY_QUEUE_KEY) or [])
     scope_label = request.session.get(STUDY_SCOPE_KEY) or message("learning.study.scope.all")
-
-    word = None
-    while queue and word is None:
-        # Từ có thể đã bị xoá sau khi hàng đợi được chốt — bỏ qua, đừng 404
-        # giữa lúc người ta đang học.
-        word = Vocabulary.objects.filter(pk=queue[0]).first()
-        if word is None:
-            queue.pop(0)
-            request.session[STUDY_QUEUE_KEY] = queue
+    word, queue = _next_queue_word(request)
 
     if word is None:
         _clear_study_session(request)
@@ -367,6 +421,7 @@ def study_view(request):
         "review_action": reverse("learning:study_review", args=[word.pk]),
         "topic_slug_value": "",
         "is_study_session": True,
+        "is_extra_review": not _touches_schedule(request),
         "examples": word.examples.all()[:3],
         "comments": Contribution.objects.filter(
             target_vocabulary=word,
@@ -383,25 +438,7 @@ def study_review_view(request, vocabulary_id):
     """4 nút Quên/Khó/Nhớ/Dễ của phiên học theo bộ lọc."""
     vocab = get_object_or_404(Vocabulary, pk=vocabulary_id)
     quality = QUALITY_MAP.get(request.POST.get("quality"), 3)
-
-    progress, _ = UserVocabularyProgress.objects.get_or_create(
-        user=request.user, vocabulary=vocab
-    )
-    review_word(progress, quality)
-
-    session_id = request.session.get(STUDY_SESSION_ID_KEY)
-    if session_id:
-        StudySession.objects.filter(pk=session_id).update(
-            words_reviewed=F("words_reviewed") + 1,
-            correct_answers=F("correct_answers") + (1 if quality >= 3 else 0),
-        )
-
-    # Bỏ đúng từ vừa ôn khỏi hàng đợi (không dựa vào vị trí đầu: người dùng
-    # bấm nút hai lần / back rồi gửi lại vẫn không làm lệch hàng đợi).
-    queue = list(request.session.get(STUDY_QUEUE_KEY) or [])
-    if vocab.pk in queue:
-        queue.remove(vocab.pk)
-        request.session[STUDY_QUEUE_KEY] = queue
+    _grade_word(request, vocab, quality)
     return redirect("learning:study")
 
 
@@ -411,3 +448,187 @@ def study_end_view(request):
     """Kết thúc phiên sớm — đóng StudySession và dọn hàng đợi."""
     _clear_study_session(request)
     return redirect("learning:dashboard")
+
+
+# =============================================================================
+# SC15 — Ôn tập
+# -----------------------------------------------------------------------------
+# Trang này KHÔNG dựng hàng đợi riêng: nó chọn tập từ bằng
+# `selectors.studied_vocabulary()` rồi đi qua ĐÚNG luồng study_* đã có
+# (`build_study_queue` -> session -> study_view/study_quiz_view). Khác biệt
+# duy nhất là cờ STUDY_TOUCH_SCHEDULE_KEY: với các phạm vi "ôn thêm" (chưa đến
+# hạn / đã thuộc) phiên chỉ ghi nhận đúng-sai, không đẩy lịch SM-2.
+# =============================================================================
+
+REVIEW_VIEW_PARAM = "view"
+REVIEW_VIEW_TOPIC = "topic"
+REVIEW_VIEW_MEMORY = "memory"
+REVIEW_VIEW_CALENDAR = "calendar"
+REVIEW_VIEWS = (REVIEW_VIEW_TOPIC, REVIEW_VIEW_MEMORY, REVIEW_VIEW_CALENDAR)
+
+# Ba thẻ "ôn thêm" dưới khối đầu trang. `count_key` trỏ vào kết quả của
+# `services.get_review_overview()` nên số trên thẻ và số từ thật sự ôn được
+# luôn đến từ cùng một truy vấn.
+REVIEW_DECKS = (
+    {"scope": vocab_selectors.SCOPE_LEECH, "count_key": "leech", "emoji": "🔁"},
+    {"scope": vocab_selectors.SCOPE_UPCOMING, "count_key": "upcoming", "emoji": "🗓"},
+    {"scope": vocab_selectors.SCOPE_MASTERED, "count_key": "mastered", "emoji": "⭐"},
+)
+
+
+def _clean_review_view(raw):
+    return raw if raw in REVIEW_VIEWS else REVIEW_VIEW_TOPIC
+
+
+def _review_scope_label(scope, topics):
+    """Nhãn phạm vi hiện trên thanh tiến độ của phiên ôn."""
+    scope_label = label(f"learning.review.scope.{scope}")
+    if not topics:
+        return scope_label
+    return message(
+        "learning.review.scope_with_topics",
+        scope=scope_label,
+        topics=_scope_label(topics),
+    )
+
+
+@login_required
+def review_view(request):
+    """SC15_OnTap — thống kê từ đã học + các lối vào một lượt ôn.
+
+    Ba bảng thống kê là BA GÓC NHÌN của cùng một khu vực, chuyển bằng
+    `?view=` chứ không phải JavaScript — tắt JS vẫn đổi tab được, và mỗi tab
+    bookmark/chia sẻ được như mọi trang khác của repo.
+    """
+    user = request.user
+    active_view = _clean_review_view(request.GET.get(REVIEW_VIEW_PARAM))
+    overview = services.get_review_overview(user)
+
+    decks = [
+        {
+            "scope": deck["scope"],
+            "emoji": deck["emoji"],
+            "count": overview[deck["count_key"]],
+            "label_key": f"learning.review.scope.{deck['scope']}",
+            "hint_key": f"learning.review.hint.{deck['scope']}",
+            "is_extra": not vocab_selectors.touches_schedule(deck["scope"]),
+        }
+        for deck in REVIEW_DECKS
+    ]
+
+    context = {
+        "active_nav": "review",
+        "overview": overview,
+        "decks": decks,
+        "active_view": active_view,
+        "views": REVIEW_VIEWS,
+        "topics": Topic.objects.all().order_by("name"),
+        "limit_choices": vocab_selectors.SESSION_LIMIT_CHOICES,
+        "session_limit": vocab_selectors.DEFAULT_SESSION_LIMIT,
+        "wordlists": UserWordlist.objects.filter(user=user).order_by("-updated_at"),
+        # Chỉ truy vấn đúng bảng của tab đang mở — ba tab là ba truy vấn khác
+        # nhau, không việc gì chạy cả ba mỗi lần tải trang.
+        "topic_rows": services.get_topic_review_rows(user) if active_view == REVIEW_VIEW_TOPIC else [],
+        "memory_rows": services.get_memory_distribution(user) if active_view == REVIEW_VIEW_MEMORY else [],
+        "calendar": services.get_review_calendar(user) if active_view == REVIEW_VIEW_CALENDAR else [],
+    }
+    return render(request, "learning/review.html", context)
+
+
+@login_required
+@require_POST
+def review_start_view(request):
+    """Chốt hàng đợi cho một lượt ôn của SC15 rồi chuyển sang màn học."""
+    scope = vocab_selectors.clean_review_scope(
+        request.POST.get(vocab_selectors.REVIEW_SCOPE_PARAM)
+    )
+    topics = vocab_selectors.selected_topics(request.POST)
+    limit = vocab_selectors.clean_session_limit(
+        request.POST.get(vocab_selectors.LIMIT_PARAM)
+    )
+    mode = (
+        SESSION_TYPE_QUIZ
+        if request.POST.get("mode") == SESSION_TYPE_QUIZ
+        else SESSION_TYPE_FLASHCARD
+    )
+
+    words = vocab_selectors.studied_vocabulary(request.user, topics=topics, scope=scope)
+    queue = services.build_study_queue(request.user, words, limit=limit)
+    if not queue:
+        flash.error(request, message("learning.review.error.empty_queue"))
+        return redirect("learning:review")
+
+    _clear_study_session(request)
+    study_session = StudySession.objects.create(
+        user=request.user,
+        topic=topics[0] if len(topics) == 1 else None,
+        session_type=mode,
+        started_at=timezone.now(),
+    )
+    request.session[STUDY_QUEUE_KEY] = queue
+    request.session[STUDY_TOTAL_KEY] = len(queue)
+    request.session[STUDY_SESSION_ID_KEY] = study_session.pk
+    request.session[STUDY_SCOPE_KEY] = _review_scope_label(scope, topics)
+    request.session[STUDY_TOUCH_SCHEDULE_KEY] = vocab_selectors.touches_schedule(scope)
+    request.session[STUDY_MODE_KEY] = mode
+
+    if mode == SESSION_TYPE_QUIZ:
+        return redirect("learning:study_quiz")
+    return redirect("learning:study")
+
+
+@login_required
+def study_quiz_view(request):
+    """Trắc nghiệm trên hàng đợi đã chốt — bản "nhiều chủ đề" của SC06.
+
+    `quiz_view` (SC06) chỉ chạy được trong PHẠM VI MỘT CHỦ ĐỀ vì route của nó
+    mang slug. Màn này dùng lại y nguyên template và `get_quiz_choices()`,
+    chỉ khác nguồn hàng đợi (session thay vì `get_flashcard_queue`).
+    """
+    total = request.session.get(STUDY_TOTAL_KEY) or len(request.session.get(STUDY_QUEUE_KEY) or [])
+    scope_label = request.session.get(STUDY_SCOPE_KEY) or message("learning.study.scope.all")
+    word, queue = _next_queue_word(request)
+
+    if word is None:
+        session = _clear_study_session(request)
+        if session and session.words_reviewed:
+            flash.success(request, message(
+                "learning.quiz.success.session_complete",
+                correct=session.correct_answers, total=session.words_reviewed,
+            ))
+        return render(request, "learning/quiz.html", {
+            "word": None, "scope_label": scope_label,
+        })
+
+    position = total - len(queue) + 1
+    # Nhiễu lấy theo chủ đề ĐẦU TIÊN của từ (hàng đợi có thể gộp nhiều chủ
+    # đề); từ không có chủ đề nào thì get_quiz_choices tự lấy từ toàn bộ từ điển.
+    topic = word.topics.first()
+    context = {
+        "topic": topic,
+        "word": word,
+        "position": position,
+        "total": total,
+        "percent": round((position - 1) * 100 / total) if total else 0,
+        "choices": services.get_quiz_choices(word, topic),
+        "scope_label": scope_label,
+        "answer_action": reverse("learning:study_quiz_answer", args=[word.pk]),
+        "is_extra_review": not _touches_schedule(request),
+    }
+    return render(request, "learning/quiz.html", context)
+
+
+@login_required
+@require_POST
+def study_quiz_answer_view(request, vocabulary_id):
+    """Nộp một câu của phiên trắc nghiệm theo hàng đợi."""
+    vocab = get_object_or_404(Vocabulary, pk=vocabulary_id)
+    is_correct = request.POST.get("choice") == str(vocab.pk)
+    # Quy đổi giống SC06: đúng -> 4 ("Nhớ"), sai -> 0 ("Quên rồi").
+    _grade_word(request, vocab, 4 if is_correct else 0)
+
+    if is_correct:
+        flash.success(request, message("learning.quiz.feedback.correct"))
+    else:
+        flash.error(request, message("learning.quiz.feedback.wrong", meaning=vocab.meaning_vi))
+    return redirect("learning:study_quiz")
