@@ -113,5 +113,33 @@ function initDropdowns() {
 
 document.addEventListener("DOMContentLoaded", function () {
   initFlashcards();
+  initRequiredBeforeSubmit();
   initDropdowns();
 });
+
+// ---------------------------------------------------------------------------
+// 4. Nút cần một ô bắt buộc mới bấm được (SC12: "Từ chối" phải có lý do).
+//
+//    Ô lý do KHÔNG đặt required sẵn, vì nút "Duyệt" cùng nằm trong form đó và
+//    duyệt thì lý do là tuỳ chọn. Nên required chỉ được bật đúng lúc bấm nút
+//    từ chối, rồi gỡ ra ngay để lần bấm "Duyệt" sau đó không bị chặn oan.
+//
+//    Đây chỉ là lớp phủ cho nhanh: tắt JavaScript thì view vẫn kiểm tra và
+//    báo lỗi ngay dưới ô nhập như cũ.
+// ---------------------------------------------------------------------------
+function initRequiredBeforeSubmit() {
+  document.querySelectorAll("[data-reject-requires]").forEach(function (button) {
+    button.addEventListener("click", function (event) {
+      var field = document.getElementById(button.getAttribute("data-reject-requires"));
+      if (!field || field.value.trim()) { return; }
+      event.preventDefault();
+      field.setCustomValidity(button.getAttribute("data-reject-message") || "");
+      field.reportValidity();
+      field.focus();
+      field.addEventListener("input", function clear() {
+        field.setCustomValidity("");
+        field.removeEventListener("input", clear);
+      });
+    });
+  });
+}

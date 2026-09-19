@@ -472,6 +472,11 @@ class ThemeCssContractTests(TestCase):
     """
 
     REQUIRED_RULES = (
+        # Thông báo lỗi phải khác thông báo thường ở cả MÀU lẫn DẤU ⚠ — bản cũ
+        # chỉ đổi màu dải 4px bên trái nên lỗi nhìn hệt thành công (xem
+        # claude/sc11-sc12-gop-y.md, sự cố nút "Từ chối" 19/09/2026).
+        ".flash.error::before",
+        ".flash.success",
         "input[type=checkbox]",
         "input[type=radio]",
         ".checkbox-row",

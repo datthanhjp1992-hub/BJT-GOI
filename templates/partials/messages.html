@@ -2,6 +2,6 @@
 vào cả 3 file theme (khối "Bổ sung cho bản Django" cuối mỗi file).{% endcomment %}
 {% if messages %}
   {% for m in messages %}
-    <div class="flash{% if m.level_tag == 'error' %} error{% endif %}">{{ m }}</div>
+    <div class="flash{% if m.level_tag == 'error' %} error{% elif m.level_tag == 'success' %} success{% endif %}"{% if m.level_tag == 'error' %} role="alert"{% endif %}>{{ m }}</div>
   {% endfor %}
 {% endif %}

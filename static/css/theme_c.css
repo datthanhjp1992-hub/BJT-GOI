@@ -107,7 +107,13 @@ footer.note{padding:20px 0;text-align:center;color:var(--ink-soft);font-size:13p
 .serif{font-family:var(--serif);}
 button.btn,button.pill{font:inherit;cursor:pointer;}
 .flash{background:var(--surface);border:2px solid var(--border);border-left:6px solid var(--accent);border-radius:14px;padding:12px 18px;margin-bottom:14px;font-size:14.5px;}
-.flash.error{border-left-color:var(--coral-dark);}
+/* Thông báo LỖI phải trông như lỗi — bản cũ chỉ đổi màu dải 4px bên trái nên
+   nhìn hệt thông báo thành công. Lỗi thật đã gặp (19/09/2026): admin bấm
+   "Từ chối" mà chưa ghi lý do, trang báo lỗi ở đầu trang nhưng nhạt tới mức
+   tưởng là hệ thống không xử lý gì. Dấu ⚠ là tín hiệu KHÔNG dựa vào màu. */
+.flash.error{border-color:#D2382A;border-left-color:#D2382A;background:#FFE3DF;color:#D2382A;font-weight:600;}
+.flash.error::before{content:"⚠ ";}
+.flash.success{border-left-color:var(--mint);}
 .field .error{color:var(--coral-dark);font-size:13px;margin:6px 0 0;}
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:24px;}
 .toolbar input,.toolbar select{width:auto;flex:0 1 auto;}

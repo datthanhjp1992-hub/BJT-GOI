@@ -72,7 +72,7 @@ Khác mockup: bỏ ô "Cấp độ BJT" ở khối chi tiết (cấp độ đã 
         </div>
 
         {% if selected %}
-          <div class="card">
+          <div class="card" id="{{ detail_anchor }}">
             <p class="muted" style="margin:0 0 4px;font-size:13px;">
               {{ selected.type_name }} ·
               {{ selected.user.first_name|default:selected.user.get_username }} ·
@@ -145,14 +145,23 @@ Khác mockup: bỏ ô "Cấp độ BJT" ở khối chi tiết (cấp độ đã 
               <div class="divider"></div>
 
               {% if selected.status_code == "001" %}
+                {% comment %}Lỗi "chưa ghi lý do" hiện NGAY Ở ĐÂY chứ không chỉ ở
+                flash đầu trang: nút bấm nằm cuối một trang dài, báo lỗi cách nó
+                cả màn hình thì admin tưởng bấm xong không có gì xảy ra.
+                data-reject-requires cho main.js bắt lỗi ngay trên trình duyệt —
+                tắt JS thì view vẫn chặn y như cũ.{% endcomment %}
                 <div class="field">
                   <label for="id_admin_response">{% label "contribution.inbox.field.admin_response" %}</label>
-                  <textarea id="id_admin_response" name="admin_response" rows="3"></textarea>
+                  <textarea id="id_admin_response" name="admin_response" rows="3"
+                            {% if field_error_key %}aria-invalid="true" autofocus{% endif %}></textarea>
+                  {% if field_error_key %}<p class="error">{% message field_error_key %}</p>{% endif %}
                 </div>
                 <p class="muted" style="font-size:12.5px;margin:0 0 14px;">{% message "contribution.inbox.hint.reject_reason" %}</p>
                 <div style="display:flex;gap:10px;">
                   <button type="submit" name="action" value="approve" class="btn btn-primary" style="flex:1;">✅ {% label "contribution.inbox.button.approve_and_add" %}</button>
-                  <button type="submit" name="action" value="reject" class="btn btn-outline" style="flex:1;">✕ {% label "common.button.reject" %}</button>
+                  <button type="submit" name="action" value="reject" class="btn btn-outline" style="flex:1;"
+                          data-reject-requires="id_admin_response"
+                          data-reject-message="{% message 'contribution.reject.error.reason_required' %}">✕ {% label "common.button.reject" %}</button>
                 </div>
               {% else %}
                 <p style="margin:0 0 8px;">

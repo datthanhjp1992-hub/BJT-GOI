@@ -9,6 +9,8 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 
+from apps.core.properties import message
+
 from apps.gamification import services
 from apps.gamification.models import Contribution, UserPointTransaction
 from apps.vocabulary.models import Topic, Vocabulary
@@ -250,6 +252,45 @@ class InboxTests(ContributionTestCase):
         })
         c.refresh_from_db()
         self.assertEqual(c.status_code, services.STATUS_PENDING)
+
+    def test_reject_without_reason_says_so_right_at_the_field(self):
+        """Lỗi thật 19/09/2026: admin bấm "Từ chối" mà chưa ghi lý do thì tưởng
+        trang không xử lý gì. Nút nằm cuối một trang dài, còn báo lỗi thì chỉ có
+        một dòng nhạt ở đầu trang. Giờ redirect phải mang theo neo #chi-tiet +
+        mã lỗi để khối chi tiết hiện lỗi ngay dưới ô nhập."""
+        c = self._pending()
+        self.client.force_login(self.staff)
+        response = self.client.post(
+            reverse("admin_panel:contribution_action", args=[c.pk]),
+            {"action": "reject", "status": "pending"},
+        )
+        self.assertIn("error=reason_required", response["Location"])
+        self.assertTrue(response["Location"].endswith("#chi-tiet"))
+
+        page = self.client.get(response["Location"].split("#")[0])
+        html = page.content.decode()
+        self.assertIn('id="chi-tiet"', html)
+        self.assertIn('aria-invalid="true"', html)
+        # Lỗi hiện HAI chỗ: flash đầu trang và ngay cạnh ô nhập.
+        text = message("contribution.reject.error.reason_required")
+        self.assertIn(f'<p class="error">{text}</p>', html)
+        self.assertIn(f'<div class="flash error" role="alert">{text}</div>', html)
+
+    def test_junk_error_param_does_not_render_anything(self):
+        """`?error=` là do người dùng gõ được — chỉ mã đã khai báo mới hiện."""
+        self._pending()
+        self.client.force_login(self.staff)
+        html = self.client.get(
+            reverse("admin_panel:contribution_inbox") + "?status=pending&error=linh-tinh"
+        ).content.decode()
+        self.assertNotIn('<p class="error">', html)
+
+    def test_reject_button_carries_the_browser_side_check(self):
+        """main.js bắt ô trống ngay trên trình duyệt; tắt JS thì view vẫn chặn."""
+        self._pending()
+        self.client.force_login(self.staff)
+        html = self.client.get(reverse("admin_panel:contribution_inbox")).content.decode()
+        self.assertIn('data-reject-requires="id_admin_response"', html)
 
     def test_reject_with_reason_awards_nothing(self):
         c = self._pending()

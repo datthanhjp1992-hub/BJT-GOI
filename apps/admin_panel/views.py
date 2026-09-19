@@ -588,6 +588,25 @@ CONTRIBUTION_FILTERS = {
 CONTRIBUTION_DEFAULT_FILTER = "pending"
 
 
+# Neo tới khối chi tiết bên phải. Mọi redirect sau một hành động đều mang neo
+# này: khối hành động nằm cuối một trang dài, quay về đầu trang là mất dấu.
+CONTRIBUTION_DETAIL_ANCHOR = "chi-tiet"
+
+# Mã lỗi hiện NGAY TẠI ô nhập (khác flash ở đầu trang). Chỉ nhận đúng mã này,
+# không phải mọi thứ người dùng gõ vào query string.
+CONTRIBUTION_ERROR_REASON_REQUIRED = "reason_required"
+CONTRIBUTION_ERRORS = {
+    CONTRIBUTION_ERROR_REASON_REQUIRED: "contribution.reject.error.reason_required",
+}
+
+
+def _contribution_back_url(status_key, pk, error=None):
+    url = f"{reverse('admin_panel:contribution_inbox')}?status={status_key}&selected={pk}"
+    if error:
+        url = f"{url}&error={error}"
+    return f"{url}#{CONTRIBUTION_DETAIL_ANCHOR}"
+
+
 @staff_required
 def contribution_inbox_view(request):
     """Danh sách góp ý + chi tiết bản ghi đang chọn."""
@@ -635,6 +654,8 @@ def contribution_inbox_view(request):
         "type_comment": gamification_services.CONTRIBUTION_TYPE_COMMENT,
         "active_admin_nav": "contributions",
         "pending_error_reports": _pending_error_report_count(),
+        "field_error_key": CONTRIBUTION_ERRORS.get(request.GET.get("error")),
+        "detail_anchor": CONTRIBUTION_DETAIL_ANCHOR,
     }
     return render(request, "admin_panel/contribution_inbox.html", context)
 
@@ -655,7 +676,7 @@ def contribution_action_view(request, pk):
     status_key = request.POST.get("status") or CONTRIBUTION_DEFAULT_FILTER
     if status_key not in CONTRIBUTION_FILTERS:
         status_key = CONTRIBUTION_DEFAULT_FILTER
-    back = f"{reverse('admin_panel:contribution_inbox')}?status={status_key}&selected={contribution.pk}"
+    back = _contribution_back_url(status_key, contribution.pk)
 
     if contribution.status_code != gamification_services.STATUS_PENDING:
         django_messages.error(request, message("contribution.action.error.already_reviewed"))
@@ -673,8 +694,14 @@ def contribution_action_view(request, pk):
         try:
             gamification_services.reject_contribution(contribution, request.user, response_text)
         except ValueError as exc:
+            # Lỗi này luôn là "thiếu lý do". Ngoài flash ở đầu trang, quay về
+            # kèm ?error= để khối chi tiết hiện lỗi NGAY DƯỚI ô nhập, và neo
+            # #chi-tiet để trình duyệt nhảy xuống đúng chỗ vừa bấm — nếu không,
+            # admin đang nhìn cuối trang sẽ tưởng bấm xong không có gì xảy ra.
             django_messages.error(request, str(exc))
-            return redirect(back)
+            return redirect(_contribution_back_url(
+                status_key, contribution.pk, error=CONTRIBUTION_ERROR_REASON_REQUIRED,
+            ))
         django_messages.success(request, message("contribution.reject.success"))
         return redirect(back)
 
