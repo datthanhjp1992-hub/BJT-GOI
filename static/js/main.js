@@ -111,10 +111,108 @@ function initDropdowns() {
   document.querySelectorAll("details.dropdown").forEach(initDropdown);
 }
 
+// ---------------------------------------------------------------------------
+// 5. Bảng xem trước khi nhập file (SC07b): tab lọc theo trạng thái + phân trang.
+//
+//    Server đã in SẴN mọi dòng của file vào HTML (tối đa 2000), hàm này chỉ
+//    ẩn/hiện. Làm phía client vì phân trang phía server nghĩa là mỗi lần lật
+//    trang phải phân tích lại cả file — full_clean() từng dòng — chỉ để lấy 30
+//    dòng kế tiếp.
+//
+//    Khung HTML tối thiểu — xem templates/admin_panel/data_import.html:
+//      <div data-preview data-preview-page-size="30" data-preview-default="error">
+//        <button data-preview-filter="all|new|update|skipped|error">
+//        <tbody data-preview-body>
+//          <tr data-preview-row="new">                <- nhóm trạng thái của dòng
+//        <p data-preview-empty style="display:none">   <- không dòng nào khớp
+//        <div data-preview-pager style="display:none">
+//          <button data-preview-prev> <span data-preview-info> <button data-preview-next>
+//
+//    Tắt JavaScript thì mọi dòng vẫn hiện, chỉ mất lọc và phân trang.
+// ---------------------------------------------------------------------------
+function initPreviewTable(root) {
+  var body = root.querySelector("[data-preview-body]");
+  if (!body) { return; }
+
+  var rows = Array.prototype.slice.call(body.querySelectorAll("[data-preview-row]"));
+  var buttons = Array.prototype.slice.call(root.querySelectorAll("[data-preview-filter]"));
+  var pager = root.querySelector("[data-preview-pager]");
+  var info = root.querySelector("[data-preview-info]");
+  var prevButton = root.querySelector("[data-preview-prev]");
+  var nextButton = root.querySelector("[data-preview-next]");
+  var emptyNote = root.querySelector("[data-preview-empty]");
+  var pageSize = parseInt(root.getAttribute("data-preview-page-size"), 10) || 30;
+  var filter = root.getAttribute("data-preview-default") || "all";
+  var page = 1;
+
+  function matches(row) {
+    return filter === "all" || row.getAttribute("data-preview-row") === filter;
+  }
+
+  function render() {
+    var total = 0;
+    rows.forEach(function (row) { if (matches(row)) { total += 1; } });
+
+    var pageCount = Math.max(1, Math.ceil(total / pageSize));
+    if (page > pageCount) { page = pageCount; }
+    var from = (page - 1) * pageSize;
+
+    var seen = 0;
+    rows.forEach(function (row) {
+      if (!matches(row)) {
+        row.style.display = "none";
+        return;
+      }
+      row.style.display = (seen >= from && seen < from + pageSize) ? "" : "none";
+      seen += 1;
+    });
+
+    buttons.forEach(function (button) {
+      var isActive = button.getAttribute("data-preview-filter") === filter;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", isActive ? "true" : "false");
+    });
+    // Ẩn bằng style chứ không bằng thuộc tính hidden: .pagination có
+    // display:flex trong CSS, mà display:flex thắng display:none mặc định của
+    // [hidden] nên thanh phân trang vẫn hiện ra dù đã set hidden.
+    if (emptyNote) { emptyNote.style.display = total === 0 ? "" : "none"; }
+    if (pager) { pager.style.display = pageCount < 2 ? "none" : ""; }
+    if (info) { info.textContent = page + " / " + pageCount; }
+    if (prevButton) { prevButton.disabled = page <= 1; }
+    if (nextButton) { nextButton.disabled = page >= pageCount; }
+  }
+
+  buttons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      filter = button.getAttribute("data-preview-filter");
+      page = 1;   // đổi tab mà giữ nguyên số trang thì dễ rơi vào trang trống
+      render();
+    });
+  });
+  if (prevButton) {
+    prevButton.addEventListener("click", function () {
+      if (page > 1) { page -= 1; render(); }
+    });
+  }
+  if (nextButton) {
+    nextButton.addEventListener("click", function () {
+      page += 1;
+      render();
+    });
+  }
+
+  render();
+}
+
+function initPreviewTables() {
+  document.querySelectorAll("[data-preview]").forEach(initPreviewTable);
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   initFlashcards();
   initRequiredBeforeSubmit();
   initDropdowns();
+  initPreviewTables();
 });
 
 // ---------------------------------------------------------------------------

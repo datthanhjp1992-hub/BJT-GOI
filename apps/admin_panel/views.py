@@ -42,7 +42,7 @@ from apps.core.constants import (
     ERROR_STATUS_FIXED,
     ERROR_STATUS_PENDING,
 )
-from apps.core.properties import message
+from apps.core.properties import label, message
 from apps.error_reports import services as error_report_services
 from apps.error_reports.forms import ErrorReportActionForm
 from apps.error_reports.models import ErrorReport
@@ -128,6 +128,45 @@ CONTENT_TYPES = {
     "csv": "text/csv; charset=utf-8",
     "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 }
+
+# Số dòng mỗi trang của bảng xem trước. Phân trang chạy bằng JavaScript ngay
+# trên trang (xem initPreviewTable trong static/js/main.js): cả 2000 dòng đã
+# nằm sẵn trong HTML nên lật trang và đổi tab lọc không gọi lại server. Phân
+# trang phía server sẽ phải chạy lại analyze() — tức full_clean() cho từng dòng
+# của CẢ file — mỗi lần bấm sang trang sau.
+PREVIEW_PAGE_SIZE = 30
+
+# Gộp 5 trạng thái của dòng thành 4 nhóm đúng bằng 4 ô thống kê phía trên bảng:
+# "bỏ qua vì trùng" và "chưa có trong hệ thống" cùng là bỏ qua đối với người
+# nhập, tách ra thành hai tab chỉ làm rối.
+PREVIEW_GROUPS = {
+    dataio.STATUS_NEW: "new",
+    dataio.STATUS_UPDATE: "update",
+    dataio.STATUS_DUPLICATE: "skipped",
+    dataio.STATUS_MISSING: "skipped",
+    dataio.STATUS_ERROR: "error",
+}
+
+
+def _preview_rows(report):
+    """Dòng của report -> dict phẳng cho template VÀ cho file kết quả tải về.
+
+    Một hàm duy nhất cho cả hai chỗ để bảng trên màn hình và file tải về không
+    bao giờ lệch nhau.
+    """
+    rows = []
+    for row in report.rows:
+        rows.append(
+            {
+                "number": row.number,
+                "status": row.status,
+                "group": PREVIEW_GROUPS.get(row.status, "error"),
+                "status_label": label(f"admin.data.status.{row.status}"),
+                "display": row.display,
+                "detail": "; ".join(str(error) for error in row.errors),
+            }
+        )
+    return rows
 
 
 def _import_tmp_dir():
@@ -354,18 +393,22 @@ def data_import_view(request, model_label):
     if report.fatal:
         django_messages.error(request, message(report.fatal))
 
-    token = ""
-    if report.can_apply:
-        _purge_old_uploads()
-        suffix = Path(upload.name).suffix.lower()
-        token = f"{uuid.uuid4().hex}{suffix}"
-        (_import_tmp_dir() / token).write_bytes(raw)
-        request.session[IMPORT_SESSION_KEY] = {
-            "token": token,
-            "model": dataset.label,
-            "mode": mode,
-            "filename": upload.name,
-        }
+    # File tạm được giữ lại CẢ KHI có dòng lỗi, vì nút "tải kết quả kiểm tra"
+    # phân tích lại đúng file này (report có instance model chưa lưu nên không
+    # nhét vào session được). Cờ can_apply đi kèm để bước xác nhận từ chối ngay
+    # một phiên chỉ dùng để xuất báo cáo, thay vì báo nhầm "dữ liệu đã đổi".
+    _purge_old_uploads()
+    suffix = Path(upload.name).suffix.lower()
+    token = f"{uuid.uuid4().hex}{suffix}"
+    (_import_tmp_dir() / token).write_bytes(raw)
+    request.session[IMPORT_SESSION_KEY] = {
+        "token": token,
+        "model": dataset.label,
+        "mode": mode,
+        "filename": upload.name,
+        "can_apply": report.can_apply,
+        "error_count": report.error_count,
+    }
 
     return render(
         request,
@@ -376,15 +419,63 @@ def data_import_view(request, model_label):
             mode,
             {
                 "report": report,
-                "token": token,
+                "token": token if report.can_apply else "",
                 "source_filename": upload.name,
-                "problem_rows": report.problem_rows[:50],
-                "problem_overflow": max(0, report.error_count - 50),
-                "preview_rows": report.rows[:50],
-                "preview_overflow": max(0, len(report.rows) - 50),
+                "preview_rows": _preview_rows(report),
+                "preview_page_size": PREVIEW_PAGE_SIZE,
+                "skipped_count": report.skipped_count,
             },
         ),
     )
+
+
+@staff_required
+def data_import_preview_export_view(request, model_label, fmt):
+    """Tải KẾT QUẢ KIỂM TRA (dòng / trạng thái / khoá / chi tiết lỗi) ra file.
+
+    Không phải xuất dữ liệu trong DB — cái đó là data_export_view. File này để
+    gửi cho người điền file đi sửa, nhất là khi danh sách lỗi dài hơn màn hình.
+
+    Phân tích LẠI file tạm thay vì giữ report trong session: report mang theo
+    instance model chưa lưu, vừa nặng vừa không serialize được.
+    """
+    dataset = _resolve_dataset(model_label)
+    if not _available_modes(request, dataset):
+        raise PermissionDenied(message("common.error.permission_denied"))
+    if fmt not in CONTENT_TYPES:
+        raise Http404
+
+    pending = request.session.get(IMPORT_SESSION_KEY) or {}
+    token = pending.get("token") or ""
+    path = (_import_tmp_dir() / token) if token else None
+    if pending.get("model") != dataset.label or path is None or not path.exists():
+        django_messages.error(request, message("admin.data.error.session_expired"))
+        return redirect("admin_panel:data_import", model_label=dataset.label)
+
+    mode = dataio.normalize_mode(pending.get("mode"))
+    try:
+        headers, rows = dataio.read_table(path.read_bytes(), pending.get("filename") or token)
+        report = dataset.analyze(headers, rows, mode=mode)
+    except dataio.DataFileError as exc:
+        django_messages.error(request, message(exc.message_key, **exc.params))
+        return redirect("admin_panel:data_import", model_label=dataset.label)
+
+    out_headers = [
+        label("admin.data.preview.row"),
+        label("admin.data.preview.status"),
+        label("admin.data.preview.key"),
+        label("admin.data.preview.detail"),
+    ]
+    out_rows = [
+        [row["number"], row["status_label"], row["display"], row["detail"]]
+        for row in _preview_rows(report)
+    ]
+    if fmt == "csv":
+        payload = dataio.write_csv(out_headers, out_rows)
+    else:
+        payload = dataio.write_xlsx(out_headers, out_rows, sheet_title="Ket_qua_kiem_tra")
+    stamp = timezone.localtime(timezone.now()).strftime("%Y%m%d_%H%M")
+    return _file_response(payload, f"ketqua_{dataset.label}_{stamp}.{fmt}", fmt)
 
 
 @staff_required
@@ -403,6 +494,14 @@ def data_import_confirm_view(request, model_label):
     token = request.POST.get("token", "")
     if not token or pending.get("token") != token or pending.get("model") != dataset.label:
         django_messages.error(request, message("admin.data.error.session_expired"))
+        return redirect("admin_panel:data_import", model_label=dataset.label)
+
+    if not pending.get("can_apply"):
+        # Phiên này chỉ còn dùng để tải kết quả kiểm tra. Nói thẳng lý do thay
+        # vì để bước phân tích lại phía dưới báo "dữ liệu đã thay đổi".
+        error_count = pending.get("error_count") or 0
+        key = "admin.data.error.has_errors" if error_count else "admin.data.error.nothing_to_import"
+        django_messages.error(request, message(key, count=error_count))
         return redirect("admin_panel:data_import", model_label=dataset.label)
 
     mode = dataio.normalize_mode(pending.get("mode"))

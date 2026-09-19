@@ -6,6 +6,10 @@ Hai bước trên cùng một template: chưa có `report` thì chỉ hiện for
 có `report` thì hiện kết quả kiểm tra, và chỉ khi report.can_apply mới hiện nút
 xác nhận ghi.
 
+Bảng xem trước hiện ĐỦ mọi dòng của file trong HTML; lọc theo trạng thái và
+phân trang 30 dòng/trang chạy bằng JavaScript (initPreviewTable trong
+static/js/main.js). Có lỗi thì tab "Lỗi" được mở sẵn.
+
 Ô chọn chế độ là radio chứ không phải select: ba chế độ có hậu quả khác hẳn
 nhau nên phải đọc được cả ba cùng lúc, không giấu trong danh sách xổ xuống.
 Chế độ thật sự dùng để ghi lấy từ SESSION ở bước xác nhận, ô này chỉ là đầu
@@ -116,59 +120,81 @@ vào của bước xem trước.{% endcomment %}
         <p class="muted" style="font-size:13px;">{% message "admin.data.hint.ignored_columns" columns=report.ignored_columns|join:", " %}</p>
       {% endif %}
 
-      {% if problem_rows %}
-        <div class="eyebrow">{% label "admin.data.section.errors" %}</div>
-        <div class="card" style="padding:0;margin-bottom:20px;">
-          <table>
-            <tr>
-              <th>{% label "admin.data.preview.row" %}</th>
-              <th>{% label "admin.data.preview.detail" %}</th>
-            </tr>
-            {% for row in problem_rows %}
-              <tr>
-                <td>{{ row.number }}</td>
-                <td>{% for error in row.errors %}{{ error }}{% if not forloop.last %}; {% endif %}{% endfor %}</td>
-              </tr>
-            {% endfor %}
-          </table>
-        </div>
-        {% if problem_overflow %}
-          <p class="muted" style="font-size:13px;">{% message "admin.data.hint.more_rows" count=problem_overflow %}</p>
-        {% endif %}
-      {% endif %}
+      {% if preview_rows %}
+        {% comment %}Một bảng duy nhất chứa TẤT CẢ các dòng, mỗi <tr> mang
+        data-preview-row là nhóm trạng thái. Tab lọc và phân trang do
+        initPreviewTable() trong static/js/main.js làm, ngay trên trang: cả
+        file (tối đa 2000 dòng) đã nằm sẵn trong HTML nên đổi tab hay lật
+        trang không gọi lại server — phân trang phía server sẽ phải chạy lại
+        full_clean() cho cả file mỗi lần bấm sang trang.
 
-      <div class="card" style="padding:0;margin-bottom:20px;">
-        <table>
-          <tr>
-            <th>{% label "admin.data.preview.row" %}</th>
-            <th>{% label "admin.data.preview.status" %}</th>
-            <th>{% label "admin.data.preview.key" %}</th>
-            <th>{% label "admin.data.preview.detail" %}</th>
-          </tr>
-          {% for row in preview_rows %}
-            <tr>
-              <td>{{ row.number }}</td>
-              <td>
-                {% if row.status == "new" %}
-                  <span class="tag">{% label "admin.data.status.new" %}</span>
-                {% elif row.status == "update" %}
-                  <span class="tag">{% label "admin.data.status.update" %}</span>
-                {% elif row.status == "duplicate" %}
-                  <span class="tag level">{% label "admin.data.status.duplicate" %}</span>
-                {% elif row.status == "missing" %}
-                  <span class="tag level">{% label "admin.data.status.missing" %}</span>
-                {% else %}
-                  <span class="tag level">{% label "admin.data.status.error" %}</span>
-                {% endif %}
-              </td>
-              <td>{{ row.display|default:"—" }}</td>
-              <td class="muted">{% for error in row.errors %}{{ error }}{% if not forloop.last %}; {% endif %}{% endfor %}</td>
-            </tr>
-          {% endfor %}
-        </table>
-      </div>
-      {% if preview_overflow %}
-        <p class="muted" style="font-size:13px;">{% message "admin.data.hint.more_rows" count=preview_overflow %}</p>
+        Tắt JavaScript thì mọi dòng vẫn hiện (chỉ mất lọc + phân trang), kèm
+        <noscript> chỉ sang nút tải kết quả để mở bằng Excel.{% endcomment %}
+        <div class="eyebrow">{% label "admin.data.section.rows" %}</div>
+
+        <div data-preview
+             data-preview-page-size="{{ preview_page_size }}"
+             data-preview-default="{% if report.error_count %}error{% else %}all{% endif %}">
+
+          {% if report.error_count %}
+            <p class="muted" style="margin:0 0 10px;font-size:13px;">{% message "admin.data.hint.preview_has_errors" count=report.error_count %}</p>
+          {% endif %}
+
+          <div class="toolbar" style="margin-bottom:12px;">
+            <button type="button" class="tag tag-filter" data-preview-filter="all">{% label "admin.data.filter.all" %} ({{ preview_rows|length }})</button>
+            <button type="button" class="tag tag-filter" data-preview-filter="new">{% label "admin.data.status.new" %} ({{ report.new_count }})</button>
+            <button type="button" class="tag tag-filter" data-preview-filter="update">{% label "admin.data.status.update" %} ({{ report.update_count }})</button>
+            <button type="button" class="tag tag-filter" data-preview-filter="skipped">{% label "admin.data.status.duplicate" %} ({{ skipped_count }})</button>
+            <button type="button" class="tag tag-filter" data-preview-filter="error">{% label "admin.data.status.error" %} ({{ report.error_count }})</button>
+            <span class="grow"></span>
+            <a class="action-link" href="{% url 'admin_panel:data_import_preview_export' model_label 'xlsx' %}">{% label "admin.data.button.export_preview_xlsx" %}</a>
+            <a class="action-link" href="{% url 'admin_panel:data_import_preview_export' model_label 'csv' %}">{% label "admin.data.button.export_preview_csv" %}</a>
+          </div>
+
+          <noscript>
+            <p class="muted" style="font-size:13px;">{% message "admin.data.hint.preview_noscript" count=preview_rows|length %}</p>
+          </noscript>
+
+          <div class="card" style="padding:0;">
+            <table>
+              <thead>
+                <tr>
+                  <th>{% label "admin.data.preview.row" %}</th>
+                  <th>{% label "admin.data.preview.status" %}</th>
+                  <th>{% label "admin.data.preview.key" %}</th>
+                  <th>{% label "admin.data.preview.detail" %}</th>
+                </tr>
+              </thead>
+              <tbody data-preview-body>
+                {% for row in preview_rows %}
+                  <tr data-preview-row="{{ row.group }}">
+                    <td>{{ row.number }}</td>
+                    <td>
+                      {% if row.status == "new" or row.status == "update" %}
+                        <span class="tag">{{ row.status_label }}</span>
+                      {% else %}
+                        <span class="tag level">{{ row.status_label }}</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ row.display|default:"—" }}</td>
+                    <td class="muted">{{ row.detail }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <p class="muted" style="margin:0;padding:14px;font-size:13px;display:none;" data-preview-empty>{% label "admin.data.preview.empty" %}</p>
+          </div>
+
+          <div class="pagination" data-preview-pager style="display:none;margin-bottom:20px;">
+            <button type="button" class="tag tag-filter" data-preview-prev>{% label "common.pagination.prev" %}</button>
+            <span data-preview-info></span>
+            <button type="button" class="tag tag-filter" data-preview-next>{% label "common.pagination.next" %}</button>
+          </div>
+        </div>
+
+        {% if preview_rows|length > preview_page_size %}
+          <p class="muted" style="margin:0 0 20px;font-size:13px;">{% message "admin.data.hint.preview_paging" page_size=preview_page_size %}</p>
+        {% endif %}
       {% endif %}
 
       {% if report.can_apply %}

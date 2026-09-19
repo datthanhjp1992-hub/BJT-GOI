@@ -14,6 +14,11 @@ urlpatterns = [
     # Đặt trước route nhập để "mau.csv" / "xuat.xlsx" không bị nuốt mất.
     path("data/<str:model_label>/mau.<str:fmt>", views.data_template_view, name="data_template"),
     path("data/<str:model_label>/xuat.<str:fmt>", views.data_export_view, name="data_export"),
+    path(
+        "data/<str:model_label>/ket-qua.<str:fmt>",
+        views.data_import_preview_export_view,
+        name="data_import_preview_export",
+    ),
     path("data/<str:model_label>/xac-nhan/", views.data_import_confirm_view, name="data_import_confirm"),
     path("data/<str:model_label>/", views.data_import_view, name="data_import"),
 ]

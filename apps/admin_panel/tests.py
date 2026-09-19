@@ -491,6 +491,81 @@ class DataImportViewTests(AdminPanelTestCase):
             self.assertNotIn(marker, report_html, msg=f'màn nhập còn sót "{marker}"')
 
 
+class DataPreviewTableTests(AdminPanelTestCase):
+    """Bảng xem trước: đủ dòng trong HTML, tab lỗi mở sẵn, tải kết quả kiểm tra.
+
+    Phân trang/lọc chạy bằng JavaScript nên test chỉ khoá phần server phải
+    cung cấp: ĐỦ dòng (không cắt 50 như bản cũ), thuộc tính data-preview-row
+    của từng dòng, tab mặc định, và file kết quả tải về.
+    """
+
+    HEADER = ["name", "name_ja", "slug", "icon_emoji", "description"]
+
+    def setUp(self):
+        super().setUp()
+        self.admin = User.objects.create_superuser(
+            username="sieuquantri", password="MatKhauRatManh123", email="a@b.c",
+        )
+        self.client.force_login(self.admin)
+        self.url = reverse("admin_panel:data_import", args=["vocabulary.topic"])
+
+    def _preview(self, *rows):
+        return self.client.post(
+            self.url, {"data_file": csv_upload("t.csv", self.HEADER, *rows), "mode": dataio.MODE_INSERT}
+        )
+
+    def test_preview_keeps_every_row_in_the_page_not_only_the_first_fifty(self):
+        rows = [[f"Chủ đề {i}", "", f"chu-de-{i}", "", ""] for i in range(60)]
+        html = self._preview(*rows).content.decode()
+        self.assertEqual(html.count('data-preview-row="new"'), 60)
+        self.assertIn('data-preview-page-size="30"', html)
+
+    def test_preview_opens_the_error_tab_when_a_row_is_broken(self):
+        html = self._preview(
+            ["Sân bay", "空港", "san-bay", "", ""],
+            ["", "", "thieu-ten", "", ""],
+        ).content.decode()
+        self.assertIn('data-preview-default="error"', html)
+        self.assertIn('data-preview-row="error"', html)
+
+    def test_preview_result_downloads_as_csv(self):
+        self._preview(["Sân bay", "空港", "san-bay", "", ""])
+        response = self.client.get(
+            reverse("admin_panel:data_import_preview_export", args=["vocabulary.topic", "csv"])
+        )
+        self.assertEqual(response.status_code, 200)
+        body = response.content.decode("utf-8-sig")
+        self.assertIn(label("admin.data.preview.status"), body)
+        self.assertIn(label("admin.data.status.new"), body)
+        self.assertIn("san-bay", body)
+
+    def test_preview_result_downloads_the_error_rows_too(self):
+        """File kết quả phải tải được CẢ KHI có lỗi — đó mới là lúc cần nó."""
+        self._preview(["", "", "thieu-ten", "", ""])
+        response = self.client.get(
+            reverse("admin_panel:data_import_preview_export", args=["vocabulary.topic", "csv"])
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(label("admin.data.status.error"), response.content.decode("utf-8-sig"))
+
+    def test_preview_result_download_without_a_preview_goes_back_to_the_import_screen(self):
+        response = self.client.get(
+            reverse("admin_panel:data_import_preview_export", args=["vocabulary.topic", "csv"])
+        )
+        self.assertRedirects(response, self.url)
+
+    def test_confirm_is_refused_when_the_preview_had_errors(self):
+        """File tạm nay được giữ lại cả khi có lỗi (để tải kết quả), nên bước
+        xác nhận phải tự từ chối thay vì ghi bừa."""
+        self._preview(["Sân bay", "空港", "san-bay", "", ""], ["", "", "thieu-ten", "", ""])
+        token = self.client.session["admin_panel_import"]["token"]
+        self.client.post(
+            reverse("admin_panel:data_import_confirm", args=["vocabulary.topic"]),
+            {"token": token},
+        )
+        self.assertFalse(Topic.objects.filter(slug="san-bay").exists())
+
+
 class DataSidebarTests(AdminPanelTestCase):
     def test_overview_links_to_the_data_screen(self):
         self.client.force_login(self.staff)
