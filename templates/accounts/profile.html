@@ -13,10 +13,9 @@ Khác mockup ở hai chỗ, đều có lý do (giống ghi chú ở settings.htm
      "Điểm đóng góp" (User.total_points), số liệu thật duy nhất còn hợp lý ở
      vị trí đó và nối liền với nút "Điểm & danh hiệu" (xem TODO bên dưới).
 
-Nút "🏅 Điểm & danh hiệu" trong mockup trỏ sang SC13 (Thành tích) — **màn đó
-CHƯA được dựng** (chưa có URL `learning:achievements`/tương đương), nên nút
-này bị bỏ hẳn thay vì trỏ vào một `{% url %}` không tồn tại (sẽ làm nổ
-NoReverseMatch, sập cả trang). Thêm lại nút này khi SC13 có URL thật.
+Nút "🏅 Điểm & danh hiệu" trỏ sang SC13 (Thành tích). Từ 21/09/2026 màn đó đã
+được dựng tại `gamification:achievements` nên nút quay lại đúng vị trí mockup;
+trước đó nó bị bỏ hẳn vì URL chưa tồn tại (sẽ nổ NoReverseMatch, sập cả trang).
 {% endcomment %}
 
 {% block title %}{% label "accounts.profile.title" %} | {% label "common.brand.name" %}{% endblock %}
@@ -74,4 +73,5 @@ NoReverseMatch, sập cả trang). Thêm lại nút này khi SC13 có URL thật
   </div>
 
   <a class="btn btn-outline" style="margin-top:22px;" href="{% url 'accounts:settings' %}">{% label "accounts.profile.button.edit_settings" %}</a>
+  <a class="btn btn-primary" style="margin-top:22px;margin-left:10px;" href="{% url 'gamification:achievements' %}">🏅 {% label "accounts.profile.button.view_badges" %}</a>
 {% endblock %}

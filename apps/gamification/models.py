@@ -127,6 +127,13 @@ class UserPointTransaction(AuditableModel):
     def __str__(self):
         return f"{self.user} {self.points:+d} ({self.action_code})"
 
+    @property
+    def action_name(self):
+        """Tên hành động để hiện ở bảng "Lịch sử điểm" (SC13) — tra MasterCode
+        như Contribution.type_name, không lưu tên trong bảng log."""
+        from apps.core.mastercode import get_code_name
+        return get_code_name(CODE_TYPE_POINT_ACTION, self.action_code, default=self.action_code)
+
 
 # --------------------------------------------------------------------------
 # Danh hiệu — nhiều nhóm, mỗi nhóm 1 code_type riêng trong MasterCode

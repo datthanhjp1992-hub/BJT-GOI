@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}
+SC13_ThanhTich — port từ htmlTemplate/SC13_ThanhTich_A.html.
+
+Khác mockup ở ba chỗ, đều có lý do:
+
+1. MOCKUP CHỈ VẼ MỘT NHÓM DANH HIỆU ("5 bậc danh hiệu"), bản thật lặp qua mọi
+   BadgeCategory đang bật (Đóng góp / Học tập / Kiểm tra). Mô hình đã là nhiều
+   nhóm từ đầu (docs/SPEC_GOP_Y_THANH_TICH.md mục 5) và mỗi nhóm cần nút ghim
+   riêng, nên gom về một nhóm là mất tính năng.
+
+2. ĐƠN VỊ KHÔNG PHẢI LÚC NÀO CŨNG LÀ "ĐIỂM". Mockup viết cứng "còn 282 điểm";
+   nhóm Học tập đo số TỪ, nhóm Kiểm tra đo số BÀI. Đơn vị lấy từ
+   services.metric_unit(category) -> label "badge.metric.unit.*".
+
+3. Ô thống kê "#8 Hạng trên bảng xếp hạng" chỉ có nghĩa khi user đã có điểm;
+   chưa đóng góp thì get_contribution_rank() trả None và ô hiện "—" thay vì
+   "#None".
+
+Nút ghim/bỏ ghim là FORM POST, không phải link: chúng đổi dữ liệu. Cùng lý do
+với nút Đăng xuất ở topbar.
+{% endcomment %}
+
+{% block title %}{% label "badge.page.title" %} | {% label "common.brand.name" %}{% endblock %}
+{% block wrap_attrs %} style="max-width:900px;"{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">{% label "badge.page.eyebrow" %}</div>
+  <h1 class="serif" style="font-size:28px;margin:0 0 26px;">{% label "badge.page.title" %}</h1>
+
+  {# ---------- Khối lớn: danh hiệu đang khoe + tiến độ lên bậc kế ---------- #}
+  {% if highlight %}
+    <div class="card stamp" style="display:flex;gap:26px;align-items:center;flex-wrap:wrap;margin-bottom:22px;">
+      <div style="width:76px;height:76px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;flex:none;">
+        {{ highlight.earned_tier_icon|default:"🎖" }}
+      </div>
+      <div style="flex:1 1 320px;">
+        <p class="muted" style="margin:0 0 2px;font-size:13px;">
+          {% label "badge.page.label.current_badge" %} · {{ highlight.category.name }}
+        </p>
+        <h2 class="serif" style="margin:0 0 10px;font-size:24px;">
+          {% if highlight.earned_tier %}{{ highlight.earned_tier_name }}{% else %}{% label "badge.page.label.no_badge_yet" %}{% endif %}
+        </h2>
+        <div class="progressbar" style="margin-bottom:6px;"><span style="width:{{ highlight.percent }}%"></span></div>
+        <p class="muted" style="margin:0;font-size:13px;">
+          {% if highlight.next_tier %}
+            {% message "badge.progress.value" value=highlight.value target=highlight.next_tier_min unit=highlight.unit %}
+            — {% message "badge.progress.remaining" remaining=highlight.remaining unit=highlight.unit %}
+            <strong style="color:var(--ink);">{{ highlight.next_tier_name }}</strong>
+          {% else %}
+            {% message "badge.progress.max_tier" %}
+          {% endif %}
+        </p>
+      </div>
+      <div style="text-align:right;">
+        <div class="stat" style="border:none;padding:0;background:transparent;">
+          <div class="num">{{ total_points }}</div>
+          <div class="label">{% label "badge.page.label.total_points" %}</div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# ---------- Ba ô thống kê nhỏ ---------- #}
+  <div class="grid cols-3" style="margin-bottom:22px;">
+    <div class="stat">
+      <div class="num">{{ contribution_stats.approved_total }}</div>
+      <div class="label">{% label "badge.page.stat.approved_contributions" %}</div>
+    </div>
+    <div class="stat">
+      <div class="num">{{ contribution_stats.approved_comments }}</div>
+      <div class="label">{% label "badge.page.stat.approved_comments" %}</div>
+    </div>
+    <div class="stat">
+      <div class="num">{% if rank %}#{{ rank }}{% else %}—{% endif %}</div>
+      <div class="label">{% label "badge.page.stat.rank" %}</div>
+    </div>
+  </div>
+
+  {# ---------- Từng nhóm danh hiệu ---------- #}
+  {% for item in progress_list %}
+    <div class="card" style="margin-bottom:22px;">
+      <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:16px;">
+        <h3 class="serif" style="margin:0;">
+          {% if item.category.icon_emoji %}{{ item.category.icon_emoji }} {% endif %}{{ item.category.name }}
+        </h3>
+        <span class="muted" style="font-size:13px;">
+          {% message "badge.progress.current_value" value=item.value unit=item.unit %}
+        </span>
+        {% if item.is_pinned %}<span class="tag level">📌 {% label "badge.page.tag.pinned" %}</span>{% endif %}
+
+        <span style="margin-left:auto;">
+          {% comment %}Chưa đạt bậc nào thì không dựng nút ghim: services.pin_badge
+          sẽ từ chối, đưa nút ra chỉ để người dùng bấm rồi nhận lỗi.{% endcomment %}
+          {% if item.is_pinned %}
+            <form method="post" action="{% url 'gamification:unpin_badge' item.category.code_type %}" style="margin:0;">
+              {% csrf_token %}
+              <button type="submit" class="tag tag-filter">{% label "badge.page.button.unpin" %}</button>
+            </form>
+          {% elif item.earned_tier %}
+            <form method="post" action="{% url 'gamification:pin_badge' item.category.code_type %}" style="margin:0;">
+              {% csrf_token %}
+              <button type="submit" class="tag tag-filter">📌 {% label "badge.page.button.pin" %}</button>
+            </form>
+          {% endif %}
+        </span>
+      </div>
+
+      <div class="grid cols-3" style="gap:12px;">
+        {% for row in item.tiers %}
+          {% comment %}Ba trạng thái của một bậc: đang đứng (viền đậm + nền nhạt),
+          đã qua (bình thường), chưa tới (mờ đi).{% endcomment %}
+          <div style="padding:14px;border-radius:4px;text-align:center;{% if row.is_current %}border:2px solid var(--accent);background:var(--accent-soft);{% else %}border:1px solid var(--border);{% endif %}{% if not row.is_earned %}opacity:.55;{% endif %}">
+            <div style="font-size:24px;">{{ row.icon|default:"🎖" }}</div>
+            <div style="font-size:13.5px;font-weight:{% if row.is_current %}700{% else %}600{% endif %};margin-top:4px;">{{ row.name }}</div>
+            <div class="muted" style="font-size:12px;">
+              {% message "badge.progress.tier_threshold" min_value=row.min_value unit=item.unit %}{% if row.is_current %} · {% label "badge.page.tag.you_are_here" %}{% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% empty %}
+    <div class="card" style="margin-bottom:22px;">
+      <p class="muted" style="margin:0;">{% label "common.empty.no_data" %}</p>
+    </div>
+  {% endfor %}
+
+  <p class="muted" style="margin:0 0 22px;font-size:13px;">
+    {% message "badge.pin.hint.limit" max_pinned=max_pinned pinned_count=pinned_count %}
+  </p>
+
+  {# ---------- Lịch sử điểm + bảng xếp hạng ---------- #}
+  <div class="grid cols-2" style="gap:20px;align-items:start;">
+    <div class="card">
+      <h3 class="serif" style="margin:0 0 14px;">{% label "badge.page.section.point_history" %}</h3>
+      {% if point_history %}
+        <table>
+          <tr>
+            <th>{% label "badge.page.table.action" %}</th>
+            <th>{% label "badge.page.table.points" %}</th>
+            <th>{% label "badge.page.table.date" %}</th>
+          </tr>
+          {% for tx in point_history %}
+            <tr>
+              <td>{{ tx.note|default:tx.action_name }}</td>
+              <td style="color:var(--teal);font-weight:600;">{% if tx.points > 0 %}+{% endif %}{{ tx.points }}</td>
+              <td class="muted">{{ tx.created_at|date:"d/m" }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p class="muted" style="margin:0;">{% message "badge.history.empty" %}</p>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h3 class="serif" style="margin:0 0 14px;">🏆 {% label "badge.page.section.leaderboard" %}</h3>
+      {% if leaderboard %}
+        <table>
+          <tr>
+            <th>{% label "badge.page.table.rank" %}</th>
+            <th>{% label "badge.page.table.user" %}</th>
+            <th>{% label "badge.page.table.badge" %}</th>
+            <th>{% label "badge.page.table.points" %}</th>
+          </tr>
+          {% for row in leaderboard %}
+            {% comment %}Dòng của chính mình khi đứng ngoài top: chèn một dòng "…"
+            phía trên để thấy rõ là có khoảng đứt quãng, đúng như mockup.{% endcomment %}
+            {% if row.outside_top %}
+              <tr><td class="muted">…</td><td class="muted">…</td><td class="muted">…</td><td class="muted">…</td></tr>
+            {% endif %}
+            <tr{% if row.is_me %} style="background:var(--accent-soft);"{% endif %}>
+              <td>{{ row.rank }}</td>
+              <td>
+                {% if row.is_me %}<strong>{{ row.display_name }} {% label "badge.page.table.you" %}</strong>
+                {% else %}{{ row.display_name }}{% endif %}
+              </td>
+              <td>{% if row.badge_icon %}{{ row.badge_icon }} {% endif %}{{ row.badge_name }}</td>
+              <td>{% if row.is_me %}<strong>{{ row.points }}</strong>{% else %}{{ row.points }}{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p class="muted" style="margin:0;">{% label "common.empty.no_data" %}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <p style="text-align:center;margin-top:26px;">
+    <a class="btn btn-primary" href="{% url 'gamification:form' %}">✏️ {% label "badge.page.button.contribute_more" %}</a>
+  </p>
+{% endblock %}

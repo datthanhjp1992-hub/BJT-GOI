@@ -24,6 +24,11 @@ Khác mockup 2 chỗ, đều có lý do:
        href="?type={{ type_key }}{% if locked_vocabulary %}&vocabulary={{ locked_vocabulary.pk }}{% endif %}">✏️ {% label "contribution.form.tab.new" %}</a>
     <a class="tag tag-filter{% if tab == 'mine' %} is-active{% endif %}"
        href="?tab=mine">📋 {% label "contribution.form.tab.mine" %} ({{ mine_count }})</a>
+    {% comment %}Lối vào SC13 từ đây, KHÔNG phải một tab thứ ba: trang Thành
+    tích là màn riêng (có URL riêng, bookmark được), không phải một chế độ hiển
+    thị khác của form góp ý.{% endcomment %}
+    <a class="tag tag-filter" style="margin-left:auto;"
+       href="{% url 'gamification:achievements' %}">🏅 {% label "badge.page.title" %}</a>
   </div>
 
   {% if tab == "new" %}

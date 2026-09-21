@@ -25,19 +25,25 @@ POINT_RULE_SEED = {
     "005": 2,   # Bình luận được duyệt
 }
 
-# code_type -> (tên category, metric, [(code, min_value), ...])
+# code_type -> (tên category, metric, icon nhóm, [(code, min_value, icon bậc), ...])
+#
+# Mỗi BẬC có icon riêng (mockup SC13: 🌱 → 🌿 → 🌟 → 🏆 → 👑, nhìn là biết mình
+# đang ở đâu). Bỏ trống thì SC13 lấy icon của cả nhóm cho mọi bậc, 5 ô giống
+# hệt nhau.
 BADGE_CATEGORY_SEED = {
     CODE_TYPE_BADGE_CONTRIBUTION: (
         "Đóng góp cộng đồng", "CONTRIBUTION_POINTS", "🌟",
-        [("001", 0), ("002", 50), ("003", 200), ("004", 500), ("005", 1000)],
+        [("001", 0, "🌱"), ("002", 50, "🌿"), ("003", 200, "🌟"),
+         ("004", 500, "🏆"), ("005", 1000, "👑")],
     ),
     CODE_TYPE_BADGE_LEARNING: (
         "Học tập", "WORDS_LEARNED", "📚",
-        [("001", 50), ("002", 200), ("003", 500), ("004", 1000), ("005", 2000)],
+        [("001", 50, "📗"), ("002", 200, "📘"), ("003", 500, "📙"),
+         ("004", 1000, "📚"), ("005", 2000, "🎓")],
     ),
     CODE_TYPE_BADGE_QUIZ: (
         "Kiểm tra", "QUIZ_HIGH_SCORE_COUNT", "🎯",
-        [("001", 1), ("002", 10), ("003", 30), ("004", 50)],
+        [("001", 1, "🎲"), ("002", 10, "🎯"), ("003", 30, "🏹"), ("004", 50, "🥇")],
     ),
 }
 
@@ -59,9 +65,10 @@ class Command(BaseCommand):
                     code_type=code_type,
                     defaults={"name": name, "metric": metric, "icon_emoji": icon, "sort_order": i},
                 )
-                for code, min_value in tiers:
+                for code, min_value, tier_icon in tiers:
                     BadgeTier.objects.update_or_create(
-                        category=category, code=code, defaults={"min_value": min_value}
+                        category=category, code=code,
+                        defaults={"min_value": min_value, "icon_emoji": tier_icon},
                     )
 
         self.stdout.write(self.style.SUCCESS(

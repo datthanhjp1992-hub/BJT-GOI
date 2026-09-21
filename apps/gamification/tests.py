@@ -1,5 +1,5 @@
 """
-Test cho SC11 (Góp ý từ vựng) và SC12 (Hòm thư góp ý).
+Test cho SC11 (Góp ý từ vựng), SC12 (Hòm thư góp ý) và SC13 (Điểm & Thành tích).
 
 Chạy: python manage.py test apps.gamification
 """
@@ -8,6 +8,7 @@ from django.core.cache import cache
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.html import escape
 
 from apps.core.properties import message
 
@@ -336,3 +337,216 @@ class BadgeTests(ContributionTestCase):
 
         self.assertEqual(value, 60)
         self.assertNotEqual(after.pk, before.pk if before else None)
+
+
+class AchievementsPageTests(ContributionTestCase):
+    """SC13 — trang Điểm & Thành tích, và luồng ghim/bỏ ghim danh hiệu."""
+
+    def setUp(self):
+        super().setUp()
+        self.url = reverse("gamification:achievements")
+
+    def _category(self, code_type):
+        from apps.gamification.models import BadgeCategory
+        return BadgeCategory.objects.get(code_type=code_type)
+
+    def test_login_required(self):
+        self.assertRedirects(
+            self.client.get(self.url), reverse("accounts:login") + "?next=" + self.url
+        )
+
+    def test_page_shows_every_active_category_and_its_tiers(self):
+        """Mockup chỉ vẽ 1 nhóm; bản thật phải vẽ đủ 3 nhóm đã seed."""
+        from apps.gamification.models import BadgeCategory
+
+        self.client.force_login(self.learner)
+        html = self.client.get(self.url).content.decode()
+
+        for category in BadgeCategory.objects.filter(is_active=True):
+            self.assertIn(category.name, html)
+        # Tên bậc tra từ MasterCode, không phải code "001"
+        self.assertIn("Tân Binh", html)
+        self.assertIn("Huyền Thoại", html)
+
+    def test_progress_percent_is_measured_between_tiers(self):
+        """60 điểm: đang ở bậc 2 (>=50), bậc kế là 200 -> (60-50)/(200-50) = 7%."""
+        from apps.core.constants import CODE_TYPE_BADGE_CONTRIBUTION
+
+        services.award_points(self.learner, "002", 60, note="test")
+        self.learner.refresh_from_db()
+        data = services.get_category_progress(self.learner, self._category(CODE_TYPE_BADGE_CONTRIBUTION))
+
+        self.assertEqual(data["value"], 60)
+        self.assertEqual(data["earned_tier_name"], "Tích Cực")
+        self.assertEqual(data["next_tier_name"], "Chuyên Gia")
+        self.assertEqual(data["remaining"], 140)
+        self.assertEqual(data["percent"], 7)
+
+    def test_top_tier_has_no_next_tier_and_full_bar(self):
+        from apps.core.constants import CODE_TYPE_BADGE_CONTRIBUTION
+
+        services.award_points(self.learner, "002", 5000, note="test")
+        self.learner.refresh_from_db()
+        data = services.get_category_progress(self.learner, self._category(CODE_TYPE_BADGE_CONTRIBUTION))
+
+        self.assertIsNone(data["next_tier"])
+        self.assertEqual(data["percent"], 100)
+        self.assertEqual(data["earned_tier_name"], "Huyền Thoại")
+
+    def test_each_tier_has_its_own_icon_after_seeding(self):
+        """Mockup SC13 có 5 icon khác nhau (🌱🌿🌟🏆👑); nếu BadgeTier.icon_emoji
+        trống thì mọi bậc đều mượn icon của nhóm, trông như lỗi."""
+        from apps.core.constants import CODE_TYPE_BADGE_CONTRIBUTION
+
+        icons = [t.icon_emoji for t in self._category(CODE_TYPE_BADGE_CONTRIBUTION).tiers.all()]
+        self.assertTrue(all(icons))
+        self.assertEqual(len(set(icons)), len(icons))
+
+    def test_unit_follows_the_metric_of_each_category(self):
+        """Nhóm Học tập đo số TỪ, không phải "điểm" — xem badge.metric.unit.*."""
+        from apps.core.constants import CODE_TYPE_BADGE_CONTRIBUTION, CODE_TYPE_BADGE_LEARNING
+
+        self.assertEqual(services.metric_unit(self._category(CODE_TYPE_BADGE_CONTRIBUTION)), "điểm")
+        self.assertEqual(services.metric_unit(self._category(CODE_TYPE_BADGE_LEARNING)), "từ")
+
+    # ---------------------------------------------------------------- xếp hạng
+
+    def test_rank_is_none_without_points_and_ties_share_a_rank(self):
+        self.assertIsNone(services.get_contribution_rank(self.learner))
+
+        top = User.objects.create_user(username="dandau", password="MatKhauRatManh123")
+        services.award_points(top, "002", 500, note="test")
+        services.award_points(self.learner, "002", 100, note="test")
+        tie = User.objects.create_user(username="dongdiem", password="MatKhauRatManh123")
+        services.award_points(tie, "002", 100, note="test")
+
+        self.learner.refresh_from_db()
+        tie.refresh_from_db()
+        self.assertEqual(services.get_contribution_rank(self.learner), 2)
+        self.assertEqual(services.get_contribution_rank(tie), 2)  # đồng điểm = đồng hạng
+
+    def test_leaderboard_appends_my_row_when_i_am_outside_the_top(self):
+        for i in range(3):
+            other = User.objects.create_user(username=f"top{i}", password="MatKhauRatManh123")
+            services.award_points(other, "002", 100 + i, note="test")
+        services.award_points(self.learner, "002", 5, note="test")
+        self.learner.refresh_from_db()
+
+        rows = services.get_leaderboard(limit=2, current_user=self.learner)
+        self.assertEqual(len(rows), 3)                 # 2 dòng top + dòng của mình
+        self.assertTrue(rows[-1]["is_me"])
+        self.assertTrue(rows[-1]["outside_top"])
+        self.assertEqual(rows[-1]["rank"], 4)
+
+    def test_leaderboard_does_not_duplicate_me_when_i_am_in_the_top(self):
+        services.award_points(self.learner, "002", 100, note="test")
+        self.learner.refresh_from_db()
+        rows = services.get_leaderboard(current_user=self.learner)
+        self.assertEqual(sum(1 for r in rows if r["is_me"]), 1)
+        self.assertFalse(rows[0]["outside_top"])
+
+    def test_user_without_points_is_not_on_the_leaderboard(self):
+        self.assertEqual(services.get_leaderboard(current_user=self.learner), [])
+
+    # -------------------------------------------------------------- ghim / bỏ
+
+    def test_pin_and_unpin_round_trip(self):
+        from apps.core.constants import CODE_TYPE_BADGE_CONTRIBUTION
+        from apps.gamification.models import UserPinnedBadge
+
+        self.client.force_login(self.learner)
+        response = self.client.post(
+            reverse("gamification:pin_badge", args=[CODE_TYPE_BADGE_CONTRIBUTION])
+        )
+        self.assertRedirects(response, self.url)
+        self.assertTrue(UserPinnedBadge.objects.filter(user=self.learner).exists())
+
+        self.client.post(reverse("gamification:unpin_badge", args=[CODE_TYPE_BADGE_CONTRIBUTION]))
+        self.assertFalse(UserPinnedBadge.objects.filter(user=self.learner).exists())
+
+    def test_pin_is_refused_when_no_tier_earned(self):
+        """Nhóm Học tập cần >= 50 từ đã thuộc; người mới chưa đạt bậc nào.
+
+        escape() vì thông báo có dấu nháy kép quanh tên nhóm, ra HTML thành
+        &quot; — so chuỗi thô sẽ trượt dù trang hiện đúng."""
+        from apps.core.constants import CODE_TYPE_BADGE_LEARNING
+        from apps.gamification.models import UserPinnedBadge
+
+        category = self._category(CODE_TYPE_BADGE_LEARNING)
+        self.client.force_login(self.learner)
+        response = self.client.post(
+            reverse("gamification:pin_badge", args=[CODE_TYPE_BADGE_LEARNING]), follow=True
+        )
+        self.assertFalse(UserPinnedBadge.objects.filter(user=self.learner).exists())
+        self.assertContains(
+            response,
+            escape(message("badge.pin.error.not_earned", category_name=category.name)),
+        )
+
+    def test_pin_is_refused_past_the_limit(self):
+        """Hạn mức là 3, mà dữ liệu seed chỉ cho người mới đạt bậc ở ĐÚNG MỘT
+        nhóm (Đóng góp, ngưỡng 0) — nên phải dựng thêm 3 nhóm ngưỡng 0 mới
+        chạm được trần."""
+        from apps.core.constants import CODE_TYPE_BADGE_CONTRIBUTION
+        from apps.gamification.models import BadgeCategory, BadgeTier, UserPinnedBadge
+
+        code_types = [CODE_TYPE_BADGE_CONTRIBUTION]
+        for i in range(3):
+            extra = BadgeCategory.objects.create(
+                code_type=f"9{i}", name=f"Nhóm thử {i}",
+                metric=BadgeCategory.METRIC_CONTRIBUTION_POINTS,
+                icon_emoji="🧪", sort_order=90 + i,
+            )
+            BadgeTier.objects.create(category=extra, code="001", min_value=0, icon_emoji="🧪")
+            code_types.append(extra.code_type)
+
+        self.client.force_login(self.learner)
+        last = None
+        for code_type in code_types:
+            last = self.client.post(
+                reverse("gamification:pin_badge", args=[code_type]), follow=True
+            )
+
+        self.assertEqual(
+            UserPinnedBadge.objects.filter(user=self.learner).count(), services.MAX_PINNED_BADGES
+        )
+        self.assertContains(
+            last,
+            escape(message("badge.pin.error.limit_reached", max_pinned=services.MAX_PINNED_BADGES)),
+        )
+
+    def test_pin_url_rejects_get(self):
+        from apps.core.constants import CODE_TYPE_BADGE_CONTRIBUTION
+
+        self.client.force_login(self.learner)
+        response = self.client.get(
+            reverse("gamification:pin_badge", args=[CODE_TYPE_BADGE_CONTRIBUTION])
+        )
+        self.assertEqual(response.status_code, 405)
+
+    def test_unknown_category_is_404(self):
+        self.client.force_login(self.learner)
+        response = self.client.post(reverse("gamification:pin_badge", args=["khong-co"]))
+        self.assertEqual(response.status_code, 404)
+
+    # ------------------------------------------------------------ lịch sử điểm
+
+    def test_point_history_shows_the_note_of_each_transaction(self):
+        services.award_points(self.learner, "002", 10, note="Góp ý #1 được duyệt")
+        self.client.force_login(self.learner)
+        html = self.client.get(self.url).content.decode()
+        self.assertIn("Góp ý #1 được duyệt", html)
+        self.assertIn("+10", html)
+
+    def test_empty_state_when_nothing_happened_yet(self):
+        self.client.force_login(self.learner)
+        response = self.client.get(self.url)
+        self.assertContains(response, message("badge.history.empty"))
+
+    # ------------------------------------------------------------- lối vào SC13
+
+    def test_profile_links_to_the_page(self):
+        """Nút "Điểm & danh hiệu" ở SC09 từng bị gỡ vì URL chưa tồn tại."""
+        self.client.force_login(self.learner)
+        html = self.client.get(reverse("accounts:profile")).content.decode()
+        self.assertIn(self.url, html)
