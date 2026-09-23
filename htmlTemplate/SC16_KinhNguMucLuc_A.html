@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kính ngữ | 毎日BJT</title>
+<link rel="stylesheet" href="style_A.css">
+<!--
+  SC16_KinhNguMucLuc — MỤC LỤC KÍNH NGỮ (bản đề xuất 22/09/2026, chờ Dat duyệt)
+  Tham chiếu: claude/keigo-thiet-ke.md mục 7.
+
+  Bốn quyết định của màn này, đọc trước khi sửa:
+
+  1. Ô TRA CỨU ĐỨNG ĐẦU TRANG, TRƯỚC 7 CHƯƠNG.
+     Cùng lý do SC15 đặt hàng đợi lên trước tuỳ chọn: người vào khu kính ngữ
+     phần lớn không muốn "đọc chương 3", họ muốn biết 「言う」 nói kính ngữ thế
+     nào. Bảng tra (SC18) là thứ dùng nhiều nhất và cũng là thứ có dữ liệu
+     sớm nhất (bước 6 của kế hoạch). Nên nó là hành động chính, không phải
+     một thẻ nằm thứ năm trong lưới.
+
+  2. THẺ CHƯƠNG HIỆN SỐ LƯỢNG NỘI DUNG, KHÔNG HIỆN "% HOÀN THÀNH".
+     Giai đoạn 1 chốt KHÔNG làm SRS cho kính ngữ (mục 7 điểm 6), nên không
+     có bảng nào biết người học đã đọc chương nào. Vẽ một thanh tiến độ ở
+     đây là bịa số. Con số thật mà ta có là số mẫu ngữ pháp / số ví dụ /
+     số dòng — đó là thứ đang hiện. Tiến độ thật xuất hiện ở khối BÀI TẬP
+     bên dưới, khi giai đoạn 2 có UserExerciseAttempt.
+
+  3. CHƯƠNG 5 KHÔNG DẪN VÀO TRANG BÀI HỌC, NÓ DẪN THẲNG SANG SC18.
+     KeigoLesson "bang-chia-dong-tu-bat-quy-tac" không có KeigoPattern hay
+     KeigoPhrasePair nào trỏ tới — trang đó do KeigoVerb/KeigoForm dựng nên.
+     Nếu để nó mở /keigo/bang-chia-dong-tu-bat-quy-tac/ thì sẽ ra một trang
+     trống. Thẻ này mang nhãn riêng "Bảng tra" để thấy rõ nó khác 6 thẻ kia.
+
+  4. KHỐI BÀI TẬP HIỆN NGAY TỪ GIAI ĐOẠN 1, Ở TRẠNG THÁI "SẮP CÓ".
+     Giấu hẳn thì lúc bật lên người học không biết có; hiện như một mục bình
+     thường rồi bấm vào báo 404 thì tệ hơn. Khối này không phải <a>.
+
+  CSS: file này dùng style_A.css (bản mockup gốc, đã đóng băng) + một khối
+  <style> ở dưới cho 4 class mới. Nếu duyệt, 4 class đó chép vào cả ba
+  theme_a/b/c.css dưới tiêu đề "SC16–SC19 — Kính ngữ", bo góc đổi theo
+  từng theme (A 3px / B 0 / C bo tròn).
+-->
+<style>
+/* =============================================================================
+   KHỐI 1 — KHÔNG PHẢI CSS MỚI. Chép tạm từ static/css/theme_a.css, vì
+   htmlTemplate/style_A.css (bản mockup gốc, đóng băng 13/09) chưa có
+   .action-link. KHÔNG chép khối này vào theme_*.css, đã có sẵn ở đó.
+   ========================================================================== */
+.action-link{color:var(--ink-soft);border-bottom:1px solid transparent;
+  transition:color .16s ease,border-color .16s ease;}
+.action-link:hover{color:var(--accent);border-bottom-color:var(--accent);}
+.action-link.is-primary{color:var(--accent);}
+button.btn,button.pill{font:inherit;cursor:pointer;}
+
+/* =============================================================================
+   KHỐI 1b — LỖI CŨ, KHÔNG PHẢI CỦA MÀN NÀY. Cả ba theme_*.css đều không có
+   media query cho .topbar (flex, height cố định 72px, không xuống dòng) →
+   trên màn 390px thanh trên cùng rộng 695px, CẢ TRANG cuộn ngang, mọi màn
+   của app đều dính. Thêm mục "Kính ngữ" vào navmeta làm nó rộng thêm nữa.
+   → Đề xuất thêm khối này vào cả 3 theme_*.css, DUYỆT RIÊNG vì nó sửa chung.
+   ========================================================================== */
+@media (max-width:720px){
+  .topbar .wrap{height:auto;flex-wrap:wrap;gap:10px 14px;padding-top:12px;padding-bottom:12px;}
+  .brand{font-size:19px;}
+  nav.mainnav{order:3;flex:1 1 100%;gap:16px;font-size:14px;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  nav.mainnav a{white-space:nowrap;}
+  .navmeta{gap:10px;font-size:13.5px;}
+  .navmeta .pill{padding:7px 13px;}
+}
+
+/* =============================================================================
+   KHỐI 2 — 4 class mới, đề xuất thêm vào cả 3 theme_*.css dưới tiêu đề
+   "SC16–SC19 — Kính ngữ". Bo góc đổi theo theme (A 4px / B 0 / C bo tròn).
+   ========================================================================== */
+
+/* Lưới thẻ chương: tự xuống dòng theo bề ngang, không cố định 3 cột như
+   .grid.cols-3 — tiêu đề chương dài ngắn rất khác nhau (「THỂ LỊCH SỰ」 vs
+   「MỘT SỐ QUY TẮC CHIA ĐỘNG TỪ CÓ QUY TẮC」). */
+.lesson-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px;}
+
+/* Một thẻ chương. Là thẻ <a> nên cả khối bấm được, không chỉ mỗi tiêu đề. */
+.lesson-card{display:flex;flex-direction:column;gap:10px;padding:22px 24px;
+  background:var(--surface);border:1px solid var(--border);border-radius:4px;
+  color:var(--ink);transition:border-color .18s ease,box-shadow .18s ease,transform .12s ease;}
+.lesson-card:hover{border-color:var(--accent);transform:translateY(-2px);
+  box-shadow:0 4px 14px rgba(181,67,46,.14);}
+.lesson-card:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+.lesson-card.is-soon{opacity:.62;cursor:default;}
+.lesson-card.is-soon:hover{border-color:var(--border);transform:none;box-shadow:none;}
+.lesson-card .jp{font-family:var(--serif);font-size:26px;line-height:1.2;}
+.lesson-card .vi{font-size:15px;font-weight:600;letter-spacing:.01em;}
+.lesson-card .meta{margin-top:auto;padding-top:6px;font-size:13px;color:var(--ink-soft);}
+
+/* Số thứ tự chương — con dấu tròn nhỏ, cùng ngôn ngữ với .brand .mark. */
+.lesson-num{width:26px;height:26px;border-radius:50%;background:var(--accent-soft);
+  color:var(--accent-dark);font-family:var(--serif);font-size:13px;
+  display:inline-flex;align-items:center;justify-content:center;flex:none;}
+
+/* Hàng số liệu nhỏ trong hero — khác .stat (thẻ có viền, số 34px) vì ở đây
+   4 con số nằm chung trong một card chứ không phải 4 thẻ rời. */
+.figrow{display:grid;grid-template-columns:repeat(4,auto);gap:20px 30px;justify-content:start;}
+.figrow div{min-width:78px;}
+.figrow .num{font-family:var(--serif);font-size:28px;color:var(--accent-dark);line-height:1.1;}
+.figrow .label{font-size:13px;color:var(--ink-soft);}
+
+@media (max-width:720px){
+  .keigo-hero{flex-direction:column;align-items:stretch;}
+  .figrow{grid-template-columns:repeat(2,1fr);}
+  .grid.cols-3,.grid.cols-2{grid-template-columns:1fr;}
+}
+</style>
+</head><body>
+
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="mark">毎</span>毎日BJT</div>
+  <nav class="mainnav">
+    <a href="SC03_TrangChu_A.html">Trang chủ</a>
+    <a href="SC05_DanhSachTuVung_A.html">Từ vựng</a>
+    <a href="SC15_OnTap_A.html">Ôn tập</a>
+    <a href="SC10_LuyenVietPdf_A.html">Luyện viết</a>
+    <a href="SC11_GopYTuVung_A.html">Góp ý</a>
+  </nav>
+  <!-- ĐỀ XUẤT MENU (Dat đã chọn phương án navmeta).
+       Mục "敬語 Kính ngữ" đặt Ở ĐẦU navmeta, trước tên người dùng, và là mục
+       DUY NHẤT trong navmeta dẫn tới nội dung học — mấy mục còn lại (tên, ⚙️,
+       Đăng xuất) đều là tiện ích tài khoản. Vì vậy nó được một đường kẻ dọc
+       ngăn cách, để không bị đọc nhầm là một nút tài khoản.
+
+       Bản Django, sửa templates/partials/topbar.html — đặt ngay sau <div class="navmeta">:
+
+         <a href="{% url 'keigo:index' %}" class="navmeta-feature{% if active_nav == 'keigo' %} active{% endif %}">
+           <span class="jp">敬語</span>{% label "common.nav.keigo" %}
+         </a>
+
+       và thêm vào label.properties:  common.nav.keigo = Kính ngữ
+  -->
+  <div class="navmeta">
+    <a href="SC16_KinhNguMucLuc_A.html" class="navmeta-feature active"
+       style="display:inline-flex;align-items:center;gap:7px;color:var(--accent);
+              border-bottom:2px solid var(--accent);padding:5px 2px;">
+      <span style="font-family:var(--serif);font-size:15px;">敬語</span>Kính ngữ
+    </a>
+    <span style="color:var(--border);">|</span>
+    <a href="SC09_ThongTinCaNhan_A.html">Dat</a>
+    <a class="pill ghost" href="SC08_CaiDat_A.html">⚙️</a>
+    <a class="pill ghost" href="SC01_DangNhap_A.html">Đăng xuất</a>
+  </div>
+</div></header>
+
+<main>
+  <div class="wrap">
+
+    <div class="eyebrow">敬語 · Kính ngữ</div>
+    <h1 class="serif" style="font-size:32px;margin:0 0 8px;">Nói sao cho đúng vai</h1>
+    <p class="muted" style="margin:0 0 26px;max-width:620px;">
+      Tôn kính ngữ, khiêm nhường ngữ và thể lịch sự — ba cách nói cùng một việc,
+      khác nhau ở chỗ ai là người làm. Tra nhanh một động từ, hoặc đọc theo chương.
+    </p>
+
+    <!-- ========== HERO: tra cứu nhanh + 4 số liệu ========== -->
+    <div class="card stamp" style="margin-bottom:38px;">
+      <div class="keigo-hero" style="display:flex;flex-wrap:wrap;gap:30px;align-items:flex-end;">
+
+        <div style="flex:1 1 340px;min-width:260px;">
+          <label for="q">Tra nhanh một động từ</label>
+          <!-- Form GET thật, không JavaScript. Django: action="{% url 'keigo:lookup' %}" -->
+          <form method="get" action="SC18_TraCuuDongTu_A.html" style="display:flex;gap:10px;">
+            <input id="q" name="q" type="search" placeholder="言う, 行く, nói, đi…" style="flex:1 1 auto;">
+            <button type="submit" class="btn btn-primary" style="flex:none;">Tra</button>
+          </form>
+          <p class="muted" style="margin:10px 0 0;font-size:13px;">
+            Gõ được cả 漢字, kana lẫn nghĩa tiếng Việt.
+          </p>
+        </div>
+
+        <div class="figrow" style="flex:1 1 300px;">
+          <div><div class="num">47</div><div class="label">động từ</div></div>
+          <div><div class="num">175</div><div class="label">dạng kính ngữ</div></div>
+          <div><div class="num">39</div><div class="label">mẫu ngữ pháp</div></div>
+          <div><div class="num">262</div><div class="label">câu bài tập</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 7 CHƯƠNG ========== -->
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:16px;">
+      <h2 class="serif" style="font-size:22px;margin:0;">Bảy chương</h2>
+      <span class="muted" style="font-size:13.5px;">Đọc theo thứ tự, hoặc nhảy thẳng vào chương cần.</span>
+    </div>
+
+    <div class="lesson-grid" style="margin-bottom:38px;">
+
+      <a class="lesson-card" href="SC17_BaiHocKinhNgu_A.html">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="lesson-num">1</span>
+          <span class="tag level" style="margin:0;">尊敬語</span>
+        </div>
+        <div class="jp">尊敬語</div>
+        <div class="vi">Tôn kính ngữ</div>
+        <p class="muted" style="margin:0;font-size:13.5px;">
+          Nâng người đối diện lên. Dùng khi nói về hành động của khách, của cấp trên.
+        </p>
+        <div class="meta">10 mẫu ngữ pháp · 26 ví dụ · 14 dạng bất quy tắc</div>
+      </a>
+
+      <a class="lesson-card" href="SC17_BaiHocKinhNgu_A.html">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="lesson-num">2</span>
+          <span class="tag level" style="margin:0;">謙譲語</span>
+        </div>
+        <div class="jp">謙譲語</div>
+        <div class="vi">Khiêm nhường ngữ</div>
+        <p class="muted" style="margin:0;font-size:13.5px;">
+          Hạ mình xuống. Nói về việc chính mình làm, gồm cả nhóm I và nhóm II.
+        </p>
+        <div class="meta">13 mẫu ngữ pháp · 35 ví dụ · 18 dạng bất quy tắc</div>
+      </a>
+
+      <a class="lesson-card" href="SC17_BaiHocKinhNgu_A.html">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="lesson-num">3</span>
+          <span class="tag level" style="margin:0;">丁寧語</span>
+        </div>
+        <div class="jp">丁寧語</div>
+        <div class="vi">Thể lịch sự</div>
+        <p class="muted" style="margin:0;font-size:13.5px;">
+          〜です・〜ます・〜ございます và quy tắc biến âm tính từ 安い → 安うございます.
+        </p>
+        <div class="meta">1 mẫu · 11 cặp biến âm · 12 quy tắc</div>
+      </a>
+
+      <a class="lesson-card" href="SC17_BaiHocKinhNgu_A.html">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="lesson-num">4</span>
+          <span class="tag" style="margin:0;">授受</span>
+        </div>
+        <div class="jp">授受動詞</div>
+        <div class="vi">Động từ cho – nhận</div>
+        <p class="muted" style="margin:0;font-size:13.5px;">
+          あげる・くれる・もらう và ba sơ đồ hướng cho – nhận, vẽ lại bằng SVG.
+        </p>
+        <div class="meta">6 mẫu · 3 sơ đồ</div>
+      </a>
+
+      <!-- Chương 5: KHÔNG mở trang bài học, xem ghi chú 3 ở đầu file. -->
+      <a class="lesson-card" href="SC18_TraCuuDongTu_A.html"
+         style="border-color:var(--accent);">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="lesson-num" style="background:var(--accent);color:#fff;">5</span>
+          <span class="tag level" style="margin:0;">Bảng tra</span>
+        </div>
+        <div class="jp">不規則動詞</div>
+        <div class="vi">Bảng chia động từ bất quy tắc</div>
+        <p class="muted" style="margin:0;font-size:13.5px;">
+          34 động từ hay dùng nhất, bốn cột 基本形 / 尊敬語 / 謙譲語 / 丁寧語.
+        </p>
+        <div class="meta" style="color:var(--accent);">Mở bảng tra →</div>
+      </a>
+
+      <a class="lesson-card" href="SC17_BaiHocKinhNgu_A.html">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="lesson-num">6</span>
+          <span class="tag" style="margin:0;">規則</span>
+        </div>
+        <div class="jp">規則動詞の作り方</div>
+        <div class="vi">Quy tắc chia động từ có quy tắc</div>
+        <p class="muted" style="margin:0;font-size:13.5px;">
+          Những động từ không có dạng riêng thì ghép theo công thức
+          お／ご + Vます + になる.
+        </p>
+        <div class="meta">Quy tắc chia + ví dụ áp dụng</div>
+      </a>
+
+      <a class="lesson-card" href="SC19_LoiThuongGap_A.html">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="lesson-num">7</span>
+          <span class="tag" style="margin:0;">参考</span>
+        </div>
+        <div class="jp">参考</div>
+        <div class="vi">Tham khảo — lỗi thường gặp</div>
+        <p class="muted" style="margin:0;font-size:13.5px;">
+          二重敬語, kính ngữ kiểu làm thêm, từ đệm クッション言葉, cặp
+          thường → lịch sự.
+        </p>
+        <div class="meta">8 bảng · 87 cặp từ</div>
+      </a>
+
+    </div>
+
+    <!-- ========== BÀI TẬP — giai đoạn 2 ========== -->
+    <div class="card" style="margin-bottom:30px;border-style:dashed;">
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;">
+        <div style="flex:1 1 380px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+            <h2 class="serif" style="font-size:20px;margin:0;">Bài tập</h2>
+            <span class="tag" style="margin:0;">Sắp có</span>
+          </div>
+          <p class="muted" style="margin:0;font-size:14px;">
+            17 bộ đề, 262 câu: điền vào ô trống, sắp xếp câu, và điền trong đoạn văn.
+            Làm xong xem lại đúng câu sai, mỗi câu dẫn về mẫu ngữ pháp liên quan.
+          </p>
+        </div>
+        <div style="flex:0 0 auto;">
+          <span class="btn btn-outline" style="opacity:.5;cursor:not-allowed;">Chưa mở</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="muted" style="margin:0;font-size:13px;">
+        Phần bài tập cần 6 bảng của giai đoạn 2 và dữ liệu đang được bóc.
+        Khi mở, khối này thành danh sách bộ đề kèm điểm cao nhất và lần làm gần nhất.
+      </p>
+    </div>
+
+    <p class="muted" style="font-size:12.5px;margin:0;">
+      Nguồn nội dung: Thaolejp – Khóa BJT Kính ngữ (04/2025).
+      <!-- source_note có sẵn trên mọi bảng nội dung, xem keigo-thiet-ke.md mục 0.
+           Ghi nguồn KHÔNG thay được việc xin phép tác giả — việc đó còn treo. -->
+    </p>
+
+  </div>
+</main>
+
+<footer class="note">毎日BJT — Học từ vựng tiếng Nhật thương mại</footer>
+</body></html>

@@ -26,6 +26,9 @@ from apps.core.constants import (
     CODE_TYPE_RECALL_DIRECTION,
     CODE_TYPE_ERROR_TYPE,
     CODE_TYPE_ERROR_STATUS,
+    CODE_TYPE_KEIGO_STYLE,
+    CODE_TYPE_KEIGO_PAIR_TYPE,
+    CODE_TYPE_QUESTION_TYPE,
 )
 
 # (code, code_name, mother_code, description, sort_order)
@@ -38,6 +41,7 @@ SEED_DATA = {
     CODE_TYPE_SESSION_TYPE: [
         ("flashcard", "Flashcard", None, "Phiên học thẻ từ", 1),
         ("quiz", "Kiểm tra", None, "Phiên làm bài kiểm tra", 2),
+        ("keigo", "Bài tập kính ngữ", None, "Phiên làm bài tập kính ngữ (app keigo)", 3),
     ],
     # SC10 — phiếu PDF. Mã dạng chữ để truy vấn tay còn đọc được, giống
     # session_type. Thêm một loại phiếu mới ở đây KHÔNG đủ: phải viết thêm hàm
@@ -111,6 +115,36 @@ SEED_DATA = {
         ("002", "Tay Vững", None, "Đạt 10 bài kiểm tra >= 80%", 2),
         ("003", "Thiện Xạ", None, "Đạt 30 bài kiểm tra >= 90%", 3),
         ("004", "Bất Bại", None, "Đạt 50 bài kiểm tra >= 95%", 4),
+    ],
+    # --- Kính ngữ (apps.keigo) — xem claude/keigo-thiet-ke.md ---
+    # `kenjo` (không phân I/II) là mã dùng cho cột 謙譲語 của bảng chia động từ
+    # trang 13-16, nơi sách KHÔNG tách I/II. Chỉ dòng nào có mặt trong hai bảng
+    # nhỏ trang 7 mới được mang kenjo1 / kenjo2.
+    CODE_TYPE_KEIGO_STYLE: [
+        ("sonkei", "Tôn kính ngữ 尊敬語", None, "Nâng người nghe / người được nói tới lên", 1),
+        ("kenjo", "Khiêm nhường ngữ 謙譲語", None, "Không phân I/II — sách không tách", 2),
+        ("kenjo1", "Khiêm nhường ngữ I 謙譲語I", None, "Hạ mình trước ĐỐI TƯỢNG của hành vi", 3),
+        ("kenjo2", "Khiêm nhường ngữ II 謙譲語II", None, "Hạ mình trước NGƯỜI NGHE", 4),
+        ("teinei", "Thể lịch sự 丁寧語", None, "です・ます・ございます", 5),
+        # Sách này không dạy 美化語, nhưng seed sẵn vì nó là loại thứ 5 trong
+        # phân loại chính thức của 文化審議会 — thiếu thì sau phải migration dữ liệu.
+        ("bikago", "Mỹ hoá ngữ 美化語", None, "お茶, お菓子 — sách này không dạy", 6),
+        ("juju", "Động từ cho/nhận 授受動詞", None, "〜てあげる / 〜てもらう / 〜てくださる", 7),
+    ],
+    CODE_TYPE_KEIGO_PAIR_TYPE: [
+        ("wrong", "Kính ngữ dùng sai", None, "Bảng よくある間違った敬語の使用例 (tr.18)", 1),
+        ("double", "Kính ngữ hai lần", None, "二重敬語 — dùng quá mức (tr.19)", 2),
+        ("baito", "Kính ngữ giới trẻ", None, "バイト敬語 (tr.19)", 3),
+        ("noun_biz", "Danh từ kinh doanh", None, "プライベート → ビジネス (tr.18)", 4),
+        ("daily", "Lời nói thường ngày", None, "日常言語 → 丁寧な言葉遣い (tr.21)", 5),
+        ("cushion", "Từ đệm", None, "クッション言葉 — vế casual để trống (tr.20)", 6),
+        ("teinei", "Quy tắc 丁寧語", None, "です→でございます ... (tr.17-18)", 7),
+        ("adj_gozai", "Biến âm tính từ", None, "安い→安うございます (tr.11)", 8),
+    ],
+    CODE_TYPE_QUESTION_TYPE: [
+        ("mcq_blank", "Điền vào chỗ trống", None, "Chọn 1 trong 2-4 phương án", 1),
+        ("ordering", "Sắp xếp câu (★)", None, "Đáp án sách dạng 3(1234)", 2),
+        ("cloze", "Điền vào đoạn văn", None, "Đọc đoạn văn rồi điền (11)-(15)", 3),
     ],
 }
 

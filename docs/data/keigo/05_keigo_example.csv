@@ -1,0 +1,102 @@
+pattern__code,sentence_jp,sentence_vi,speaker,is_correct,pair_group,display_order
+sonkei-o-go-da,問題解決のためのはっきりした考えをお持ちですか。,,,true,,1
+sonkei-o-go-da,お客様がついさっきまでお待ちだったですよ。,,,true,,2
+sonkei-o-go-da,学長は、本日の会議にはご欠席です。,,,true,,3
+sonkei-o-go-da,何かお探しでしたら、お手伝いましょうか。,,,true,,4
+sonkei-o-go-nasaru,課長がご説明なさいます。,,,true,,1
+sonkei-o-go-nasaru,どうぞご心配なさらないでください。,,,true,,2
+sonkei-o-go-ni-nareru,お客様は飛行機の操縦室へはお入りになれません。,,,true,,1
+sonkei-de-irassharu,こちらは山本先生の奥様でいらっしゃいます。,,,true,,1
+sonkei-de-irassharu,食べ物は何がお好きでいらっしゃいますか。,,,true,,2
+sonkei-te-irassharu,先生は、最近どんなご研究をしていらっしゃいますか。,,,true,,1
+sonkei-te-irassharu,先生はいま本を読んでおいでになります。,,,true,,2
+sonkei-agaru,どうぞお召し上がりください。,,,true,,1
+sonkei-agaru,どうぞおあがりください。,,,true,,2
+sonkei-agaru,おじゃまします。,,A,true,1,3
+sonkei-agaru,どうぞお上がり下さい。,,B,true,1,4
+sonkei-agaru,お荷物のお届けにあがりましたが不在の為持ち帰りました。ご確認ください。,,,true,,5
+sonkei-o-de-irassharu,いつまでもお若くていらっしゃいますね。 若さの秘訣は何でしょうか。,,,true,,1
+sonkei-o-de-irassharu,先生はお顔が広くていらっしゃる学者で、 学会で大活躍なさっています。,,,true,,2
+sonkei-mieru-omieninaru,お客さんが見える前に身なりを整えなさい。,,,true,,1
+sonkei-mieru-omieninaru,取引先の野口様がお見えになりました。,,,true,,2
+sonkei-mieru-omieninaru,水野先生がお見えです。,,,true,,3
+sonkei-mesu,お気に召しましたら、どうぞお持ち帰りください。,,,true,,1
+sonkei-mesu,社長のお母様はお風邪を召されて、ここ１週間ほど休んでいらっしゃるそうです。,,,true,,2
+sonkei-ki,貴社ますますご隆盛のこととお慶び申し上げます。,,,true,,1
+sonkei-ki,貴会からの 6 月 12 日付けの手紙が郵送されてまいりました。,,,true,,2
+sonkei-ki,大学の後輩である貴君に、私はできる限りの力添えをするつもりです。,,,true,,3
+kenjo-o-go-itadaku,本日はこのような素晴らしいパーティーにお招きいただき、ありがとうございます。,,,true,,1
+kenjo-o-go-moushiageru,引き続き本サービスをご利用くださいますようお願い申し上げます。,,,true,,1
+kenjo-o-go-dekiru,ご紹介できる仕事,,,true,,1
+kenjo-zonjiru-zonjiageru,先生はお変わりなくお過ごしのことと存じます。,,,true,,1
+kenjo-zonjiru-zonjiageru,お名前はよく存じ上げております。,,,true,,2
+kenjo-teoru-teorazu,田中はただいま席を外しておりますが、戻って来ましたら、折り返しさせましょうか？,,,true,,1
+kenjo-teoru-teorazu,まだまだ寒さが残っております。お風邪など引きませんようお気をつけください。,,,true,,2
+kenjo-teoru-teorazu,挨拶する予定の市長がまだ到着しておらず、開会式が遅れそうだ。,,,true,,3
+kenjo-o-go-negau,詳細は各地の販売代理店までお問い合わせ願います。,,,true,,1
+kenjo-o-go-negau,個人情報が正しいかどうかご確認願います。,,,true,,2
+kenjo-o-go-negau,誠に申し訳ございませんが、 もう一度ご検討願えませんか。,,,true,,3
+kenjo-uketamawaru,24時間いつでもご注文をうけたまわっております。,,,true,,1
+kenjo-uketamawaru,お問い合わせを確かに承りました。 早急に折り返しご連絡いたしますので、しばらくお待ちください。,,,true,,2
+kenjo-uketamawaru,中村先生のご意見を承りたいのですが、 明日午後2時に研究室に伺ってもよろしいでしょうか。,,,true,,3
+kenjo-uketamawaru,この春ご子息様には、 京都大学を優秀な成績でご卒業なさいました{由|よし}{承|うけたまわ}り、心からお祝い申し上げます。,,,true,,4
+kenjo-hai,すみません。 切符を拝見します。,,,true,,1
+kenjo-hai,お送りいただいた論説を拝読しました。 {僭越|せんえつ}ながら、 私の意見を申し上げます。,,,true,,2
+kenjo-itadaku,さきほど、会長からご紹介いただきました田村と申します。,,,true,,1
+kenjo-itadaku,今日は私が払わせていただきます。 いつもお世話になっておりますから。,,,true,,2
+kenjo-itadaku,当ホテルは様々なタイプの会場をご用意しております。 料金はこちらよりご覧いただけます。,,,true,,3
+kenjo-temairu,すぐ父を呼んでまいりますので、 少々お待ちください。,,,true,,1
+kenjo-temairu,これからお見舞いに行ってまいります。,,,true,,2
+kenjo-temairu,私どもは全てのお客様にご満足いただけるようにこれからも努力を継続して参ります。,,,true,,3
+kenjo-temairu,暖かくなってまいりましたが、いかがお過ごしでしょうか。,,,true,,4
+kenjo-ome-ni-kakaru,長いことご無沙汰しておりましたが、いかがお過ごしでしょうか。度お目にかかりたいと思っておりますが、 なかなか時間がなく、失礼しております。,,,true,,1
+kenjo-ome-ni-kakaru,この話は私が社長にお目にかかった時に、 ゆっくりご説明致します。,,,true,,2
+kenjo-ome-ni-kakaru,あのう、山田と申しますが、 松本部長にお目にかかりたいのですが。,,客,true,1,3
+kenjo-ome-ni-kakaru,はい、少々お待ちください。,,係員,true,1,4
+kenjo-ome-ni-kakeru,最近手に入れた珍しい切手がありますので、ぜひお目にかけたく存じます。,,,true,,1
+kenjo-ome-ni-kakeru,見苦しいところをお目にかけて大変失礼致しました。,,A,true,1,2
+kenjo-ome-ni-kakeru,いいえ、お互い様でございます。 どうぞお気になさいませんように。,,B,true,1,3
+kenjo-ome-ni-kakeru,これから展覧室にお越しになって、 私たちの作品をお目にかけましょうか。,,,true,,4
+kenjo-ome-ni-kakeru,社長にお目にかけるような{骨董品|こっとうひん}ではございません,,,true,,5
+kenjo-goran-ni-ireru,新製品の実物をご覧に入れた方がお分かりになりやすいかと存じます。,,,true,,1
+kenjo-goran-ni-ireru,残念ながら、今日は霧が深いため、 富士山をご覧に入れることができません。,,,true,,2
+sonkei-o-go-nasaru,ご利用なさいますか？,,,true,,3
+sonkei-o-go-da,お待ちです。,,,true,,5
+sonkei-de-irassharu,お元気でいらっしゃる,,,true,,3
+kenjo-o-go-moushiageru,ご報告申し上げます。,,,true,,2
+kenjo-o-go-itadaku,お待ちいただきます。,,,true,,2
+teinei-u-gozaimasu,朝夕はまだまだお寒うございますが、くれぐれもお体にはお気をつけくださいませ。,,,true,,1
+teinei-u-gozaimasu,こちらのワイシャツのほうが少しお高うございます。,,,true,,2
+teinei-u-gozaimasu,東大合格して、おめでとうございます。,,A,true,1,3
+teinei-u-gozaimasu,ありがとうございます。,,B,true,1,4
+teinei-u-gozaimasu,今日の披露宴に、大勢の親友が来てくださって本当に嬉しゅうございます。,,,true,,5
+juju-te-kudasai,Ｂさん、時間ありますか。,,A,true,1,1
+juju-te-kudasai,ええ。,,B,true,1,2
+juju-te-kudasai,じゃ、ちょっとこれ、手伝ってください。,,A,true,1,3
+juju-te-agete-yatte-kudasai,Ｂさん、時間ありますか。,,A,true,1,1
+juju-te-agete-yatte-kudasai,ええ。,,B,true,1,2
+juju-te-agete-yatte-kudasai,Ｃさんが忙しそうなので、手伝ってあげてください。,,A,true,1,3
+juju-te-moratte-kudasai,（あなたは）Ｃさんに荷物を持ってくれるよう依頼してください。,,,true,,1
+juju-te-moratte-kudasai,（あなたは）Ｃさんに荷物を持ってもらってください。,,,true,,2
+juju-te-kureru-temorau,私は先生に教えてもらう。,,,true,,1
+juju-te-kureru-temorau,先生は私に教えてくれる。,,,true,,2
+juju-te-morau-te-itadaku,教えていただけますでしょうか。,,,true,,1
+juju-sasete-morau-itadaku,使用させていただきます。,,,true,,1
+sonkei-ni-naru,お食べになります。,,,true,,1
+sonkei-ni-naru,ご説明になります。,,,true,,2
+sonkei-kudasaru-kudasai,お食べください。,,,true,,1
+sonkei-kudasaru-kudasai,ご注意ください。,,,true,,2
+sonkei-reru-rareru,中田先生がこの本を書かれました。,,,true,,1
+sonkei-reru-rareru,あの方は東京駅で降りられます。,,,true,,2
+sonkei-keishou,あちらは山田様です。,,,true,,1
+sonkei-o-go-ki-on,あなたのお仕事は何ですか。,,,true,,1
+sonkei-o-go-ki-on,ご家族はどちらにいらっしゃいますか。,,,true,,2
+kenjo-o-go-suru-itasu,お持ちします。,,,true,,1
+kenjo-o-go-suru-itasu,ご説明します。,,,true,,2
+kenjo-o-go-suru-itasu,係員がご案内します。,,,true,,3
+kenjo-o-go-sasete-itadakimasu,工場内をご案内させていただきます。,,,true,,1
+kenjo-settoji-o-go-so-hei,お知らせ,,,true,,1
+kenjo-settoji-o-go-so-hei,粗品,,,true,,2
+kenjo-settoji-o-go-so-hei,会社→弊社,,,true,,3
+kenjo-domo-me,私ども,,,true,,1
+kenjo-domo-me,私め,,,true,,2

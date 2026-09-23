@@ -45,7 +45,7 @@ from django.apps import apps as django_apps
 from django.core.exceptions import ValidationError
 from django.db import models
 
-# 7 app nội bộ = 19 bảng. django.contrib.auth KHÔNG đụng vào (quyết định của Dat,
+# 8 app nội bộ = 31 bảng. django.contrib.auth KHÔNG đụng vào (quyết định của Dat,
 # xem claude/db-schema-django.md).
 LOCAL_APP_LABELS = (
     "core",
@@ -55,6 +55,7 @@ LOCAL_APP_LABELS = (
     "practice_sheets",
     "gamification",
     "error_reports",
+    "keigo",
 )
 
 AUDIT_FIELDS = ("created_by", "created_at", "updated_by", "updated_at")
@@ -135,6 +136,22 @@ NATURAL_KEYS = {
     "gamification.badgecategory": ("code_type",),
     "gamification.badgetier": ("category", "code"),
     "gamification.userpinnedbadge": ("user", "category"),
+    # --- Kính ngữ (apps.keigo) ---
+    # Khai tường minh thay vì để suy ra từ constraints: tên cột của file CSV
+    # phụ thuộc thẳng vào đây, và 10 file dữ liệu đã bóc xong theo đúng bộ khoá
+    # này. Đổi một dòng ở đây = đổi header của file nhập liệu.
+    "keigo.keigolesson": ("slug",),
+    "keigo.keigoverb": ("plain_form", "reading"),
+    "keigo.keigoform": ("verb", "style_code", "form"),
+    "keigo.keigopattern": ("code",),
+    "keigo.keigoexample": ("pattern", "sentence_jp"),
+    "keigo.keigophrasepair": ("pair_type", "casual", "polite"),
+    "keigo.exerciseset": ("slug",),
+    "keigo.exercisesection": ("exercise_set", "number"),
+    "keigo.question": ("code",),
+    "keigo.questionoption": ("question", "position"),
+    "keigo.userexerciseattempt": ("user", "exercise_set", "started_at"),
+    "keigo.userquestionanswer": ("attempt", "question"),
 }
 
 # Ba bảng NHẬT KÝ cố ý không có khoá tự nhiên, và đừng bịa ra một cái.

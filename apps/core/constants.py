@@ -120,3 +120,50 @@ def error_status_choices(include_parent=False):
     if include_parent:
         return rows
     return [(code, name) for code, name in rows if code != ERROR_STATUS_HANDLED_PARENT]
+
+
+# --- Kính ngữ (app apps.keigo) ---
+# Ba code_type mới cho khu kính ngữ. Giống mọi nhóm khác: KHÔNG hardcode
+# choices=[...] ở model, mà khai code_type ở đây rồi seed trong
+# seed_mastercode.py và đọc qua get_choices().
+CODE_TYPE_KEIGO_STYLE = "14"      # Loại kính ngữ
+CODE_TYPE_KEIGO_PAIR_TYPE = "15"  # Loại cặp từ (8 bảng của trang 11, 17-21)
+CODE_TYPE_QUESTION_TYPE = "16"    # Dạng câu hỏi trắc nghiệm
+
+# Mã cụ thể — hằng số để code khỏi rải chuỗi, giống SHEET_TYPE_* / SESSION_TYPE_*.
+#
+# LƯU Ý về kenjo/kenjo1/kenjo2: sách chỉ phân 謙譲語 I và II ở ĐÚNG hai bảng nhỏ
+# trang 7. Bảng chia động từ trang 13-16 chỉ có MỘT cột 謙譲語 chung, nên phải có
+# mã `kenjo` không phân cấp. Đừng suy đoán I/II cho những dòng sách không nói.
+KEIGO_STYLE_SONKEI = "sonkei"
+KEIGO_STYLE_KENJO = "kenjo"
+KEIGO_STYLE_KENJO1 = "kenjo1"
+KEIGO_STYLE_KENJO2 = "kenjo2"
+KEIGO_STYLE_TEINEI = "teinei"
+KEIGO_STYLE_BIKAGO = "bikago"
+KEIGO_STYLE_JUJU = "juju"
+
+QUESTION_TYPE_MCQ = "mcq_blank"
+QUESTION_TYPE_ORDERING = "ordering"
+QUESTION_TYPE_CLOZE = "cloze"
+
+# Kiểu phiên học mới của code_type "09" — để lượt làm bài kính ngữ cũng ghi một
+# learning.StudySession, nhờ đó streak và biểu đồ lịch sử ở dashboard/SC15 tự
+# đếm luôn phần kính ngữ mà không phải sửa gamification/services.py.
+SESSION_TYPE_KEIGO = "keigo"
+
+
+def keigo_style_choices():
+    """Loại kính ngữ: 尊敬語 / 謙譲語 (chung, I, II) / 丁寧語 / 美化語 / cho-nhận."""
+    return get_choices(CODE_TYPE_KEIGO_STYLE)
+
+
+def keigo_pair_type_choices():
+    """Loại cặp từ trong KeigoPhrasePair — mỗi mã là một bảng trong sách."""
+    return get_choices(CODE_TYPE_KEIGO_PAIR_TYPE)
+
+
+def question_type_choices():
+    """Dạng câu hỏi. Đặt ở CẤP CÂU chứ không phải cấp bộ đề: BÀI TẬP 6 và 8
+    trộn câu sắp xếp ★ vào giữa bộ đề điền (  )."""
+    return get_choices(CODE_TYPE_QUESTION_TYPE)

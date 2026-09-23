@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     "apps.practice_sheets",
     "apps.gamification",
     "apps.error_reports",
+    # Kinh ngu (SC16-SC22) - noi dung tach han khoi vocabulary.
+    "apps.keigo",
     # Khu vuc quan tri SC07 - khong co model, chi doc du lieu app khac.
     "apps.admin_panel",
 ]

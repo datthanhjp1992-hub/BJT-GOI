@@ -1,0 +1,40 @@
+code,lesson__slug,style_code,title,formation,explanation_vi,display_order
+sonkei-o-go-da,ton-kinh-ngu,sonkei,お・ご～だ,お/ご+N+だ,,1
+sonkei-o-go-nasaru,ton-kinh-ngu,sonkei,お／ご～なさる,お/ご+Vます形+なさる,,2
+sonkei-o-go-ni-nareru,ton-kinh-ngu,sonkei,お／ご～になれる,お/ご+Vます形+になれる,,3
+sonkei-de-irassharu,ton-kinh-ngu,sonkei,N／Na です → N／Na でいらっしゃる,N/Na+でいらっしゃる,Bản in gốc trang 5 ghi nhầm là「でいっらしゃる」.,4
+sonkei-te-irassharu,ton-kinh-ngu,sonkei,～ていらっしゃる,Vて形+いらっしゃる,,5
+sonkei-agaru,ton-kinh-ngu,sonkei,～あがる,,,6
+sonkei-o-de-irassharu,ton-kinh-ngu,sonkei,（お）～でいらっしゃる,(お)+形容詞/N+でいらっしゃる,,7
+sonkei-mieru-omieninaru,ton-kinh-ngu,sonkei,見える／お見えになる,,,8
+sonkei-mesu,ton-kinh-ngu,sonkei,めす,,,9
+sonkei-ki,ton-kinh-ngu,sonkei,貴～,貴+N,,10
+kenjo-o-go-itadaku,khiem-nhuong-ngu,kenjo,お／ご～いただく,お/ご+Vます形+いただく,,1
+kenjo-o-go-moushiageru,khiem-nhuong-ngu,kenjo,お／ご～申し上げる,お/ご+Vます形+申し上げる,,2
+kenjo-o-go-dekiru,khiem-nhuong-ngu,kenjo,お／ご～できる,お/ご+Vます形+できる,,3
+kenjo-zonjiru-zonjiageru,khiem-nhuong-ngu,kenjo,存じる・存じ上げる,,,4
+kenjo-teoru-teorazu,khiem-nhuong-ngu,kenjo,ておる・ておらず,Vて形+おる／Vて形+おらず,,5
+kenjo-o-go-negau,khiem-nhuong-ngu,kenjo,お／ご～願う,お/ご+Vます形+願う,,6
+kenjo-uketamawaru,khiem-nhuong-ngu,kenjo,うけたまわる,,,7
+kenjo-hai,khiem-nhuong-ngu,kenjo,拝～（する）,拝+漢字1字(+する),,8
+kenjo-itadaku,khiem-nhuong-ngu,kenjo,いただく,,,9
+kenjo-temairu,khiem-nhuong-ngu,kenjo,～てまいる,Vて形+まいる,,10
+kenjo-ome-ni-kakaru,khiem-nhuong-ngu,kenjo,お目にかかる,,,11
+kenjo-ome-ni-kakeru,khiem-nhuong-ngu,kenjo,お目にかける,,,12
+kenjo-goran-ni-ireru,khiem-nhuong-ngu,kenjo,ご覧に入れる,,,13
+teinei-u-gozaimasu,the-lich-su,teinei,形容詞 ～うございます,い形容詞語幹+うございます（音便変化あり）,,1
+juju-te-kudasai,dong-tu-cho-nhan,juju,～てください,Vて形+ください,,1
+juju-te-agete-yatte-kudasai,dong-tu-cho-nhan,juju,～てあげて／やってください,Vて形+あげて／やってください,,2
+juju-te-moratte-kudasai,dong-tu-cho-nhan,juju,～てもらってください,Vて形+もらってください,,3
+juju-te-kureru-temorau,dong-tu-cho-nhan,juju,～てくれる・てもらう,Vて形+くれる／Vて形+もらう,,4
+juju-te-morau-te-itadaku,dong-tu-cho-nhan,juju,～Vてもらう・Vていただく,Vて形+もらう／Vて形+いただく,,5
+juju-sasete-morau-itadaku,dong-tu-cho-nhan,juju,～させてもらう・させていただく,Vさせて形+もらう／Vさせて形+いただく,,6
+sonkei-ni-naru,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,お/ご～になる,お/ご+Vます形+になる,,1
+sonkei-kudasaru-kudasai,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,お/ご～くださる/ください,お/ご+Vます形+くださる／ください,,2
+sonkei-reru-rareru,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,「Vれる／Vられる」の形を取るもの,Vれる／Vられる,,3
+sonkei-keishou,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,後ろに～さん、～様、先生、殿、社長などの敬称を付ける,,,4
+sonkei-o-go-ki-on,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,前に「お」「ご」「貴」「御」などを付ける,お/ご/貴/御+N,,5
+kenjo-o-go-suru-itasu,mot-so-quy-tac-chia-dong-tu-co-quy-tac,kenjo,お／ご～する／いたす,お/ご+Vます形+する／いたす,,6
+kenjo-o-go-sasete-itadakimasu,mot-so-quy-tac-chia-dong-tu-co-quy-tac,kenjo,お/ご～ させていただきます,お/ご+Vます形+させていただきます,,7
+kenjo-settoji-o-go-so-hei,mot-so-quy-tac-chia-dong-tu-co-quy-tac,kenjo,前に「お」「ご」「粗」「弊」「拝」などを付ける,お/ご/粗/弊/拝+N,,8
+kenjo-domo-me,mot-so-quy-tac-chia-dong-tu-co-quy-tac,kenjo,後ろに「ども」「め」などを付ける,N+ども／め,,9

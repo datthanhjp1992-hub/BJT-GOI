@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bảng tra động từ kính ngữ | 毎日BJT</title>
+<link rel="stylesheet" href="style_A.css">
+<!--
+  SC18_TraCuuDongTu — BẢNG TRA ĐỘNG TỪ (bản đề xuất 22/09/2026, chờ Dat duyệt)
+  Tham chiếu: claude/keigo-thiet-ke.md mục 2.2 / 2.3 / 7.
+
+  Năm quyết định của màn này, đọc trước khi sửa:
+
+  1. MỘT HÀNG = MỘT KeigoVerb, MỖI Ô CHỨA N KeigoForm.
+     Đây đúng là hình dạng bảng trang 13–16 của sách, và cũng đúng hình dạng
+     dữ liệu đã chuẩn hoá. Ô trống của sách ("—", vd 風邪を引く không có 謙譲語)
+     KHÔNG tạo row trong DB, nên ở đây in dấu "—" mờ từ template chứ không
+     phải in một giá trị rỗng lấy từ DB.
+
+  2. LỌC VÀ TÌM BẰNG GET, KHÔNG PHẢI JAVASCRIPT.
+     ?q=言う&loai=sonkei — mỗi trạng thái lọc là một URL bookmark được, tắt JS
+     vẫn dùng được. Giống SC05/SC10/SC15. Khối <script> cuối file CHỈ là lớp
+     tăng cường: lọc tại chỗ trong lúc gõ, để khỏi phải nạp lại trang. Bỏ
+     khối đó đi thì trang vẫn chạy đủ chức năng.
+
+  3. DẤU ★ = is_irregular, KHÔNG PHẢI MÀU.
+     Hai bảng "trường hợp đặc biệt" trang 4 và 7 không có bảng riêng — chúng
+     chỉ là filter is_irregular=True. Trên bảng này chúng phải nhận ra được
+     mà không cần nhìn màu (cùng lý do .flash.error dùng dấu ⚠).
+
+  4. DƯỚI 720px ĐỔI SANG THẺ DỌC, KHÔNG CHO CUỘN NGANG.
+     Bảng 4 cột mà mỗi ô có tới 4 dạng thì trên điện thoại hoặc là chữ bé
+     như hạt vừng, hoặc là phải kéo ngang để đọc cột 丁寧語 — cả hai đều hỏng.
+     Media query ở dưới biến mỗi hàng thành một thẻ 4 dòng nhãn–giá trị.
+
+  5. Ô 謙譲語 CHỈ HIỆN CHIP I / II KHI DỮ LIỆU CÓ.
+     Sách chỉ phân 謙譲語 I và II ở đúng hai bảng nhỏ trang 7; bảng lớn chỉ có
+     một cột 謙譲語. Template đọc thẳng style_code (kenjo / kenjo1 / kenjo2),
+     KHÔNG tự đoán theo お・ご — lượt bóc dữ liệu đầu đã mắc đúng lỗi này và
+     phải sửa lại ~40 dòng.
+
+  ⚠ DỮ LIỆU TRONG FILE NÀY LÀ DỮ LIỆU MẪU để duyệt bố cục — 18 hàng, lấy
+    những động từ chắc chắn có trong sách. Bảng thật là 34 động từ (trang
+    13–16), tổng kho là 47 động từ / 175 dạng. Chờ session bóc dữ liệu xong
+    thì thay vào.
+-->
+<style>
+/* =============================================================================
+   KHỐI 1 — KHÔNG PHẢI CSS MỚI. Chép tạm từ static/css/theme_a.css.
+   htmlTemplate/style_A.css là bản mockup gốc đã đóng băng từ 13/09, nó KHÔNG
+   có .toolbar / .grow / .tag-filter / .action-link — những class này đã được
+   thêm vào theme_a/b/c.css sau đó. Chép lại đây chỉ để file mockup hiện đúng
+   như bản Django. KHÔNG chép khối này vào theme_*.css, đã có sẵn ở đó rồi.
+   ========================================================================== */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:24px;}
+.toolbar input,.toolbar select{width:auto;flex:0 1 auto;}
+.toolbar .grow{flex:1 1 240px;}
+.filter-bar{gap:8px;}
+.tag-filter{cursor:pointer;user-select:none;margin-right:0;background:var(--surface);
+  transition:background .18s ease,border-color .18s ease,color .18s ease,transform .12s ease,box-shadow .18s ease;}
+.tag-filter:hover{border-color:var(--accent);color:var(--accent);
+  transform:translateY(-1px);box-shadow:0 2px 6px rgba(181,67,46,.18);}
+.tag-filter.is-active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.action-link{color:var(--ink-soft);border-bottom:1px solid transparent;
+  transition:color .16s ease,border-color .16s ease;}
+.action-link:hover{color:var(--accent);border-bottom-color:var(--accent);}
+.action-link.is-primary{color:var(--accent);}
+button.btn,button.pill{font:inherit;cursor:pointer;}
+
+/* =============================================================================
+   KHỐI 1b — LỖI CŨ, KHÔNG PHẢI CỦA MÀN NÀY, nhưng phải vá thì mới duyệt được
+   bản điện thoại. Cả ba theme_*.css đều KHÔNG có media query nào cho .topbar:
+   `.topbar .wrap` là flex, height cố định 72px, không cho xuống dòng. Trên
+   màn 390px, thanh trên cùng rộng 695px → CẢ TRANG cuộn ngang, mọi màn hình
+   của app đều dính, không riêng kính ngữ. Thêm mục "Kính ngữ" vào navmeta
+   làm nó rộng thêm ~90px nữa, nên phải nói ra ở đây.
+   Đo được: scrollWidth 695px / viewport 390px (Chromium, 22/09/2026).
+   → Đề xuất thêm khối này vào cả 3 theme_*.css, DUYỆT RIÊNG vì nó sửa chung.
+   ========================================================================== */
+@media (max-width:720px){
+  .topbar .wrap{height:auto;flex-wrap:wrap;gap:10px 14px;padding-top:12px;padding-bottom:12px;}
+  .brand{font-size:19px;}
+  nav.mainnav{order:3;flex:1 1 100%;gap:16px;font-size:14px;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  nav.mainnav a{white-space:nowrap;}
+  .navmeta{gap:10px;font-size:13.5px;}
+  .navmeta .pill{padding:7px 13px;}
+}
+
+/* =============================================================================
+   KHỐI 2 — class mới, đề xuất thêm vào cả 3 theme_*.css dưới tiêu đề
+   "SC16–SC19 — Kính ngữ". Bo góc đổi theo theme (A 4px / B 0 / C bo tròn).
+   ========================================================================== */
+
+/* Bảng tra: cột 基本形 hẹp và dính trái, ba cột còn lại chia đều. */
+table.keigo-table{table-layout:fixed;}
+table.keigo-table th:first-child,table.keigo-table td:first-child{width:22%;}
+table.keigo-table td{vertical-align:top;}
+table.keigo-table th .jp{font-family:var(--serif);font-size:15px;color:var(--ink);}
+
+/* Một dạng kính ngữ trong ô. Xuống dòng riêng vì một ô có tới 4 dạng. */
+.form-item{display:block;margin-bottom:7px;}
+.form-item:last-child{margin-bottom:0;}
+.form-item .jp{font-family:var(--serif);font-size:16.5px;}
+.form-item .reading{color:var(--ink-soft);font-size:12.5px;margin-left:5px;}
+.form-item .note{display:block;color:var(--ink-soft);font-size:12px;margin-top:1px;}
+
+/* ★ bất quy tắc — dấu, không phải màu. */
+.irr{color:var(--gold);font-size:11px;margin-right:3px;vertical-align:2px;}
+
+/* Chip I / II của 謙譲語. Nhỏ hơn .tag vì nằm sát chữ Nhật. */
+.kchip{display:inline-block;margin-left:5px;padding:0 5px;border-radius:2px;
+  background:var(--accent-soft);color:var(--accent-dark);font-size:11px;line-height:16px;}
+
+.dash{color:var(--border);}
+
+/* Hàng tìm + hàng lọc là HAI hàng của cùng một khối, nên hàng trên không
+   mang margin-bottom 24px của .toolbar. */
+.toolbar.is-stacked{margin-bottom:10px;}
+.toolbar.filter-bar{margin-bottom:12px;}
+
+/* Cột 基本形 */
+.verb-cell .jp{font-family:var(--serif);font-size:19px;}
+.verb-cell .vi{display:block;color:var(--ink-soft);font-size:13px;margin-top:2px;}
+
+/* Hàng bị ô tìm nhanh loại đi (lớp tăng cường JS). */
+tr[hidden]{display:none;}
+
+/* ---- Dưới 720px: bảng → thẻ dọc (quyết định 4) ---- */
+@media (max-width:720px){
+  table.keigo-table thead{position:absolute;left:-9999px;}
+  table.keigo-table,table.keigo-table tbody,table.keigo-table tr,table.keigo-table td{display:block;width:auto;}
+  table.keigo-table tr{border:1px solid var(--border);border-radius:4px;
+    background:var(--surface);padding:14px 16px;margin-bottom:12px;}
+  table.keigo-table tr:hover td{background:transparent;}
+  table.keigo-table td{border-bottom:none;padding:8px 0 0;}
+  table.keigo-table td:first-child{width:auto;padding-top:0;
+    border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:4px;}
+  /* Nhãn cột chuyển vào trong ô, vì thead đã bị giấu. */
+  table.keigo-table td[data-col]::before{content:attr(data-col);display:block;
+    font-size:11.5px;color:var(--ink-soft);margin-bottom:3px;}
+
+  /* Khối chi tiết: .grid.cols-3 của theme là 3 cột cứng, trên điện thoại ba
+     cột kính ngữ bóp lại còn ~100px và chữ Nhật xuống dòng giữa từ.
+     Rule này nên vào thẳng theme_*.css vì mọi màn dùng .grid.cols-3 đều dính. */
+  .grid.cols-3,.grid.cols-2{grid-template-columns:1fr;}
+}
+</style>
+</head><body>
+
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="mark">毎</span>毎日BJT</div>
+  <nav class="mainnav">
+    <a href="SC03_TrangChu_A.html">Trang chủ</a>
+    <a href="SC05_DanhSachTuVung_A.html">Từ vựng</a>
+    <a href="SC15_OnTap_A.html">Ôn tập</a>
+    <a href="SC10_LuyenVietPdf_A.html">Luyện viết</a>
+    <a href="SC11_GopYTuVung_A.html">Góp ý</a>
+  </nav>
+  <div class="navmeta">
+    <a href="SC16_KinhNguMucLuc_A.html" class="navmeta-feature active"
+       style="display:inline-flex;align-items:center;gap:7px;color:var(--accent);
+              border-bottom:2px solid var(--accent);padding:5px 2px;">
+      <span style="font-family:var(--serif);font-size:15px;">敬語</span>Kính ngữ
+    </a>
+    <span style="color:var(--border);">|</span>
+    <a href="SC09_ThongTinCaNhan_A.html">Dat</a>
+    <a class="pill ghost" href="SC08_CaiDat_A.html">⚙️</a>
+    <a class="pill ghost" href="SC01_DangNhap_A.html">Đăng xuất</a>
+  </div>
+</div></header>
+
+<main>
+  <div class="wrap">
+
+    <div class="eyebrow"><a href="SC16_KinhNguMucLuc_A.html" class="action-link">敬語 · Kính ngữ</a> › Bảng tra</div>
+    <h1 class="serif" style="font-size:30px;margin:0 0 8px;">Bảng chia động từ bất quy tắc</h1>
+    <p class="muted" style="margin:0 0 22px;max-width:640px;">
+      Những động từ không chia theo công thức お／ご + Vます + になる mà có dạng riêng.
+      Đây là phần phải nhớ thuộc — số còn lại chia theo quy tắc ở
+      <a href="SC17_BaiHocKinhNgu_A.html" class="action-link is-primary">chương 6</a>.
+    </p>
+
+    <!-- ========== TOOLBAR: tìm + lọc, đều là GET ========== -->
+    <form method="get" action="SC18_TraCuuDongTu_A.html" class="toolbar is-stacked"
+          style="flex-wrap:nowrap;">
+      <input class="grow" id="q" name="q" type="search"
+             placeholder="Tìm 言う, いう, おっしゃる hay 'nói'…" autocomplete="off">
+      <button type="submit" class="btn btn-primary" style="flex:none;padding:11px 22px;">Tìm</button>
+    </form>
+
+    <!-- Lọc theo loại: thẻ .tag-filter đã có sẵn trong theme (SC05), ở đây là
+         thẻ <a> chứ không phải <label><input> vì mỗi lần chỉ lọc một loại. -->
+    <div class="toolbar filter-bar">
+      <span class="muted" style="font-size:13.5px;">Lọc theo loại:</span>
+      <a class="tag tag-filter is-active" href="?loai=">Tất cả</a>
+      <a class="tag tag-filter" href="?loai=sonkei">尊敬語 Tôn kính</a>
+      <a class="tag tag-filter" href="?loai=kenjo">謙譲語 Khiêm nhường</a>
+      <a class="tag tag-filter" href="?loai=teinei">丁寧語 Lịch sự</a>
+      <span style="color:var(--border);">|</span>
+      <a class="tag tag-filter" href="?batquytac=1">★ Chỉ dạng đặc biệt</a>
+    </div>
+
+    <p class="muted" style="font-size:13px;margin:0 0 14px;">
+      <span id="count">18</span> / 34 động từ &nbsp;·&nbsp;
+      <span class="irr">★</span> dạng đặc biệt, phải nhớ thuộc &nbsp;·&nbsp;
+      <span class="kchip">I</span><span class="kchip">II</span> nhóm khiêm nhường ngữ
+    </p>
+
+    <!-- ========== BẢNG 4 CỘT ========== -->
+    <div class="card" style="padding:8px 18px;margin-bottom:28px;">
+      <table class="keigo-table">
+        <thead>
+          <tr>
+            <th><span class="jp">基本形</span><br>Dạng gốc</th>
+            <th><span class="jp">尊敬語</span><br>Tôn kính ngữ</th>
+            <th><span class="jp">謙譲語</span><br>Khiêm nhường ngữ</th>
+            <th><span class="jp">丁寧語</span><br>Thể lịch sự</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">言う</span></a>
+              <span class="vi">nói</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">おっしゃる</span></span>
+              <span class="form-item"><span class="jp">言われる</span></span>
+            </td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">申し上げる</span><span class="kchip">I</span></span>
+              <span class="form-item"><span class="irr">★</span><span class="jp">申す</span><span class="kchip">II</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">言います</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">行く</span></a>
+              <span class="vi">đi</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">いらっしゃる</span></span>
+              <span class="form-item"><span class="irr">★</span><span class="jp">おいでになる</span></span>
+              <span class="form-item"><span class="jp">お越しになる</span></span>
+              <span class="form-item"><span class="jp">行かれる</span></span>
+            </td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">伺う</span><span class="kchip">I</span></span>
+              <span class="form-item"><span class="irr">★</span><span class="jp">参る</span><span class="kchip">II</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">行きます</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">来る</span></a>
+              <span class="vi">đến</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">いらっしゃる</span></span>
+              <span class="form-item"><span class="irr">★</span><span class="jp">おいでになる</span></span>
+              <span class="form-item"><span class="irr">★</span><span class="jp">お見えになる</span></span>
+              <span class="form-item"><span class="jp">お越しになる</span></span>
+            </td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">参る</span><span class="kchip">II</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">来ます</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">いる</span></a>
+              <span class="vi">ở, có mặt</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">いらっしゃる</span></span>
+              <span class="form-item"><span class="irr">★</span><span class="jp">おいでになる</span></span>
+            </td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">おる</span><span class="kchip">II</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">います</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">する</span></a>
+              <span class="vi">làm</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">なさる</span></span>
+              <span class="form-item"><span class="jp">される</span></span>
+            </td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">いたす</span><span class="kchip">II</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">します</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">食べる・飲む</span></a>
+              <span class="vi">ăn, uống</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">召し上がる</span></span>
+            </td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">いただく</span><span class="kchip">I</span></span>
+              <span class="form-item"><span class="irr">★</span><span class="jp">頂戴する</span></span>
+            </td>
+            <td data-col="丁寧語">
+              <span class="form-item"><span class="jp">食べます・飲みます</span></span>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">見る</span></a>
+              <span class="vi">xem, nhìn</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">ご覧になる</span></span>
+            </td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">拝見する</span><span class="kchip">I</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">見ます</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">聞く</span></a>
+              <span class="vi">nghe, hỏi</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="jp">お聞きになる</span></span>
+            </td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">伺う</span><span class="kchip">I</span></span>
+              <span class="form-item"><span class="jp">拝聴する</span></span>
+              <span class="form-item"><span class="jp">お伺いする</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">聞きます</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">知っている</span></a>
+              <span class="vi">biết</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">ご存じだ</span></span>
+            </td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">存じ上げる</span><span class="kchip">I</span>
+                <span class="note">dùng khi biết về NGƯỜI</span></span>
+              <span class="form-item"><span class="irr">★</span><span class="jp">存じております</span><span class="kchip">II</span>
+                <span class="note">dùng khi biết về VIỆC, VẬT</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">知っています</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">会う</span></a>
+              <span class="vi">gặp</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="jp">お会いになる</span></span>
+              <span class="form-item"><span class="jp">会われる</span></span>
+            </td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">お目にかかる</span><span class="kchip">I</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">会います</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">もらう</span></a>
+              <span class="vi">nhận</span>
+            </td>
+            <td data-col="尊敬語"><span class="dash">—</span></td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">いただく</span><span class="kchip">I</span></span>
+              <span class="form-item"><span class="irr">★</span><span class="jp">賜る</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">もらいます</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">あげる</span></a>
+              <span class="vi">cho, tặng</span>
+            </td>
+            <td data-col="尊敬語"><span class="dash">—</span></td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">差し上げる</span><span class="kchip">I</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">あげます</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">くれる</span></a>
+              <span class="vi">cho tôi</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">くださる</span></span>
+            </td>
+            <td data-col="謙譲語"><span class="dash">—</span></td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">くれます</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">借りる</span></a>
+              <span class="vi">mượn</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="jp">お借りになる</span></span>
+            </td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">拝借する</span><span class="kchip">I</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">借ります</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">読む</span></a>
+              <span class="vi">đọc</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="jp">お読みになる</span></span>
+            </td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="jp">拝読する</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">読みます</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">思う</span></a>
+              <span class="vi">nghĩ</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="jp">お思いになる</span></span>
+              <span class="form-item"><span class="jp">思われる</span></span>
+            </td>
+            <td data-col="謙譲語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">存じる</span></span>
+            </td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">思います</span></span></td>
+          </tr>
+
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">着る</span></a>
+              <span class="vi">mặc</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">お召しになる</span></span>
+            </td>
+            <td data-col="謙譲語"><span class="dash">—</span></td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">着ます</span></span></td>
+          </tr>
+
+          <!-- Hàng có ô trống thật — giữ lại để duyệt xem dấu "—" đọc có ổn không. -->
+          <tr>
+            <td class="verb-cell">
+              <a href="#chitiet" class="action-link is-primary"><span class="jp">風邪を引く</span></a>
+              <span class="vi">bị cảm</span>
+            </td>
+            <td data-col="尊敬語">
+              <span class="form-item"><span class="irr">★</span><span class="jp">お風邪を召す</span></span>
+            </td>
+            <td data-col="謙譲語"><span class="dash">—</span></td>
+            <td data-col="丁寧語"><span class="form-item"><span class="jp">風邪を引きます</span></span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ========== CHI TIẾT MỘT ĐỘNG TỪ ==========
+         Bấm 基本形 ở cột đầu mở khối này. Bản Django là một trang riêng
+         /keigo/tra-cuu/<slug>/ chứ không phải <details> — vì nó cần URL
+         riêng để chia sẻ và để trang từ vựng trỏ ngược về.
+
+         Dòng "Trong từ điển từ vựng" chỉ hiện khi KeigoForm.vocabulary khác
+         null — cây cầu ở mục 1 bản thiết kế. Phần lớn dạng kính ngữ sẽ KHÔNG
+         có trong từ điển, nên khối này phải trông bình thường cả khi vắng nó.
+    -->
+    <div class="card stamp" id="chitiet">
+      <div class="eyebrow" style="margin-bottom:6px;">Chi tiết</div>
+      <h2 class="serif" style="font-size:28px;margin:0 0 4px;">言う <span class="muted" style="font-size:16px;font-family:var(--sans);">nói</span></h2>
+      <p class="muted" style="margin:0 0 20px;font-size:13.5px;">5 dạng · 3 loại</p>
+
+      <div class="grid cols-3" style="gap:18px;">
+        <div>
+          <div class="tag level" style="margin:0 0 10px;">尊敬語 Tôn kính</div>
+          <div class="form-item"><span class="irr">★</span><span class="jp" style="font-size:19px;">おっしゃる</span></div>
+          <div class="form-item"><span class="jp" style="font-size:19px;">言われる</span></div>
+          <p class="muted" style="font-size:13px;margin:10px 0 0;">
+            Nói về lời của khách hàng, cấp trên.
+          </p>
+        </div>
+        <div>
+          <div class="tag level" style="margin:0 0 10px;">謙譲語 Khiêm nhường</div>
+          <div class="form-item"><span class="irr">★</span><span class="jp" style="font-size:19px;">申し上げる</span><span class="kchip">I</span></div>
+          <div class="form-item"><span class="irr">★</span><span class="jp" style="font-size:19px;">申す</span><span class="kchip">II</span></div>
+          <p class="muted" style="font-size:13px;margin:10px 0 0;">
+            <strong>I</strong>: có người nghe cụ thể được nâng lên.
+            <strong>II</strong>: chỉ hạ mình, vd 「山田と申します」.
+          </p>
+        </div>
+        <div>
+          <div class="tag" style="margin:0 0 10px;">丁寧語 Lịch sự</div>
+          <div class="form-item"><span class="jp" style="font-size:19px;">言います</span></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:14px 26px;font-size:14px;">
+        <a class="action-link is-primary" href="SC17_BaiHocKinhNgu_A.html">Mẫu ngữ pháp liên quan (3) →</a>
+        <!-- Chỉ hiện khi KeigoForm.vocabulary khác null: -->
+        <a class="action-link" href="SC05_DanhSachTuVung_A.html">おっしゃる có trong từ điển từ vựng →</a>
+        <a class="action-link" href="SC14_BaoCaoLoi_A.html">Báo lỗi nội dung ở mục này</a>
+      </div>
+    </div>
+
+    <p class="muted" style="font-size:12.5px;margin:22px 0 0;">
+      Nguồn nội dung: Thaolejp – Khóa BJT Kính ngữ (04/2025).
+    </p>
+
+  </div>
+</main>
+
+<footer class="note">毎日BJT — Học từ vựng tiếng Nhật thương mại</footer>
+
+<script>
+/* LỚP TĂNG CƯỜNG, KHÔNG BẮT BUỘC (quyết định 2).
+   Bỏ cả khối này đi thì form GET ở trên vẫn tìm được, chỉ là phải nạp lại
+   trang. Không có gì ở đây là chức năng riêng mà server không làm được. */
+(function () {
+  var box = document.getElementById('q');
+  var rows = document.querySelectorAll('#rows tr');
+  var count = document.getElementById('count');
+  if (!box || !rows.length) return;
+
+  box.form.addEventListener('submit', function (e) { e.preventDefault(); });
+
+  box.addEventListener('input', function () {
+    var kw = box.value.trim().toLowerCase();
+    var shown = 0;
+    rows.forEach(function (tr) {
+      var hit = !kw || tr.textContent.toLowerCase().indexOf(kw) !== -1;
+      tr.hidden = !hit;
+      if (hit) shown++;
+    });
+    if (count) count.textContent = shown;
+  });
+})();
+</script>
+</body></html>
