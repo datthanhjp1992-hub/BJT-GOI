@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% load properties_tags mastercode_tags keigo_tags %}
+{% comment %}SC17_BaiHoc -- trang bai hoc mot chuong kinh ngu.
+
+Phuong an 3 "hoc tung muc mot" (Dat chon 23/09/2026, mockup
+htmlTemplate/SC17_BaiHoc_PhuongAn.html): danh sach muc ben trai, moi lan chi
+hien MOT muc ben phai. Chuyen muc = link GET ?muc=<key> -- khong JavaScript,
+bookmark duoc tung muc, dung khuon ?view= cua SC15.
+
+Ba loai muc (apps/keigo/selectors.py, lesson_items()):
+  - irregular : bang cac truong hop dac biet (chuong 1 va 2)
+  - pattern   : mau ngu phap + cau vi du (cau thuong / hoi thoai theo pair_group)
+  - pairs     : bang cap tu KeigoPhrasePair; wrong/double/baito hien × / ○,
+                cac loai khac hien "thuong -> lich su", cushion ve trai rong.
+
+Cot sentence_vi / explanation_vi / summary_vi dang TRONG toan bo (sach goc
+khong dich) -- moi cho deu {% if %}, trong thi an han, khong de khung rong.
+Moi cau tieng Nhat di qua |ruby (escape TRUOC roi moi ghep <ruby>).{% endcomment %}
+
+{% block title %}{{ lesson.title|lower|capfirst }} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <nav class="kl-crumb">
+    <a href="{% url 'keigo:index' %}" class="action-link">{% label "keigo.tra_cuu.breadcrumb" %}</a>
+    <span>&rsaquo;</span>
+    <span>{% label "keigo.lesson.chapter" %} {{ lesson_number }} / {{ lesson_total }}</span>
+  </nav>
+
+  {# ========== HERO ========== #}
+  <div class="kl-hero">
+    <div>
+      <div class="eyebrow">{% if lesson.style_code %}{{ lesson.style_code|code_name:"14" }} · {% endif %}{% label "keigo.lesson.chapter" %} {{ lesson_number }}</div>
+      <h1 class="kl-h1">{{ lesson.title|lower|capfirst }}</h1>
+      {% if lesson.summary_vi %}<p class="muted kl-sum">{{ lesson.summary_vi }}</p>{% endif %}
+    </div>
+    <div class="figrow">
+      {% if stats.pattern_count %}<div><div class="num">{{ stats.pattern_count }}</div><div class="label">{% label "keigo.index.stat.pattern" %}</div></div>{% endif %}
+      {% if stats.example_count %}<div><div class="num">{{ stats.example_count }}</div><div class="label">{% label "keigo.lesson.stat.example" %}</div></div>{% endif %}
+      {% if stats.irregular_count %}<div><div class="num">{{ stats.irregular_count }}</div><div class="label">{% label "keigo.lesson.stat.irregular" %}</div></div>{% endif %}
+      {% if stats.pair_count %}<div><div class="num">{{ stats.pair_count }}</div><div class="label">{% label "keigo.lesson.stat.pair" %}</div></div>{% endif %}
+    </div>
+  </div>
+
+  {% if current %}
+  <div class="kl-layout">
+    {# ========== DANH SACH MUC ========== #}
+    <div class="kl-side">
+      <nav class="kl-list" aria-label="{% label 'keigo.lesson.list_label' %}">
+        {% for item in items %}
+          <a href="{{ item.url }}"{% if item.key == current.key %} class="active" aria-current="page"{% endif %}>
+            <span class="n">{{ item.badge }}</span><span class="t jp">{{ item.title|ruby }}</span>
+          </a>
+        {% endfor %}
+      </nav>
+
+      {# In on tap: PDF TOAN BO chuong (moi muc), khong chi muc dang mo. GET, khong tac dung phu -> <a>. #}
+      <div class="kl-print">
+        <a class="btn btn-outline btn-block" href="{% url 'keigo:lesson_pdf' lesson.slug %}"
+           target="_blank" rel="noopener">{% label "keigo.lesson.print.button" %}</a>
+        <p class="muted">{% label "keigo.lesson.print.hint" %}</p>
+      </div>
+    </div>
+
+    {# ========== MUC DANG MO ========== #}
+    <section class="card kl-stage">
+      <div class="kl-pane">
+      {% if current.kind == "pattern" %}
+        <div class="kl-kicker">{% label "keigo.lesson.kicker.pattern" %} {{ current.badge }} / {{ pattern_total }}</div>
+        <h2 class="kl-title jp">{{ current.title|ruby }}</h2>
+        {% if current.pattern.formation %}
+          <div class="kl-formula"><span class="lbl">{% label "keigo.lesson.formula" %}</span><span class="jp">{{ current.pattern.formation|ruby }}</span></div>
+        {% endif %}
+        {% if current.pattern.explanation_vi %}<p class="kl-expl">{{ current.pattern.explanation_vi|linebreaksbr }}</p>{% endif %}
+
+        {% if current.detail.blocks %}
+          <ul class="kl-exlist">
+            {% for block in current.detail.blocks %}
+              {% if block.kind == "dialog" %}
+                <li class="kl-dialog">
+                  {% for e in block.lines %}
+                    <div class="kl-line">
+                      {% if e.speaker %}<span class="spk">{{ e.speaker }}</span>{% endif %}
+                      <span><span class="jp">「{{ e.sentence_jp|ruby }}」</span>{% if e.sentence_vi %}<span class="vi">{{ e.sentence_vi }}</span>{% endif %}</span>
+                    </div>
+                  {% endfor %}
+                </li>
+              {% else %}
+                {% with e=block.example %}
+                <li class="kl-ex{% if not e.is_correct %} is-wrong{% endif %}">
+                  <span class="jp">{{ e.sentence_jp|ruby }}</span>
+                  {% if e.sentence_vi %}<span class="vi">{{ e.sentence_vi }}</span>{% endif %}
+                </li>
+                {% endwith %}
+              {% endif %}
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="muted">{% label "keigo.lesson.examples_empty" %}</p>
+        {% endif %}
+
+      {% elif current.kind == "irregular" %}
+        <div class="kl-kicker">★ {% label "keigo.lesson.irregular.title" %}</div>
+        <h2 class="kl-title">{% label "keigo.lesson.irregular.heading" %}</h2>
+        <p class="muted kl-intro">{% label "keigo.lesson.irregular.intro" %}</p>
+        {% for group in current.detail.groups %}
+          {% if current.detail.show_group_heading %}
+            <h3 class="kl-subhead"><span class="tag level">{{ group.style_code|code_name:"14" }}</span></h3>
+          {% endif %}
+          <div class="kl-irr">
+            {% for row in group.verbs %}
+              <div class="kl-irr-row">
+                <a class="base jp" href="{% url 'keigo:verb_detail' row.verb.pk %}">{{ row.verb.plain_form }}</a>
+                <span class="arr">→</span>
+                <span class="forms">
+                  {% for f in row.forms %}<span class="f"><span class="jp">{{ f.form }}</span>{% if f.note_vi %} <span class="note">{{ f.note_vi }}</span>{% endif %}</span>{% endfor %}
+                </span>
+                {% if row.verb.meaning_vi %}<span class="vi">{{ row.verb.meaning_vi }}</span>{% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+        <p class="kl-more"><a class="action-link is-primary" href="{% url 'keigo:tra_cuu' %}?batquytac=1">{% label "keigo.lesson.irregular.more" %}</a></p>
+
+      {% elif current.kind == "pairs" %}
+        <div class="kl-kicker">※ {% label "keigo.lesson.kicker.pairs" %}</div>
+        <h2 class="kl-title">{{ current.title }}</h2>
+        {% for group in current.detail.groups %}
+          {% if group.label %}<h3 class="kl-subhead jp">{{ group.label|ruby }}</h3>{% endif %}
+          {% if current.detail.is_wrong_type %}
+            {% for p in group.pairs %}
+              <div class="kl-xo">
+                {% if p.casual %}<div class="x"><span class="mk">×</span><span class="jp">{{ p.casual|ruby }}</span></div>{% endif %}
+                <div class="o"><span class="mk">○</span><span class="jp">{{ p.polite|ruby }}</span>{% if p.note_vi %}<span class="note">{{ p.note_vi }}</span>{% endif %}</div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <table class="kl-pairs"><tbody>
+              {% for p in group.pairs %}
+                <tr>
+                  {% if p.casual %}<td class="jp">{{ p.casual|ruby }}</td><td class="arr">→</td>{% endif %}
+                  <td class="jp pol"{% if not p.casual %} colspan="3"{% endif %}>{{ p.polite|ruby }}{% if p.note_vi %}<span class="note">{{ p.note_vi }}</span>{% endif %}</td>
+                </tr>
+              {% endfor %}
+            </tbody></table>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      </div>
+
+      {# Truoc / sau -- het muc thi dan sang chuong ke ben. La <a> vi chi DOC, khong co tac dung phu. #}
+      <footer class="kl-foot">
+        {% if prev_item %}
+          <a class="btn btn-outline" href="{{ prev_item.url }}">{% label "keigo.lesson.prev" %}</a>
+        {% elif prev_lesson %}
+          <a class="btn btn-outline" href="{{ prev_lesson.url }}">{% label "keigo.lesson.prev_chapter" %}</a>
+        {% else %}
+          <span class="btn btn-outline is-off">{% label "keigo.lesson.prev" %}</span>
+        {% endif %}
+        <span class="muted kl-pos">{{ position }} / {{ items|length }}</span>
+        {% if next_item %}
+          <a class="btn btn-primary" href="{{ next_item.url }}">{% label "keigo.lesson.next" %}</a>
+        {% elif next_lesson %}
+          <a class="btn btn-primary" href="{{ next_lesson.url }}">{% label "keigo.lesson.next_chapter" %}</a>
+        {% else %}
+          <span class="btn btn-primary is-off">{% label "keigo.lesson.next" %}</span>
+        {% endif %}
+      </footer>
+    </section>
+  </div>
+  {% else %}
+    <div class="card"><p class="muted" style="margin:0;">{% label "keigo.lesson.empty" %}</p></div>
+  {% endif %}
+
+  {# ========== CHUONG TRUOC / SAU ========== #}
+  <nav class="kl-chnav">
+    {% if prev_lesson %}
+      <a class="prev" href="{{ prev_lesson.url }}"><span class="muted">{% label "keigo.lesson.prev_chapter" %}</span><span class="t">{{ prev_lesson.title|lower|capfirst }}</span></a>
+    {% else %}<span></span>{% endif %}
+    {% if next_lesson %}
+      <a class="next" href="{{ next_lesson.url }}"><span class="muted">{% label "keigo.lesson.next_chapter" %}</span><span class="t">{{ next_lesson.title|lower|capfirst }}</span></a>
+    {% endif %}
+  </nav>
+{% endblock %}

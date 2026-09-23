@@ -6,10 +6,10 @@ Cong voi apps/keigo/views.py:
   - Chuong "bang-chia-dong-tu-bat-quy-tac" la the DUY NHAT co the bam duoc,
     dan thang sang SC18 (keigo:tra_cuu) -- no khong co KeigoPattern/
     KeigoPhrasePair nao ca nen khong the mo mot "trang bai hoc".
-  - 6 chuong con lai hien nhu the thong tin (khong phai <a>) vi trang bai hoc
-    SC17 CHUA lam -- dung tinh than da ghi trong keigo-thiet-ke.md: an het thi
-    luc bat len nguoi hoc khong biet co, hien binh thuong roi bam vao bao 404
-    con te hon.
+  - 6 chuong con lai dan sang trang bai hoc SC17 (keigo:lesson, 23/09/2026).
+    Chuong nao KHONG co noi dung (meta_text rong) van hien the thong tin
+    "sap co" (khong phai <a>) -- bam vao mot trang rong con te hon khong bam
+    duoc.
   - Khong hien thanh tien do % -- giai doan 1 khong lam SRS cho kinh ngu, con
     so % se la con so bia. Con so that la meta_text (so mau/vi du/cap tu),
     tinh san o view.{% endcomment %}
@@ -53,6 +53,8 @@ Cong voi apps/keigo/views.py:
     {% for lesson in lessons %}
       {% if lesson.slug == verb_table_lesson_slug %}
       <a class="lesson-card" href="{% url 'keigo:tra_cuu' %}" style="border-color:var(--accent);">
+      {% elif lesson.meta_text %}
+      <a class="lesson-card" href="{% url 'keigo:lesson' lesson.slug %}">
       {% else %}
       <div class="lesson-card is-soon">
       {% endif %}
@@ -69,7 +71,7 @@ Cong voi apps/keigo/views.py:
         {% else %}
           <div class="meta">{% label "keigo.index.lesson.soon" %}</div>
         {% endif %}
-      {% if lesson.slug == verb_table_lesson_slug %}
+      {% if lesson.slug == verb_table_lesson_slug or lesson.meta_text %}
       </a>
       {% else %}
       </div>

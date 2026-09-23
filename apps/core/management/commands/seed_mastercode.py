@@ -29,6 +29,7 @@ from apps.core.constants import (
     CODE_TYPE_KEIGO_STYLE,
     CODE_TYPE_KEIGO_PAIR_TYPE,
     CODE_TYPE_QUESTION_TYPE,
+    CODE_TYPE_KEEPALIVE_INTERVAL,
 )
 
 # (code, code_name, mother_code, description, sort_order)
@@ -145,6 +146,14 @@ SEED_DATA = {
         ("mcq_blank", "Điền vào chỗ trống", None, "Chọn 1 trong 2-4 phương án", 1),
         ("ordering", "Sắp xếp câu (★)", None, "Đáp án sách dạng 3(1234)", 2),
         ("cloze", "Điền vào đoạn văn", None, "Đọc đoạn văn rồi điền (11)-(15)", 3),
+    ],
+    # Chu kỳ tự ping giữ server Render free thức — code = số phút, PHẢI < 15
+    # (Render cho ngủ sau 15 phút không có request). Xem apps/core/keepalive.py.
+    CODE_TYPE_KEEPALIVE_INTERVAL: [
+        ("3", "3 phút", None, "Ping dày nhất", 1),
+        ("5", "5 phút", None, "Mặc định", 2),
+        ("10", "10 phút", None, "", 3),
+        ("14", "14 phút", None, "Sát ngưỡng ngủ 15 phút của Render — mạng chậm có thể lỡ", 4),
     ],
 }
 

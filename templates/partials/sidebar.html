@@ -24,12 +24,12 @@ Khong view nao phai sua vi giu nguyen ten context.
 Rieng nhom "Kinh ngu" la <details> (khong JavaScript -- dung tinh than da co
 o SC05, xem templates/vocabulary/list.html): bam vao tieu de xo/thu muc con,
 tu mo san khi dang o bat ky trang keigo nao. `active_sub` la context MOI
-("index"/"tra_cuu", apps/keigo/views.py them vao) de to dung muc con dang mo;
+("index"/"tra_cuu"/"hoc_tu", apps/keigo/views.py them vao) de to dung muc con dang mo;
 view nao chua truyen thi khong muc con nao sang, khong loi.
 
-"Hoc tu" / "Bai tap" la <span> khong phai <a> -- SC17/SC20-22 chua co trang
-that, hien "sap co" giong dung cach trang muc luc SC16 dang lam voi 6/7
-chuong chua co trang bai hoc.
+"Hoc tu" (SC17, 23/09/2026) tro toi keigo:hoc -- redirect sang chuong dau
+tien, khong hardcode slug o day. "Bai tap" van la <span> khong phai <a> --
+SC20-22 chua co trang that, hien "sap co".
 
 Nhom "Quan tri" (23/09/2026, theo yeu cau cua Dat: "chuyen cac muc trong left
 panel cua trang quan tri thanh nut con trong left panel chinh") cung la
@@ -67,8 +67,8 @@ falsy, khong loi).
            href="{% url 'keigo:index' %}">{% label "keigo.nav.index" %}</a>
         <a class="sidenav-sublink{% if active_nav == "keigo" and active_sub == "tra_cuu" %} active{% endif %}"
            href="{% url 'keigo:tra_cuu' %}">{% label "keigo.nav.tra_cuu" %}</a>
-        <span class="sidenav-sublink is-soon">{% label "keigo.nav.hoc_tu" %}
-          <span class="tag">{% label "keigo.nav.soon" %}</span></span>
+        <a class="sidenav-sublink{% if active_nav == "keigo" and active_sub == "hoc_tu" %} active{% endif %}"
+           href="{% url 'keigo:hoc' %}">{% label "keigo.nav.hoc_tu" %}</a>
         <span class="sidenav-sublink is-soon">{% label "keigo.nav.bai_tap" %}
           <span class="tag">{% label "keigo.nav.soon" %}</span></span>
       </div>
@@ -96,6 +96,8 @@ falsy, khong loi).
              href="{% url 'admin_panel:error_report_list' %}">{% label "common.nav.admin_error_reports" %}
             {% if pending_error_reports %}<span class="tag">{{ pending_error_reports }}</span>{% endif %}
           </a>
+          <a class="sidenav-sublink{% if active_admin_nav == "system" %} active{% endif %}"
+             href="{% url 'admin_panel:system_settings' %}">{% label "common.nav.admin_system" %}</a>
         </div>
       </details>
     {% endif %}

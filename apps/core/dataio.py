@@ -199,6 +199,11 @@ def model_label(model):
     return f"{model._meta.app_label}.{model._meta.model_name}"
 
 
+# Bảng cấu hình hệ thống, không phải dữ liệu học — không đưa ra màn nhập/xuất.
+# SiteSetting là bảng một dòng, sửa ở màn "Cài đặt hệ thống".
+NON_DATA_MODELS = frozenset({"core.sitesetting"})
+
+
 def _all_local_models():
     found = []
     for app_label in LOCAL_APP_LABELS:
@@ -208,6 +213,8 @@ def _all_local_models():
             continue
         for model in config.get_models():
             if model._meta.auto_created or model._meta.proxy:
+                continue
+            if model_label(model) in NON_DATA_MODELS:
                 continue
             found.append(model)
     return found

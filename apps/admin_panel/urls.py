@@ -10,6 +10,8 @@ urlpatterns = [
     path("contributions/<int:pk>/xu-ly/", views.contribution_action_view, name="contribution_action"),
     path("error-reports/", views.error_report_list_view, name="error_report_list"),
     path("error-reports/<int:pk>/xu-ly/", views.error_report_action_view, name="error_report_action"),
+    path("system/", views.system_settings_view, name="system_settings"),
+    path("system/ping-thu/", views.system_ping_now_view, name="system_ping_now"),
     path("data/", views.data_index_view, name="data_index"),
     # Đặt trước route nhập để "mau.csv" / "xuat.xlsx" không bị nuốt mất.
     path("data/<str:model_label>/mau.<str:fmt>", views.data_template_view, name="data_template"),

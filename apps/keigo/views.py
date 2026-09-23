@@ -1,25 +1,32 @@
 """
-View cua app keigo -- SC16 (muc luc) + SC18 (bang tra dong tu).
+View cua app keigo -- SC16 (muc luc) + SC17 (bai hoc) + SC18 (bang tra dong tu).
 
-Giai doan 1 chi co noi dung kinh ngu (khong co bai tap) -- SC17/SC19-22 CHUA
-lam, xem claude/keigo-thiet-ke.md muc 7 va muc 8. Chuong nao chua co trang bai
-hoc (SC17) thi the tren SC16 hien dang "sap co", KHONG dan toi 404 -- dung
-quyet dinh 4 da ghi trong htmlTemplate/SC16_KinhNguMucLuc_A.html.
+SC19-22 CHUA lam, xem claude/keigo-thiet-ke.md muc 7 va muc 8. Chuong nao
+khong co noi dung (meta_text rong) thi the tren SC16 van hien dang "sap co",
+KHONG dan toi 404 -- dung quyet dinh 4 trong htmlTemplate/SC16_KinhNguMucLuc_A.html.
 
 Ban quyen PDF (Thaolejp / HCC JAPAN) CHUA xin phep -- xem keigo-thiet-ke.md
 muc 0. Cho toi khi Dat quyet, ca khu kinh ngu doi dang nhap, coi nhu tai lieu
 hoc noi bo thay vi cong khai roi phai khoa lai sau.
 """
+import logging
+
+from django.contrib import messages as flash
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count
-from django.http import QueryDict
-from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponse, QueryDict
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils.http import urlencode
 
-from apps.core.properties import label
+from apps.core.properties import label, message
 
+from . import pdf as keigo_pdf
 from . import selectors
 from .models import KeigoForm, KeigoLesson, KeigoPattern, KeigoVerb
+
+logger = logging.getLogger(__name__)
 
 # Chuong duy nhat KHONG co trang bai hoc rieng -- no dan thang sang bang tra.
 # Xem ghi chu 3 o dau htmlTemplate/SC16_KinhNguMucLuc_A.html.
@@ -122,3 +129,102 @@ def verb_detail_view(request, pk):
     verb = selectors.attach_columns([verb])[0]
     context = {"verb": verb, "active_nav": "keigo", "active_sub": "tra_cuu"}
     return render(request, "keigo/verb_detail.html", context)
+
+
+def lesson_url(lesson):
+    """URL "mo chuong nay" -- chuong bang chia dong tu di thang sang SC18."""
+    if lesson.slug == VERB_TABLE_LESSON_SLUG:
+        return reverse("keigo:tra_cuu")
+    return reverse("keigo:lesson", args=[lesson.slug])
+
+
+def _lesson_position(lesson):
+    """(tat ca chuong theo thu tu, vi tri 0-based cua `lesson`)."""
+    lessons = list(KeigoLesson.objects.order_by("display_order", "slug"))
+    position = next(i for i, x in enumerate(lessons) if x.pk == lesson.pk)
+    return lessons, position
+
+
+@login_required
+def learn_start_view(request):
+    """Muc "Hoc tu" o sidebar -- vao chuong dau tien co trang bai hoc. La
+    redirect chu khong hardcode slug trong sidebar.html, de doi thu tu chuong
+    qua SC07b khong phai sua template."""
+    lesson = (KeigoLesson.objects.exclude(slug=VERB_TABLE_LESSON_SLUG)
+              .order_by("display_order", "slug").first())
+    if lesson is None:
+        return redirect("keigo:index")
+    return redirect("keigo:lesson", slug=lesson.slug)
+
+
+@login_required
+def lesson_view(request, slug):
+    """SC17_BaiHoc -- phuong an 3: danh sach muc ben trai, moi lan hien MOT
+    muc; truoc/sau la link GET ?muc=<key>. Het muc cuoi thi "tiep" dan sang
+    chuong sau. Xem selectors.lesson_items()."""
+    lesson = get_object_or_404(KeigoLesson, slug=slug)
+    if lesson.slug == VERB_TABLE_LESSON_SLUG:
+        return redirect("keigo:tra_cuu")
+
+    base_url = reverse("keigo:lesson", args=[lesson.slug])
+    items = selectors.lesson_items(lesson)
+    for item in items:
+        item.url = f"{base_url}?{urlencode({selectors.LESSON_ITEM_PARAM: item.key})}"
+
+    lessons, position = _lesson_position(lesson)
+    prev_lesson = lessons[position - 1] if position > 0 else None
+    next_lesson = lessons[position + 1] if position + 1 < len(lessons) else None
+    for other in (prev_lesson, next_lesson):
+        if other is not None:
+            other.url = lesson_url(other)
+
+    index, current = None, None
+    prev_item = next_item = None
+    if items:
+        index, current = selectors.pick_item(items, request.GET.get(selectors.LESSON_ITEM_PARAM, ""))
+        selectors.load_item_detail(lesson, current)
+        prev_item = items[index - 1] if index > 0 else None
+        next_item = items[index + 1] if index + 1 < len(items) else None
+
+    context = {
+        "lesson": lesson,
+        "lesson_number": position + 1,
+        "lesson_total": len(lessons),
+        "stats": selectors.lesson_stats(lesson),
+        "items": items,
+        "current": current,
+        "position": (index + 1) if items else 0,
+        "pattern_total": sum(1 for i in items if i.kind == selectors.KIND_PATTERN),
+        "prev_item": prev_item,
+        "next_item": next_item,
+        "prev_lesson": prev_lesson,
+        "next_lesson": next_lesson,
+        "active_nav": "keigo",
+        "active_sub": "hoc_tu",  # to dung muc "Hoc tu" trong sidebar
+    }
+    return render(request, "keigo/lesson.html", context)
+
+
+@login_required
+def lesson_pdf_view(request, slug):
+    """Nut "In on tap chuong nay" o SC17 -- PDF TOAN BO noi dung chuong.
+
+    GET, khong ghi gi vao DB nen la link <a> binh thuong. Tra `inline` de
+    trinh duyet mo san trong tab moi: xem, in giay hay luu file deu duoc.
+    Sinh moi moi lan (vai tram dong, duoi 1 giay), khong luu vao MEDIA_ROOT --
+    MEDIA_ROOT tren Render la ephemeral, va du lieu sua qua SC07b thi PDF tu
+    cap nhat theo."""
+    lesson = get_object_or_404(KeigoLesson, slug=slug)
+    if lesson.slug == VERB_TABLE_LESSON_SLUG:
+        return redirect("keigo:tra_cuu")
+    lessons, position = _lesson_position(lesson)
+    try:
+        data = keigo_pdf.build_lesson_pdf(lesson, position + 1, len(lessons))
+    except keigo_pdf.KeigoPdfFontError:
+        logger.exception("Thieu font khi sinh PDF on tap kinh ngu")
+        flash.error(request, message("keigo.pdf.error.font_missing"))
+        return redirect("keigo:lesson", slug=lesson.slug)
+    response = HttpResponse(data, content_type="application/pdf")
+    filename = keigo_pdf.lesson_pdf_filename(lesson, position + 1)
+    response["Content-Disposition"] = f'inline; filename="{filename}"'
+    return response

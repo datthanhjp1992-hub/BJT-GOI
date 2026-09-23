@@ -10,6 +10,8 @@ PHẠM VI (cập nhật 13/09/2026):
 4. NHẬP / XUẤT DỮ LIỆU bằng file CSV & Excel cho cả 18 bảng + một mẫu gộp
    "Từ vựng đầy đủ": tải file mẫu, xuất dữ liệu hiện có, chọn chế độ ghi, tải
    file lên và xem trước rồi mới ghi.
+5. CÀI ĐẶT HỆ THỐNG — bật/tắt và chọn chu kỳ tự ping giữ server Render free
+   luôn thức (SiteSetting + apps/core/keepalive.py).
 
 Sửa/xoá TỪNG bản ghi vẫn đẩy sang Django admin ở `/admin/` — viết lại form
 CRUD từng bảng ở đây là làm lại thứ Django cho không. Cái Django admin làm dở
@@ -35,13 +37,14 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from apps.core import dataio
+from apps.core import dataio, keepalive
 
 from apps.core.constants import (
     ERROR_STATUS_DISMISSED,
     ERROR_STATUS_FIXED,
     ERROR_STATUS_PENDING,
 )
+from apps.core.models import SiteSetting
 from apps.core.properties import label, message
 from apps.error_reports import services as error_report_services
 from apps.error_reports.forms import ErrorReportActionForm
@@ -50,6 +53,8 @@ from apps.gamification import services as gamification_services
 from apps.gamification.forms import ContributionActionForm
 from apps.gamification.models import Contribution
 from apps.vocabulary.models import Topic, Vocabulary
+
+from .forms import SiteSettingForm
 
 User = get_user_model()
 
@@ -108,6 +113,51 @@ def overview_view(request):
         "pending_error_reports": _pending_error_report_count(),
     }
     return render(request, "admin_panel/overview.html", context)
+
+
+# ---------------------------------------------------------------------------
+# Cài đặt hệ thống — tự ping giữ Render free thức
+# ---------------------------------------------------------------------------
+
+
+@staff_required
+def system_settings_view(request):
+    """Bật/tắt tự ping + chọn chu kỳ. Luồng nền đọc lại SiteSetting mỗi ~30
+    giây nên lưu xong là có hiệu lực, không cần deploy lại."""
+    setting = SiteSetting.load()
+    if request.method == "POST":
+        form = SiteSettingForm(request.POST, instance=setting)
+        if form.is_valid():
+            form.save()
+            django_messages.success(request, message("common.success.saved"))
+            return redirect("admin_panel:system_settings")
+    else:
+        form = SiteSettingForm(instance=setting)
+
+    context = {
+        "form": form,
+        "setting": setting,
+        "target_url": keepalive.target_url(),
+        "active_nav": "admin",
+        "active_admin_nav": "system",
+        "pending_error_reports": _pending_error_report_count(),
+    }
+    return render(request, "admin_panel/system_settings.html", context)
+
+
+@staff_required
+@require_POST
+def system_ping_now_view(request):
+    """Nút "Ping thử ngay": gọi /healthz/ một lần để admin kiểm tra URL đúng
+    chưa, ghi kết quả như một lần ping thường."""
+    ok, status = keepalive.ping_once()
+    if keepalive.target_url():
+        keepalive.record_result(ok, status)
+    if ok:
+        django_messages.success(request, message("admin.system.success.ping", status=status))
+    else:
+        django_messages.error(request, message("admin.system.error.ping", status=status))
+    return redirect("admin_panel:system_settings")
 
 
 # ---------------------------------------------------------------------------

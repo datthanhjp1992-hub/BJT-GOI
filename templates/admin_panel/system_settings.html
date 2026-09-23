@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}Cài đặt hệ thống — hiện chỉ có nhóm tự ping giữ server Render free
+luôn thức. Model: apps.core.models.SiteSetting (bảng một dòng); luồng nền:
+apps/core/keepalive.py. Dropdown chu kỳ lấy từ MasterCode code_type 17.{% endcomment %}
+
+{% block title %}{% label "admin.system.title" %} | {% label "common.brand.name" %}{% endblock %}
+{% block main_attrs %} style="padding:0;"{% endblock %}
+
+{% block main %}
+<div class="admin-content">
+    {% include "partials/messages.html" %}
+
+    <div class="eyebrow">{% label "admin.system.eyebrow" %}</div>
+    <h1 class="serif" style="font-size:28px;margin:0 0 20px;">{% label "admin.system.title" %}</h1>
+
+    <div class="grid cols-2" style="gap:20px;align-items:start;">
+      <div>
+        <div class="eyebrow">{% label "admin.system.section.keepalive" %}</div>
+        <div class="card">
+          <p class="muted" style="margin:0 0 16px;font-size:13.5px;">
+            {% message "admin.system.hint.keepalive" url="/healthz/" %}
+          </p>
+          <form method="post" action="{% url 'admin_panel:system_settings' %}">
+            {% csrf_token %}
+            <label class="checkbox-row" style="margin-bottom:18px;">
+              <input type="checkbox" name="keepalive_enabled" id="id_keepalive_enabled"{% if form.keepalive_enabled.value %} checked{% endif %}>
+              <span>{{ form.keepalive_enabled.label }}</span>
+            </label>
+            <div class="field">
+              <label for="id_keepalive_interval_code">{{ form.keepalive_interval_code.label }}</label>
+              <select name="keepalive_interval_code" id="id_keepalive_interval_code">
+                {% for value, name in form.keepalive_interval_code.field.choices %}
+                  <option value="{{ value }}"{% if form.keepalive_interval_code.value|stringformat:"s" == value|stringformat:"s" %} selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+              </select>
+              {% for error in form.keepalive_interval_code.errors %}<p class="error">{{ error }}</p>{% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">{% label "common.button.save" %}</button>
+          </form>
+          <p class="muted" style="margin:16px 0 0;font-size:12.5px;">{% message "admin.system.hint.hours_budget" %}</p>
+          <p class="muted" style="margin:8px 0 0;font-size:12.5px;">{% message "admin.system.hint.wake_limit" %}</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="eyebrow">{% label "admin.system.section.status" %}</div>
+        <div class="card" style="padding:0;">
+          <table>
+            <tr>
+              <th style="width:40%;">{% label "common.field.status" %}</th>
+              <td>
+                {% if setting.keepalive_enabled %}
+                  <span class="tag">{% label "admin.system.tag.on" %}</span>
+                {% else %}
+                  <span class="tag level">{% label "admin.system.tag.off" %}</span>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th>{% label "admin.system.field.target_url" %}</th>
+              <td class="muted" style="word-break:break-all;">{{ target_url|default:"—" }}</td>
+            </tr>
+            <tr>
+              <th>{% label "admin.system.field.last_ping_at" %}</th>
+              <td>{% if setting.keepalive_last_ping_at %}{{ setting.keepalive_last_ping_at|date:"d/m/Y H:i:s" }}{% else %}—{% endif %}</td>
+            </tr>
+            <tr>
+              <th>{% label "admin.system.field.last_status" %}</th>
+              <td>
+                {% if setting.keepalive_last_ping_at %}
+                  {% if setting.keepalive_last_ok %}
+                    <span class="tag">{% label "admin.system.tag.ok" %}</span>
+                  {% else %}
+                    <span class="tag level">{% label "admin.system.tag.failed" %}</span>
+                  {% endif %}
+                  <span class="muted" style="font-size:13px;">{{ setting.keepalive_last_status }}</span>
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        {% if not target_url %}
+          <p class="muted" style="font-size:12.5px;margin:12px 0 0;">{% message "admin.system.hint.no_target" %}</p>
+        {% elif not setting.keepalive_last_ping_at %}
+          <p class="muted" style="font-size:12.5px;margin:12px 0 0;">{% message "admin.system.hint.never_pinged" %}</p>
+        {% endif %}
+
+        {% if target_url %}
+          <form method="post" action="{% url 'admin_panel:system_ping_now' %}" style="margin-top:14px;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline">{% label "admin.system.button.ping_now" %}</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

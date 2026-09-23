@@ -95,3 +95,56 @@ class MasterCode(AuditableModel):
                 )
             if self.mother_code == self.code:
                 raise ValidationError({"mother_code": "mother_code không được trùng chính code này."})
+
+
+class SiteSetting(AuditableModel):
+    """
+    Cài đặt toàn hệ thống — bảng MỘT DÒNG (pk luôn = 1), đọc bằng
+    SiteSetting.load(). Admin sửa ở màn "Cài đặt hệ thống"
+    (admin_panel:system_settings).
+
+    Hiện chỉ có nhóm keep-alive: luồng nền trong apps/core/keepalive.py đọc lại
+    bảng này mỗi ~30 giây nên bật/tắt hay đổi chu kỳ có hiệu lực ngay, không cần
+    deploy lại. Hai cột keepalive_last_* do CHÍNH luồng đó ghi (bằng .update(),
+    không qua save() nên không đè updated_by của admin).
+    """
+    SINGLETON_PK = 1
+
+    keepalive_enabled = models.BooleanField(
+        default=True,
+        help_text="Bật = cứ mỗi chu kỳ tự gọi /healthz/ để Render free không cho server ngủ.",
+    )
+    keepalive_interval_code = models.CharField(
+        max_length=10,
+        default="5",
+        help_text="MasterCode code_type 17 — code chính là số phút giữa hai lần ping.",
+    )
+    keepalive_last_ping_at = models.DateTimeField(null=True, blank=True, editable=False)
+    keepalive_last_status = models.CharField(max_length=255, blank=True, editable=False)
+    keepalive_last_ok = models.BooleanField(null=True, blank=True, editable=False)
+
+    class Meta:
+        verbose_name = "Cài đặt hệ thống"
+        verbose_name_plural = "Cài đặt hệ thống"
+
+    def __str__(self):
+        return "Cài đặt hệ thống"
+
+    def save(self, *args, **kwargs):
+        self.pk = self.SINGLETON_PK
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=cls.SINGLETON_PK)
+        return obj
+
+    @property
+    def keepalive_interval_minutes(self):
+        """Mã không hợp lệ (bị sửa tay trong DB) -> quay về 5 phút chứ không
+        làm chết luồng nền."""
+        try:
+            minutes = int(self.keepalive_interval_code)
+        except (TypeError, ValueError):
+            return 5
+        return minutes if 1 <= minutes < 15 else 5

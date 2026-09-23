@@ -29,6 +29,14 @@ if RENDER_EXTERNAL_HOSTNAME:
     if _origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS = [*CSRF_TRUSTED_ORIGINS, _origin]
 
+# Đích tự ping giữ server free thức (apps/core/keepalive.py). Có thể ghi đè
+# bằng biến môi trường KEEPALIVE_URL; đặt KEEPALIVE_URL="" để tắt hẳn ở mức
+# hạ tầng (khi đó bật/tắt trên màn quản trị không còn tác dụng).
+KEEPALIVE_URL = os.environ.get(
+    "KEEPALIVE_URL",
+    f"https://{RENDER_EXTERNAL_HOSTNAME}/healthz/" if RENDER_EXTERNAL_HOSTNAME else "",
+)
+
 # Render gom stdout/stderr vào tab Logs — ghi thẳng ra đó, không ghi ra file
 # vì đĩa của instance là tạm, mất sạch sau mỗi lần deploy.
 LOGGING = {
