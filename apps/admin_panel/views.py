@@ -103,6 +103,7 @@ def overview_view(request):
         "stats": stats,
         "recent_users": User.objects.order_by("-date_joined")[:RECENT_USER_LIMIT],
         "display_name": (request.user.first_name or "").strip() or request.user.get_username(),
+        "active_nav": "admin",
         "active_admin_nav": "overview",
         "pending_error_reports": _pending_error_report_count(),
     }
@@ -262,6 +263,7 @@ def data_index_view(request):
     """Danh sách mẫu gộp + 18 bảng, mỗi dòng có lối tải mẫu / xuất / nhập."""
     context = {
         "tables": _table_rows(),
+        "active_nav": "admin",
         "active_admin_nav": "data",
         "pending_error_reports": _pending_error_report_count(),
         "max_rows": dataio.MAX_IMPORT_ROWS,
@@ -326,6 +328,7 @@ def _import_context(request, dataset, mode, extra=None):
         "MODE_INSERT": dataio.MODE_INSERT,
         "MODE_UPSERT": dataio.MODE_UPSERT,
         "MODE_UPDATE": dataio.MODE_UPDATE,
+        "active_nav": "admin",
         "active_admin_nav": "data",
         "pending_error_reports": _pending_error_report_count(),
     }
@@ -622,6 +625,7 @@ def error_report_list_view(request):
         "selected": selected,
         "status_key": status_key,
         "counts": counts,
+        "active_nav": "admin",
         "active_admin_nav": "error_reports",
         "pending_error_reports": _pending_error_report_count(),
     }
@@ -751,6 +755,7 @@ def contribution_inbox_view(request):
         "type_new_word": gamification_services.CONTRIBUTION_TYPE_NEW_WORD,
         "type_edit_meaning": gamification_services.CONTRIBUTION_TYPE_EDIT_MEANING,
         "type_comment": gamification_services.CONTRIBUTION_TYPE_COMMENT,
+        "active_nav": "admin",
         "active_admin_nav": "contributions",
         "pending_error_reports": _pending_error_report_count(),
         "field_error_key": CONTRIBUTION_ERRORS.get(request.GET.get("error")),

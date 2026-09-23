@@ -5,6 +5,18 @@ Sidebar trai -- thay the topbar ngang cu cho MOI trang KHI DA DANG NHAP
 Khach chua dang nhap van dung partials/topbar_guest.html (topbar ngang don
 gian nhu truoc, KHONG doi).
 
+Icon/ten thuong hieu (.brand) KHONG con o day nua -- da chuyen sang
+partials/topbar_brand.html, mot thanh ngang rieng nam TREN sidebar nay (xem
+templates/base.html). Sidebar tu day chi con link chuc nang, tu "Trang chu"
+tro xuong, dung theo yeu cau cua Dat "icon se la top panel, left panel chi
+hien thi tu trang chu do xuong" (23/09/2026, dot 3).
+
+Khoi "ten nguoi dung / Cai dat / Dang xuat" (truoc day la .site-sidebar-footer
+o CUOI sidebar nay) CUNG da chuyen not sang partials/topbar_brand.html, hien
+o goc phai top panel (23/09/2026, dot 4, theo yeu cau cua Dat: "goc ben tay
+phai man hinh con kha la trong"). Sidebar nay tu day CHI con
+.site-sidebar-nav, khong con footer.
+
 `active_nav` do view truyen vao -- GIU NGUYEN cung bo gia tri nhu topbar cu:
 "home"/"vocabulary"/"review"/"practice_sheet"/"contribution"/"keigo"/"admin".
 Khong view nao phai sua vi giu nguyen ten context.
@@ -18,12 +30,22 @@ view nao chua truyen thi khong muc con nao sang, khong loi.
 "Hoc tu" / "Bai tap" la <span> khong phai <a> -- SC17/SC20-22 chua co trang
 that, hien "sap co" giong dung cach trang muc luc SC16 dang lam voi 6/7
 chuong chua co trang bai hoc.
+
+Nhom "Quan tri" (23/09/2026, theo yeu cau cua Dat: "chuyen cac muc trong left
+panel cua trang quan tri thanh nut con trong left panel chinh") cung la
+<details> giong het "Kinh ngu" -- gom lai 7 link truoc day nam o
+templates/admin_panel/_sidebar.html (file rieng cua khu quan tri, gio KHONG
+con duoc include o dau nua, xem ghi chu dau moi template admin_panel/*.html).
+`active_admin_nav` la context CO SAN tu truoc (apps/admin_panel/views.py da
+tra tu lau, dung cho _sidebar.html cu) -- dung lai nguyen, chi them moi
+`active_nav: "admin"` vao ca 5 view de <details> tu mo dung trang. 3 muc
+"Quan ly nguoi dung/tu vung/chu de" tro thang sang Django admin (/admin/,
+route KHONG do site nay render) nen khong to duoc trang thai active. The
+"Bao cao loi" van giu badge so luong cho xu ly (`pending_error_reports`,
+context nay chi apps/admin_panel/views.py truyen, trang khac khong co la
+falsy, khong loi).
 {% endcomment %}
 <nav class="site-sidebar">
-  <a class="brand" href="{% url 'learning:dashboard' %}">
-    <span class="mark">{% label "common.brand.mark" %}</span>{% label "common.brand.name" %}
-  </a>
-
   <div class="site-sidebar-nav">
     <a class="sidenav-link{% if active_nav == "home" %} active{% endif %}"
        href="{% url 'learning:dashboard' %}">{% label "common.nav.home" %}</a>
@@ -38,7 +60,7 @@ chuong chua co trang bai hoc.
 
     <details class="sidenav-group"{% if active_nav == "keigo" %} open{% endif %}>
       <summary class="sidenav-link{% if active_nav == "keigo" %} active{% endif %}">
-        <span><span class="jp">敬語</span>{% label "common.nav.keigo" %}</span>
+        <span>{% label "common.nav.keigo" %}</span>
       </summary>
       <div class="sidenav-sub">
         <a class="sidenav-sublink{% if active_nav == "keigo" and active_sub == "index" %} active{% endif %}"
@@ -53,18 +75,30 @@ chuong chua co trang bai hoc.
     </details>
 
     {% if user.is_staff %}
-      <a class="sidenav-link{% if active_nav == "admin" %} active{% endif %}"
-         href="{% url 'admin_panel:overview' %}">{% label "common.nav.admin" %}</a>
+      <details class="sidenav-group"{% if active_nav == "admin" %} open{% endif %}>
+        <summary class="sidenav-link{% if active_nav == "admin" %} active{% endif %}">
+          <span>{% label "common.nav.admin" %}</span>
+        </summary>
+        <div class="sidenav-sub">
+          <a class="sidenav-sublink{% if active_admin_nav == "overview" %} active{% endif %}"
+             href="{% url 'admin_panel:overview' %}">{% label "common.nav.admin_overview" %}</a>
+          <a class="sidenav-sublink{% if active_admin_nav == "data" %} active{% endif %}"
+             href="{% url 'admin_panel:data_index' %}">{% label "common.nav.admin_data" %}</a>
+          <a class="sidenav-sublink"
+             href="{% url 'admin:accounts_user_changelist' %}">{% label "common.nav.admin_users" %}</a>
+          <a class="sidenav-sublink"
+             href="{% url 'admin:vocabulary_vocabulary_changelist' %}">{% label "common.nav.admin_vocabulary" %}</a>
+          <a class="sidenav-sublink"
+             href="{% url 'admin:vocabulary_topic_changelist' %}">{% label "common.nav.admin_topics" %}</a>
+          <a class="sidenav-sublink{% if active_admin_nav == "contributions" %} active{% endif %}"
+             href="{% url 'admin_panel:contribution_inbox' %}">{% label "common.nav.admin_inbox" %}</a>
+          <a class="sidenav-sublink{% if active_admin_nav == "error_reports" %} active{% endif %}"
+             href="{% url 'admin_panel:error_report_list' %}">{% label "common.nav.admin_error_reports" %}
+            {% if pending_error_reports %}<span class="tag">{{ pending_error_reports }}</span>{% endif %}
+          </a>
+        </div>
+      </details>
     {% endif %}
   </div>
 
-  <div class="site-sidebar-footer">
-    <a class="sidenav-link" href="{% url 'accounts:profile' %}">{{ user.first_name|default:user.get_username }}</a>
-    <a class="sidenav-link" href="{% url 'accounts:settings' %}">{% label "common.nav.settings" %}</a>
-    {% comment %}Dang xuat phai la POST -- xem apps.accounts.views.logout_view.{% endcomment %}
-    <form method="post" action="{% url 'accounts:logout' %}" style="margin:0;">
-      {% csrf_token %}
-      <button type="submit" class="sidenav-link sidenav-button">{% label "common.nav.logout" %}</button>
-    </form>
-  </div>
 </nav>

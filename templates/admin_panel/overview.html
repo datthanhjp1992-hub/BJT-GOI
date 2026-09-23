@@ -12,11 +12,7 @@ ghi vẫn ở Django admin — xem ghi chú đầu apps/admin_panel/views.py.{% 
 {% block main_attrs %} style="padding:0;"{% endblock %}
 
 {% block main %}
-<div class="admin-layout">
-
-  {% include "admin_panel/_sidebar.html" %}
-
-  <div class="admin-content">
+<div class="admin-content">
     {% include "partials/messages.html" %}
 
     <div class="eyebrow">{% label "admin.overview.eyebrow" %}</div>
@@ -88,6 +84,4 @@ ghi vẫn ở Django admin — xem ghi chú đầu apps/admin_panel/views.py.{% 
       <div class="card"><p class="muted" style="margin:0;">{% label "common.empty.no_data" %}</p></div>
     {% endif %}
   </div>
-
-</div>
 {% endblock %}

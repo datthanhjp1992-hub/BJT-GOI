@@ -1,0 +1,31 @@
+{% load properties_tags %}
+{% comment %}
+Top panel -- icon/ten thuong hieu (trai) + thong tin nguoi dung (phai), ngang
+toan man hinh, luon o TREN sidebar trai (23/09/2026, theo yeu cau cua Dat:
+"icon maichinichi BJT se la top panel... left panel se chi hien thi tu trang
+chu do xuong"). Chi hien khi DA DANG NHAP -- xem templates/base.html. Khach
+chua dang nhap van dung partials/topbar_guest.html rieng (co san icon +
+login/register), KHONG dung file nay.
+
+23/09/2026, dot 4 -- 3 muc "ten nguoi dung / Cai dat / Dang xuat" CHUYEN tu
+partials/sidebar.html (.site-sidebar-footer, khi do nam duoi cung sidebar)
+sang day, theo yeu cau cua Dat: "goc ben tay phai man hinh con kha la trong,
+muon hien thi thong tin nguoi dung o do". Noi dung 3 link/form giu NGUYEN
+(cung urlname, cung nhan), chi doi vi tri va class CSS cho hop voi thanh
+ngang (.site-topbar-user thay vi .sidenav-link/.sidenav-button).
+{% endcomment %}
+<header class="site-topbar">
+  <a class="brand" href="{% url 'learning:dashboard' %}">
+    <span class="mark">{% label "common.brand.mark" %}</span>{% label "common.brand.name" %}
+  </a>
+
+  <div class="site-topbar-user">
+    <a href="{% url 'accounts:profile' %}">{{ user.first_name|default:user.get_username }}</a>
+    <a href="{% url 'accounts:settings' %}">{% label "common.nav.settings" %}</a>
+    {% comment %}Dang xuat phai la POST -- xem apps.accounts.views.logout_view.{% endcomment %}
+    <form method="post" action="{% url 'accounts:logout' %}">
+      {% csrf_token %}
+      <button type="submit">{% label "common.nav.logout" %}</button>
+    </form>
+  </div>
+</header>

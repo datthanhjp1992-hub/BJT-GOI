@@ -11,11 +11,7 @@ thái lọc nằm trên URL để admin bookmark/chia sẻ được.{% endcommen
 {% block main_attrs %} style="padding:0;"{% endblock %}
 
 {% block main %}
-<div class="admin-layout">
-
-  {% include "admin_panel/_sidebar.html" %}
-
-  <div class="admin-content">
+<div class="admin-content">
     {% include "partials/messages.html" %}
 
     <div class="eyebrow">{% label "error_report.admin.eyebrow" %}</div>
@@ -169,6 +165,4 @@ thái lọc nằm trên URL để admin bookmark/chia sẻ được.{% endcommen
       <div class="card"><p class="muted" style="margin:0;">{% message "error_report.admin.empty" %}</p></div>
     {% endif %}
   </div>
-
-</div>
 {% endblock %}

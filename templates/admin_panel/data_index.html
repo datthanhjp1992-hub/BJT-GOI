@@ -10,11 +10,7 @@ là nó tự xuất hiện ở đây, không phải sửa template.{% endcomment
 {% block main_attrs %} style="padding:0;"{% endblock %}
 
 {% block main %}
-<div class="admin-layout">
-
-  {% include "admin_panel/_sidebar.html" %}
-
-  <div class="admin-content">
+<div class="admin-content">
     {% include "partials/messages.html" %}
 
     <div class="eyebrow">{% label "admin.data.eyebrow" %}</div>
@@ -64,6 +60,4 @@ là nó tự xuất hiện ở đây, không phải sửa template.{% endcomment
       </table>
     </div>
   </div>
-
-</div>
 {% endblock %}

@@ -19,11 +19,7 @@ vào của bước xem trước.{% endcomment %}
 {% block main_attrs %} style="padding:0;"{% endblock %}
 
 {% block main %}
-<div class="admin-layout">
-
-  {% include "admin_panel/_sidebar.html" %}
-
-  <div class="admin-content">
+<div class="admin-content">
     {% include "partials/messages.html" %}
 
     <a href="{% url 'admin_panel:data_index' %}" class="muted" style="font-size:13px;">{% label "admin.data.link.back" %}</a>
@@ -232,6 +228,4 @@ vào của bước xem trước.{% endcomment %}
       </table>
     </div>
   </div>
-
-</div>
 {% endblock %}

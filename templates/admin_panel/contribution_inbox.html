@@ -9,11 +9,7 @@ Khác mockup: bỏ ô "Cấp độ BJT" ở khối chi tiết (cấp độ đã 
 {% block main_attrs %} style="padding:0;"{% endblock %}
 
 {% block main %}
-<div class="admin-layout">
-
-  {% include "admin_panel/_sidebar.html" %}
-
-  <div class="admin-content">
+<div class="admin-content">
     {% include "partials/messages.html" %}
 
     <div class="eyebrow">{% label "contribution.inbox.eyebrow" %}</div>
@@ -193,6 +189,4 @@ Khác mockup: bỏ ô "Cấp độ BJT" ở khối chi tiết (cấp độ đã 
       <div class="card"><p class="muted" style="margin:0;">{% message "contribution.inbox.empty" %}</p></div>
     {% endif %}
   </div>
-
-</div>
 {% endblock %}

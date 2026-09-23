@@ -26,26 +26,41 @@ Block cho template con:
   cua topbar.html). Class `.app-shell-guest` tra .app-shell ve display:block
   binh thuong (khong flex) de khach van thay bo cuc xep doc nhu truoc, khong
   co gi doi voi ho.
+
+  23/09/2026, dot 3 -- them mot thanh ngang tren cung CHI CO icon/ten thuong
+  hieu cho nguoi da dang nhap (partials/topbar_brand.html), theo yeu cau cua
+  Dat "icon se la top panel, left panel chi hien thi tu trang chu do xuong".
+  `.app-shell` gio la flex-direction:column (thanh ngang tren, roi toi hang
+  duoi gom sidebar+noi dung); `.app-shell-body` la div MOI dam nhan vai tro
+  flex-row ma `.app-shell` tung lam truoc day. Voi khach thi `.app-shell-body`
+  chi bao mot minh `.app-main` (khong sidebar) nen van hien binh thuong du
+  khong co CSS rieng cho truong hop nay -- xem ghi chu trong 3 file
+  static/css/theme_*.css.
   {% endcomment %}
   <div class="app-shell{% if not user.is_authenticated %} app-shell-guest{% endif %}">
     {% if user.is_authenticated %}
-      {% include "partials/sidebar.html" %}
+      {% include "partials/topbar_brand.html" %}
     {% else %}
       {% include "partials/topbar_guest.html" %}
     {% endif %}
-    <div class="app-main">
-      <main{% block main_attrs %}{% endblock %}>
-        {% comment %}Trang thường chỉ cần override `content`. Trang cần bố cục
-        khác hẳn (khu quản trị: sidebar riêng + nội dung, tràn hết chiều
-        ngang) thì override cả `main` để thoát khỏi khung .wrap.{% endcomment %}
-        {% block main %}
-        <div class="wrap"{% block wrap_attrs %}{% endblock %}>
-          {% include "partials/messages.html" %}
-          {% block content %}{% endblock %}
-        </div>
-        {% endblock %}
-      </main>
-      <footer class="note">{% label "common.brand.name" %} — {% label "common.brand.tagline" %}</footer>
+    <div class="app-shell-body">
+      {% if user.is_authenticated %}
+        {% include "partials/sidebar.html" %}
+      {% endif %}
+      <div class="app-main">
+        <main{% block main_attrs %}{% endblock %}>
+          {% comment %}Trang thường chỉ cần override `content`. Trang cần bố cục
+          khác hẳn (khu quản trị: sidebar riêng + nội dung, tràn hết chiều
+          ngang) thì override cả `main` để thoát khỏi khung .wrap.{% endcomment %}
+          {% block main %}
+          <div class="wrap"{% block wrap_attrs %}{% endblock %}>
+            {% include "partials/messages.html" %}
+            {% block content %}{% endblock %}
+          </div>
+          {% endblock %}
+        </main>
+        <footer class="note">{% label "common.brand.name" %} — {% label "common.brand.tagline" %}</footer>
+      </div>
     </div>
   </div>
   <script src="{% static 'js/main.js' %}"></script>

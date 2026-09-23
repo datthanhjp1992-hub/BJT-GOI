@@ -321,15 +321,21 @@ table.keigo-table th .jp{font-family:var(--serif);font-size:15px;color:var(--ink
    Sidebar trai toan site (23/09/2026) -- thay topbar ngang cu cho nguoi da
    dang nhap. Khach chua dang nhap van dung .topbar cu (khong doi).
    ========================================================================== */
-.app-shell{display:flex;align-items:stretch;min-height:100vh;}
+.app-shell{display:flex;flex-direction:column;min-height:100vh;}
 .app-shell.app-shell-guest{display:block;min-height:0;}
+
+.site-topbar{display:flex;align-items:center;justify-content:space-between;height:74px;padding:0 24px;flex:none;border-bottom:1px solid var(--border);background:var(--surface);}
+.site-topbar .brand{padding:0;}
+.site-topbar-user{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--ink-soft);}
+.site-topbar-user form{margin:0;}
+.site-topbar-user button{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;}
+
+.app-shell-body{display:flex;align-items:stretch;flex:1;min-height:0;}
 
 .site-sidebar{width:250px;flex:none;display:flex;flex-direction:column;
   border-right:2px solid var(--border);background:var(--surface);}
-.site-sidebar .brand{padding:22px 20px 14px;}
 
 .site-sidebar-nav{flex:1;overflow-y:auto;padding:6px 14px;}
-.site-sidebar-footer{padding:10px 14px;border-top:2px solid var(--border);}
 
 .sidenav-link{display:block;padding:10px 16px;border-radius:14px;color:var(--ink-soft);
   margin-bottom:3px;font-size:14.5px;font-weight:600;text-decoration:none;cursor:pointer;
@@ -357,12 +363,12 @@ table.keigo-table th .jp{font-family:var(--serif);font-size:15px;color:var(--ink
 .app-main>main{flex:1;}
 
 @media (max-width:900px){
-  .app-shell{flex-direction:column;}
+  .site-topbar{height:auto;padding:12px 16px;flex-wrap:wrap;gap:8px 14px;}
+  .site-topbar-user{gap:12px;font-size:13.5px;}
+  .app-shell-body{flex-direction:column;}
   .site-sidebar{width:auto;flex-direction:row;flex-wrap:wrap;align-items:center;
     border-right:none;border-bottom:2px solid var(--border);padding:10px 14px;gap:2px 4px;}
-  .site-sidebar .brand{padding:0;margin-right:auto;}
   .site-sidebar-nav{flex:none;display:flex;flex-wrap:wrap;padding:0;overflow:visible;gap:2px;}
-  .site-sidebar-footer{flex:none;display:flex;padding:0;border-top:none;gap:2px;}
   .sidenav-group{position:relative;}
   .sidenav-sub{position:absolute;top:100%;left:0;margin-top:4px;background:var(--surface);
     border:2px solid var(--border);border-radius:16px;padding:6px;z-index:30;min-width:180px;
