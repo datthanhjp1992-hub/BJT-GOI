@@ -88,8 +88,9 @@ def register_view(request):
 @require_POST
 def logout_view(request):
     """Chỉ nhận POST: đăng xuất bằng link GET là bị CSRF (một thẻ <img> trên
-    trang khác cũng đá được người dùng ra ngoài). Nút Đăng xuất ở topbar là
-    một <form method="post"> — xem templates/partials/topbar.html.
+    trang khác cũng đá được người dùng ra ngoài). Nút Đăng xuất là một
+    <form method="post"> — xem templates/partials/sidebar.html (23/09/2026,
+    trước đó ở templates/partials/topbar.html).
     """
     if request.user.is_authenticated:
         logout(request)

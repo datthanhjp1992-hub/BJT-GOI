@@ -243,3 +243,128 @@ input[type=checkbox],input[type=radio]{width:auto;padding:0;margin:0;flex:none;}
   .review-hero .btn{display:block;width:100%;text-align:center;}
   .daybar-labels{font-size:11.5px;}
 }
+
+/* =============================================================================
+   SC16-SC19 -- Kinh ngu (23/09/2026)
+   ========================================================================== */
+
+/* Bug co san, khong rieng man nay: .topbar khong co media query nen tren man
+   hep (~390px) ca trang cuon ngang. Them muc "Kinh ngu" vao navmeta cang lam
+   no rong hon nen phai va luon o day. */
+@media (max-width:720px){
+  .topbar .wrap{height:auto;flex-wrap:wrap;gap:10px 14px;padding-top:12px;padding-bottom:12px;}
+  .brand{font-size:19px;}
+  nav.mainnav{order:3;flex:1 1 100%;gap:16px;font-size:14px;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  nav.mainnav a{white-space:nowrap;}
+  .navmeta{gap:10px;font-size:13.5px;}
+  .navmeta .pill{padding:7px 13px;}
+}
+
+.navmeta-feature{display:inline-flex;align-items:center;gap:7px;color:var(--ink-soft);
+  border-bottom:2px solid transparent;padding:5px 2px;}
+.navmeta-feature .jp{font-family:var(--serif);font-size:15px;}
+.navmeta-feature:hover,.navmeta-feature.active{color:var(--accent);border-bottom-color:var(--accent);}
+.navmeta-divider{color:var(--border);}
+
+.lesson-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px;}
+.lesson-card{display:flex;flex-direction:column;gap:10px;padding:22px 24px;
+  background:var(--surface);border:1px solid var(--border);border-radius:0;
+  color:var(--ink);transition:border-color .18s ease,box-shadow .18s ease,transform .12s ease;}
+a.lesson-card:hover{border-color:var(--accent);transform:translateY(-2px);
+  box-shadow:3px 3px 0 var(--ink);}
+a.lesson-card:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+.lesson-card.is-soon{opacity:.62;}
+.lesson-card .vi{font-size:15px;font-weight:600;letter-spacing:.01em;}
+.lesson-card .meta{margin-top:auto;padding-top:6px;font-size:13px;color:var(--ink-soft);}
+.lesson-num{width:26px;height:26px;border-radius:50%;background:var(--accent-soft);
+  color:var(--accent-dark);font-family:var(--serif);font-size:13px;
+  display:inline-flex;align-items:center;justify-content:center;flex:none;}
+
+.figrow{display:grid;grid-template-columns:repeat(3,auto);gap:20px 30px;justify-content:start;}
+.figrow div{min-width:78px;}
+.figrow .num{font-family:var(--serif);font-size:28px;color:var(--accent-dark);line-height:1.1;}
+.figrow .label{font-size:13px;color:var(--ink-soft);}
+
+table.keigo-table{table-layout:fixed;}
+table.keigo-table th:first-child,table.keigo-table td:first-child{width:22%;}
+table.keigo-table td{vertical-align:top;}
+table.keigo-table th .jp{font-family:var(--serif);font-size:15px;color:var(--ink);}
+.form-item{display:block;margin-bottom:7px;}
+.form-item:last-child{margin-bottom:0;}
+.form-item .jp{font-family:var(--serif);font-size:16.5px;}
+.form-item .note{display:block;color:var(--ink-soft);font-size:12px;margin-top:1px;}
+.irr{color:var(--gold, var(--accent-dark));font-size:11px;margin-right:3px;vertical-align:2px;}
+.kchip{display:inline-block;margin-left:5px;padding:0 5px;border-radius:0;
+  background:var(--accent-soft);color:var(--accent-dark);font-size:11px;line-height:16px;}
+.dash{color:var(--border);}
+.verb-cell .jp{font-family:var(--serif);font-size:19px;}
+.verb-cell .vi{display:block;color:var(--ink-soft);font-size:13px;margin-top:2px;}
+
+@media (max-width:720px){
+  .keigo-hero{flex-direction:column;align-items:stretch;}
+  .figrow{grid-template-columns:repeat(2,1fr);}
+  .grid.cols-3,.grid.cols-2{grid-template-columns:1fr;}
+
+  table.keigo-table thead{position:absolute;left:-9999px;}
+  table.keigo-table,table.keigo-table tbody,table.keigo-table tr,table.keigo-table td{display:block;width:auto;}
+  table.keigo-table tr{border:1px solid var(--border);border-radius:0;
+    background:var(--surface);padding:14px 16px;margin-bottom:12px;}
+  table.keigo-table td{border-bottom:none;padding:8px 0 0;}
+  table.keigo-table td:first-child{width:auto;padding-top:0;
+    border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:4px;}
+  table.keigo-table td[data-col]::before{content:attr(data-col);display:block;
+    font-size:11.5px;color:var(--ink-soft);margin-bottom:3px;}
+}
+
+/* =============================================================================
+   Sidebar trai toan site (23/09/2026) -- thay topbar ngang cu cho nguoi da
+   dang nhap. Khach chua dang nhap van dung .topbar cu (khong doi).
+   ========================================================================== */
+.app-shell{display:flex;align-items:stretch;min-height:100vh;}
+.app-shell.app-shell-guest{display:block;min-height:0;}
+
+.site-sidebar{width:240px;flex:none;display:flex;flex-direction:column;
+  border-right:1px solid var(--border);background:var(--surface);}
+.site-sidebar .brand{padding:22px 20px 14px;}
+
+.site-sidebar-nav{flex:1;overflow-y:auto;padding:6px 12px;}
+.site-sidebar-footer{padding:10px 12px;border-top:1px solid var(--border);}
+
+.sidenav-link{display:block;padding:10px 14px;border-radius:0;color:var(--ink-soft);
+  margin-bottom:2px;font-size:14.5px;text-decoration:none;cursor:pointer;
+  transition:background .15s ease,color .15s ease;}
+.sidenav-link:hover{background:var(--accent-soft);color:var(--ink);}
+.sidenav-link.active{background:var(--accent-soft);color:var(--ink);font-weight:600;}
+.sidenav-link .jp{font-family:var(--serif);font-size:14px;margin-right:6px;}
+.sidenav-button{width:100%;text-align:left;background:none;border:0;font:inherit;}
+
+.sidenav-group{margin-bottom:2px;}
+.sidenav-group summary{list-style:none;}
+.sidenav-group summary::-webkit-details-marker{display:none;}
+.sidenav-group summary::after{content:"\203A";float:right;transform:rotate(90deg);
+  transition:transform .15s ease;color:var(--ink-soft);}
+.sidenav-group[open]>summary::after{transform:rotate(-90deg);}
+.sidenav-sub{padding:2px 0 6px 16px;display:flex;flex-direction:column;}
+.sidenav-sublink{display:flex;align-items:center;gap:8px;padding:8px 14px;
+  border-radius:0;color:var(--ink-soft);font-size:13.5px;text-decoration:none;}
+.sidenav-sublink:hover{background:var(--accent-soft);color:var(--ink);}
+.sidenav-sublink.active{background:var(--accent-soft);color:var(--ink);font-weight:600;}
+.sidenav-sublink.is-soon{color:var(--border);cursor:default;}
+.sidenav-sublink.is-soon .tag{margin:0;font-size:10px;padding:1px 6px;}
+
+.app-main{flex:1;min-width:0;display:flex;flex-direction:column;}
+.app-main>main{flex:1;}
+
+@media (max-width:900px){
+  .app-shell{flex-direction:column;}
+  .site-sidebar{width:auto;flex-direction:row;flex-wrap:wrap;align-items:center;
+    border-right:none;border-bottom:1px solid var(--border);padding:10px 14px;gap:2px 4px;}
+  .site-sidebar .brand{padding:0;margin-right:auto;}
+  .site-sidebar-nav{flex:none;display:flex;flex-wrap:wrap;padding:0;overflow:visible;gap:2px;}
+  .site-sidebar-footer{flex:none;display:flex;padding:0;border-top:none;gap:2px;}
+  .sidenav-group{position:relative;}
+  .sidenav-sub{position:absolute;top:100%;left:0;margin-top:4px;background:var(--surface);
+    border:1px solid var(--border);border-radius:0;padding:6px;z-index:30;min-width:180px;
+    box-shadow:3px 3px 0 var(--ink);}
+}

@@ -1,0 +1,70 @@
+{% load properties_tags %}
+{% comment %}
+Sidebar trai -- thay the topbar ngang cu cho MOI trang KHI DA DANG NHAP
+(23/09/2026, theo yeu cau cua Dat: "chuyen het cac chuc nang vao left panel").
+Khach chua dang nhap van dung partials/topbar_guest.html (topbar ngang don
+gian nhu truoc, KHONG doi).
+
+`active_nav` do view truyen vao -- GIU NGUYEN cung bo gia tri nhu topbar cu:
+"home"/"vocabulary"/"review"/"practice_sheet"/"contribution"/"keigo"/"admin".
+Khong view nao phai sua vi giu nguyen ten context.
+
+Rieng nhom "Kinh ngu" la <details> (khong JavaScript -- dung tinh than da co
+o SC05, xem templates/vocabulary/list.html): bam vao tieu de xo/thu muc con,
+tu mo san khi dang o bat ky trang keigo nao. `active_sub` la context MOI
+("index"/"tra_cuu", apps/keigo/views.py them vao) de to dung muc con dang mo;
+view nao chua truyen thi khong muc con nao sang, khong loi.
+
+"Hoc tu" / "Bai tap" la <span> khong phai <a> -- SC17/SC20-22 chua co trang
+that, hien "sap co" giong dung cach trang muc luc SC16 dang lam voi 6/7
+chuong chua co trang bai hoc.
+{% endcomment %}
+<nav class="site-sidebar">
+  <a class="brand" href="{% url 'learning:dashboard' %}">
+    <span class="mark">{% label "common.brand.mark" %}</span>{% label "common.brand.name" %}
+  </a>
+
+  <div class="site-sidebar-nav">
+    <a class="sidenav-link{% if active_nav == "home" %} active{% endif %}"
+       href="{% url 'learning:dashboard' %}">{% label "common.nav.home" %}</a>
+    <a class="sidenav-link{% if active_nav == "vocabulary" %} active{% endif %}"
+       href="{% url 'vocabulary:index' %}">{% label "common.nav.vocabulary" %}</a>
+    <a class="sidenav-link{% if active_nav == "review" %} active{% endif %}"
+       href="{% url 'learning:review' %}">{% label "common.nav.review" %}</a>
+    <a class="sidenav-link{% if active_nav == "practice_sheet" %} active{% endif %}"
+       href="{% url 'practice_sheets:create' %}">{% label "common.nav.practice_sheet" %}</a>
+    <a class="sidenav-link{% if active_nav == "contribution" %} active{% endif %}"
+       href="{% url 'gamification:form' %}">{% label "common.nav.contribution" %}</a>
+
+    <details class="sidenav-group"{% if active_nav == "keigo" %} open{% endif %}>
+      <summary class="sidenav-link{% if active_nav == "keigo" %} active{% endif %}">
+        <span><span class="jp">敬語</span>{% label "common.nav.keigo" %}</span>
+      </summary>
+      <div class="sidenav-sub">
+        <a class="sidenav-sublink{% if active_nav == "keigo" and active_sub == "index" %} active{% endif %}"
+           href="{% url 'keigo:index' %}">{% label "keigo.nav.index" %}</a>
+        <a class="sidenav-sublink{% if active_nav == "keigo" and active_sub == "tra_cuu" %} active{% endif %}"
+           href="{% url 'keigo:tra_cuu' %}">{% label "keigo.nav.tra_cuu" %}</a>
+        <span class="sidenav-sublink is-soon">{% label "keigo.nav.hoc_tu" %}
+          <span class="tag">{% label "keigo.nav.soon" %}</span></span>
+        <span class="sidenav-sublink is-soon">{% label "keigo.nav.bai_tap" %}
+          <span class="tag">{% label "keigo.nav.soon" %}</span></span>
+      </div>
+    </details>
+
+    {% if user.is_staff %}
+      <a class="sidenav-link{% if active_nav == "admin" %} active{% endif %}"
+         href="{% url 'admin_panel:overview' %}">{% label "common.nav.admin" %}</a>
+    {% endif %}
+  </div>
+
+  <div class="site-sidebar-footer">
+    <a class="sidenav-link" href="{% url 'accounts:profile' %}">{{ user.first_name|default:user.get_username }}</a>
+    <a class="sidenav-link" href="{% url 'accounts:settings' %}">{% label "common.nav.settings" %}</a>
+    {% comment %}Dang xuat phai la POST -- xem apps.accounts.views.logout_view.{% endcomment %}
+    <form method="post" action="{% url 'accounts:logout' %}" style="margin:0;">
+      {% csrf_token %}
+      <button type="submit" class="sidenav-link sidenav-button">{% label "common.nav.logout" %}</button>
+    </form>
+  </div>
+</nav>

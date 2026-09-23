@@ -19,19 +19,35 @@ Block cho template con:
   {% block extra_head %}{% endblock %}
 </head>
 <body>
-  {% include "partials/topbar.html" %}
-  <main{% block main_attrs %}{% endblock %}>
-    {% comment %}Trang thường chỉ cần override `content`. Trang cần bố cục
-    khác hẳn (khu quản trị: sidebar + nội dung, tràn hết chiều ngang) thì
-    override cả `main` để thoát khỏi khung .wrap.{% endcomment %}
-    {% block main %}
-    <div class="wrap"{% block wrap_attrs %}{% endblock %}>
-      {% include "partials/messages.html" %}
-      {% block content %}{% endblock %}
+  {% comment %}
+  23/09/2026 -- topbar ngang cu (partials/topbar.html) tach lam hai: nguoi da
+  dang nhap dung sidebar trai (partials/sidebar.html), khach van dung topbar
+  ngang don gian (partials/topbar_guest.html, noi dung y het nhanh "else" cu
+  cua topbar.html). Class `.app-shell-guest` tra .app-shell ve display:block
+  binh thuong (khong flex) de khach van thay bo cuc xep doc nhu truoc, khong
+  co gi doi voi ho.
+  {% endcomment %}
+  <div class="app-shell{% if not user.is_authenticated %} app-shell-guest{% endif %}">
+    {% if user.is_authenticated %}
+      {% include "partials/sidebar.html" %}
+    {% else %}
+      {% include "partials/topbar_guest.html" %}
+    {% endif %}
+    <div class="app-main">
+      <main{% block main_attrs %}{% endblock %}>
+        {% comment %}Trang thường chỉ cần override `content`. Trang cần bố cục
+        khác hẳn (khu quản trị: sidebar riêng + nội dung, tràn hết chiều
+        ngang) thì override cả `main` để thoát khỏi khung .wrap.{% endcomment %}
+        {% block main %}
+        <div class="wrap"{% block wrap_attrs %}{% endblock %}>
+          {% include "partials/messages.html" %}
+          {% block content %}{% endblock %}
+        </div>
+        {% endblock %}
+      </main>
+      <footer class="note">{% label "common.brand.name" %} — {% label "common.brand.tagline" %}</footer>
     </div>
-    {% endblock %}
-  </main>
-  <footer class="note">{% label "common.brand.name" %} — {% label "common.brand.tagline" %}</footer>
+  </div>
   <script src="{% static 'js/main.js' %}"></script>
   {% block extra_js %}{% endblock %}
 </body>

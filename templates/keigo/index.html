@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load properties_tags mastercode_tags %}
+{% comment %}SC16_KinhNguMucLuc -- muc luc kinh ngu.
+
+Cong voi apps/keigo/views.py:
+  - Chuong "bang-chia-dong-tu-bat-quy-tac" la the DUY NHAT co the bam duoc,
+    dan thang sang SC18 (keigo:tra_cuu) -- no khong co KeigoPattern/
+    KeigoPhrasePair nao ca nen khong the mo mot "trang bai hoc".
+  - 6 chuong con lai hien nhu the thong tin (khong phai <a>) vi trang bai hoc
+    SC17 CHUA lam -- dung tinh than da ghi trong keigo-thiet-ke.md: an het thi
+    luc bat len nguoi hoc khong biet co, hien binh thuong roi bam vao bao 404
+    con te hon.
+  - Khong hien thanh tien do % -- giai doan 1 khong lam SRS cho kinh ngu, con
+    so % se la con so bia. Con so that la meta_text (so mau/vi du/cap tu),
+    tinh san o view.{% endcomment %}
+
+{% block title %}{% label "keigo.index.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">{% label "keigo.index.eyebrow" %}</div>
+  <h1 class="serif" style="font-size:32px;margin:0 0 8px;">{% label "keigo.index.title" %}</h1>
+  <p class="muted" style="margin:0 0 26px;max-width:620px;">{% label "keigo.index.intro" %}</p>
+
+  {# ========== HERO: tra cuu nhanh + so lieu tong ========== #}
+  <div class="card stamp" style="margin-bottom:38px;">
+    <div class="keigo-hero" style="display:flex;flex-wrap:wrap;gap:30px;align-items:flex-end;">
+
+      <div style="flex:1 1 340px;min-width:260px;">
+        <label for="keigo-q">{% label "keigo.index.search.label" %}</label>
+        <form method="get" action="{% url 'keigo:tra_cuu' %}" style="display:flex;gap:10px;">
+          <input id="keigo-q" name="q" type="search"
+                 placeholder="{% label 'keigo.index.search.placeholder' %}" style="flex:1 1 auto;">
+          <button type="submit" class="btn btn-primary" style="flex:none;">{% label "keigo.index.search.button" %}</button>
+        </form>
+        <p class="muted" style="margin:10px 0 0;font-size:13px;">{% label "keigo.index.search.hint" %}</p>
+      </div>
+
+      <div class="figrow" style="flex:1 1 300px;">
+        <div><div class="num">{{ totals.verb_count }}</div><div class="label">{% label "keigo.index.stat.verb" %}</div></div>
+        <div><div class="num">{{ totals.form_count }}</div><div class="label">{% label "keigo.index.stat.form" %}</div></div>
+        <div><div class="num">{{ totals.pattern_count }}</div><div class="label">{% label "keigo.index.stat.pattern" %}</div></div>
+      </div>
+    </div>
+  </div>
+
+  {# ========== 7 CHUONG ========== #}
+  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:16px;">
+    <h2 class="serif" style="font-size:22px;margin:0;">{% label "keigo.index.section.lessons" %}</h2>
+    <span class="muted" style="font-size:13.5px;">{% label "keigo.index.section.lessons_hint" %}</span>
+  </div>
+
+  <div class="lesson-grid" style="margin-bottom:38px;">
+    {% for lesson in lessons %}
+      {% if lesson.slug == verb_table_lesson_slug %}
+      <a class="lesson-card" href="{% url 'keigo:tra_cuu' %}" style="border-color:var(--accent);">
+      {% else %}
+      <div class="lesson-card is-soon">
+      {% endif %}
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="lesson-num"{% if lesson.slug == verb_table_lesson_slug %} style="background:var(--accent);color:#fff;"{% endif %}>{{ lesson.display_order }}</span>
+          {% if lesson.style_code %}<span class="tag level" style="margin:0;">{{ lesson.style_code|code_name:"14" }}</span>{% endif %}
+        </div>
+        <div class="vi" style="margin-top:4px;">{{ lesson.title }}</div>
+        {% if lesson.summary_vi %}<p class="muted" style="margin:0;font-size:13.5px;">{{ lesson.summary_vi }}</p>{% endif %}
+        {% if lesson.slug == verb_table_lesson_slug %}
+          <div class="meta" style="color:var(--accent);">{% label "keigo.index.lesson.open_table" %}</div>
+        {% elif lesson.meta_text %}
+          <div class="meta">{{ lesson.meta_text }}</div>
+        {% else %}
+          <div class="meta">{% label "keigo.index.lesson.soon" %}</div>
+        {% endif %}
+      {% if lesson.slug == verb_table_lesson_slug %}
+      </a>
+      {% else %}
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {# ========== BAI TAP -- giai doan 2, chua mo ========== #}
+  <div class="card" style="margin-bottom:30px;border-style:dashed;">
+    <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;">
+      <div style="flex:1 1 380px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+          <h2 class="serif" style="font-size:20px;margin:0;">{% label "keigo.index.exercise.title" %}</h2>
+          <span class="tag" style="margin:0;">{% label "keigo.index.exercise.badge" %}</span>
+        </div>
+        <p class="muted" style="margin:0;font-size:14px;">{% label "keigo.index.exercise.desc" %}</p>
+      </div>
+      <div style="flex:0 0 auto;">
+        <span class="btn btn-outline" style="opacity:.5;cursor:not-allowed;">{% label "keigo.index.exercise.button" %}</span>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <p class="muted" style="margin:0;font-size:13px;">{% label "keigo.index.exercise.note" %}</p>
+  </div>
+{% endblock %}

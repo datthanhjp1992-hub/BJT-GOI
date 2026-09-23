@@ -1,0 +1,17 @@
+{% load properties_tags %}
+{% comment %}
+Topbar ngang cho KHACH CHUA DANG NHAP -- tach ra tu partials/topbar.html cu
+(23/09/2026) khi phan cho nguoi da dang nhap chuyen sang sidebar trai
+(partials/sidebar.html). Noi dung giu NGUYEN, khong doi gi so voi nhanh
+{% verbatim %}{% else %}{% endverbatim %} cua topbar.html truoc day.
+{% endcomment %}
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="{% url 'learning:dashboard' %}">
+    <span class="mark">{% label "common.brand.mark" %}</span>{% label "common.brand.name" %}
+  </a>
+  <nav class="mainnav"></nav>
+  <div class="navmeta">
+    <a href="{% url 'accounts:login' %}">{% label "common.nav.login" %}</a>
+    <a class="pill" href="{% url 'accounts:register' %}">{% label "common.nav.register" %}</a>
+  </div>
+</div></header>

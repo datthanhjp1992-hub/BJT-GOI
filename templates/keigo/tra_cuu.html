@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC18_TraCuuDongTu -- bang tra dong tu kinh ngu.
+
+5 quyet dinh, xem chi tiet o htmlTemplate/SC18_TraCuuDongTu_A.html (mockup):
+  1. Mot hang = mot KeigoVerb, moi o chua N KeigoForm (o "-" khong phai gia
+     tri rong lay tu DB, ma la template tu in khi verb.<cot>_forms rong).
+  2. Loc + tim bang GET (?q=&loai=&batquytac=1) -- khong JavaScript bat buoc.
+  3. Dau ★ = is_irregular, KHONG PHAI mau -- .irr la mot ky tu that.
+  4. Duoi 720px doi sang the doc (CSS .keigo-table trong theme_*.css).
+  5. Chip I/II chi hien khi form.style_code la kenjo1/kenjo2 -- KHONG suy doan
+     theo chu お/ご, doc thang field.
+{% endcomment %}
+
+{% block title %}{% label "keigo.tra_cuu.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">
+    <a href="{% url 'keigo:index' %}" class="action-link">{% label "keigo.tra_cuu.breadcrumb" %}</a>
+    &rsaquo; {% label "keigo.tra_cuu.title" %}
+  </div>
+  <h1 class="serif" style="font-size:30px;margin:0 0 8px;">{% label "keigo.tra_cuu.title" %}</h1>
+  <p class="muted" style="margin:0 0 22px;max-width:640px;">{% label "keigo.tra_cuu.intro" %}</p>
+
+  {# ========== TOOLBAR: tim + loc, deu la GET ========== #}
+  <form method="get" action="{% url 'keigo:tra_cuu' %}" class="toolbar is-stacked" style="flex-wrap:nowrap;">
+    {% if style %}<input type="hidden" name="loai" value="{{ style }}">{% endif %}
+    {% if irregular_only %}<input type="hidden" name="batquytac" value="1">{% endif %}
+    <input class="grow" id="keigo-search" name="q" type="search" value="{{ query }}"
+           placeholder="{% label 'keigo.tra_cuu.search.placeholder' %}" autocomplete="off">
+    <button type="submit" class="btn btn-primary" style="flex:none;padding:11px 22px;">{% label "keigo.tra_cuu.search.button" %}</button>
+  </form>
+
+  <div class="toolbar filter-bar">
+    <span class="muted" style="font-size:13.5px;">{% label "keigo.tra_cuu.filter.label" %}</span>
+    <a class="tag tag-filter{% if not style %} is-active{% endif %}"
+       href="?{% if query %}q={{ query|urlencode }}{% if irregular_only %}&batquytac=1{% endif %}{% elif irregular_only %}batquytac=1{% endif %}">{% label "keigo.tra_cuu.filter.all" %}</a>
+    {% for code, name in style_choices %}
+      <a class="tag tag-filter{% if style == code %} is-active{% endif %}"
+         href="?loai={{ code }}{% if query %}&q={{ query|urlencode }}{% endif %}{% if irregular_only %}&batquytac=1{% endif %}">{{ name }}</a>
+    {% endfor %}
+    <span style="color:var(--border);">|</span>
+    <a class="tag tag-filter{% if irregular_only %} is-active{% endif %}"
+       href="?{% if style %}loai={{ style }}&{% endif %}{% if query %}q={{ query|urlencode }}&{% endif %}batquytac={% if irregular_only %}0{% else %}1{% endif %}">{% label "keigo.tra_cuu.filter.irregular" %}</a>
+  </div>
+
+  <p class="muted" style="font-size:13px;margin:0 0 14px;">
+    {{ paginator.count }} / {{ total_verb_count }} {% label "keigo.index.stat.verb" %}
+    &nbsp;&middot;&nbsp; <span class="irr">★</span> {% label "keigo.tra_cuu.count.irregular_hint" %}
+    &nbsp;&middot;&nbsp; <span class="kchip">I</span><span class="kchip">II</span> {% label "keigo.tra_cuu.count.kenjo_hint" %}
+  </p>
+
+  {# ========== BANG 4 COT ========== #}
+  <div class="card" style="padding:8px 18px;margin-bottom:28px;">
+    <table class="keigo-table">
+      <thead>
+        <tr>
+          <th><span class="jp">基本形</span><br>{% label "keigo.tra_cuu.table.plain_form" %}</th>
+          <th><span class="jp">尊敬語</span><br>{% label "keigo.tra_cuu.table.sonkei" %}</th>
+          <th><span class="jp">謙譲語</span><br>{% label "keigo.tra_cuu.table.kenjo" %}</th>
+          <th><span class="jp">丁寧語</span><br>{% label "keigo.tra_cuu.table.teinei" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for verb in page_obj %}
+        <tr>
+          <td class="verb-cell">
+            <a href="{% url 'keigo:verb_detail' verb.pk %}" class="action-link is-primary"><span class="jp">{{ verb.plain_form }}</span></a>
+            {% if verb.meaning_vi %}<span class="vi">{{ verb.meaning_vi }}</span>{% endif %}
+          </td>
+          <td data-col="尊敬語">
+            {% if verb.sonkei_forms %}
+              {% for f in verb.sonkei_forms %}
+                <span class="form-item">{% if f.is_irregular %}<span class="irr">★</span>{% endif %}<span class="jp">{{ f.form }}</span>{% if f.note_vi %}<span class="note">{{ f.note_vi }}</span>{% endif %}</span>
+              {% endfor %}
+            {% else %}<span class="dash">&mdash;</span>{% endif %}
+          </td>
+          <td data-col="謙譲語">
+            {% if verb.kenjo_forms %}
+              {% for f in verb.kenjo_forms %}
+                <span class="form-item">{% if f.is_irregular %}<span class="irr">★</span>{% endif %}<span class="jp">{{ f.form }}</span>{% if f.style_code == "kenjo1" %}<span class="kchip">I</span>{% elif f.style_code == "kenjo2" %}<span class="kchip">II</span>{% endif %}{% if f.note_vi %}<span class="note">{{ f.note_vi }}</span>{% endif %}</span>
+              {% endfor %}
+            {% else %}<span class="dash">&mdash;</span>{% endif %}
+          </td>
+          <td data-col="丁寧語">
+            {% if verb.teinei_forms %}
+              {% for f in verb.teinei_forms %}
+                <span class="form-item"><span class="jp">{{ f.form }}</span>{% if f.note_vi %}<span class="note">{{ f.note_vi }}</span>{% endif %}</span>
+              {% endfor %}
+            {% else %}<span class="dash">&mdash;</span>{% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="muted">{% label "keigo.tra_cuu.empty" %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if page_obj.has_other_pages %}
+    <div class="pagination">
+      {% if page_obj.has_previous %}
+        <a class="tag" href="?page={{ page_obj.previous_page_number }}{{ pagination_query }}">{% label "common.pagination.prev" %}</a>
+      {% endif %}
+      <span>{{ page_obj.number }} / {{ paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a class="tag" href="?page={{ page_obj.next_page_number }}{{ pagination_query }}">{% label "common.pagination.next" %}</a>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}

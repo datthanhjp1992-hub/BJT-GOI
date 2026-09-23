@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}Trang chi tiet MOT dong tu -- URL rieng (khong phai <details>) de
+co the chia se va de trang tu vung tro nguoc lai qua KeigoForm.vocabulary (cay
+cau da noi trong keigo-thiet-ke.md muc 1). Khoi "co trong tu dien" chi hien khi
+FK do khac null -- phan lon dang kinh ngu KHONG co trong tu dien, nen khoi nay
+phai binh thuong ca khi vang no.{% endcomment %}
+
+{% block title %}{{ verb.plain_form }} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">
+    <a href="{% url 'keigo:index' %}" class="action-link">{% label "keigo.tra_cuu.breadcrumb" %}</a>
+    &rsaquo; <a href="{% url 'keigo:tra_cuu' %}" class="action-link">{% label "keigo.tra_cuu.title" %}</a>
+  </div>
+
+  <div class="card stamp">
+    <div class="eyebrow" style="margin-bottom:6px;">{% label "keigo.tra_cuu.detail.title" %}</div>
+    <h1 class="serif" style="font-size:28px;margin:0 0 4px;">
+      <span class="jp">{{ verb.plain_form }}</span>
+      {% if verb.meaning_vi %}<span class="muted" style="font-size:16px;font-family:var(--sans);">{{ verb.meaning_vi }}</span>{% endif %}
+    </h1>
+    <p class="muted" style="margin:0 0 20px;font-size:13.5px;">
+      {{ verb.forms.all|length }} {% label "keigo.tra_cuu.detail.form_count" %}
+    </p>
+
+    <div class="grid cols-3" style="gap:18px;">
+      <div>
+        <div class="tag level" style="margin:0 0 10px;">{% label "keigo.tra_cuu.table.sonkei" %}</div>
+        {% for f in verb.sonkei_forms %}
+          <div class="form-item">{% if f.is_irregular %}<span class="irr">★</span>{% endif %}<span class="jp" style="font-size:19px;">{{ f.form }}</span></div>
+          {% if f.note_vi %}<p class="muted" style="font-size:13px;margin:2px 0 8px;">{{ f.note_vi }}</p>{% endif %}
+        {% empty %}
+          <span class="dash">&mdash;</span>
+        {% endfor %}
+      </div>
+      <div>
+        <div class="tag level" style="margin:0 0 10px;">{% label "keigo.tra_cuu.table.kenjo" %}</div>
+        {% for f in verb.kenjo_forms %}
+          <div class="form-item">{% if f.is_irregular %}<span class="irr">★</span>{% endif %}<span class="jp" style="font-size:19px;">{{ f.form }}</span>{% if f.style_code == "kenjo1" %}<span class="kchip">I</span>{% elif f.style_code == "kenjo2" %}<span class="kchip">II</span>{% endif %}</div>
+          {% if f.note_vi %}<p class="muted" style="font-size:13px;margin:2px 0 8px;">{{ f.note_vi }}</p>{% endif %}
+        {% empty %}
+          <span class="dash">&mdash;</span>
+        {% endfor %}
+      </div>
+      <div>
+        <div class="tag" style="margin:0 0 10px;">{% label "keigo.tra_cuu.table.teinei" %}</div>
+        {% for f in verb.teinei_forms %}
+          <div class="form-item"><span class="jp" style="font-size:19px;">{{ f.form }}</span></div>
+        {% empty %}
+          <span class="dash">&mdash;</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% for f in verb.forms.all %}
+      {% if f.vocabulary_id %}
+        <div class="divider"></div>
+        <div style="font-size:14px;">
+          <a class="action-link is-primary" href="{% url 'vocabulary:index' %}?q={{ f.form|urlencode }}">{{ f.form }} {% label "keigo.tra_cuu.detail.in_vocabulary" %}</a>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <p style="margin:22px 0 0;">
+    <a class="action-link" href="{% url 'keigo:tra_cuu' %}">{% label "keigo.tra_cuu.detail.back" %}</a>
+  </p>
+{% endblock %}
