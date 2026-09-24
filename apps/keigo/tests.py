@@ -168,3 +168,99 @@ class LessonPdfTests(LessonTestCase):
         self.assertIn(f'<font name="{keigo_pdf.FONT_JP}">僭越</font>', markup)
         self.assertIn("せんえつ", markup)
         self.assertIn("&lt;b&gt;", keigo_pdf._runs("<b>"))  # escape, khong de lot markup
+
+
+class PitfallTests(LessonTestCase):
+    """SC19 -- Loi thuong gap. Dung lai du lieu LessonTestCase (adj_gozai o
+    chuong 3, wrong + cushion o chuong 7) + them double / teinei."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        # double #1-#2: cung group_label + cung casual -> 1 × voi 2 ○
+        for order, polite in enumerate(["資料をお読みになりましたか。", "資料を読まれましたか。"], start=1):
+            KeigoPhrasePair.objects.create(lesson=cls.ch7, pair_type="double", group_label="お読みになられる",
+                                           casual="資料をお読みになられましたか。", polite=polite,
+                                           display_order=order)
+        KeigoPhrasePair.objects.create(lesson=cls.ch3, pair_type="teinei", polite="後ろに「です」「ます」を付ける",
+                                       display_order=1)
+        KeigoPhrasePair.objects.create(lesson=cls.ch3, pair_type="teinei", casual="です", polite="でございます",
+                                       display_order=2)
+
+    def get(self, **params):
+        return self.client.get(reverse("keigo:loi_thuong_gap"), params)
+
+    def test_anonymous_is_sent_to_login(self):
+        self.client.logout()
+        url = reverse("keigo:loi_thuong_gap")
+        self.assertRedirects(self.client.get(url), reverse("accounts:login") + "?next=" + url)
+
+    def test_route_not_shadowed_by_lesson_slug(self):
+        resp = self.get()
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, "keigo/loi_thuong_gap.html")
+
+    def test_default_tab_is_wrong_and_unknown_view_falls_back(self):
+        self.assertEqual(self.get().context["view"], "wrong")
+        self.assertEqual(self.get(view="khong-co").context["view"], "wrong")
+        resp = self.get()
+        self.assertEqual([t.code for t in resp.context["shown"]], ["wrong"])
+        self.assertContains(resp, "いらっしゃいますか")
+        self.assertNotContains(resp, "安うございます")  # nhom khac khong render
+
+    def test_only_types_with_data_and_three_clusters(self):
+        resp = self.get()
+        self.assertEqual({t.code for t in resp.context["types"]},
+                         {"wrong", "double", "adj_gozai", "teinei", "cushion"})
+        self.assertEqual([k for k, _ in resp.context["clusters"]],
+                         [selectors.PITFALL_KIND_XO, selectors.PITFALL_KIND_CONV, selectors.PITFALL_KIND_CUSHION])
+        self.assertEqual(resp.context["total"], 7)
+        self.assertEqual(resp.context["lesson_count"], 2)
+
+    def test_link_back_to_lesson_item(self):
+        resp = self.get(view="adj_gozai")
+        self.assertContains(resp, f'href="{self.url(self.ch3, "cap-adj_gozai")}"')
+
+    def test_double_same_casual_merged_into_one_x(self):
+        t = self.get(view="double").context["shown"][0]
+        self.assertEqual(len(t.groups), 1)
+        self.assertEqual(t.groups[0]["label"], "お読みになられる")
+        self.assertEqual(len(t.groups[0]["items"]), 1)
+        self.assertEqual(len(t.groups[0]["items"][0]["answers"]), 2)
+
+    def test_teinei_rule_row_is_heading_not_pair(self):
+        resp = self.get(view="teinei")
+        self.assertContains(resp, '<tr class="lt-rule"><td colspan="3"><span class="jp">後ろに「です」「ます」を付ける',
+                            html=False)
+        self.assertContains(resp, 'data-l="Thường">です')
+
+    def test_check_mode_hides_polite_side_except_cushion(self):
+        self.assertNotContains(self.get(), "lt-reveal")
+        resp = self.get(an="1")
+        self.assertContains(resp, 'class="lt-reveal"')
+        self.assertTrue(resp.context["check"])
+        # tab + nut bo tu kiem tra giu/doi ?an dung
+        self.assertContains(resp, "view=double&amp;an=1")
+        self.assertNotIn("an=1", resp.context["check_toggle_url"])
+
+        resp = self.get(view="cushion", an="1")
+        self.assertNotContains(resp, 'class="lt-reveal"')
+        self.assertContains(resp, 'class="lt-nocheck')
+
+    def test_search_spans_all_types_and_ignores_view(self):
+        resp = self.get(view="wrong", q="ございます")
+        codes = [t.code for t in resp.context["shown"]]
+        self.assertEqual(codes, ["teinei", "adj_gozai"])  # thu tu theo sort_order MasterCode
+        self.assertEqual(resp.context["match_total"], 2)
+        self.assertNotContains(resp, "いらっしゃいますか")
+        self.assertNotContains(resp, "後ろに")  # dong quy tac khong khop thi an
+
+    def test_search_without_result_shows_empty_state(self):
+        resp = self.get(q="ぴかちゅう")
+        self.assertEqual(resp.context["shown"], [])
+        self.assertContains(resp, "見つかりません")
+
+    def test_sidebar_link_is_live_and_active(self):
+        resp = self.get()
+        self.assertContains(resp, f'href="{reverse("keigo:loi_thuong_gap")}"')
+        self.assertEqual(resp.context["active_sub"], "loi_thuong_gap")

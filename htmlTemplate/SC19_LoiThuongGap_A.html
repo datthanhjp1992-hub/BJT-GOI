@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC19 Lỗi thường gặp | 毎日BJT</title>
+<!--
+  SC19_LoiThuongGap — LỖI THƯỜNG GẶP & CÁCH NÓI LỊCH SỰ (mockup 24/09/2026, chờ Dat duyệt)
+  Tham chiếu: claude/keigo-thiet-ke.md mục 2.6 + mục 7 (SC19).
+  Dữ liệu SINH TỪ docs/data/keigo/06_keigo_phrase_pair.csv (đủ 87 dòng, 8 pair_type),
+  không gõ tay. Nhãn/ghi chú từng nhóm lấy nguyên từ MasterCode 15 (seed_mastercode.py).
+  Theme A. Duyệt xong mới làm CSS cho B/C.
+
+  Bảy quyết định của màn này, đọc trước khi code:
+
+  1. SC19 KHÔNG CHÉP DỮ LIỆU CỦA SC17 — NÓ XẾP LẠI CÙNG DỮ LIỆU THEO LOẠI.
+     SC17 đã hiện đủ 87 cặp, nhưng rải trong 3 chương (3, 6, 7) và nằm giữa luồng
+     học. SC19 là "bảng tra nhanh": gom theo pair_type xuyên chương, có tìm kiếm và
+     chế độ tự kiểm tra. Cùng một bảng KeigoPhrasePair, không thêm model, không thêm
+     cột. Mỗi nhóm có link "Xem trong chương N →" về đúng mục của SC17 (?muc=).
+     Tái dùng nguyên class .kl-xo / table.kl-pairs của SC17 — hàng dữ liệu KHÔNG cần
+     CSS mới, chỉ khung trang (tab, toolbar) là mới.
+
+  2. TAB ĐỔI BẰNG ?view=<pair_type>, KHÔNG JAVASCRIPT. Mặc định ?view=wrong.
+     8 tab chia 3 cụm hiển thị. Cụm KHÔNG có trong DB — là hằng số trình bày ở
+     selectors.py, suy từ đúng quy tắc SC17 đang dùng (is_wrong_type =
+     wrong/double/baito → hiện × / ○; cushion → vế casual rỗng; còn lại → bảng →).
+     Thứ tự tab trong cụm theo MasterCode.sort. view lạ → về wrong, không 404.
+
+  3. TỰ KIỂM TRA = ?an=1 — che vế lịch sự bằng <details>, bấm để hiện. Không JS.
+     Đây là giá trị SC19 thêm vào so với SC17: nhìn câu sai / lời thường, tự nghĩ
+     câu đúng rồi mới mở. Nhóm cushion không có vế thường → không che, có dòng giải
+     thích. (Không lưu kết quả — không phải bài tập, SRS để giai đoạn sau.)
+
+  4. TÌM KIẾM ?q= QUÉT CẢ 8 NHÓM, BỎ QUA ?view=.
+     icontains trên casual / polite / group_label / note_vi. Khi có q: hiện mọi nhóm
+     có kết quả, xếp theo thứ tự tab, số trên tab đổi thành số kết quả; nhóm 0 kết
+     quả ẩn; hết kết quả → khối rỗng + link bỏ lọc. Form là GET, giữ ?an.
+
+  5. HAI CHỖ GỘP / TÁCH KHI RENDER (làm ở selectors, không sửa dữ liệu):
+     - double #1–#2 cùng group_label + cùng casual → MỘT khung ×, HAI dòng ○.
+       Quy tắc: gộp các dòng LIỀN KỀ có cùng (group_label, casual).
+     - teinei có 2 dòng casual rỗng (後ろに「です」「ます」を付ける / 前に「お」「ご」
+       などを付ける) = QUY TẮC, không phải cặp → hiện thành dòng tiêu đề chia bảng.
+     - group_label của double là công thức (お読みになる＋れる・られる) → khung công thức.
+
+  6. DƯỚI 720px: bảng → thẻ dọc (mỗi hàng 2 dòng nhãn "Thường"/"Lịch sự"),
+     tab xuống dòng, không cuộn ngang — cùng nguyên tắc SC18.
+
+  7. URL & SIDEBAR:
+     path("loi-thuong-gap/", views.pitfall_view, name="loi_thuong_gap")
+     PHẢI đặt TRƯỚC path("<slug:slug>/") trong apps/keigo/urls.py, nếu không bị
+     lesson_view nuốt (slug "loi-thuong-gap" hợp lệ) → 404 "không có chương".
+     Sidebar Kính ngữ thêm mục con "Lỗi thường gặp" giữa "Học từ" và "Bài tập"
+     (active_sub = "loi_thuong_gap"). Nhãn mới vào label.properties nhóm keigo.pitfall.*.
+     @login_required như SC16–SC18 (bản quyền chưa xin phép).
+
+  ⚠ DỮ LIỆU CÓ LỖI IN CỦA SÁCH, GIỮ NGUYÊN theo keigo-thiet-ke.md mục 0:
+    wrong #5 vế ○ 「資料はご覧いただけますしたでしょうか。」 và noun_biz #7 「さっきほど」.
+    Ở một trang tên "lỗi thường gặp" mà vế ○ lại sai là nguy hiểm hơn ở SC17 —
+    đề xuất Dat điền note_vi cho 2 dòng này (vd "Sách in ... — đúng là 先ほど"),
+    không sửa polite. Việc dữ liệu, không đụng code.
+
+  Thanh MOCKUP màu tối trên cùng và <script> cuối file CHỈ có trong mockup để mô
+  phỏng tab / tự kiểm tra / tìm kiếm tại chỗ. Bản Django dùng link + form GET.
+-->
+<style>
+/* ===== KHỐI 1 — base + app shell, chép từ SC17 mockup (không phải CSS mới) ===== */
+
+/* Design A - "Washi & Vermillion": warm traditional Japanese paper aesthetic */
+:root{
+  --bg:#FAF6EE;
+  --surface:#FFFFFF;
+  --ink:#24211D;
+  --ink-soft:#6b6455;
+  --accent:#B5432E;
+  --accent-dark:#8f3323;
+  --accent-soft:#f0d9cf;
+  --gold:#B8912B;
+  --teal:#3F6B63;
+  --border:#DCD3C0;
+  --serif: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --sans: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;}
+h1,h2,h3,.serif{font-family:var(--serif);}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+
+/* header */
+.topbar{border-bottom:1px solid var(--border);background:var(--surface);}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:72px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:22px;color:var(--ink);}
+.brand .mark{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-family:var(--serif);}
+nav.mainnav{display:flex;gap:28px;font-size:14.5px;}
+nav.mainnav a{padding:6px 2px;border-bottom:2px solid transparent;color:var(--ink-soft);}
+nav.mainnav a.active{color:var(--accent);border-color:var(--accent);}
+.navmeta{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--ink-soft);}
+.pill{padding:8px 18px;border-radius:3px;background:var(--accent);color:#fff;font-size:14px;}
+.pill.ghost{background:transparent;border:1px solid var(--border);color:var(--ink);}
+
+main{padding:52px 0 80px;}
+.stamp{position:relative;}
+.stamp::before{content:"";position:absolute;top:-6px;right:-6px;width:46px;height:46px;border:2px solid var(--accent);border-radius:50%;opacity:.25;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:28px;}
+.grid{display:grid;gap:20px;}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-2{grid-template-columns:1.4fr 1fr;}
+
+.btn{display:inline-block;padding:13px 26px;border-radius:3px;font-size:15px;cursor:pointer;border:1px solid transparent;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-dark);}
+.btn-outline{border-color:var(--ink);color:var(--ink);background:transparent;}
+.btn-block{display:block;width:100%;text-align:center;}
+
+label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:6px;}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:3px;background:#fff;font-size:15px;font-family:var(--sans);color:var(--ink);}
+input:focus,select:focus{outline:none;border-color:var(--accent);}
+.field{margin-bottom:18px;}
+
+.divider{height:1px;background:var(--border);margin:26px 0;}
+.eyebrow{color:var(--accent);font-size:13px;letter-spacing:.02em;margin-bottom:10px;}
+.muted{color:var(--ink-soft);}
+.tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12.5px;border:1px solid var(--border);color:var(--ink-soft);margin-right:6px;}
+.tag.level{background:var(--accent-soft);border-color:transparent;color:var(--accent-dark);}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+th{text-align:left;color:var(--ink-soft);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;}
+td{padding:14px 12px;border-bottom:1px solid var(--border);}
+tr:hover td{background:#fbf8f2;}
+
+.stat{padding:22px;border:1px solid var(--border);border-radius:4px;background:var(--surface);}
+.stat .num{font-family:var(--serif);font-size:34px;color:var(--accent-dark);}
+.stat .label{font-size:13.5px;color:var(--ink-soft);margin-top:4px;}
+
+.flashcard{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:60px 40px;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
+.flashcard .jp{font-family:var(--serif);font-size:52px;margin-bottom:14px;}
+.flashcard .reading{color:var(--ink-soft);margin-bottom:20px;}
+.progressbar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progressbar span{display:block;height:100%;background:var(--accent);}
+
+.sidebar{width:220px;border-right:1px solid var(--border);padding:32px 20px;}
+.sidebar a{display:block;padding:10px 14px;border-radius:3px;color:var(--ink-soft);margin-bottom:4px;font-size:14.5px;}
+.sidebar a.active{background:var(--accent-soft);color:var(--accent-dark);}
+.admin-layout{display:flex;}
+.admin-content{flex:1;padding:32px 36px;}
+
+footer.note{padding:20px 0;text-align:center;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--border);}
+
+.figrow{display:grid;grid-template-columns:repeat(3,auto);gap:20px 30px;justify-content:start;}
+.figrow div{min-width:78px;}
+.figrow .num{font-family:var(--serif);font-size:28px;color:var(--accent-dark);line-height:1.1;}
+.figrow .label{font-size:13px;color:var(--ink-soft);}
+
+
+.app-shell{display:flex;flex-direction:column;min-height:100vh;}
+.app-shell.app-shell-guest{display:block;min-height:0;}
+
+.site-topbar{display:flex;align-items:center;justify-content:space-between;height:72px;padding:0 24px;flex:none;border-bottom:1px solid var(--border);background:var(--surface);}
+.site-topbar .brand{padding:0;}
+.site-topbar-user{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--ink-soft);}
+.site-topbar-user form{margin:0;}
+.site-topbar-user button{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;}
+
+.app-shell-body{display:flex;align-items:stretch;flex:1;min-height:0;}
+
+.site-sidebar{width:240px;flex:none;display:flex;flex-direction:column;
+  border-right:1px solid var(--border);background:var(--surface);}
+
+.site-sidebar-nav{flex:1;overflow-y:auto;padding:6px 12px;}
+
+.sidenav-link{display:block;padding:10px 14px;border-radius:3px;color:var(--ink-soft);
+  margin-bottom:2px;font-size:14.5px;text-decoration:none;cursor:pointer;
+  transition:background .15s ease,color .15s ease;}
+.sidenav-link:hover{background:var(--accent-soft);color:var(--accent-dark);}
+.sidenav-link.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:600;}
+.sidenav-link .jp{font-family:var(--serif);font-size:14px;margin-right:6px;}
+.sidenav-button{width:100%;text-align:left;background:none;border:0;font:inherit;}
+
+.sidenav-group{margin-bottom:2px;}
+.sidenav-group summary{list-style:none;}
+.sidenav-group summary::-webkit-details-marker{display:none;}
+.sidenav-group summary::after{content:"\203A";float:right;transform:rotate(90deg);
+  transition:transform .15s ease;color:var(--ink-soft);}
+.sidenav-group[open]>summary::after{transform:rotate(-90deg);}
+.sidenav-sub{padding:2px 0 6px 16px;display:flex;flex-direction:column;}
+.sidenav-sublink{display:flex;align-items:center;gap:8px;padding:8px 14px;
+  border-radius:3px;color:var(--ink-soft);font-size:13.5px;text-decoration:none;}
+.sidenav-sublink:hover{background:var(--accent-soft);color:var(--accent-dark);}
+.sidenav-sublink.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:600;}
+.sidenav-sublink.is-soon{color:var(--border);cursor:default;}
+.sidenav-sublink.is-soon .tag{margin:0;font-size:10px;padding:1px 6px;}
+
+.app-main{flex:1;min-width:0;display:flex;flex-direction:column;}
+.app-main>main{flex:1;}
+
+@media (max-width:900px){
+  .site-topbar{height:auto;padding:12px 16px;flex-wrap:wrap;gap:8px 14px;}
+  .site-topbar-user{gap:12px;font-size:13.5px;}
+  .app-shell-body{flex-direction:column;}
+  .site-sidebar{width:auto;flex-direction:row;flex-wrap:wrap;align-items:center;
+    border-right:none;border-bottom:1px solid var(--border);padding:10px 14px;gap:2px 4px;}
+  .site-sidebar-nav{flex:none;display:flex;flex-wrap:wrap;padding:0;overflow:visible;gap:2px;}
+  .sidenav-group{position:relative;}
+  .sidenav-sub{position:absolute;top:100%;left:0;margin-top:4px;background:var(--surface);
+    border:1px solid var(--border);border-radius:4px;padding:6px;z-index:30;min-width:180px;
+    box-shadow:0 6px 18px rgba(0,0,0,.14);}
+}
+
+
+/* ===== KHỐI 2 — .kl-* đã có trong static/css/theme_a.css (SC17), chép để mockup hiện đúng ===== */
+.kl-crumb{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--ink-soft);margin-bottom:14px;}
+.kl-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;
+  padding-bottom:24px;margin-bottom:26px;border-bottom:1px solid var(--border);}
+.kl-h1{font-family:var(--serif);font-size:36px;font-weight:400;margin:0 0 8px;line-height:1.2;}
+.kl-sum{max-width:580px;margin:0;font-size:14.5px;}
+.kl-stage rt,.kl-list rt{font-size:.55em;color:var(--ink-soft);}
+
+.kl-layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:26px;align-items:start;}
+/* Chuong 2 co 14 muc: gioi han chieu cao de nut in khong bi day ra khoi man hinh -- danh sach tu cuon ben trong. */
+.kl-side{position:sticky;top:20px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 40px);}
+.kl-print{flex:none;}
+.kl-print p{margin:8px 2px 0;font-size:12.5px;line-height:1.5;}
+.kl-list{display:flex;flex-direction:column;overflow-y:auto;min-height:0;flex:0 1 auto;
+  background:var(--surface);border:1px solid var(--border);border-radius:4px;}
+.kl-list a{display:flex;gap:12px;align-items:center;padding:11px 16px;font-size:15px;
+  color:var(--ink-soft);border-top:1px solid #efe9dc;}
+.kl-list a:first-child{border-top:none;}
+.kl-list a:hover{background:#fbf8f2;color:var(--ink);}
+.kl-list a.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:600;}
+.kl-list .n{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);flex:none;
+  display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--serif);}
+.kl-list a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;}
+.kl-list .t{font-family:var(--serif);line-height:1.35;}
+
+.kl-stage{padding:34px 40px 26px;min-height:420px;display:flex;flex-direction:column;}
+.kl-pane{flex:1;}
+.kl-kicker{font-size:12.5px;color:var(--accent);letter-spacing:.04em;margin-bottom:6px;}
+.kl-title{font-family:var(--serif);font-weight:400;font-size:32px;margin:0 0 18px;line-height:1.3;}
+.kl-intro{margin:-8px 0 18px;font-size:14px;}
+.kl-subhead{font-size:15px;font-weight:600;margin:24px 0 8px;}
+.kl-subhead .tag{margin:0;}
+.kl-formula{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-bottom:16px;
+  padding:8px 14px;background:#fbf8f2;border:1px dashed var(--border);border-radius:3px;}
+.kl-formula .lbl{font-size:11.5px;color:var(--ink-soft);letter-spacing:.04em;text-transform:uppercase;}
+.kl-formula .jp{font-family:var(--serif);font-size:16px;color:var(--accent-dark);}
+.kl-expl{margin:-4px 0 14px;padding-left:10px;font-size:13.5px;color:var(--ink-soft);border-left:2px solid var(--gold);}
+
+.kl-exlist{list-style:none;margin:0;padding:0;}
+.kl-ex{position:relative;padding:9px 0 9px 18px;border-top:1px solid #efe9dc;}
+.kl-ex:first-child{border-top:none;}
+.kl-ex::before{content:"\30FB";position:absolute;left:0;top:9px;color:var(--accent);}
+.kl-ex.is-wrong::before{content:"\00D7";}
+.kl-ex.is-wrong .jp{color:var(--ink-soft);text-decoration:line-through;}
+.kl-ex .jp,.kl-line .jp{font-family:var(--serif);font-size:17px;line-height:1.9;}
+.kl-ex .vi,.kl-line .vi{display:block;font-size:13.5px;color:var(--ink-soft);}
+.kl-dialog{margin:6px 0;padding:10px 14px;background:#fbf8f2;border-left:3px solid var(--teal);border-radius:3px;}
+.kl-line{display:flex;gap:12px;align-items:baseline;padding:3px 0;}
+.kl-line .spk{flex:none;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:var(--teal);color:#fff;
+  font-size:11.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;}
+
+.kl-irr{display:grid;grid-template-columns:1fr;}
+.kl-irr-row{display:grid;grid-template-columns:110px 20px 1fr;align-items:baseline;padding:9px 0;border-bottom:1px solid #efe9dc;}
+.kl-irr-row .base{font-family:var(--serif);font-size:18px;}
+.kl-irr-row a.base:hover{color:var(--accent);}
+.kl-irr-row .arr{color:var(--ink-soft);}
+.kl-irr-row .forms{display:flex;flex-wrap:wrap;gap:4px 16px;}
+.kl-irr-row .f .jp{font-family:var(--serif);font-size:17px;color:var(--accent-dark);}
+.kl-irr-row .note{font-size:12px;color:var(--ink-soft);}
+.kl-irr-row .vi{grid-column:1;font-size:12px;color:var(--ink-soft);}
+.kl-more{margin:16px 0 0;font-size:14px;}
+
+table.kl-pairs td{padding:9px 10px;font-size:16px;vertical-align:top;}
+table.kl-pairs td.jp{font-family:var(--serif);}
+table.kl-pairs td.arr{width:24px;padding:9px 0;color:var(--ink-soft);}
+table.kl-pairs td.pol{color:var(--accent-dark);}
+table.kl-pairs tr:hover td{background:transparent;}
+.kl-pairs .note,.kl-xo .note{display:block;font-size:12px;color:var(--ink-soft);font-family:var(--sans);}
+.kl-xo{margin-bottom:10px;overflow:hidden;border:1px solid var(--border);border-radius:3px;}
+.kl-xo>div{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:8px 14px;}
+.kl-xo .x{background:#f7ece8;}
+.kl-xo .x .jp{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--accent);}
+.kl-xo .o{background:#eaf1ef;}
+.kl-xo .mk{width:14px;font-weight:700;}
+.kl-xo .x .mk{color:var(--accent);}
+.kl-xo .o .mk{color:var(--teal);}
+.kl-xo .jp{font-family:var(--serif);font-size:16px;}
+
+
+/* ===== KHỐI 3 — MỚI, đề xuất thêm vào 3 theme_*.css dưới "SC19 — Lỗi thường gặp" ===== */
+.action-link{color:var(--ink-soft);border-bottom:1px solid transparent;}
+.action-link.is-primary{color:var(--accent);}
+.action-link:hover{color:var(--accent);border-bottom-color:var(--accent);}
+button.btn{font:inherit;cursor:pointer;}
+.kwrap{max-width:1000px;}
+main{padding:36px 0 70px;}
+.lt-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:26px;}
+.lt-hero p{max-width:560px;margin:0;font-size:14.5px;}
+
+.lt-tools{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:18px;}
+.lt-tools .grow{flex:1 1 280px;display:flex;gap:8px;}
+.lt-tools input[type=search]{flex:1;}
+.lt-tools .btn{padding:11px 20px;}
+.lt-check{display:flex;align-items:center;gap:8px;margin:0;font-size:14px;color:var(--ink);cursor:pointer;}
+.lt-check input{width:auto;accent-color:var(--accent);}
+
+.lt-tabs{display:grid;grid-template-columns:1.25fr 1.6fr .55fr;gap:14px;margin-bottom:22px;}
+.lt-glabel{font-size:12px;color:var(--ink-soft);letter-spacing:.04em;margin:0 0 7px 2px;}
+.lt-tablist{display:flex;flex-wrap:wrap;gap:6px;}
+.lt-tab{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--border);
+  border-radius:3px;background:var(--surface);font-size:13.5px;color:var(--ink-soft);
+  transition:border-color .15s,color .15s,background .15s;}
+.lt-tab:hover{border-color:var(--accent);color:var(--accent);}
+.lt-tab .c{font-size:11.5px;min-width:20px;text-align:center;padding:0 5px;border-radius:9px;background:#f1ece1;color:var(--ink-soft);}
+.lt-tab.is-active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.lt-tab.is-active .c{background:rgba(255,255,255,.25);color:#fff;}
+.lt-tab.is-zero{opacity:.4;}
+
+.lt-pane{display:none;padding:28px 34px;margin-bottom:18px;}
+.lt-pane.is-active{display:block;}
+.lt-pane-h{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:6px;}
+.lt-pane-h .kl-title{font-size:27px;margin-bottom:14px;}
+.lt-cnt{font-family:var(--sans);font-size:13px;color:var(--ink-soft);vertical-align:middle;}
+.lt-src{font-size:13.5px;white-space:nowrap;margin-top:4px;}
+
+.lt-formula{display:table;margin:18px 0 8px;padding:6px 12px;font-weight:400;font-family:var(--serif);
+  background:#fbf8f2;border-left:3px solid var(--gold);border-radius:3px;}
+.kl-xo .o+.o{border-top:1px dashed #cfe0db;}
+
+table.lt-conv th{font-size:12px;}
+table.lt-conv th:nth-child(2){width:24px;}
+table.lt-conv td.jp:first-child{width:42%;}
+tr.lt-rule td{padding:16px 10px 6px;border-bottom:1px solid var(--border);font-size:14px;color:var(--accent-dark);}
+tr.lt-rule td .jp{font-family:var(--serif);}
+tr.lt-rule td::before{content:"▸ ";color:var(--gold);}
+
+.lt-cush{list-style:none;margin:0 0 6px;padding:0;}
+.lt-cush li{padding:9px 0 9px 18px;position:relative;border-top:1px solid #efe9dc;font-family:var(--serif);font-size:16.5px;}
+.lt-cush li:first-child{border-top:none;}
+.lt-cush li::before{content:"\30FB";position:absolute;left:0;color:var(--accent);}
+.lt-nocheck{display:none;font-size:13px;margin:0 0 10px;padding:8px 12px;background:#fbf8f2;border-radius:3px;}
+
+/* Tự kiểm tra (?an=1): template chỉ render <details>; mockup render cả hai rồi đổi class. */
+.lt-hide{display:none;}
+.is-check .lt-open{display:none;}
+.is-check .lt-hide{display:inline;}
+.is-check .lt-nocheck{display:block;}
+.lt-hide summary{display:inline-block;cursor:pointer;list-style:none;font-size:12.5px;color:var(--teal);
+  border:1px dashed var(--teal);border-radius:3px;padding:2px 10px;font-family:var(--sans);}
+.lt-hide summary::-webkit-details-marker{display:none;}
+.lt-hide[open] summary{display:none;}
+
+.lt-empty{text-align:center;padding:46px 20px;}
+.lt-empty .jp{font-family:var(--serif);font-size:30px;color:var(--border);margin-bottom:8px;}
+.lt-searchhead{display:none;font-size:14px;margin:0 0 14px;}
+.is-search .lt-searchhead{display:block;}
+mark{background:var(--accent-soft);color:inherit;padding:0 1px;border-radius:2px;}
+
+@media (max-width:900px){ .lt-tabs{grid-template-columns:1fr;gap:10px;} }
+@media (max-width:720px){
+  .lt-hero{flex-direction:column;align-items:flex-start;gap:16px;}
+  .lt-pane{padding:20px 16px;}
+  .lt-pane-h{flex-direction:column;gap:0;}
+  .lt-pane-h .kl-title{font-size:23px;margin-bottom:6px;}
+  .lt-src{margin:0 0 12px;}
+  table.lt-conv thead{display:none;}
+  table.lt-conv,table.lt-conv tbody,table.lt-conv tr,table.lt-conv td{display:block;width:auto!important;}
+  table.lt-conv tr{padding:8px 0;border-bottom:1px solid #efe9dc;}
+  table.lt-conv td{border:0;padding:2px 0;}
+  table.lt-conv td.arr{display:none;}
+  table.lt-conv td[data-l]::before{content:attr(data-l);display:inline-block;width:62px;font-family:var(--sans);font-size:11.5px;color:var(--ink-soft);}
+  tr.lt-rule td{padding:12px 0 4px;}
+}
+
+/* chỉ mockup */
+.mock-switch{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 16px;background:#24211D;color:#eee;font-size:13px;}
+.mock-switch .lbl{margin-right:8px;opacity:.7;letter-spacing:.04em;}
+.mock-switch button{background:transparent;border:1px solid #666;color:#eee;padding:4px 12px;border-radius:3px;cursor:pointer;font:inherit;}
+.mock-switch button.on{background:#B5432E;border-color:#B5432E;}
+</style></head><body>
+<div class="mock-switch"><span class="lbl">MOCKUP SC19 · trạng thái</span>
+<button data-m="view" class="on">Xem bình thường</button><button data-m="check">?an=1 Tự kiểm tra</button><button data-m="q">?q=いただ Tìm kiếm</button><button data-m="none">?q= không kết quả</button>
+<span class="lbl" style="margin-left:auto">Thu hẹp cửa sổ &lt; 720px để xem bản điện thoại</span></div>
+
+<div class="app-shell"><header class="site-topbar"><a class="brand" href="#"><span class="mark">毎</span>毎日BJT</a><div class="site-topbar-user"><a href="#">Dat</a><a href="#">Cài đặt</a><a href="#">Đăng xuất</a></div></header><div class="app-shell-body"><nav class="site-sidebar"><div class="site-sidebar-nav">
+<a class="sidenav-link" href="#">Trang chủ</a><a class="sidenav-link" href="#">Từ vựng</a><a class="sidenav-link" href="#">Ôn tập</a><a class="sidenav-link" href="#">Luyện viết</a><a class="sidenav-link" href="#">Góp ý</a>
+<details class="sidenav-group" open><summary class="sidenav-link active"><span>Kính ngữ</span></summary><div class="sidenav-sub">
+<a class="sidenav-sublink" href="#">Mục lục</a><a class="sidenav-sublink" href="#">Tra cứu từ</a><a class="sidenav-sublink" href="#">Học từ</a><a class="sidenav-sublink active" href="#">Lỗi thường gặp</a><span class="sidenav-sublink is-soon">Bài tập <span class="tag">Sắp có</span></span></div></details>
+</div></nav><div class="app-main"><main><div class="wrap kwrap" id="page">
+
+<nav class="kl-crumb"><a href="#" class="action-link">Kính ngữ</a><span>&rsaquo;</span><span>Lỗi thường gặp</span></nav>
+
+<div class="lt-hero">
+  <div>
+    <div class="eyebrow">間違いやすい敬語 · 言い換え · クッション言葉</div>
+    <h1 class="kl-h1">Lỗi thường gặp</h1>
+    <p class="muted">Mọi bảng cặp từ trong sách gom lại một chỗ: câu sai → câu đúng, lời thường → lời lịch sự, và từ đệm. Bật “tự kiểm tra” để che đáp án rồi tự nghĩ trước khi mở.</p>
+  </div>
+  <div class="figrow"><div><div class="num">87</div><div class="label">cặp câu / từ</div></div><div><div class="num">8</div><div class="label">nhóm</div></div><div><div class="num">3</div><div class="label">chương nguồn</div></div></div>
+</div>
+
+<form class="lt-tools" method="get" action="" onsubmit="return false">
+  <input type="hidden" name="view" value="wrong">
+  <div class="grow"><input type="search" name="q" id="q" placeholder="Tìm trong cả 8 nhóm — vd いただく, ございます, 本日"><button class="btn btn-outline" type="submit">Tìm</button></div>
+  <label class="lt-check"><input type="checkbox" name="an" value="1" id="an"> Tự kiểm tra — che vế lịch sự</label>
+</form>
+
+<nav class="lt-tabs" aria-label="Nhóm cặp từ">
+<div class="lt-tabgroup"><div class="lt-glabel">Câu sai → câu đúng</div><div class="lt-tablist">
+<a class="lt-tab is-active" href="?view=wrong" data-v="wrong">Kính ngữ dùng sai <span class="c" data-n="6">6</span></a>
+<a class="lt-tab" href="?view=double" data-v="double">Kính ngữ hai lần <span class="c" data-n="4">4</span></a>
+<a class="lt-tab" href="?view=baito" data-v="baito">Kính ngữ giới trẻ <span class="c" data-n="5">5</span></a>
+</div></div>
+<div class="lt-tabgroup"><div class="lt-glabel">Lời thường → lời lịch sự</div><div class="lt-tablist">
+<a class="lt-tab" href="?view=noun_biz" data-v="noun_biz">Danh từ kinh doanh <span class="c" data-n="10">10</span></a>
+<a class="lt-tab" href="?view=daily" data-v="daily">Lời nói thường ngày <span class="c" data-n="18">18</span></a>
+<a class="lt-tab" href="?view=teinei" data-v="teinei">Quy tắc 丁寧語 <span class="c" data-n="12">12</span></a>
+<a class="lt-tab" href="?view=adj_gozai" data-v="adj_gozai">Biến âm tính từ <span class="c" data-n="11">11</span></a>
+</div></div>
+<div class="lt-tabgroup"><div class="lt-glabel">Từ đệm</div><div class="lt-tablist">
+<a class="lt-tab" href="?view=cushion" data-v="cushion">Từ đệm <span class="c" data-n="21">21</span></a>
+</div></div>
+</nav>
+
+<p class="lt-searchhead muted">Kết quả cho “<b id="qv"></b>” trong cả 8 nhóm — <span id="qn"></span> dòng · <a href="#" class="action-link is-primary" id="qclear">Bỏ tìm kiếm</a></p>
+
+<section class="card lt-pane is-active" data-v="wrong">
+<header class="lt-pane-h"><div><div class="kl-kicker">※ Bảng よくある間違った敬語の使用例 (tr.18)</div><h2 class="kl-title">Kính ngữ dùng sai <span class="lt-cnt" data-n="6">6</span></h2></div>
+<a class="action-link is-primary lt-src" href="/keigo/mot-so-quy-tac-chia-dong-tu-co-quy-tac/?muc=cap-wrong">Xem trong chương 6 →</a></header>
+<div class="lt-grp">
+<div class="kl-xo lt-row" data-t="佐藤さんはおられますか？ 佐藤さんはいらっしゃいますか？">
+<div class="x"><span class="mk">×</span><span class="jp">佐藤さんはおられますか？</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">佐藤さんはいらっしゃいますか？</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">佐藤さんはいらっしゃいますか？</span></details></div>
+</div>
+<div class="kl-xo lt-row" data-t="鈴木様でございますか？ 鈴木様でいらっしゃいますか？">
+<div class="x"><span class="mk">×</span><span class="jp">鈴木様でございますか？</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">鈴木様でいらっしゃいますか？</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">鈴木様でいらっしゃいますか？</span></details></div>
+</div>
+<div class="kl-xo lt-row" data-t="ご確認してください。 ご確認ください。">
+<div class="x"><span class="mk">×</span><span class="jp">ご確認してください。</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">ご確認ください。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">ご確認ください。</span></details></div>
+</div>
+<div class="kl-xo lt-row" data-t="ただいま田中部長がおっしゃったように… ただいま部長の田中が申したように… （社外の人に対して）">
+<div class="x"><span class="mk">×</span><span class="jp">ただいま田中部長がおっしゃったように…</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">ただいま部長の田中が申したように…</span><span class="note">（社外の人に対して）</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">ただいま部長の田中が申したように…</span><span class="note">（社外の人に対して）</span></details></div>
+</div>
+<div class="kl-xo lt-row" data-t="資料は拝見されましたでしょうか。 資料はご覧いただけますしたでしょうか。">
+<div class="x"><span class="mk">×</span><span class="jp">資料は拝見されましたでしょうか。</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">資料はご覧いただけますしたでしょうか。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">資料はご覧いただけますしたでしょうか。</span></details></div>
+</div>
+<div class="kl-xo lt-row" data-t="おっしゃられました おっしゃいました">
+<div class="x"><span class="mk">×</span><span class="jp">おっしゃられました</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">おっしゃいました</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">おっしゃいました</span></details></div>
+</div>
+</div>
+</section>
+<section class="card lt-pane" data-v="double">
+<header class="lt-pane-h"><div><div class="kl-kicker">※ 二重敬語 — dùng quá mức (tr.19)</div><h2 class="kl-title">Kính ngữ hai lần <span class="lt-cnt" data-n="4">4</span></h2></div>
+<a class="action-link is-primary lt-src" href="/keigo/tham-khao/?muc=cap-double">Xem trong chương 7 →</a></header>
+<div class="lt-grp">
+<h3 class="kl-subhead jp lt-formula">お読みになられる＝「お読みになる」＋「れる・られる」</h3>
+<div class="kl-xo lt-row" data-t="お読みになられる＝「お読みになる」＋「れる・られる」 資料をお読みになられましたか。 資料をお読みになりましたか。 資料を読まれましたか。">
+<div class="x"><span class="mk">×</span><span class="jp">資料をお読みになられましたか。</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">資料をお読みになりましたか。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">資料をお読みになりましたか。</span></details></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">資料を読まれましたか。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">資料を読まれましたか。</span></details></div>
+</div>
+</div>
+<div class="lt-grp">
+<h3 class="kl-subhead jp lt-formula">ご案内してさしあげる＝「ご案内する」＋「さしあげる」</h3>
+<div class="kl-xo lt-row" data-t="ご案内してさしあげる＝「ご案内する」＋「さしあげる」 ご案内してさしあげましょうか。 ご案内いたしましょうか。">
+<div class="x"><span class="mk">×</span><span class="jp">ご案内してさしあげましょうか。</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">ご案内いたしましょうか。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">ご案内いたしましょうか。</span></details></div>
+</div>
+</div>
+<div class="lt-grp">
+<h3 class="kl-subhead jp lt-formula">させていただきます。</h3>
+<div class="kl-xo lt-row" data-t="させていただきます。 お話をうかがい、感動させていただきました。 お話をうかがい、感動いたしました。">
+<div class="x"><span class="mk">×</span><span class="jp">お話をうかがい、感動させていただきました。</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">お話をうかがい、感動いたしました。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">お話をうかがい、感動いたしました。</span></details></div>
+</div>
+</div>
+</section>
+<section class="card lt-pane" data-v="baito">
+<header class="lt-pane-h"><div><div class="kl-kicker">※ バイト敬語 (tr.19)</div><h2 class="kl-title">Kính ngữ giới trẻ <span class="lt-cnt" data-n="5">5</span></h2></div>
+<a class="action-link is-primary lt-src" href="/keigo/tham-khao/?muc=cap-baito">Xem trong chương 7 →</a></header>
+<div class="lt-grp">
+<div class="kl-xo lt-row" data-t="ご注文のほうは、以上でよろしかったでしょうか。 ご注文は、以上でよろしかったでしょうか。">
+<div class="x"><span class="mk">×</span><span class="jp">ご注文のほうは、以上でよろしかったでしょうか。</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">ご注文は、以上でよろしかったでしょうか。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">ご注文は、以上でよろしかったでしょうか。</span></details></div>
+</div>
+<div class="kl-xo lt-row" data-t="こちらコーヒーになります。 こちらコーヒーでございます。／をおもちいたしました。">
+<div class="x"><span class="mk">×</span><span class="jp">こちらコーヒーになります。</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">こちらコーヒーでございます。／をおもちいたしました。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">こちらコーヒーでございます。／をおもちいたしました。</span></details></div>
+</div>
+<div class="kl-xo lt-row" data-t="1.000円からお預かりします。 1.000円、お預かりいたします。">
+<div class="x"><span class="mk">×</span><span class="jp">1.000円からお預かりします。</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">1.000円、お預かりいたします。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">1.000円、お預かりいたします。</span></details></div>
+</div>
+<div class="kl-xo lt-row" data-t="わたし的には賛成です。 私は賛成です。">
+<div class="x"><span class="mk">×</span><span class="jp">わたし的には賛成です。</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">私は賛成です。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">私は賛成です。</span></details></div>
+</div>
+<div class="kl-xo lt-row" data-t="映画とかご覧になりますか。 映画をご覧になりますか。">
+<div class="x"><span class="mk">×</span><span class="jp">映画とかご覧になりますか。</span></div>
+<div class="o"><span class="mk">○</span><span class="lt-open"><span class="jp">映画をご覧になりますか。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">映画をご覧になりますか。</span></details></div>
+</div>
+</div>
+</section>
+<section class="card lt-pane" data-v="noun_biz">
+<header class="lt-pane-h"><div><div class="kl-kicker">※ プライベート → ビジネス (tr.18)</div><h2 class="kl-title">Danh từ kinh doanh <span class="lt-cnt" data-n="10">10</span></h2></div>
+<a class="action-link is-primary lt-src" href="/keigo/mot-so-quy-tac-chia-dong-tu-co-quy-tac/?muc=cap-noun_biz">Xem trong chương 6 →</a></header>
+<table class="kl-pairs lt-conv"><thead><tr><th>Cách nói thường</th><th></th><th>Cách nói lịch sự</th></tr></thead><tbody>
+<tr class="lt-row" data-t="今日 本日"><td class="jp" data-l="Thường">今日</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">本日</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">本日</span></details></td></tr>
+<tr class="lt-row" data-t="昨日「きのう」 昨日「さくじつ」"><td class="jp" data-l="Thường">昨日「きのう」</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">昨日「さくじつ」</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">昨日「さくじつ」</span></details></td></tr>
+<tr class="lt-row" data-t="明日「あした」 明日「あす、みょうにち」"><td class="jp" data-l="Thường">明日「あした」</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">明日「あす、みょうにち」</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">明日「あす、みょうにち」</span></details></td></tr>
+<tr class="lt-row" data-t="一昨日「おととい」 一昨日「いっさくじつ」"><td class="jp" data-l="Thường">一昨日「おととい」</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">一昨日「いっさくじつ」</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">一昨日「いっさくじつ」</span></details></td></tr>
+<tr class="lt-row" data-t="明後日「あさって」 明後日「みょうごにち」"><td class="jp" data-l="Thường">明後日「あさって」</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">明後日「みょうごにち」</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">明後日「みょうごにち」</span></details></td></tr>
+<tr class="lt-row" data-t="今度 このたび"><td class="jp" data-l="Thường">今度</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">このたび</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">このたび</span></details></td></tr>
+<tr class="lt-row" data-t="さっき さっきほど"><td class="jp" data-l="Thường">さっき</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">さっきほど</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">さっきほど</span></details></td></tr>
+<tr class="lt-row" data-t="前に 以前"><td class="jp" data-l="Thường">前に</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">以前</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">以前</span></details></td></tr>
+<tr class="lt-row" data-t="後で 後ほど「のちほど」"><td class="jp" data-l="Thường">後で</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">後ほど「のちほど」</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">後ほど「のちほど」</span></details></td></tr>
+<tr class="lt-row" data-t="もうすぐ まもなく"><td class="jp" data-l="Thường">もうすぐ</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">まもなく</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">まもなく</span></details></td></tr>
+</tbody></table>
+</section>
+<section class="card lt-pane" data-v="daily">
+<header class="lt-pane-h"><div><div class="kl-kicker">※ 日常言語 → 丁寧な言葉遣い (tr.21)</div><h2 class="kl-title">Lời nói thường ngày <span class="lt-cnt" data-n="18">18</span></h2></div>
+<a class="action-link is-primary lt-src" href="/keigo/tham-khao/?muc=cap-daily">Xem trong chương 7 →</a></header>
+<table class="kl-pairs lt-conv"><thead><tr><th>Cách nói thường</th><th></th><th>Cách nói lịch sự</th></tr></thead><tbody>
+<tr class="lt-row" data-t="どうですか。 いかがですか。"><td class="jp" data-l="Thường">どうですか。</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">いかがですか。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">いかがですか。</span></details></td></tr>
+<tr class="lt-row" data-t="いいですか。 よろしいですか。"><td class="jp" data-l="Thường">いいですか。</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">よろしいですか。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">よろしいですか。</span></details></td></tr>
+<tr class="lt-row" data-t="誰ですか。 どなたですか。"><td class="jp" data-l="Thường">誰ですか。</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">どなたですか。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">どなたですか。</span></details></td></tr>
+<tr class="lt-row" data-t="どんなご用件ですか。 どのようなご用件ですか。"><td class="jp" data-l="Thường">どんなご用件ですか。</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">どのようなご用件ですか。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">どのようなご用件ですか。</span></details></td></tr>
+<tr class="lt-row" data-t="いくらぐらいですか。 いかほどですか。"><td class="jp" data-l="Thường">いくらぐらいですか。</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">いかほどですか。</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">いかほどですか。</span></details></td></tr>
+<tr class="lt-row" data-t="いま ただいま"><td class="jp" data-l="Thường">いま</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">ただいま</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">ただいま</span></details></td></tr>
+<tr class="lt-row" data-t="さっき／このあいだ、この前 先ほど／先日、以前"><td class="jp" data-l="Thường">さっき／このあいだ、この前</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">先ほど／先日、以前</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">先ほど／先日、以前</span></details></td></tr>
+<tr class="lt-row" data-t="あとで のちほど、後日"><td class="jp" data-l="Thường">あとで</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">のちほど、後日</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">のちほど、後日</span></details></td></tr>
+<tr class="lt-row" data-t="すぐに さっそく、間もなく、早急に"><td class="jp" data-l="Thường">すぐに</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">さっそく、間もなく、早急に</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">さっそく、間もなく、早急に</span></details></td></tr>
+<tr class="lt-row" data-t="少し、ちょっと 少々"><td class="jp" data-l="Thường">少し、ちょっと</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">少々</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">少々</span></details></td></tr>
+<tr class="lt-row" data-t="とても／すごく たいへん／非常に"><td class="jp" data-l="Thường">とても／すごく</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">たいへん／非常に</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">たいへん／非常に</span></details></td></tr>
+<tr class="lt-row" data-t="やっぱり やはり"><td class="jp" data-l="Thường">やっぱり</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">やはり</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">やはり</span></details></td></tr>
+<tr class="lt-row" data-t="じゃあ では、それでは"><td class="jp" data-l="Thường">じゃあ</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">では、それでは</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">では、それでは</span></details></td></tr>
+<tr class="lt-row" data-t="こっち／そっち／あっち／どっち こちら／そちら／あちら／どちら"><td class="jp" data-l="Thường">こっち／そっち／あっち／どっち</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">こちら／そちら／あちら／どちら</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">こちら／そちら／あちら／どちら</span></details></td></tr>
+<tr class="lt-row" data-t="昨日／一昨日 さくじつ／いっさくじつ"><td class="jp" data-l="Thường">昨日／一昨日</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">さくじつ／いっさくじつ</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">さくじつ／いっさくじつ</span></details></td></tr>
+<tr class="lt-row" data-t="今日 本日"><td class="jp" data-l="Thường">今日</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">本日</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">本日</span></details></td></tr>
+<tr class="lt-row" data-t="明日／明後日 みょうにち／みょうごにち"><td class="jp" data-l="Thường">明日／明後日</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">みょうにち／みょうごにち</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">みょうにち／みょうごにち</span></details></td></tr>
+<tr class="lt-row" data-t="去年／一昨年 昨年／一昨年"><td class="jp" data-l="Thường">去年／一昨年</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">昨年／一昨年</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">昨年／一昨年</span></details></td></tr>
+</tbody></table>
+</section>
+<section class="card lt-pane" data-v="teinei">
+<header class="lt-pane-h"><div><div class="kl-kicker">※ です→でございます ... (tr.17-18)</div><h2 class="kl-title">Quy tắc 丁寧語 <span class="lt-cnt" data-n="12">12</span></h2></div>
+<a class="action-link is-primary lt-src" href="/keigo/mot-so-quy-tac-chia-dong-tu-co-quy-tac/?muc=cap-teinei">Xem trong chương 6 →</a></header>
+<table class="kl-pairs lt-conv"><thead><tr><th>Cách nói thường</th><th></th><th>Cách nói lịch sự</th></tr></thead><tbody>
+<tr class="lt-rule lt-row" data-t="後ろに「です」「ます」を付ける"><td colspan="3"><span class="jp">後ろに「です」「ます」を付ける</span></td></tr>
+<tr class="lt-row" data-t="です でございます"><td class="jp" data-l="Thường">です</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">でございます</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">でございます</span></details></td></tr>
+<tr class="lt-row" data-t="ではありません でございません"><td class="jp" data-l="Thường">ではありません</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">でございません</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">でございません</span></details></td></tr>
+<tr class="lt-row" data-t="あります ございます"><td class="jp" data-l="Thường">あります</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">ございます</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">ございます</span></details></td></tr>
+<tr class="lt-row" data-t="ありません ございません"><td class="jp" data-l="Thường">ありません</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">ございません</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">ございません</span></details></td></tr>
+<tr class="lt-row" data-t="ここ、そこ、あそこ こちら、そちら、あちら"><td class="jp" data-l="Thường">ここ、そこ、あそこ</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">こちら、そちら、あちら</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">こちら、そちら、あちら</span></details></td></tr>
+<tr class="lt-row" data-t="私（わたし） 私（わたくし）"><td class="jp" data-l="Thường">私（わたし）</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">私（わたくし）</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">私（わたくし）</span></details></td></tr>
+<tr class="lt-row" data-t="ごめんなさい 申し訳ありません/申し訳ございません"><td class="jp" data-l="Thường">ごめんなさい</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">申し訳ありません/申し訳ございません</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">申し訳ありません/申し訳ございません</span></details></td></tr>
+<tr class="lt-row" data-t="いいですか ～よろしいでしょうか"><td class="jp" data-l="Thường">いいですか</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">～よろしいでしょうか</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">～よろしいでしょうか</span></details></td></tr>
+<tr class="lt-rule lt-row" data-t="前に「お」「ご」などを付ける"><td colspan="3"><span class="jp">前に「お」「ご」などを付ける</span></td></tr>
+<tr class="lt-row" data-t="食事 お食事"><td class="jp" data-l="Thường">食事</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">お食事</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">お食事</span></details></td></tr>
+<tr class="lt-row" data-t="説明 ご説明"><td class="jp" data-l="Thường">説明</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">ご説明</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">ご説明</span></details></td></tr>
+</tbody></table>
+</section>
+<section class="card lt-pane" data-v="adj_gozai">
+<header class="lt-pane-h"><div><div class="kl-kicker">※ 安い→安うございます (tr.11)</div><h2 class="kl-title">Biến âm tính từ <span class="lt-cnt" data-n="11">11</span></h2></div>
+<a class="action-link is-primary lt-src" href="/keigo/the-lich-su/?muc=cap-adj_gozai">Xem trong chương 3 →</a></header>
+<table class="kl-pairs lt-conv"><thead><tr><th>Cách nói thường</th><th></th><th>Cách nói lịch sự</th></tr></thead><tbody>
+<tr class="lt-row" data-t="安い 安うございます"><td class="jp" data-l="Thường">安い</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">安うございます</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">安うございます</span></details></td></tr>
+<tr class="lt-row" data-t="寒い 寒うございます"><td class="jp" data-l="Thường">寒い</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">寒うございます</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">寒うございます</span></details></td></tr>
+<tr class="lt-row" data-t="細い 細うございます"><td class="jp" data-l="Thường">細い</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">細うございます</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">細うございます</span></details></td></tr>
+<tr class="lt-row" data-t="青い 青うございます"><td class="jp" data-l="Thường">青い</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">青うございます</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">青うございます</span></details></td></tr>
+<tr class="lt-row" data-t="早い 早うございます"><td class="jp" data-l="Thường">早い</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">早うございます</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">早うございます</span></details></td></tr>
+<tr class="lt-row" data-t="高い 高うございます"><td class="jp" data-l="Thường">高い</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">高うございます</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">高うございます</span></details></td></tr>
+<tr class="lt-row" data-t="ありがたい ありがとうございます"><td class="jp" data-l="Thường">ありがたい</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">ありがとうございます</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">ありがとうございます</span></details></td></tr>
+<tr class="lt-row" data-t="めでたい めでとうございます"><td class="jp" data-l="Thường">めでたい</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">めでとうございます</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">めでとうございます</span></details></td></tr>
+<tr class="lt-row" data-t="嬉しい 嬉しゅうございます"><td class="jp" data-l="Thường">嬉しい</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">嬉しゅうございます</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">嬉しゅうございます</span></details></td></tr>
+<tr class="lt-row" data-t="涼しい 涼しゅうございます"><td class="jp" data-l="Thường">涼しい</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">涼しゅうございます</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">涼しゅうございます</span></details></td></tr>
+<tr class="lt-row" data-t="大きい 大きゅうございます"><td class="jp" data-l="Thường">大きい</td><td class="arr">→</td><td class="jp pol" data-l="Lịch sự"><span class="lt-open"><span class="jp">大きゅうございます</span></span><details class="lt-hide"><summary>Hiện đáp án</summary><span class="jp">大きゅうございます</span></details></td></tr>
+</tbody></table>
+</section>
+<section class="card lt-pane" data-v="cushion">
+<header class="lt-pane-h"><div><div class="kl-kicker">※ クッション言葉 — vế casual để trống (tr.20)</div><h2 class="kl-title">Từ đệm <span class="lt-cnt" data-n="21">21</span></h2></div>
+<a class="action-link is-primary lt-src" href="/keigo/tham-khao/?muc=cap-cushion">Xem trong chương 7 →</a></header>
+<p class="lt-nocheck muted">Nhóm này chỉ có vế lịch sự (sách không in vế thường) — chế độ tự kiểm tra không áp dụng, cả nhóm luôn hiện đủ.</p>
+<div class="lt-grp">
+<ul class="lt-cush">
+<li class="lt-row jp" data-t="失礼ですが、お名前をお聞かせいただけますか。">失礼ですが、お名前をお聞かせいただけますか。</li>
+<li class="lt-row jp" data-t="まことに申し訳ございませんが、お約束のない方のお取り次ぎはいたしかねます。">まことに申し訳ございませんが、お約束のない方のお取り次ぎはいたしかねます。</li>
+</ul></div>
+<div class="lt-grp">
+<h3 class="kl-subhead jp">ご要望・ご質問・ご提案をする場合</h3>
+<ul class="lt-cush">
+<li class="lt-row jp" data-t="ご要望・ご質問・ご提案をする場合 お忙しいところ、恐れ入りますが...">お忙しいところ、恐れ入りますが...</li>
+<li class="lt-row jp" data-t="ご要望・ご質問・ご提案をする場合 お手数をおかけしますが...">お手数をおかけしますが...</li>
+<li class="lt-row jp" data-t="ご要望・ご質問・ご提案をする場合 ご面倒をおかけしますが...">ご面倒をおかけしますが...</li>
+<li class="lt-row jp" data-t="ご要望・ご質問・ご提案をする場合 失礼ですが...">失礼ですが...</li>
+<li class="lt-row jp" data-t="ご要望・ご質問・ご提案をする場合 さしつかえなければ...">さしつかえなければ...</li>
+<li class="lt-row jp" data-t="ご要望・ご質問・ご提案をする場合 よろしければ...">よろしければ...</li>
+<li class="lt-row jp" data-t="ご要望・ご質問・ご提案をする場合 つかぬことをおうかがいしますが...">つかぬことをおうかがいしますが...</li>
+</ul></div>
+<div class="lt-grp">
+<h3 class="kl-subhead jp">言いにくいとき／謝るとき／断るとき</h3>
+<ul class="lt-cush">
+<li class="lt-row jp" data-t="言いにくいとき／謝るとき／断るとき まことに申し訳ありませんが...">まことに申し訳ありませんが...</li>
+<li class="lt-row jp" data-t="言いにくいとき／謝るとき／断るとき まことに恐縮でございますが...">まことに恐縮でございますが...</li>
+<li class="lt-row jp" data-t="言いにくいとき／謝るとき／断るとき ご迷惑かとは存じますが...">ご迷惑かとは存じますが...</li>
+<li class="lt-row jp" data-t="言いにくいとき／謝るとき／断るとき ご不便をおかけしますが...">ご不便をおかけしますが...</li>
+<li class="lt-row jp" data-t="言いにくいとき／謝るとき／断るとき せっかくではございますが...">せっかくではございますが...</li>
+<li class="lt-row jp" data-t="言いにくいとき／謝るとき／断るとき あいにくでございますが...">あいにくでございますが...</li>
+<li class="lt-row jp" data-t="言いにくいとき／謝るとき／断るとき 残念ではございますが...">残念ではございますが...</li>
+<li class="lt-row jp" data-t="言いにくいとき／謝るとき／断るとき わたくしの思い違いかもしれませんが...">わたくしの思い違いかもしれませんが...</li>
+<li class="lt-row jp" data-t="言いにくいとき／謝るとき／断るとき ○○時に約束していたのですが...">○○時に約束していたのですが...</li>
+<li class="lt-row jp" data-t="言いにくいとき／謝るとき／断るとき まことに申しわけありませんが...ただいま...">まことに申しわけありませんが...ただいま...</li>
+</ul></div>
+<div class="lt-grp">
+<h3 class="kl-subhead jp">「恐れ入りますが...」そして「さしつかえなければ...」</h3>
+<ul class="lt-cush">
+<li class="lt-row jp" data-t="「恐れ入りますが...」そして「さしつかえなければ...」 恐れ入りますが、至急ご調査いただけませんでしょうか。">恐れ入りますが、至急ご調査いただけませんでしょうか。</li>
+<li class="lt-row jp" data-t="「恐れ入りますが...」そして「さしつかえなければ...」 さしつかえなければ、ご用件をお聞かせ願えますでしょうか。">さしつかえなければ、ご用件をお聞かせ願えますでしょうか。</li>
+</ul></div>
+</section>
+
+<div class="card lt-empty" id="empty" style="display:none"><div class="jp">見つかりません</div><p class="muted" style="margin:0 0 14px">Không có cặp nào khớp “<b id="qv2"></b>”.</p><a href="#" class="btn btn-outline" id="qclear2">Bỏ tìm kiếm</a></div>
+
+</div></main></div></div></div>
+
+<script>
+/* CHỈ MOCKUP — mô phỏng ?view= / ?an=1 / ?q= tại chỗ. Bản Django: link GET + form GET, không JS. */
+(function(){
+  var page=document.getElementById('page'), q=document.getElementById('q'), an=document.getElementById('an');
+  var tabs=[].slice.call(document.querySelectorAll('.lt-tab')), panes=[].slice.call(document.querySelectorAll('.lt-pane'));
+  var view='wrong';
+  function setView(v){view=v;render();}
+  tabs.forEach(function(t){t.addEventListener('click',function(ev){ev.preventDefault();q.value='';setView(t.dataset.v);});});
+  an.addEventListener('change',function(){page.classList.toggle('is-check',an.checked);sync();});
+  q.addEventListener('input',render);
+  ['qclear','qclear2'].forEach(function(id){document.getElementById(id).addEventListener('click',function(e){e.preventDefault();q.value='';render();});});
+  function render(){
+    var s=q.value.trim().toLowerCase(), total=0;
+    page.classList.toggle('is-search',!!s);
+    panes.forEach(function(p){
+      var rows=[].slice.call(p.querySelectorAll('.lt-row')), n=0;
+      rows.forEach(function(r){var ok=!s||r.dataset.t.indexOf(s)>-1; r.style.display=ok?'':'none'; if(ok)n++;});
+      // an tieu de nhom khi ca nhom trong
+      [].slice.call(p.querySelectorAll('.lt-grp')).forEach(function(g){
+        var vis=[].slice.call(g.querySelectorAll('.lt-row')).some(function(r){return r.style.display!=='none';});
+        g.style.display=vis?'':'none';});
+      var cc=p.querySelector('.lt-cnt'); cc.textContent=s?(n+' / '+cc.dataset.n):cc.dataset.n;
+      var tab=tabs.filter(function(t){return t.dataset.v===p.dataset.v;})[0], c=tab.querySelector('.c');
+      c.textContent=s?n:c.dataset.n; tab.classList.toggle('is-zero',!!s&&n===0);
+      var show=s? n>0 : p.dataset.v===view;
+      p.classList.toggle('is-active',show); tab.classList.toggle('is-active',!s&&p.dataset.v===view);
+      total+=n;
+    });
+    document.getElementById('qv').textContent=document.getElementById('qv2').textContent=q.value.trim();
+    document.getElementById('qn').textContent=total;
+    document.getElementById('empty').style.display=(s&&total===0)?'':'none';
+    sync();
+  }
+  var btns=[].slice.call(document.querySelectorAll('.mock-switch button'));
+  function sync(){btns.forEach(function(b){var m=b.dataset.m,on=false,s=q.value.trim();
+    if(m==='view')on=!an.checked&&!s; if(m==='check')on=an.checked&&!s; if(m==='q')on=s==='いただ'; if(m==='none')on=!!s&&s!=='いただ';
+    b.classList.toggle('on',on);});}
+  btns.forEach(function(b){b.addEventListener('click',function(){var m=b.dataset.m;
+    an.checked=(m==='check'); page.classList.toggle('is-check',an.checked);
+    q.value= m==='q'?'いただ': m==='none'?'ぴかちゅう':''; if(m==='view'||m==='check')view=view||'wrong'; render();});});
+  render();
+})();
+</script>
+</body></html>

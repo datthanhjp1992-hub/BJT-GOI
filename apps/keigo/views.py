@@ -1,7 +1,8 @@
 """
-View cua app keigo -- SC16 (muc luc) + SC17 (bai hoc) + SC18 (bang tra dong tu).
+View cua app keigo -- SC16 (muc luc) + SC17 (bai hoc) + SC18 (bang tra dong tu)
++ SC19 (loi thuong gap).
 
-SC19-22 CHUA lam, xem claude/keigo-thiet-ke.md muc 7 va muc 8. Chuong nao
+SC20-22 CHUA lam, xem claude/keigo-thiet-ke.md muc 7 va muc 8. Chuong nao
 khong co noi dung (meta_text rong) thi the tren SC16 van hien dang "sap co",
 KHONG dan toi 404 -- dung quyet dinh 4 trong htmlTemplate/SC16_KinhNguMucLuc_A.html.
 
@@ -228,3 +229,48 @@ def lesson_pdf_view(request, slug):
     filename = keigo_pdf.lesson_pdf_filename(lesson, position + 1)
     response["Content-Disposition"] = f'inline; filename="{filename}"'
     return response
+
+
+def _pitfall_url(view, check, query=""):
+    """URL SC19 giu ?an=1 khi doi tab / bo tim kiem."""
+    params = {selectors.PITFALL_VIEW_PARAM: view}
+    if query:
+        params[selectors.SEARCH_PARAM] = query
+    if check:
+        params[selectors.PITFALL_CHECK_PARAM] = "1"
+    return f"{reverse('keigo:loi_thuong_gap')}?{urlencode(params)}"
+
+
+@login_required
+def pitfall_view(request):
+    """SC19_LoiThuongGap -- 87 cap tu KeigoPhrasePair gom theo pair_type.
+
+    Tab ?view=, tim ?q= (quet ca 8 nhom), tu kiem tra ?an=1 -- tat ca la GET,
+    khong JavaScript. Xem selectors.pitfall_page() va 7 quyet dinh o dau
+    htmlTemplate/SC19_LoiThuongGap_A.html."""
+    query = (request.GET.get(selectors.SEARCH_PARAM) or "").strip()
+    check = request.GET.get(selectors.PITFALL_CHECK_PARAM) == "1"
+    data = selectors.pitfall_page(view=request.GET.get(selectors.PITFALL_VIEW_PARAM, ""), query=query)
+
+    # "Xem trong chuong N" -- N la VI TRI chuong (giong "Chuong N / 7" o SC17),
+    # link toi dung muc cap-<pair_type> cua SC17.
+    positions = {pk: i for i, pk in enumerate(
+        KeigoLesson.objects.order_by("display_order", "slug").values_list("pk", flat=True), start=1)}
+    for t in data["types"]:
+        t.url = _pitfall_url(t.code, check)
+    for t in data["shown"]:
+        if t.lesson is not None:
+            t.lesson_number = positions.get(t.lesson.pk, 0)
+            t.lesson_url = (f"{reverse('keigo:lesson', args=[t.lesson.slug])}?"
+                            f"{urlencode({selectors.LESSON_ITEM_PARAM: selectors.PAIR_ITEM_PREFIX + t.code})}")
+
+    context = {
+        **data,
+        "query": query,
+        "check": check,
+        "clear_url": _pitfall_url(data["view"], check),
+        "check_toggle_url": _pitfall_url(data["view"], not check, query),
+        "active_nav": "keigo",
+        "active_sub": "loi_thuong_gap",  # to dung muc "Loi thuong gap" trong sidebar
+    }
+    return render(request, "keigo/loi_thuong_gap.html", context)

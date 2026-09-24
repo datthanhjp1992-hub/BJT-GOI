@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load properties_tags keigo_tags %}
+{% comment %}SC19_LoiThuongGap -- loi thuong gap & cach noi lich su.
+
+Mockup Dat duyet 24/09/2026: htmlTemplate/SC19_LoiThuongGap_A.html (doc 7
+quyet dinh o dau file do). Du lieu: KeigoPhrasePair -- CUNG bang SC17 dang
+hien, o day gom theo pair_type xuyen chuong. Hang du lieu dung lai nguyen class
+.kl-xo / table.kl-pairs cua SC17; chi khung trang (.lt-*) la CSS moi.
+
+Tat ca la GET, khong JavaScript:
+  ?view=<pair_type>  tab     ?q=  tim trong ca 8 nhom     ?an=1  tu kiem tra
+Tu kiem tra: ve lich su nam trong <details> -- bam "Hien dap an" moi mo. Nhom
+cushion khong co ve thuong nen khong che, chi hien dong giai thich.
+Moi chuoi tieng Nhat di qua |ruby (escape TRUOC roi moi ghep <ruby>).{% endcomment %}
+
+{% block title %}{% label "keigo.pitfall.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <nav class="kl-crumb">
+    <a href="{% url 'keigo:index' %}" class="action-link">{% label "keigo.tra_cuu.breadcrumb" %}</a>
+    <span>&rsaquo;</span>
+    <span>{% label "keigo.pitfall.title" %}</span>
+  </nav>
+
+  <div class="kl-hero lt-hero">
+    <div>
+      <div class="eyebrow jp">{% label "keigo.pitfall.eyebrow" %}</div>
+      <h1 class="kl-h1">{% label "keigo.pitfall.title" %}</h1>
+      <p class="muted kl-sum">{% label "keigo.pitfall.intro" %}</p>
+    </div>
+    <div class="figrow">
+      <div><div class="num">{{ total }}</div><div class="label">{% label "keigo.pitfall.stat.pairs" %}</div></div>
+      <div><div class="num">{{ types|length }}</div><div class="label">{% label "keigo.pitfall.stat.types" %}</div></div>
+      <div><div class="num">{{ lesson_count }}</div><div class="label">{% label "keigo.pitfall.stat.lessons" %}</div></div>
+    </div>
+  </div>
+
+  {% if not types %}
+    <div class="card lt-empty"><p class="muted" style="margin:0;">{% label "keigo.pitfall.no_data" %}</p></div>
+  {% else %}
+
+  {# ========== TIM + TU KIEM TRA ========== #}
+  <div class="lt-tools">
+    <form class="grow" method="get" action="{% url 'keigo:loi_thuong_gap' %}">
+      <input type="hidden" name="view" value="{{ view }}">
+      {% if check %}<input type="hidden" name="an" value="1">{% endif %}
+      <input type="search" name="q" value="{{ query }}" placeholder="{% label 'keigo.pitfall.search.placeholder' %}">
+      <button class="btn btn-outline" type="submit">{% label "keigo.tra_cuu.search.button" %}</button>
+    </form>
+    {# Link chu khong phai checkbox: checkbox trong form GET phai bam "Tim" moi co tac dung. #}
+    <a class="lt-check{% if check %} is-on{% endif %}" href="{{ check_toggle_url }}" role="switch"
+       aria-checked="{% if check %}true{% else %}false{% endif %}">
+      <span class="box" aria-hidden="true">{% if check %}✓{% endif %}</span>{% label "keigo.pitfall.check.toggle" %}
+    </a>
+  </div>
+
+  {# ========== 8 TAB / 3 CUM ========== #}
+  <nav class="lt-tabs" aria-label="{% label 'keigo.pitfall.tabs_label' %}">
+    {% for kind, group_types in clusters %}
+      <div class="lt-tabgroup">
+        <div class="lt-glabel">{% if kind == "xo" %}{% label "keigo.pitfall.cluster.xo" %}{% elif kind == "cush" %}{% label "keigo.pitfall.cluster.cush" %}{% else %}{% label "keigo.pitfall.cluster.conv" %}{% endif %}</div>
+        <div class="lt-tablist">
+          {% for t in group_types %}
+            <a class="lt-tab{% if not query and t.code == view %} is-active{% endif %}{% if query and not t.match_count %} is-zero{% endif %}"
+               href="{{ t.url }}"{% if not query and t.code == view %} aria-current="page"{% endif %}>
+              {{ t.name }} <span class="c">{% if query %}{{ t.match_count }}{% else %}{{ t.count }}{% endif %}</span>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </nav>
+
+  {% if query %}
+    <p class="lt-searchhead muted">
+      {% label "keigo.pitfall.search.result_prefix" %} “<b>{{ query }}</b>” — {{ match_total }} {% label "keigo.pitfall.search.result_suffix" %}
+      · <a class="action-link is-primary" href="{{ clear_url }}">{% label "keigo.pitfall.search.clear" %}</a>
+    </p>
+  {% endif %}
+
+  {# ========== NOI DUNG ========== #}
+  {% for t in shown %}
+    <section class="card lt-pane">
+      <header class="lt-pane-h">
+        <div>
+          {% if t.description %}<div class="kl-kicker">※ {{ t.description }}</div>{% endif %}
+          <h2 class="kl-title">{{ t.name }} <span class="lt-cnt">{% if query %}{{ t.match_count }} / {% endif %}{{ t.count }}</span></h2>
+        </div>
+        {% if t.lesson_url %}
+          <a class="action-link is-primary lt-src" href="{{ t.lesson_url }}">{% label "keigo.pitfall.see_in_lesson" %} {{ t.lesson_number }} →</a>
+        {% endif %}
+      </header>
+
+      {% if t.kind == "xo" %}
+        {% for g in t.groups %}
+          {% if g.label %}<h3 class="kl-subhead jp lt-formula">{{ g.label|ruby }}</h3>{% endif %}
+          {% for row in g.items %}
+            <div class="kl-xo">
+              <div class="x"><span class="mk">×</span><span class="jp">{{ row.casual|ruby }}</span></div>
+              {% for p in row.answers %}
+                <div class="o"><span class="mk">○</span>
+                  {% if check %}<details class="lt-reveal"><summary>{% label "keigo.pitfall.check.reveal" %}</summary>{% endif %}
+                  <span class="jp">{{ p.polite|ruby }}</span>{% if p.note_vi %}<span class="note">{{ p.note_vi }}</span>{% endif %}
+                  {% if check %}</details>{% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        {% endfor %}
+
+      {% elif t.kind == "cush" %}
+        {% if check %}<p class="lt-nocheck muted">{% label "keigo.pitfall.check.cushion_note" %}</p>{% endif %}
+        {% for g in t.groups %}
+          {% if g.label %}<h3 class="kl-subhead jp">{{ g.label|ruby }}</h3>{% endif %}
+          <ul class="lt-cush">
+            {% for p in g.items %}
+              <li class="jp">{{ p.polite|ruby }}{% if p.note_vi %}<span class="note">{{ p.note_vi }}</span>{% endif %}</li>
+            {% endfor %}
+          </ul>
+        {% endfor %}
+
+      {% else %}
+        <table class="kl-pairs lt-conv">
+          <thead><tr><th>{% label "keigo.pitfall.col.casual" %}</th><th></th><th>{% label "keigo.pitfall.col.polite" %}</th></tr></thead>
+          {% for g in t.groups %}
+            <tbody>
+              {% if g.label %}<tr class="lt-rule"><td colspan="3"><span class="jp">{{ g.label|ruby }}</span></td></tr>{% endif %}
+              {% for p in g.items %}
+                {% if not p.casual %}
+                  {# 2 dong quy tac chung cua teinei -- khong phai cap, hien thanh tieu de chia bang #}
+                  <tr class="lt-rule"><td colspan="3"><span class="jp">{{ p.polite|ruby }}</span></td></tr>
+                {% else %}
+                  <tr>
+                    <td class="jp" data-l="{% label 'keigo.pitfall.col.casual_short' %}">{{ p.casual|ruby }}</td>
+                    <td class="arr">→</td>
+                    <td class="jp pol" data-l="{% label 'keigo.pitfall.col.polite_short' %}">
+                      {% if check %}<details class="lt-reveal"><summary>{% label "keigo.pitfall.check.reveal" %}</summary>{% endif %}
+                      {{ p.polite|ruby }}{% if p.note_vi %}<span class="note">{{ p.note_vi }}</span>{% endif %}
+                      {% if check %}</details>{% endif %}
+                    </td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          {% endfor %}
+        </table>
+      {% endif %}
+    </section>
+  {% empty %}
+    {# Chi xay ra khi ?q= khong khop dong nao #}
+    <div class="card lt-empty">
+      <div class="jp big">見つかりません</div>
+      <p class="muted">{% label "keigo.pitfall.search.empty" %} “<b>{{ query }}</b>”.</p>
+      <a class="btn btn-outline" href="{{ clear_url }}">{% label "keigo.pitfall.search.clear" %}</a>
+    </div>
+  {% endfor %}
+  {% endif %}
+{% endblock %}

@@ -12,7 +12,7 @@ from django.db.models import Count, Q
 from apps.core.constants import keigo_pair_type_choices, keigo_style_choices
 from apps.core.properties import label
 
-from .models import KeigoForm, KeigoVerb
+from .models import KeigoForm, KeigoPhrasePair, KeigoVerb
 
 # --- Ten tham so tren query string ------------------------------------------
 SEARCH_PARAM = "q"
@@ -241,4 +241,138 @@ def lesson_stats(lesson):
         "irregular_count": (KeigoForm.objects.filter(is_irregular=True, style_code__in=styles).count()
                             if styles else 0),
         "pair_count": lesson.phrase_pairs.count(),
+    }
+
+
+# =============================================================================
+# SC19 -- Loi thuong gap (Dat duyet mockup 24/09/2026,
+# htmlTemplate/SC19_LoiThuongGap_A.html -- doc 7 quyet dinh o dau file do).
+#
+# KHONG them model: xep lai CUNG bang KeigoPhrasePair ma SC17 dang hien, nhung
+# gom theo pair_type XUYEN chuong (SC17 rai 87 cap o chuong 3, 6, 7).
+#   ?view=<pair_type>  tab dang mo (la / trong -> tab dau tien co du lieu)
+#   ?q=                tim trong CA 8 nhom, bo qua ?view=
+#   ?an=1              tu kiem tra -- che ve lich su bang <details>
+# =============================================================================
+PITFALL_VIEW_PARAM = "view"
+PITFALL_CHECK_PARAM = "an"
+PITFALL_DEFAULT_VIEW = "wrong"
+CUSHION_PAIR_TYPE = "cushion"
+
+# 3 cum hien thi -- KHONG co trong DB. Suy tu DUNG quy tac SC17 dang dung
+# (WRONG_PAIR_TYPES -> × / ○; cushion -> ve casual rong; con lai -> bang "→"),
+# nen them mot pair_type moi vao MasterCode 15 la tu roi vao cum "conv".
+PITFALL_KIND_XO = "xo"
+PITFALL_KIND_CONV = "conv"
+PITFALL_KIND_CUSHION = "cush"
+PITFALL_KIND_ORDER = [PITFALL_KIND_XO, PITFALL_KIND_CONV, PITFALL_KIND_CUSHION]
+
+
+def pitfall_kind(pair_type):
+    if pair_type in WRONG_PAIR_TYPES:
+        return PITFALL_KIND_XO
+    if pair_type == CUSHION_PAIR_TYPE:
+        return PITFALL_KIND_CUSHION
+    return PITFALL_KIND_CONV
+
+
+@dataclass
+class PitfallType:
+    code: str
+    name: str
+    description: str
+    kind: str
+    count: int = 0            # tong so dong cua nhom
+    match_count: int = 0      # so dong khop ?q= (khong tim thi = count)
+    lesson: object = None     # chuong chua nhom nay (de link ve SC17)
+    url: str = ""             # link tab -- view dien
+    lesson_url: str = ""      # link "Xem trong chuong N" -- view dien
+    lesson_number: int = 0
+    groups: list = field(default_factory=list)  # chi dien cho nhom DANG HIEN
+
+
+def _pair_type_meta():
+    """[(code, code_name, description)] theo sort_order MasterCode 15.
+
+    Doc thang MasterCode vi can ca `description` (ghi chu "Bang ... (tr.18)"
+    hien lam kicker), ma keigo_pair_type_choices() chi tra (code, name)."""
+    from apps.core.constants import CODE_TYPE_KEIGO_PAIR_TYPE
+    from apps.core.models import MasterCode
+
+    return list(MasterCode.objects.filter(code_type=CODE_TYPE_KEIGO_PAIR_TYPE, is_active=True)
+                .order_by("sort_order", "code")
+                .values_list("code", "code_name", "description"))
+
+
+def _search_q(query):
+    return (Q(casual__icontains=query) | Q(polite__icontains=query)
+            | Q(group_label__icontains=query) | Q(note_vi__icontains=query))
+
+
+def pitfall_groups(kind, pairs):
+    """Gom cac dong cua MOT nhom thanh khoi hien thi: [{label, items}].
+
+    Cac dong LIEN KE cung group_label -> mot khoi (co tieu de neu label khac rong).
+    - xo  : trong moi khoi, dong LIEN KE cung ve `casual` gop thanh MOT ×
+            voi N ○ (double #1-#2 cung 「資料をお読みになられましたか。」).
+            item = {"casual": str, "answers": [KeigoPhrasePair, ...]}
+    - conv: item = KeigoPhrasePair; dong casual rong (2 quy tac chung cua
+            teinei) template hien thanh dong tieu de chia bang.
+    - cush: item = KeigoPhrasePair (chi co polite).
+    """
+    groups = []
+    for lbl, rows in groupby(pairs, key=lambda p: p.group_label):
+        rows = list(rows)
+        if kind == PITFALL_KIND_XO:
+            items = []
+            for casual, same in groupby(rows, key=lambda p: p.casual):
+                items.append({"casual": casual, "answers": list(same)})
+        else:
+            items = rows
+        groups.append({"label": lbl, "items": items})
+    return groups
+
+
+def pitfall_page(view="", query=""):
+    """Du lieu cho SC19. Tra dict:
+      types    : [PitfallType] moi nhom CO du lieu, theo sort_order MasterCode
+      clusters : [(kind, [PitfallType])] -- cum rong bi bo
+      view     : ma tab dang mo (da chuan hoa)
+      shown    : [PitfallType] cac nhom hien noi dung (1 nhom, hoac moi nhom khop ?q=)
+      total / match_total / lesson_count
+    """
+    query = (query or "").strip()
+    base = KeigoPhrasePair.objects.all()
+    counts = dict(base.values_list("pair_type").annotate(n=Count("id")))
+    matches = (dict(base.filter(_search_q(query)).values_list("pair_type").annotate(n=Count("id")))
+               if query else counts)
+
+    types = [PitfallType(code=code, name=name, description=desc, kind=pitfall_kind(code),
+                         count=counts[code], match_count=matches.get(code, 0))
+             for code, name, desc in _pair_type_meta() if counts.get(code)]
+    codes = [t.code for t in types]
+    if view not in codes:
+        view = PITFALL_DEFAULT_VIEW if PITFALL_DEFAULT_VIEW in codes else (codes[0] if codes else "")
+
+    shown = [t for t in types if t.match_count] if query else [t for t in types if t.code == view]
+    if shown:
+        pairs = (base.filter(pair_type__in=[t.code for t in shown])
+                 .select_related("lesson").order_by("pair_type", "display_order", "id"))
+        if query:
+            pairs = pairs.filter(_search_q(query))
+        by_type = {code: list(rows) for code, rows in groupby(pairs, key=lambda p: p.pair_type)}
+        for t in shown:
+            rows = by_type.get(t.code, [])
+            t.lesson = rows[0].lesson if rows else None
+            t.groups = pitfall_groups(t.kind, rows)
+
+    clusters = [(kind, [t for t in types if t.kind == kind]) for kind in PITFALL_KIND_ORDER]
+    return {
+        "types": types,
+        "clusters": [(kind, ts) for kind, ts in clusters if ts],
+        "view": view,
+        "shown": shown,
+        "total": sum(counts.values()),
+        "match_total": sum(t.match_count for t in types),
+        "lesson_count": base.values("lesson").distinct().count(),
     }
