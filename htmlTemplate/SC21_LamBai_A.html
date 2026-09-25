@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC21 Làm bài kính ngữ | 毎日BJT</title>
+<!--
+  SC21_LamBai — LÀM BÀI TẬP KÍNH NGỮ (mockup 25/09/2026, chờ Dat duyệt)
+  Tham chiếu: claude/keigo-thiet-ke.md mục 3.2–3.6, mục 7 (SC21) + quyết định UI số 8.
+  Đề, đoạn văn, phương án, đáp án lấy NGUYÊN từ docs/data/keigo/08–10. Tiến độ là giả.
+  Theme A — duyệt xong mới làm B/C.
+
+  Mười quyết định của màn này:
+
+  1. URL: path("bai-tap/<slug:set_slug>/", views.exercise_play_view, name="bai_tap_lam")
+     — đặt TRƯỚC path("<slug:slug>/"). GET: hiện câu CHƯA TRẢ LỜI ĐẦU TIÊN của lượt dở
+     (thứ tự section.display_order, question.number). Không có lượt dở → về SC20
+     (không tự tạo lượt bằng GET — tạo lượt chỉ bằng POST ở SC20).
+
+  2. MỖI LẦN MỘT CÂU, CHẤM NGAY (Post/Redirect/Get):
+     POST {question_id, option} → lưu UserQuestionAnswer (unique attempt+question ⇒ F5 /
+     bấm hai lần không tạo bản ghi thứ hai, lần sau KHÔNG ghi đè lần đầu), cập nhật
+     attempt.score → redirect GET ?da=<question_id> để hiện phản hồi. Không chọn gì mà
+     bấm Kiểm tra → flash "Chọn một phương án", giữ nguyên câu.
+
+  3. PHẢN HỒI: phương án đúng xanh ○, phương án đã chọn sai đỏ ×, còn lại mờ đi.
+     Khối "Giải thích" CHỈ hiện khi explanation_vi có nội dung — hiện đang trống toàn
+     bộ nên thực tế chưa ai thấy nó (đúng quyết định "template tự ẩn khi trống").
+
+  4. KHÔNG NHẢY CÂU. Dải ô số trên đầu chỉ để xem tiến độ (xanh đúng / đỏ sai / viền đỏ
+     câu đang làm), KHÔNG phải link. Xem lại để ở SC22. Giữ luồng đơn giản, không
+     phải xử lý "sửa câu đã trả lời".
+
+  5. DẠNG SẮP XẾP ★ (ordering): người học chọn VẾ NÀO VÀO Ô ★ — đúng cách sách chấm
+     (đáp án 3(1234) chỉ tính vế ở ô ★). Không bắt kéo-thả cả 4 vế: không cần JS, dùng
+     được trên điện thoại. Sau khi chấm hiện CÂU HOÀN CHỈNH ghép theo correct_order, số
+     nhỏ trên mỗi vế là số in trong sách. selected_order để trống (dự phòng về sau).
+
+  6. ĐOẠN VĂN (section.passage_jp khác rỗng): ghim trên đầu (position:sticky) trong
+     <details open> — gập lại được khi đoạn dài. Chỗ trống có số == question.number tô
+     đỏ; chỗ trống của câu ĐÃ làm điền luôn đáp án đúng (xanh) hoặc câu đã chọn (đỏ);
+     chỗ trống chưa tới thì mờ. Làm bằng một filter template (regex （n）), không JS.
+     Dưới 720px: bỏ sticky (màn nhỏ không đủ chỗ ghim), đoạn văn nằm trên câu hỏi.
+
+  7. THÂN CÂU của dạng cloze chỉ là "(13)" trong DB → selector cắt ra CÂU chứa （13）
+     trong passage_jp (tách theo 。/xuống dòng) để thẻ câu hỏi có ngữ cảnh.
+     LUYỆN TẬP 問題3: stem_jp đã là câu thoại, dùng thẳng — hai câu (3)(4) chung một
+     câu thoại thì chỗ trống kia hiện đáp án/mờ, không bị trùng.
+
+  8. Số phương án do dữ liệu quyết định (LUYỆN TẬP 2–3, còn lại 4) — lưới 2 cột tự co.
+
+  9. BÀN PHÍM (tăng cường bằng JS nhỏ, tắt JS vẫn dùng được): 1–4 chọn, Enter kiểm tra /
+     sang câu tiếp. Bản mockup chưa gắn.
+
+  10. Câu cuối: nút "Xem kết quả →" → set finished_at, redirect SC22. "Dừng lại, làm
+      sau" chỉ là link về SC20 — lượt vẫn dở, SC20 hiện "Làm tiếp".
+
+  Thanh MOCKUP màu tối và <script> cuối file CHỈ có trong mockup.
+-->
+<style>
+/* ===== KHỐI 1 — base + app shell, chép nguyên từ SC19 mockup (không phải CSS mới) ===== */
+
+/* Design A - "Washi & Vermillion": warm traditional Japanese paper aesthetic */
+:root{
+  --bg:#FAF6EE;
+  --surface:#FFFFFF;
+  --ink:#24211D;
+  --ink-soft:#6b6455;
+  --accent:#B5432E;
+  --accent-dark:#8f3323;
+  --accent-soft:#f0d9cf;
+  --gold:#B8912B;
+  --teal:#3F6B63;
+  --border:#DCD3C0;
+  --serif: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --sans: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;}
+h1,h2,h3,.serif{font-family:var(--serif);}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+
+/* header */
+.topbar{border-bottom:1px solid var(--border);background:var(--surface);}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:72px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:22px;color:var(--ink);}
+.brand .mark{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-family:var(--serif);}
+nav.mainnav{display:flex;gap:28px;font-size:14.5px;}
+nav.mainnav a{padding:6px 2px;border-bottom:2px solid transparent;color:var(--ink-soft);}
+nav.mainnav a.active{color:var(--accent);border-color:var(--accent);}
+.navmeta{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--ink-soft);}
+.pill{padding:8px 18px;border-radius:3px;background:var(--accent);color:#fff;font-size:14px;}
+.pill.ghost{background:transparent;border:1px solid var(--border);color:var(--ink);}
+
+main{padding:52px 0 80px;}
+.stamp{position:relative;}
+.stamp::before{content:"";position:absolute;top:-6px;right:-6px;width:46px;height:46px;border:2px solid var(--accent);border-radius:50%;opacity:.25;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:28px;}
+.grid{display:grid;gap:20px;}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-2{grid-template-columns:1.4fr 1fr;}
+
+.btn{display:inline-block;padding:13px 26px;border-radius:3px;font-size:15px;cursor:pointer;border:1px solid transparent;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-dark);}
+.btn-outline{border-color:var(--ink);color:var(--ink);background:transparent;}
+.btn-block{display:block;width:100%;text-align:center;}
+
+label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:6px;}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:3px;background:#fff;font-size:15px;font-family:var(--sans);color:var(--ink);}
+input:focus,select:focus{outline:none;border-color:var(--accent);}
+.field{margin-bottom:18px;}
+
+.divider{height:1px;background:var(--border);margin:26px 0;}
+.eyebrow{color:var(--accent);font-size:13px;letter-spacing:.02em;margin-bottom:10px;}
+.muted{color:var(--ink-soft);}
+.tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12.5px;border:1px solid var(--border);color:var(--ink-soft);margin-right:6px;}
+.tag.level{background:var(--accent-soft);border-color:transparent;color:var(--accent-dark);}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+th{text-align:left;color:var(--ink-soft);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;}
+td{padding:14px 12px;border-bottom:1px solid var(--border);}
+tr:hover td{background:#fbf8f2;}
+
+.stat{padding:22px;border:1px solid var(--border);border-radius:4px;background:var(--surface);}
+.stat .num{font-family:var(--serif);font-size:34px;color:var(--accent-dark);}
+.stat .label{font-size:13.5px;color:var(--ink-soft);margin-top:4px;}
+
+.flashcard{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:60px 40px;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
+.flashcard .jp{font-family:var(--serif);font-size:52px;margin-bottom:14px;}
+.flashcard .reading{color:var(--ink-soft);margin-bottom:20px;}
+.progressbar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progressbar span{display:block;height:100%;background:var(--accent);}
+
+.sidebar{width:220px;border-right:1px solid var(--border);padding:32px 20px;}
+.sidebar a{display:block;padding:10px 14px;border-radius:3px;color:var(--ink-soft);margin-bottom:4px;font-size:14.5px;}
+.sidebar a.active{background:var(--accent-soft);color:var(--accent-dark);}
+.admin-layout{display:flex;}
+.admin-content{flex:1;padding:32px 36px;}
+
+footer.note{padding:20px 0;text-align:center;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--border);}
+
+.figrow{display:grid;grid-template-columns:repeat(3,auto);gap:20px 30px;justify-content:start;}
+.figrow div{min-width:78px;}
+.figrow .num{font-family:var(--serif);font-size:28px;color:var(--accent-dark);line-height:1.1;}
+.figrow .label{font-size:13px;color:var(--ink-soft);}
+
+
+.app-shell{display:flex;flex-direction:column;min-height:100vh;}
+.app-shell.app-shell-guest{display:block;min-height:0;}
+
+.site-topbar{display:flex;align-items:center;justify-content:space-between;height:72px;padding:0 24px;flex:none;border-bottom:1px solid var(--border);background:var(--surface);}
+.site-topbar .brand{padding:0;}
+.site-topbar-user{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--ink-soft);}
+.site-topbar-user form{margin:0;}
+.site-topbar-user button{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;}
+
+.app-shell-body{display:flex;align-items:stretch;flex:1;min-height:0;}
+
+.site-sidebar{width:240px;flex:none;display:flex;flex-direction:column;
+  border-right:1px solid var(--border);background:var(--surface);}
+
+.site-sidebar-nav{flex:1;overflow-y:auto;padding:6px 12px;}
+
+.sidenav-link{display:block;padding:10px 14px;border-radius:3px;color:var(--ink-soft);
+  margin-bottom:2px;font-size:14.5px;text-decoration:none;cursor:pointer;
+  transition:background .15s ease,color .15s ease;}
+.sidenav-link:hover{background:var(--accent-soft);color:var(--accent-dark);}
+.sidenav-link.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:600;}
+.sidenav-link .jp{font-family:var(--serif);font-size:14px;margin-right:6px;}
+.sidenav-button{width:100%;text-align:left;background:none;border:0;font:inherit;}
+
+.sidenav-group{margin-bottom:2px;}
+.sidenav-group summary{list-style:none;}
+.sidenav-group summary::-webkit-details-marker{display:none;}
+.sidenav-group summary::after{content:"\203A";float:right;transform:rotate(90deg);
+  transition:transform .15s ease;color:var(--ink-soft);}
+.sidenav-group[open]>summary::after{transform:rotate(-90deg);}
+.sidenav-sub{padding:2px 0 6px 16px;display:flex;flex-direction:column;}
+.sidenav-sublink{display:flex;align-items:center;gap:8px;padding:8px 14px;
+  border-radius:3px;color:var(--ink-soft);font-size:13.5px;text-decoration:none;}
+.sidenav-sublink:hover{background:var(--accent-soft);color:var(--accent-dark);}
+.sidenav-sublink.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:600;}
+.sidenav-sublink.is-soon{color:var(--border);cursor:default;}
+.sidenav-sublink.is-soon .tag{margin:0;font-size:10px;padding:1px 6px;}
+
+.app-main{flex:1;min-width:0;display:flex;flex-direction:column;}
+.app-main>main{flex:1;}
+
+@media (max-width:900px){
+  .site-topbar{height:auto;padding:12px 16px;flex-wrap:wrap;gap:8px 14px;}
+  .site-topbar-user{gap:12px;font-size:13.5px;}
+  .app-shell-body{flex-direction:column;}
+  .site-sidebar{width:auto;flex-direction:row;flex-wrap:wrap;align-items:center;
+    border-right:none;border-bottom:1px solid var(--border);padding:10px 14px;gap:2px 4px;}
+  .site-sidebar-nav{flex:none;display:flex;flex-wrap:wrap;padding:0;overflow:visible;gap:2px;}
+  .sidenav-group{position:relative;}
+  .sidenav-sub{position:absolute;top:100%;left:0;margin-top:4px;background:var(--surface);
+    border:1px solid var(--border);border-radius:4px;padding:6px;z-index:30;min-width:180px;
+    box-shadow:0 6px 18px rgba(0,0,0,.14);}
+}
+
+
+/* ===== KHỐI 2 — .kl-* đã có trong static/css/theme_a.css (SC17), chép để mockup hiện đúng ===== */
+.kl-crumb{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--ink-soft);margin-bottom:14px;}
+.kl-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;
+  padding-bottom:24px;margin-bottom:26px;border-bottom:1px solid var(--border);}
+.kl-h1{font-family:var(--serif);font-size:36px;font-weight:400;margin:0 0 8px;line-height:1.2;}
+.kl-sum{max-width:580px;margin:0;font-size:14.5px;}
+.kl-stage rt,.kl-list rt{font-size:.55em;color:var(--ink-soft);}
+
+.kl-layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:26px;align-items:start;}
+/* Chuong 2 co 14 muc: gioi han chieu cao de nut in khong bi day ra khoi man hinh -- danh sach tu cuon ben trong. */
+.kl-side{position:sticky;top:20px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 40px);}
+.kl-print{flex:none;}
+.kl-print p{margin:8px 2px 0;font-size:12.5px;line-height:1.5;}
+.kl-list{display:flex;flex-direction:column;overflow-y:auto;min-height:0;flex:0 1 auto;
+  background:var(--surface);border:1px solid var(--border);border-radius:4px;}
+.kl-list a{display:flex;gap:12px;align-items:center;padding:11px 16px;font-size:15px;
+  color:var(--ink-soft);border-top:1px solid #efe9dc;}
+.kl-list a:first-child{border-top:none;}
+.kl-list a:hover{background:#fbf8f2;color:var(--ink);}
+.kl-list a.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:600;}
+.kl-list .n{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);flex:none;
+  display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--serif);}
+.kl-list a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;}
+.kl-list .t{font-family:var(--serif);line-height:1.35;}
+
+.kl-stage{padding:34px 40px 26px;min-height:420px;display:flex;flex-direction:column;}
+.kl-pane{flex:1;}
+.kl-kicker{font-size:12.5px;color:var(--accent);letter-spacing:.04em;margin-bottom:6px;}
+.kl-title{font-family:var(--serif);font-weight:400;font-size:32px;margin:0 0 18px;line-height:1.3;}
+.kl-intro{margin:-8px 0 18px;font-size:14px;}
+.kl-subhead{font-size:15px;font-weight:600;margin:24px 0 8px;}
+.kl-subhead .tag{margin:0;}
+.kl-formula{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-bottom:16px;
+  padding:8px 14px;background:#fbf8f2;border:1px dashed var(--border);border-radius:3px;}
+.kl-formula .lbl{font-size:11.5px;color:var(--ink-soft);letter-spacing:.04em;text-transform:uppercase;}
+.kl-formula .jp{font-family:var(--serif);font-size:16px;color:var(--accent-dark);}
+.kl-expl{margin:-4px 0 14px;padding-left:10px;font-size:13.5px;color:var(--ink-soft);border-left:2px solid var(--gold);}
+
+.kl-exlist{list-style:none;margin:0;padding:0;}
+.kl-ex{position:relative;padding:9px 0 9px 18px;border-top:1px solid #efe9dc;}
+.kl-ex:first-child{border-top:none;}
+.kl-ex::before{content:"\30FB";position:absolute;left:0;top:9px;color:var(--accent);}
+.kl-ex.is-wrong::before{content:"\00D7";}
+.kl-ex.is-wrong .jp{color:var(--ink-soft);text-decoration:line-through;}
+.kl-ex .jp,.kl-line .jp{font-family:var(--serif);font-size:17px;line-height:1.9;}
+.kl-ex .vi,.kl-line .vi{display:block;font-size:13.5px;color:var(--ink-soft);}
+.kl-dialog{margin:6px 0;padding:10px 14px;background:#fbf8f2;border-left:3px solid var(--teal);border-radius:3px;}
+.kl-line{display:flex;gap:12px;align-items:baseline;padding:3px 0;}
+.kl-line .spk{flex:none;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:var(--teal);color:#fff;
+  font-size:11.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;}
+
+.kl-irr{display:grid;grid-template-columns:1fr;}
+.kl-irr-row{display:grid;grid-template-columns:110px 20px 1fr;align-items:baseline;padding:9px 0;border-bottom:1px solid #efe9dc;}
+.kl-irr-row .base{font-family:var(--serif);font-size:18px;}
+.kl-irr-row a.base:hover{color:var(--accent);}
+.kl-irr-row .arr{color:var(--ink-soft);}
+.kl-irr-row .forms{display:flex;flex-wrap:wrap;gap:4px 16px;}
+.kl-irr-row .f .jp{font-family:var(--serif);font-size:17px;color:var(--accent-dark);}
+.kl-irr-row .note{font-size:12px;color:var(--ink-soft);}
+.kl-irr-row .vi{grid-column:1;font-size:12px;color:var(--ink-soft);}
+.kl-more{margin:16px 0 0;font-size:14px;}
+
+table.kl-pairs td{padding:9px 10px;font-size:16px;vertical-align:top;}
+table.kl-pairs td.jp{font-family:var(--serif);}
+table.kl-pairs td.arr{width:24px;padding:9px 0;color:var(--ink-soft);}
+table.kl-pairs td.pol{color:var(--accent-dark);}
+table.kl-pairs tr:hover td{background:transparent;}
+.kl-pairs .note,.kl-xo .note{display:block;font-size:12px;color:var(--ink-soft);font-family:var(--sans);}
+.kl-xo{margin-bottom:10px;overflow:hidden;border:1px solid var(--border);border-radius:3px;}
+.kl-xo>div{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:8px 14px;}
+.kl-xo .x{background:#f7ece8;}
+.kl-xo .x .jp{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--accent);}
+.kl-xo .o{background:#eaf1ef;}
+.kl-xo .mk{width:14px;font-weight:700;}
+.kl-xo .x .mk{color:var(--accent);}
+.kl-xo .o .mk{color:var(--teal);}
+.kl-xo .jp{font-family:var(--serif);font-size:16px;}
+
+
+
+/* ===== KHỐI 3a — dùng chung SC20–SC22 (đã có ở SC19, chép lại) ===== */
+.action-link{color:var(--ink-soft);border-bottom:1px solid transparent;}
+.action-link.is-primary{color:var(--accent);}
+.action-link:hover{color:var(--accent);border-bottom-color:var(--accent);}
+button.btn{font:inherit;cursor:pointer;}
+.kwrap{max-width:1000px;}
+main{padding:36px 0 70px;}
+.mstate{display:none;}
+.mstate.is-on{display:block;}
+.bt-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:26px;}
+.bt-hero p{max-width:560px;margin:0;font-size:14.5px;}
+.bt-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.bt-tab{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--border);
+  border-radius:3px;background:var(--surface);font-size:13.5px;color:var(--ink-soft);}
+.bt-tab:hover{border-color:var(--accent);color:var(--accent);}
+.bt-tab .c{font-size:11.5px;min-width:20px;text-align:center;padding:0 5px;border-radius:9px;background:#f1ece1;color:var(--ink-soft);}
+.bt-tab.is-active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.bt-tab.is-active .c{background:rgba(255,255,255,.25);color:#fff;}
+/* chip dạng câu hỏi — màu theo question_type (MasterCode 16) */
+.qt{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:9px;border:1px solid var(--border);color:var(--ink-soft);white-space:nowrap;}
+.qt-mcq_blank{background:#f7f3ea;}
+.qt-ordering{background:#fbf1dc;border-color:#e6cf97;color:#7a5e12;}
+.qt-cloze{background:#e6efec;border-color:#bcd3cc;color:var(--teal);}
+.qt-passage{background:#e6efec;border-color:#bcd3cc;color:var(--teal);}
+/* thanh điểm */
+.bar{height:6px;background:#efe8da;border-radius:3px;overflow:hidden;}
+.bar>i{display:block;height:100%;border-radius:3px;}
+.s-hi{background:var(--teal);} .s-mid{background:var(--gold);} .s-lo{background:var(--accent);}
+.t-hi{color:var(--teal);} .t-mid{color:#8a6b14;} .t-lo{color:var(--accent-dark);}
+/* chỗ trống & ô ★ trong đề */
+.blank{display:inline-block;min-width:3.2em;border-bottom:2px solid var(--ink-soft);margin:0 3px;text-align:center;line-height:1.3;}
+.blank.is-cur{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-dark);font-weight:600;padding:0 6px;border-radius:3px 3px 0 0;}
+.blank.is-ok{border-color:var(--teal);color:var(--teal);padding:0 4px;}
+.blank.is-ng{border-color:var(--accent);color:var(--accent);padding:0 4px;}
+.blank.is-dim{opacity:.45;}
+.jp{font-family:var(--serif);}
+
+
+/* ===== KHỐI 3b — MỚI, đề xuất thêm vào 3 theme_*.css dưới "SC21 — Làm bài" ===== */
+.kwrap{max-width:820px;}
+.lb-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:14px;}
+.lb-head .action-link{font-size:13.5px;white-space:nowrap;}
+.lb-dots{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:18px;}
+.lb-dots .dot{width:24px;height:24px;border-radius:3px;border:1px solid var(--border);background:var(--surface);
+  font-size:10.5px;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;}
+.lb-dots .dot.is-ok{background:#e6efec;border-color:#bcd3cc;color:var(--teal);}
+.lb-dots .dot.is-ng{background:#f6e3dc;border-color:#e3b6a8;color:var(--accent-dark);}
+.lb-dots .dot.is-cur{border:2px solid var(--accent);color:var(--accent);font-weight:700;}
+.lb-instr{font-size:14px;color:var(--ink-soft);margin-bottom:14px;}
+.lb-passage{position:sticky;top:44px;z-index:5;background:#fbf8f2;border:1px solid var(--border);border-left:3px solid var(--teal);
+  border-radius:4px;margin-bottom:16px;box-shadow:0 4px 14px rgba(36,33,29,.06);}
+.lb-passage summary{cursor:pointer;padding:10px 18px;font-size:13px;color:var(--teal);font-weight:600;}
+.lb-passage-body{padding:0 20px 16px;font-size:15.5px;line-height:2;max-height:34vh;overflow:auto;}
+.lb-card{padding:26px 30px;}
+.lb-qhead{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.lb-num{font-family:var(--serif);font-size:22px;color:var(--accent);min-width:28px;}
+.lb-ctx{font-size:14px;color:var(--ink-soft);}
+.lb-stem{font-size:19px;line-height:2.1;margin-bottom:20px;}
+.slot{display:inline-block;min-width:3.6em;height:1.7em;vertical-align:middle;margin:0 3px;border-bottom:2px solid var(--ink-soft);
+  text-align:center;line-height:1.7em;font-size:15px;}
+.slot.is-star{border:2px solid var(--gold);border-radius:3px;background:#fbf1dc;color:#7a5e12;font-weight:700;}
+.slot.is-filled{min-width:0;padding:0 5px;border-bottom-color:var(--teal);color:var(--teal);font-size:17px;}
+.slot.is-filled.is-star{color:#7a5e12;}
+.slot sup{font-size:10px;color:var(--ink-soft);margin-left:2px;font-family:var(--sans);font-weight:400;}
+.lb-ask{margin:-6px 0 12px;font-size:14px;} .lb-ask .star{color:#7a5e12;}
+.lb-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.lb-opts.is-ord{grid-template-columns:repeat(4,1fr);}
+.lb-opt{display:flex;align-items:center;gap:12px;padding:13px 16px;border:1px solid var(--border);border-radius:3px;background:var(--surface);cursor:pointer;
+  transition:border-color .15s,background .15s;}
+.lb-opt:hover{border-color:var(--accent);}
+.lb-opt{position:relative;}
+.lb-opt input{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none;}
+.lb-opt .n{width:24px;height:24px;flex:none;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12.5px;color:var(--ink-soft);}
+.lb-opt .t{font-size:17px;flex:1;}
+.lb-opt:has(input:checked){border-color:var(--accent);background:#fdf3ee;}
+.lb-opt:has(input:checked) .n{background:var(--accent);border-color:var(--accent);color:#fff;}
+.lb-opt:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px;}
+.lb-opt .mk{font-size:18px;font-weight:700;}
+.lb-opt.is-ok{border-color:var(--teal);background:#e6efec;} .lb-opt.is-ok .n{background:var(--teal);border-color:var(--teal);color:#fff;} .lb-opt.is-ok .mk{color:var(--teal);}
+.lb-opt.is-ng{border-color:var(--accent);background:#f6e3dc;} .lb-opt.is-ng .n{background:var(--accent);border-color:var(--accent);color:#fff;} .lb-opt.is-ng .mk{color:var(--accent);}
+.lb-opt.is-off{opacity:.5;cursor:default;} .lb-opt.is-ok,.lb-opt.is-ng{cursor:default;}
+.lb-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+.lb-kbd{font-size:12.5px;} kbd{font-family:var(--sans);font-size:11px;border:1px solid var(--border);border-bottom-width:2px;border-radius:3px;padding:0 5px;background:#fff;}
+.lb-fb{padding:12px 16px;border-radius:3px;margin-bottom:14px;font-size:14.5px;}
+.lb-fb.is-ok{background:#e6efec;color:var(--teal);} .lb-fb.is-ng{background:#f6e3dc;color:var(--accent-dark);}
+.lb-explain{border-left:3px solid var(--gold);background:#fbf8f2;padding:10px 16px;margin-bottom:16px;font-size:14px;}
+.lb-order{font-size:13px;margin:-8px 0 14px;}
+@media (max-width:720px){
+  .lb-head{flex-direction:column;align-items:flex-start;}
+  .lb-passage{position:static;} .lb-passage-body{max-height:none;}
+  .lb-card{padding:20px 16px;} .lb-stem{font-size:17px;}
+  .lb-opts,.lb-opts.is-ord{grid-template-columns:1fr;}
+  .lb-kbd{display:none;}
+}
+
+.mock-switch{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 16px;background:#24211D;color:#eee;font-size:13px;}
+.mock-switch .lbl{margin-right:8px;opacity:.7;letter-spacing:.04em;}
+.mock-switch button{background:transparent;border:1px solid #666;color:#eee;padding:4px 12px;border-radius:3px;cursor:pointer;font:inherit;}
+.mock-switch button.on{background:#B5432E;border-color:#B5432E;}
+</style></head><body>
+<div class="mock-switch"><span class="lbl">MOCKUP SC21 · trạng thái</span><button data-s="mcq">Điền （ ）</button><button data-s="mcq-ng">… đã chấm: sai</button><button data-s="ord">Sắp xếp ★</button><button data-s="ord-ok">… đã chấm: đúng</button><button data-s="doan">Hội thoại (LUYỆN TẬP)</button><button data-s="cloze">Đoạn văn (BT12)</button><button data-s="last">Câu cuối → kết quả</button><span class="lbl" style="margin-left:auto">Thu hẹp cửa sổ &lt; 720px để xem bản điện thoại</span></div>
+
+<div class="app-shell"><header class="site-topbar"><a class="brand" href="#"><span class="mark">毎</span>毎日BJT</a><div class="site-topbar-user"><a href="#">Dat</a><a href="#">Cài đặt</a><a href="#">Đăng xuất</a></div></header><div class="app-shell-body"><nav class="site-sidebar"><div class="site-sidebar-nav">
+<a class="sidenav-link" href="#">Trang chủ</a><a class="sidenav-link" href="#">Từ vựng</a><a class="sidenav-link" href="#">Ôn tập</a><a class="sidenav-link" href="#">Luyện viết</a><a class="sidenav-link" href="#">Góp ý</a>
+<details class="sidenav-group" open><summary class="sidenav-link active"><span>Kính ngữ</span></summary><div class="sidenav-sub">
+<a class="sidenav-sublink" href="#">Mục lục</a><a class="sidenav-sublink" href="#">Tra cứu từ</a><a class="sidenav-sublink" href="#">Học từ</a><a class="sidenav-sublink" href="#">Lỗi thường gặp</a><a class="sidenav-sublink active" href="#">Bài tập</a></div></details>
+</div></nav><div class="app-main"><main><div class="wrap kwrap" id="page">
+<section class="mstate" data-s="mcq"><nav class="kl-crumb"><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Kính ngữ</a><span>&rsaquo;</span><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Bài tập</a><span>&rsaquo;</span><span>BÀI TẬP 12</span></nav>
+<div class="lb-head"><div><h1 class="kl-h1" style="font-size:30px;margin:0">BÀI TẬP 12</h1><div class="muted" style="font-size:13.5px">Câu <b style="color:var(--ink)">6</b> / 15 · đúng 4 / 5 câu đã làm</div></div><a class="action-link" href="SC20_BaiTapDanhSach_A.html">Dừng lại, làm sau</a></div>
+<div class="lb-dots" aria-label="Tiến độ"><span class="dot is-ok">1</span><span class="dot is-ok">2</span><span class="dot is-ng">3</span><span class="dot is-ok">4</span><span class="dot is-ok">5</span><span class="dot is-cur">6</span><span class="dot ">7</span><span class="dot ">8</span><span class="dot ">9</span><span class="dot ">10</span><span class="dot ">11</span><span class="dot ">12</span><span class="dot ">13</span><span class="dot ">14</span><span class="dot ">15</span></div>
+<div class="lb-instr jp">問題1 次の（ ）に入れるのに最もよいものを1・2・3・4から一つ選びなさい。</div>
+<form method="post" action="#"><div class="card lb-card"><div class="lb-qhead"><span class="lb-num">6</span><span class="qt qt-mcq_blank">Điền （ ）</span></div><div class="lb-stem jp">パーティーのご案内状をお送りしたいのですが、つきましてはご住所を<span class="blank is-cur">　？　</span>ませんでしょうか。</div><div class="lb-opts"><label class="lb-opt"><input type="radio" name="opt" value="1"><span class="n">1</span><span class="t jp">ご教え願え</span></label><label class="lb-opt"><input type="radio" name="opt" value="2"><span class="n">2</span><span class="t jp">ご教え願い</span></label><label class="lb-opt"><input type="radio" name="opt" value="3"><span class="n">3</span><span class="t jp">お教え願え</span></label><label class="lb-opt"><input type="radio" name="opt" value="4"><span class="n">4</span><span class="t jp">お教え願い</span></label></div><div class="lb-actions"><button class="btn btn-primary" type="submit">Kiểm tra</button><span class="muted lb-kbd">Phím <kbd>1</kbd>–<kbd>4</kbd> để chọn, <kbd>Enter</kbd> để kiểm tra</span></div></div>
+</form></section>
+<section class="mstate" data-s="mcq-ng"><nav class="kl-crumb"><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Kính ngữ</a><span>&rsaquo;</span><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Bài tập</a><span>&rsaquo;</span><span>BÀI TẬP 12</span></nav>
+<div class="lb-head"><div><h1 class="kl-h1" style="font-size:30px;margin:0">BÀI TẬP 12</h1><div class="muted" style="font-size:13.5px">Câu <b style="color:var(--ink)">6</b> / 15 · đúng 4 / 6 câu đã làm</div></div><a class="action-link" href="SC20_BaiTapDanhSach_A.html">Dừng lại, làm sau</a></div>
+<div class="lb-dots" aria-label="Tiến độ"><span class="dot is-ok">1</span><span class="dot is-ok">2</span><span class="dot is-ng">3</span><span class="dot is-ok">4</span><span class="dot is-ok">5</span><span class="dot is-ng">6</span><span class="dot ">7</span><span class="dot ">8</span><span class="dot ">9</span><span class="dot ">10</span><span class="dot ">11</span><span class="dot ">12</span><span class="dot ">13</span><span class="dot ">14</span><span class="dot ">15</span></div>
+<div class="lb-instr jp">問題1 次の（ ）に入れるのに最もよいものを1・2・3・4から一つ選びなさい。</div>
+<div class="card lb-card"><div class="lb-qhead"><span class="lb-num">6</span><span class="qt qt-mcq_blank">Điền （ ）</span></div><div class="lb-stem jp">パーティーのご案内状をお送りしたいのですが、つきましてはご住所を<span class="blank is-ng">お教え願い</span>ませんでしょうか。</div><div class="lb-opts"><label class="lb-opt is-off"><input type="radio" name="opt" value="1" disabled><span class="n">1</span><span class="t jp">ご教え願え</span></label><label class="lb-opt is-off"><input type="radio" name="opt" value="2" disabled><span class="n">2</span><span class="t jp">ご教え願い</span></label><label class="lb-opt is-ok"><input type="radio" name="opt" value="3" disabled><span class="n">3</span><span class="t jp">お教え願え</span><span class="mk">○</span></label><label class="lb-opt is-ng"><input type="radio" name="opt" value="4" checked disabled><span class="n">4</span><span class="t jp">お教え願い</span><span class="mk">×</span></label></div><div class="lb-fb is-ng"><b>× Chưa đúng.</b> Đáp án là <b>3</b> — <span class="jp">お教え願え</span></div><div class="lb-explain"><div class="eyebrow" style="margin:0 0 4px">Giải thích</div>「教える」 là từ thuần Nhật (和語) nên đi với 「お」, không phải 「ご」. Đứng trước 「ませんでしょうか」 phải là <b>thể khả năng</b> 「願える」 → 「お教え願えませんでしょうか」. <span class="muted">(Ví dụ lời giải — sách không có, cột explanation_vi hiện đang trống. Khi trống khối này ẩn hẳn.)</span></div><div class="lb-actions"><a class="btn btn-primary" href="#" data-go="ord">Câu tiếp →</a></div></div>
+</section>
+<section class="mstate" data-s="ord"><nav class="kl-crumb"><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Kính ngữ</a><span>&rsaquo;</span><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Bài tập</a><span>&rsaquo;</span><span>BÀI TẬP 3</span></nav>
+<div class="lb-head"><div><h1 class="kl-h1" style="font-size:30px;margin:0">BÀI TẬP 3</h1><div class="muted" style="font-size:13.5px">Câu <b style="color:var(--ink)">6</b> / 10 · đúng 3 / 5 câu đã làm</div></div><a class="action-link" href="SC20_BaiTapDanhSach_A.html">Dừng lại, làm sau</a></div>
+<div class="lb-dots" aria-label="Tiến độ"><span class="dot is-ok">1</span><span class="dot is-ng">2</span><span class="dot is-ok">3</span><span class="dot is-ng">4</span><span class="dot is-ok">5</span><span class="dot is-cur">6</span><span class="dot ">7</span><span class="dot ">8</span><span class="dot ">9</span><span class="dot ">10</span></div>
+<div class="lb-instr jp">問題 次の<span class='slot is-star' style='min-width:2em'>★</span>に入れるのに最もよいものを1・2・3・4から一つ選びなさい。</div>
+<form method="post" action="#"><div class="card lb-card"><div class="lb-qhead"><span class="lb-num">6</span><span class="qt qt-ordering">Sắp xếp ★</span><span class="lb-ctx jp">（受付で）</span></div><div class="lb-stem jp">中山「すみません。予約をした中山ですが。」<br>受付「はい、中山さんですね。もうすぐお呼びしますから、そちらの<span class="slot"></span><span class="slot"></span><span class="slot is-star">★</span><span class="slot"></span>ください。」</div><p class="lb-ask">Vế nào nằm ở ô <b class="star">★</b>?</p><div class="lb-opts is-ord"><label class="lb-opt"><input type="radio" name="opt" value="1"><span class="n">1</span><span class="t jp">おかけ</span></label><label class="lb-opt"><input type="radio" name="opt" value="2"><span class="n">2</span><span class="t jp">お待ち</span></label><label class="lb-opt"><input type="radio" name="opt" value="3"><span class="n">3</span><span class="t jp">いすに</span></label><label class="lb-opt"><input type="radio" name="opt" value="4"><span class="n">4</span><span class="t jp">になって</span></label></div><div class="lb-actions"><button class="btn btn-primary" type="submit">Kiểm tra</button><span class="muted lb-kbd">Phím <kbd>1</kbd>–<kbd>4</kbd> để chọn, <kbd>Enter</kbd> để kiểm tra</span></div></div>
+</form></section>
+<section class="mstate" data-s="ord-ok"><nav class="kl-crumb"><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Kính ngữ</a><span>&rsaquo;</span><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Bài tập</a><span>&rsaquo;</span><span>BÀI TẬP 3</span></nav>
+<div class="lb-head"><div><h1 class="kl-h1" style="font-size:30px;margin:0">BÀI TẬP 3</h1><div class="muted" style="font-size:13.5px">Câu <b style="color:var(--ink)">6</b> / 10 · đúng 4 / 6 câu đã làm</div></div><a class="action-link" href="SC20_BaiTapDanhSach_A.html">Dừng lại, làm sau</a></div>
+<div class="lb-dots" aria-label="Tiến độ"><span class="dot is-ok">1</span><span class="dot is-ng">2</span><span class="dot is-ok">3</span><span class="dot is-ng">4</span><span class="dot is-ok">5</span><span class="dot is-ok">6</span><span class="dot ">7</span><span class="dot ">8</span><span class="dot ">9</span><span class="dot ">10</span></div>
+<div class="lb-instr jp">問題 次の<span class='slot is-star' style='min-width:2em'>★</span>に入れるのに最もよいものを1・2・3・4から一つ選びなさい。</div>
+<div class="card lb-card"><div class="lb-qhead"><span class="lb-num">6</span><span class="qt qt-ordering">Sắp xếp ★</span><span class="lb-ctx jp">（受付で）</span></div><div class="lb-stem jp">中山「すみません。予約をした中山ですが。」<br>受付「はい、中山さんですね。もうすぐお呼びしますから、そちらの<span class="slot is-filled">いすに<sup>3</sup></span><span class="slot is-filled">おかけ<sup>1</sup></span><span class="slot is-star is-filled">になって<sup>4</sup></span><span class="slot is-filled">お待ち<sup>2</sup></span>ください。」</div><p class="lb-ask">Vế nào nằm ở ô <b class="star">★</b>?</p><div class="lb-opts is-ord"><label class="lb-opt is-off"><input type="radio" name="opt" value="1" disabled><span class="n">1</span><span class="t jp">おかけ</span></label><label class="lb-opt is-off"><input type="radio" name="opt" value="2" disabled><span class="n">2</span><span class="t jp">お待ち</span></label><label class="lb-opt is-off"><input type="radio" name="opt" value="3" disabled><span class="n">3</span><span class="t jp">いすに</span></label><label class="lb-opt is-ok"><input type="radio" name="opt" value="4" checked disabled><span class="n">4</span><span class="t jp">になって</span><span class="mk">○</span></label></div><p class="muted lb-order">Thứ tự đúng: <b>3 → 1 → 4 → 2</b> (correct_order = 3142). Số nhỏ trên mỗi vế là số in trong sách.</p><div class="lb-fb is-ok"><b>○ Chính xác!</b></div><div class="lb-actions"><a class="btn btn-primary" href="#" data-go="doan">Câu tiếp →</a></div></div>
+</section>
+<section class="mstate" data-s="doan"><nav class="kl-crumb"><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Kính ngữ</a><span>&rsaquo;</span><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Bài tập</a><span>&rsaquo;</span><span>LUYỆN TẬP</span></nav>
+<div class="lb-head"><div><h1 class="kl-h1" style="font-size:30px;margin:0">LUYỆN TẬP</h1><div class="muted" style="font-size:13.5px">Câu <b style="color:var(--ink)">28</b> / 34 · đúng 23 / 27 câu đã làm</div></div><a class="action-link" href="SC20_BaiTapDanhSach_A.html">Dừng lại, làm sau</a></div>
+<div class="lb-dots" aria-label="Tiến độ"><span class="dot is-ok">1</span><span class="dot is-ok">2</span><span class="dot is-ok">3</span><span class="dot is-ng">4</span><span class="dot is-ok">5</span><span class="dot is-ok">6</span><span class="dot is-ok">7</span><span class="dot is-ok">8</span><span class="dot is-ng">9</span><span class="dot is-ok">10</span><span class="dot is-ok">11</span><span class="dot is-ok">12</span><span class="dot is-ok">13</span><span class="dot is-ok">14</span><span class="dot is-ng">15</span><span class="dot is-ok">16</span><span class="dot is-ok">17</span><span class="dot is-ok">18</span><span class="dot is-ok">19</span><span class="dot is-ok">20</span><span class="dot is-ng">21</span><span class="dot is-ok">22</span><span class="dot is-ok">23</span><span class="dot is-ok">24</span><span class="dot is-ok">25</span><span class="dot is-ok">26</span><span class="dot is-ok">27</span><span class="dot is-cur">28</span><span class="dot ">29</span><span class="dot ">30</span><span class="dot ">31</span><span class="dot ">32</span><span class="dot ">33</span><span class="dot ">34</span></div>
+<div class="lb-instr jp">問題3 &nbsp;<span class='muted' style='font-family:var(--sans);font-size:13px'>(đoạn 2/3)</span></div>
+<details class="lb-passage" open><summary>Đoạn hội thoại <span class="muted">· chỗ trống đang làm được tô đỏ</span></summary><div class="lb-passage-body jp">D「部長、先ほど○○会社のBさんよりお電話がありました。先日の展示会でうちの新製品を<span class="blank is-ok">ご覧になって</span>興味をもたれたようで、ぜひ詳しい資料がほしいと<span class="blank is-cur">（4）</span>。」<br>C「ああ、そう。じゃ、私が先方に直接お電話を<span class="blank is-dim">（5）</span>。<br>【○○会社に電話をかけて話している】<br>C「だいたいのことは今お話しいたしましたが、資料がお手元に届きましたら、よくご検討なさってください。」<br>B「早速お電話いただきまして、ありがとうございます。ではよく検討<span class="blank is-dim">（6）</span>後日、部長のAよりご連絡<span class="blank is-dim">（7）</span>。」</div></details>
+<form method="post" action="#"><div class="card lb-card"><div class="lb-qhead"><span class="lb-num">4</span><span class="qt qt-cloze">Hội thoại</span></div><div class="lb-stem jp">D「部長、先ほど○○会社のBさんよりお電話がありました。先日の展示会でうちの新製品を<span class="blank is-ok">ご覧になって</span>興味をもたれたようで、ぜひ詳しい資料がほしいと<span class="blank is-cur">（4）</span>。」</div><div class="lb-opts"><label class="lb-opt"><input type="radio" name="opt" value="1"><span class="n">1</span><span class="t jp">おっしゃっていました</span></label><label class="lb-opt"><input type="radio" name="opt" value="2"><span class="n">2</span><span class="t jp">申しておりました</span></label></div><div class="lb-actions"><button class="btn btn-primary" type="submit">Kiểm tra</button><span class="muted lb-kbd">Phím <kbd>1</kbd>–<kbd>4</kbd> để chọn, <kbd>Enter</kbd> để kiểm tra</span></div></div>
+</form></section>
+<section class="mstate" data-s="cloze"><nav class="kl-crumb"><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Kính ngữ</a><span>&rsaquo;</span><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Bài tập</a><span>&rsaquo;</span><span>BÀI TẬP 12</span></nav>
+<div class="lb-head"><div><h1 class="kl-h1" style="font-size:30px;margin:0">BÀI TẬP 12</h1><div class="muted" style="font-size:13.5px">Câu <b style="color:var(--ink)">14</b> / 15 · đúng 9 / 13 câu đã làm</div></div><a class="action-link" href="SC20_BaiTapDanhSach_A.html">Dừng lại, làm sau</a></div>
+<div class="lb-dots" aria-label="Tiến độ"><span class="dot is-ok">1</span><span class="dot is-ok">2</span><span class="dot is-ng">3</span><span class="dot is-ok">4</span><span class="dot is-ok">5</span><span class="dot is-ng">6</span><span class="dot is-ok">7</span><span class="dot is-ng">8</span><span class="dot is-ok">9</span><span class="dot is-ok">10</span><span class="dot is-ok">11</span><span class="dot is-ng">12</span><span class="dot is-ok">13</span><span class="dot is-cur">14</span><span class="dot ">15</span></div>
+<div class="lb-instr jp">問題2 次の文章を読んで、（11）から（15）の中に入る最もよいものを、1・2・3・4から一つ選びなさい。 &nbsp;<span class='muted' style='font-family:var(--sans);font-size:13px'>(khung 2/2)</span></div>
+<details class="lb-passage" open><summary>Đoạn văn — lá thư <span class="muted">· chỗ trống đang làm được tô đỏ</span></summary><div class="lb-passage-body jp">こんにちは。<br>先生、お変わりなくお過ごしでしょうか。私もようやく中学入試が終わり、ひと安心しているところです。<br>さて、小学校生活もあとは卒業式を残すだけとなりましたが、6年1組では卒業式の前日に演奏会を催したいと考えて、これまで練習をしてきました。難しい曲ですが、なんとかみんなで力を合わせてしっかり演奏できるようになりました。これも先生が私たちに楽器を演奏する楽しさを<span class="blank is-ok">教えてくださった</span>からだと思っています。<br>ついては、先生に私たちの演奏をぜひ<span class="blank is-cur">（14）</span>と思い、お招きすることになりました。これはクラス全員の願いでもあります。<br>そのときには先生が得意にしているオーボエの演奏も聞かせてください。みんなも久しぶりに先生にお会いできるのを楽しみにしています。<br>それでは、寒い日が続きますが、お元気で<span class="blank is-dim">（15）</span>。<br>さようなら<br>6年1組一同<br>3月1日<br>田中よし子先生</div></details>
+<form method="post" action="#"><div class="card lb-card"><div class="lb-qhead"><span class="lb-num">14</span><span class="qt qt-cloze">Đoạn văn</span></div><div class="lb-stem jp">ついては、先生に私たちの演奏をぜひ<span class="blank is-cur">（14）</span>と思い、お招きすることになりました。</div><div class="lb-opts"><label class="lb-opt"><input type="radio" name="opt" value="1"><span class="n">1</span><span class="t jp">召してもらいたい</span></label><label class="lb-opt"><input type="radio" name="opt" value="2"><span class="n">2</span><span class="t jp">拝見させていただきたい</span></label><label class="lb-opt"><input type="radio" name="opt" value="3"><span class="n">3</span><span class="t jp">上がってもらいたい</span></label><label class="lb-opt"><input type="radio" name="opt" value="4"><span class="n">4</span><span class="t jp">聞いていただきたい</span></label></div><div class="lb-actions"><button class="btn btn-primary" type="submit">Kiểm tra</button><span class="muted lb-kbd">Phím <kbd>1</kbd>–<kbd>4</kbd> để chọn, <kbd>Enter</kbd> để kiểm tra</span></div></div>
+</form></section>
+<section class="mstate" data-s="last"><nav class="kl-crumb"><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Kính ngữ</a><span>&rsaquo;</span><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Bài tập</a><span>&rsaquo;</span><span>BÀI TẬP 12</span></nav>
+<div class="lb-head"><div><h1 class="kl-h1" style="font-size:30px;margin:0">BÀI TẬP 12</h1><div class="muted" style="font-size:13.5px">Câu <b style="color:var(--ink)">15</b> / 15 · đúng 10 / 15 câu đã làm</div></div><a class="action-link" href="SC20_BaiTapDanhSach_A.html">Dừng lại, làm sau</a></div>
+<div class="lb-dots" aria-label="Tiến độ"><span class="dot is-ok">1</span><span class="dot is-ok">2</span><span class="dot is-ng">3</span><span class="dot is-ok">4</span><span class="dot is-ok">5</span><span class="dot is-ng">6</span><span class="dot is-ok">7</span><span class="dot is-ng">8</span><span class="dot is-ok">9</span><span class="dot is-ok">10</span><span class="dot is-ok">11</span><span class="dot is-ng">12</span><span class="dot is-ok">13</span><span class="dot is-ng">14</span><span class="dot is-ok">15</span></div>
+<div class="lb-instr jp">問題2 次の文章を読んで、（11）から（15）の中に入る最もよいものを、1・2・3・4から一つ選びなさい。 &nbsp;<span class='muted' style='font-family:var(--sans);font-size:13px'>(khung 2/2)</span></div>
+<details class="lb-passage" open><summary>Đoạn văn — lá thư <span class="muted">· chỗ trống đang làm được tô đỏ</span></summary><div class="lb-passage-body jp">こんにちは。<br>先生、お変わりなくお過ごしでしょうか。私もようやく中学入試が終わり、ひと安心しているところです。<br>さて、小学校生活もあとは卒業式を残すだけとなりましたが、6年1組では卒業式の前日に演奏会を催したいと考えて、これまで練習をしてきました。難しい曲ですが、なんとかみんなで力を合わせてしっかり演奏できるようになりました。これも先生が私たちに楽器を演奏する楽しさを<span class="blank is-ok">教えてくださった</span>からだと思っています。<br>ついては、先生に私たちの演奏をぜひ<span class="blank is-ng">召してもらいたい</span>と思い、お招きすることになりました。これはクラス全員の願いでもあります。<br>そのときには先生が得意にしているオーボエの演奏も聞かせてください。みんなも久しぶりに先生にお会いできるのを楽しみにしています。<br>それでは、寒い日が続きますが、お元気で<span class="blank is-cur">（15）</span>。<br>さようなら<br>6年1組一同<br>3月1日<br>田中よし子先生</div></details>
+<div class="card lb-card"><div class="lb-qhead"><span class="lb-num">15</span><span class="qt qt-cloze">Đoạn văn</span></div><div class="lb-stem jp">それでは、寒い日が続きますが、お元気で<span class="blank is-ok">お過ごしください</span>。</div><div class="lb-opts"><label class="lb-opt is-off"><input type="radio" name="opt" value="1" disabled><span class="n">1</span><span class="t jp">お過ごさせください</span></label><label class="lb-opt is-ok"><input type="radio" name="opt" value="2" checked disabled><span class="n">2</span><span class="t jp">お過ごしください</span><span class="mk">○</span></label><label class="lb-opt is-off"><input type="radio" name="opt" value="3" disabled><span class="n">3</span><span class="t jp">過ごさせていただきます</span></label><label class="lb-opt is-off"><input type="radio" name="opt" value="4" disabled><span class="n">4</span><span class="t jp">過ごしていただきます</span></label></div><div class="lb-fb is-ok"><b>○ Chính xác!</b></div><div class="lb-actions"><a class="btn btn-primary" href="SC22_KetQua_A.html">Xem kết quả →</a></div></div>
+</section>
+</div></main></div></div></div>
+<script>
+/* CHỈ MOCKUP — đổi trạng thái để Dat xem. Bản Django: mỗi trạng thái là một lần render thật, không JS. */
+(function(){
+  var btns=[].slice.call(document.querySelectorAll('.mock-switch button[data-s]'));
+  var st=[].slice.call(document.querySelectorAll('.mstate'));
+  function show(s){st.forEach(function(e){e.classList.toggle('is-on',e.dataset.s.split(' ').indexOf(s)>-1);});
+    btns.forEach(function(b){b.classList.toggle('on',b.dataset.s===s);});window.scrollTo(0,0);}
+  btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.s);});});
+  [].slice.call(document.querySelectorAll('[data-go]')).forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();show(a.dataset.go);});});
+  show(btns[0].dataset.s);
+})();
+</script>
+</body></html>

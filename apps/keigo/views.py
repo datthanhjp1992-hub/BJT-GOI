@@ -2,7 +2,8 @@
 View cua app keigo -- SC16 (muc luc) + SC17 (bai hoc) + SC18 (bang tra dong tu)
 + SC19 (loi thuong gap).
 
-SC20-22 CHUA lam, xem claude/keigo-thiet-ke.md muc 7 va muc 8. Chuong nao
+SC20 (danh sach bai tap) + SC21 (lam bai) + SC22 (ket qua) -- 25/09/2026, logic
+o apps/keigo/exercises.py. Chuong nao
 khong co noi dung (meta_text rong) thi the tren SC16 van hien dang "sap co",
 KHONG dan toi 404 -- dung quyet dinh 4 trong htmlTemplate/SC16_KinhNguMucLuc_A.html.
 
@@ -14,18 +15,20 @@ import logging
 
 from django.contrib import messages as flash
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from django.db.models import Count
-from django.http import HttpResponse, QueryDict
+from django.http import Http404, HttpResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.http import urlencode
 
 from apps.core.properties import label, message
 
+from . import exercises
 from . import pdf as keigo_pdf
 from . import selectors
-from .models import KeigoForm, KeigoLesson, KeigoPattern, KeigoVerb
+from .models import ExerciseSet, KeigoForm, KeigoLesson, KeigoPattern, KeigoVerb, Question
 
 logger = logging.getLogger(__name__)
 
@@ -274,3 +277,251 @@ def pitfall_view(request):
         "active_sub": "loi_thuong_gap",  # to dung muc "Loi thuong gap" trong sidebar
     }
     return render(request, "keigo/loi_thuong_gap.html", context)
+
+
+# =============================================================================
+# SC20-SC22 -- Bai tap kinh ngu (25/09/2026). Logic o exercises.py.
+# Tao/xoa/chot luot deu la POST (<button> trong <form>), xem va lam tiep la GET.
+# =============================================================================
+def _exercise_context(**extra):
+    return {"active_nav": "keigo", "active_sub": "bai_tap", **extra}
+
+
+def _play_url(exercise_set, feedback_question=None):
+    url = reverse("keigo:bai_tap_lam", args=[exercise_set.slug])
+    if feedback_question is not None:
+        url += "?" + urlencode({exercises.FEEDBACK_PARAM: feedback_question.pk})
+    return url
+
+
+@login_required
+def exercise_list_view(request):
+    """SC20_BaiTapDanhSach -- 17 bo de, diem cao nhat, luot do dang."""
+    view = exercises.clean_choice(request.GET.get(exercises.LIST_VIEW_PARAM, ""), exercises.LIST_VIEWS)
+    rows = exercises.list_rows(request.user)
+    done_count = sum(1 for r in rows if r.is_done)
+    todo_count = sum(1 for r in rows if not r.is_done and r.open_attempt is None)
+    tabs = [
+        (exercises.LIST_VIEW_ALL, label("keigo.exercise.list.tab.all"), len(rows)),
+        (exercises.LIST_VIEW_TODO, label("keigo.exercise.list.tab.todo"), todo_count),
+        (exercises.LIST_VIEW_DONE, label("keigo.exercise.list.tab.done"), done_count),
+    ]
+    context = _exercise_context(
+        rows=exercises.filter_rows(rows, view),
+        all_rows=rows,
+        view=view,
+        tabs=[(code, name, n, f"{reverse('keigo:bai_tap')}?{urlencode({exercises.LIST_VIEW_PARAM: code})}")
+              for code, name, n in tabs],
+        resume=exercises.latest_open(rows),
+        set_count=len(rows),
+        question_count=sum(r.question_total for r in rows),
+        done_count=done_count,
+        is_new=not any(r.is_done or r.open_attempt for r in rows),
+        first_set=rows[0].exercise_set if rows else None,
+    )
+    return render(request, "keigo/bai_tap.html", context)
+
+
+@login_required
+@require_POST
+def exercise_start_view(request, set_slug):
+    """Nut "Bat dau" / "Lam lai" / "Bo tiep theo" -- tao luot (hoac quay ve luot do dang)."""
+    exercise_set = get_object_or_404(ExerciseSet, slug=set_slug)
+    attempt, _created = exercises.start_attempt(request.user, exercise_set)
+    if attempt is None:
+        flash.error(request, message("keigo.exercise.error.empty_set"))
+        return redirect("keigo:bai_tap")
+    return redirect("keigo:bai_tap_lam", set_slug=exercise_set.slug)
+
+
+@login_required
+@require_POST
+def exercise_abandon_view(request, set_slug):
+    """"Bo luot nay" -- xoa luot do dang (cau tra loi CASCADE theo)."""
+    exercise_set = get_object_or_404(ExerciseSet, slug=set_slug)
+    deleted, _ = exercises.UserExerciseAttempt.objects.filter(
+        user=request.user, exercise_set=exercise_set, finished_at__isnull=True).delete()
+    if deleted:
+        flash.info(request, message("keigo.exercise.info.abandoned", title=exercise_set.title))
+    return redirect("keigo:bai_tap")
+
+
+@login_required
+def exercise_play_view(request, set_slug):
+    """SC21_LamBai -- moi lan MOT cau, cham ngay (Post/Redirect/Get).
+
+    GET            : cau CHUA tra loi dau tien cua luot do dang.
+    GET ?da=<id>   : phan hoi cau vua tra loi (dap an, giai thich neu co).
+    POST           : question + option -> luu, redirect ?da=<question id>.
+    Het cau        : hien phan hoi cau cuoi voi nut "Xem ket qua" (POST nop/).
+    """
+    exercise_set = get_object_or_404(ExerciseSet, slug=set_slug)
+    attempt = exercises.open_attempt(request.user, exercise_set)
+    if attempt is None:
+        flash.info(request, message("keigo.exercise.info.no_open_attempt", title=exercise_set.title))
+        return redirect("keigo:bai_tap")
+
+    questions = exercises.set_questions(exercise_set)
+    if not questions:
+        flash.error(request, message("keigo.exercise.error.empty_set"))
+        return redirect("keigo:bai_tap")
+    by_id = {q.pk: q for q in questions}
+
+    if request.method == "POST":
+        question = by_id.get(_int_or_none(request.POST.get("question")))
+        if question is None:
+            return redirect(_play_url(exercise_set))
+        option = next((o for o in question.options.all()
+                       if o.pk == _int_or_none(request.POST.get("option"))), None)
+        if option is None:
+            flash.error(request, message("keigo.exercise.error.no_option"))
+            return redirect(_play_url(exercise_set))
+        exercises.record_answer(attempt, question, option)
+        return redirect(_play_url(exercise_set, question))
+
+    answers = {a.question_id: a for a in attempt.answers.select_related("selected_option")}
+    unanswered = [q for q in questions if q.pk not in answers]
+
+    feedback_q = by_id.get(_int_or_none(request.GET.get(exercises.FEEDBACK_PARAM)))
+    if feedback_q is not None and feedback_q.pk not in answers:
+        feedback_q = None  # ?da= tro toi cau chua lam -> coi nhu khong co
+    if feedback_q is None and not unanswered:
+        feedback_q = questions[-1]  # lam het roi: hien lai cau cuoi + nut xem ket qua
+
+    current = feedback_q or unanswered[0]
+    answer = answers.get(current.pk)
+    section = current.section
+    section_questions = [q for q in questions if q.section_id == section.pk]
+
+    fills = exercises.passage_fills(section_questions, answers)
+    fills.pop(current.number, None)
+    if answer is not None:
+        # Cau dang xem phan hoi: dien luon vao cho trong cua chinh no.
+        chosen = answer.selected_option.text_jp if answer.selected_option else "?"
+        fills[current.number] = (chosen, "ok" if answer.is_correct else "ng")
+
+    is_ordering = current.question_type == exercises.QUESTION_TYPE_ORDERING
+    options = exercises.decorate_options(current, answer)
+    order_fill = None
+    if is_ordering and answer is not None:
+        order_fill = exercises.ordering_fill(current, {o.position: o for o in options})
+    sentence = exercises.question_sentence(current)
+    if order_fill:
+        stem_html = exercises.render_text(current.stem_jp, ordering_fill=order_fill,
+                                          star_position=current.star_position)
+    elif answer is not None and exercises.BLANK_MARK in sentence and not is_ordering:
+        stem_html = exercises.render_text(
+            sentence.replace(exercises.BLANK_MARK, f"（{current.number}）", 1),
+            current=None, filled={current.number: fills[current.number]})
+    else:
+        stem_html = exercises.render_text(sentence, current=None if answer else current.number,
+                                          filled=fills)
+
+    position = questions.index(current) + 1
+    next_q = unanswered[0] if unanswered else None
+    context = _exercise_context(
+        exercise_set=exercise_set,
+        attempt=attempt,
+        question=current,
+        answer=answer,
+        options=options,
+        is_ordering=is_ordering,
+        stem_html=stem_html,
+        instruction_html=exercises.render_text(section.instruction_jp, numbered=False),
+        passage_html=(exercises.render_text(section.passage_jp, current=None if answer else current.number,
+                                            filled=fills) if section.passage_jp else ""),
+        order_text=" → ".join(current.correct_order) if order_fill else "",
+        correct=exercises.correct_option(current),
+        position=position,
+        total=len(questions),
+        answered_count=len(answers),
+        correct_count=sum(1 for a in answers.values() if a.is_correct),
+        progress=exercises.progress(questions, answers, current.pk),
+        next_question=next_q,
+        is_last=next_q is None,
+    )
+    return render(request, "keigo/lam_bai.html", context)
+
+
+def _int_or_none(raw):
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return None
+
+
+@login_required
+@require_POST
+def exercise_finish_view(request, set_slug):
+    """Nut "Xem ket qua" o cau cuoi -- chot luot roi sang SC22."""
+    exercise_set = get_object_or_404(ExerciseSet, slug=set_slug)
+    attempt = exercises.open_attempt(request.user, exercise_set)
+    if attempt is None:
+        return redirect("keigo:bai_tap_ket_qua", set_slug=exercise_set.slug)
+    total = Question.objects.filter(section__exercise_set=exercise_set).count()
+    if attempt.answers.count() < total:
+        flash.error(request, message("keigo.exercise.error.not_finished"))
+        return redirect(_play_url(exercise_set))
+    exercises.finish_attempt(attempt)
+    url = reverse("keigo:bai_tap_ket_qua", args=[exercise_set.slug])
+    return redirect(f"{url}?{urlencode({exercises.ATTEMPT_PARAM: attempt.pk})}")
+
+
+@login_required
+def exercise_result_view(request, set_slug):
+    """SC22_KetQua -- mac dinh luot DA XONG gan nhat, ?lan=<id> xem luot cu.
+
+    Luot cua nguoi khac -> 404: loc theo user NGAY trong queryset."""
+    exercise_set = get_object_or_404(ExerciseSet, slug=set_slug)
+    finished = exercises.finished_attempts(request.user, exercise_set)
+    attempt_id = request.GET.get(exercises.ATTEMPT_PARAM)
+    if attempt_id:
+        attempt = finished.filter(pk=_int_or_none(attempt_id)).first()
+        if attempt is None:
+            raise Http404
+    else:
+        attempt = finished.first()
+        if attempt is None:
+            return redirect("keigo:bai_tap")
+
+    view = exercises.clean_choice(request.GET.get(exercises.RESULT_VIEW_PARAM, ""), exercises.RESULT_VIEWS)
+    questions = exercises.set_questions(exercise_set)
+    items = exercises.result_items(attempt, questions)
+    wrong = [it for it in items if not it.is_correct]
+    best_before = exercises.previous_best(attempt)
+    base = reverse("keigo:bai_tap_ket_qua", args=[exercise_set.slug])
+
+    def tab_url(code):
+        return f"{base}?{urlencode({exercises.ATTEMPT_PARAM: attempt.pk, exercises.RESULT_VIEW_PARAM: code})}"
+
+    history = list(finished[:exercises.HISTORY_SIZE])
+    order = {pk: n for n, pk in enumerate(
+        finished.order_by("finished_at").values_list("pk", flat=True), start=1)}
+    for a in history:
+        a.number = order.get(a.pk)
+        a.level = exercises.score_level(a.score, a.total)
+        a.percent = exercises.percent(a.score, a.total)
+        a.url = f"{base}?{urlencode({exercises.ATTEMPT_PARAM: a.pk})}"
+
+    minutes = max(1, round((attempt.finished_at - attempt.started_at).total_seconds() / 60))
+    context = _exercise_context(
+        exercise_set=exercise_set,
+        attempt=attempt,
+        attempt_number=order.get(attempt.pk),
+        percent=exercises.percent(attempt.score, attempt.total),
+        level=exercises.score_level(attempt.score, attempt.total),
+        minutes=minutes,
+        best_before=best_before,
+        is_record=best_before is not None and exercises.percent(attempt.score, attempt.total)
+        > exercises.percent(best_before.score, best_before.total),
+        breakdown=exercises.type_breakdown(items),
+        view=view,
+        items=items if view == exercises.RESULT_VIEW_ALL else wrong,
+        wrong_count=len(wrong),
+        item_count=len(items),
+        tab_wrong_url=tab_url(exercises.RESULT_VIEW_WRONG),
+        tab_all_url=tab_url(exercises.RESULT_VIEW_ALL),
+        history=history,
+        next_set=exercises.next_set(exercise_set),
+    )
+    return render(request, "keigo/ket_qua.html", context)

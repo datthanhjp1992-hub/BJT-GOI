@@ -79,8 +79,8 @@ Cong voi apps/keigo/views.py:
     {% endfor %}
   </div>
 
-  {# ========== BAI TAP -- giai doan 2, chua mo ========== #}
-  <div class="card" style="margin-bottom:30px;border-style:dashed;">
+  {# ========== BAI TAP -- SC20-SC22 (25/09/2026) ========== #}
+  <div class="card" style="margin-bottom:30px;">
     <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;">
       <div style="flex:1 1 380px;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
@@ -90,7 +90,7 @@ Cong voi apps/keigo/views.py:
         <p class="muted" style="margin:0;font-size:14px;">{% label "keigo.index.exercise.desc" %}</p>
       </div>
       <div style="flex:0 0 auto;">
-        <span class="btn btn-outline" style="opacity:.5;cursor:not-allowed;">{% label "keigo.index.exercise.button" %}</span>
+        <a class="btn btn-outline" href="{% url 'keigo:bai_tap' %}">{% label "keigo.index.exercise.button" %}</a>
       </div>
     </div>
     <div class="divider"></div>

@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC21_LamBai -- lam bai tap kinh ngu, moi lan MOT cau, cham ngay.
+
+Mockup Dat duyet 25/09/2026: htmlTemplate/SC21_LamBai_A.html (10 quyet dinh o
+dau file do). View: keigo.views.exercise_play_view (Post/Redirect/Get).
+  - stem_html / passage_html / instruction_html dung san o exercises.render_text()
+    (escape TRUOC roi moi ghep <ruby> va cac o trong) -- template chi in ra.
+  - Cho trong co so == question.number to do; cho trong cau da lam dien dap an.
+  - Dai o so chi de xem tien do, KHONG phai link.
+  - Dang ★: chon VE vao o ★. Sau khi cham hien cau hoan chinh (correct_order).
+  - Khoi "Giai thich" chi hien khi explanation_vi co noi dung.
+  - Script cuoi trang CHI la phim tat 1-9 / Enter; tat JS van lam bai binh thuong.{% endcomment %}
+
+{% block title %}{{ exercise_set.title }} · {% label "keigo.exercise.play.question" %} {{ position }} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+<div class="lb-wrap">
+  <nav class="kl-crumb">
+    <a href="{% url 'keigo:index' %}" class="action-link">{% label "keigo.tra_cuu.breadcrumb" %}</a>
+    <span>&rsaquo;</span>
+    <a href="{% url 'keigo:bai_tap' %}" class="action-link">{% label "keigo.exercise.list.title" %}</a>
+    <span>&rsaquo;</span>
+    <span>{{ exercise_set.title }}</span>
+  </nav>
+
+  <div class="lb-head">
+    <div>
+      <h1 class="kl-h1 lb-h1">{{ exercise_set.title }}</h1>
+      <div class="muted lb-sub">{% label "keigo.exercise.play.question" %} <b>{{ position }}</b> / {{ total }}
+        · {% label "keigo.exercise.play.correct_so_far" %} {{ correct_count }} / {{ answered_count }}</div>
+    </div>
+    <a class="action-link" href="{% url 'keigo:bai_tap' %}">{% label "keigo.exercise.play.pause" %}</a>
+  </div>
+
+  <div class="lb-dots" aria-label="{% label 'keigo.exercise.play.progress_label' %}">
+    {% for n, state in progress %}<span class="dot{% if state %} is-{{ state }}{% endif %}">{{ n }}</span>{% endfor %}
+  </div>
+
+  {% if instruction_html %}<div class="lb-instr jp">{{ instruction_html }}</div>{% endif %}
+
+  {% if passage_html %}
+    <details class="lb-passage" open>
+      <summary>{% label "keigo.exercise.play.passage" %} <span class="muted">· {% label "keigo.exercise.play.passage_hint" %}</span></summary>
+      <div class="lb-passage-body jp">{{ passage_html }}</div>
+    </details>
+  {% endif %}
+
+  <div class="card lb-card">
+    <div class="lb-qhead">
+      <span class="lb-num">{{ question.number }}</span>
+      <span class="qt qt-{{ question.question_type }}">{% if question.question_type == "ordering" %}{% label "keigo.exercise.type.ordering" %}{% elif question.question_type == "cloze" %}{% label "keigo.exercise.type.cloze" %}{% else %}{% label "keigo.exercise.type.mcq_blank" %}{% endif %}</span>
+      {% if question.context_note %}<span class="lb-ctx jp">{{ question.context_note }}</span>{% endif %}
+    </div>
+
+    <div class="lb-stem jp">{{ stem_html }}</div>
+
+    {% if answer %}
+      {# ---------- DA CHAM ---------- #}
+      {% if is_ordering %}<p class="lb-ask">{% label "keigo.exercise.play.ordering_ask" %}</p>{% endif %}
+      <div class="lb-opts{% if is_ordering %} is-ord{% endif %}">
+        {% for o in options %}
+          <div class="lb-opt{% if o.state %} is-{{ o.state }}{% endif %}">
+            <span class="n">{{ o.position }}</span><span class="t jp">{{ o.text_jp }}</span>
+            {% if o.state == "ok" %}<span class="mk">○</span>{% elif o.state == "ng" %}<span class="mk">×</span>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      {% if order_text %}<p class="muted lb-order">{% label "keigo.exercise.play.order_prefix" %} <b>{{ order_text }}</b>. {% label "keigo.exercise.play.order_note" %}</p>{% endif %}
+
+      {% if answer.is_correct %}
+        <div class="lb-fb is-ok" role="status"><b>○ {% label "keigo.exercise.play.correct" %}</b></div>
+      {% else %}
+        <div class="lb-fb is-ng" role="status"><b>× {% label "keigo.exercise.play.wrong" %}</b>
+          {% if correct %}{% label "keigo.exercise.play.answer_is" %} <b>{{ correct.position }}</b> — <span class="jp">{{ correct.text_jp }}</span>{% endif %}</div>
+      {% endif %}
+      {% if question.explanation_vi %}
+        <div class="lb-explain"><div class="eyebrow">{% label "keigo.exercise.play.explanation" %}</div>{{ question.explanation_vi|linebreaksbr }}</div>
+      {% endif %}
+
+      <div class="lb-actions">
+        {% if is_last %}
+          <form method="post" action="{% url 'keigo:bai_tap_nop' exercise_set.slug %}">
+            {% csrf_token %}
+            <button class="btn btn-primary" type="submit" data-enter>{% label "keigo.exercise.play.finish" %} →</button>
+          </form>
+        {% else %}
+          <a class="btn btn-primary" href="{% url 'keigo:bai_tap_lam' exercise_set.slug %}" data-enter>{% label "keigo.exercise.play.next" %} →</a>
+        {% endif %}
+      </div>
+
+    {% else %}
+      {# ---------- CHUA TRA LOI ---------- #}
+      <form method="post" action="{% url 'keigo:bai_tap_lam' exercise_set.slug %}" id="lb-form">
+        {% csrf_token %}
+        <input type="hidden" name="question" value="{{ question.pk }}">
+        {% if is_ordering %}<p class="lb-ask">{% label "keigo.exercise.play.ordering_ask" %}</p>{% endif %}
+        <div class="lb-opts{% if is_ordering %} is-ord{% endif %}" role="radiogroup">
+          {% for o in options %}
+            <label class="lb-opt">
+              <input type="radio" name="option" value="{{ o.pk }}" required>
+              <span class="n">{{ o.position }}</span><span class="t jp">{{ o.text_jp }}</span>
+            </label>
+          {% endfor %}
+        </div>
+        <div class="lb-actions">
+          <button class="btn btn-primary" type="submit">{% label "keigo.exercise.play.check" %}</button>
+          <span class="muted lb-kbd">{% label "keigo.exercise.play.keyboard_hint" %}</span>
+        </div>
+      </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* Phim tat SC21 -- chi la tien ich, tat JS van lam bai duoc. 1-9 chon phuong an, Enter sang cau tiep. */
+(function () {
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target && e.target.tagName;
+    if (t === "TEXTAREA" || (t === "INPUT" && e.target.type !== "radio")) return;
+    var radios = document.querySelectorAll('#lb-form input[type="radio"]');
+    if (radios.length && /^[1-9]$/.test(e.key)) {
+      var r = radios[parseInt(e.key, 10) - 1];
+      if (r) { r.checked = true; r.focus(); e.preventDefault(); }
+      return;
+    }
+    if (e.key === "Enter" && !radios.length) {
+      var go = document.querySelector("[data-enter]");
+      if (go) { e.preventDefault(); go.click(); }
+    }
+  });
+})();
+</script>
+{% endblock %}

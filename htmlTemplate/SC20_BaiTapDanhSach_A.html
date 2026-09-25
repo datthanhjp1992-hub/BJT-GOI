@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC20 Bài tập kính ngữ | 毎日BJT</title>
+<!--
+  SC20_BaiTapDanhSach — DANH SÁCH BÀI TẬP KÍNH NGỮ (mockup 25/09/2026, chờ Dat duyệt)
+  Tham chiếu: claude/keigo-thiet-ke.md mục 3.2–3.6 + mục 7 (SC20).
+  Tên bộ đề, số câu, dạng câu hỏi SINH TỪ docs/data/keigo/07 + 08 + 09 (không gõ tay).
+  Điểm/lượt làm là dữ liệu GIẢ để xem giao diện. Theme A — duyệt xong mới làm B/C.
+
+  Tám quyết định của màn này:
+
+  1. URL: path("bai-tap/", views.exercise_list_view, name="bai_tap") — ĐẶT TRƯỚC
+     path("<slug:slug>/") trong apps/keigo/urls.py (bài học SC19). @login_required như SC16–19.
+     Sidebar: "Bài tập" thành link thật, active_sub="bai_tap". Khối "Bài tập" trên SC16
+     bỏ viền đứt + nhãn "Sắp có", nút dẫn sang đây.
+
+  2. DANH SÁCH, KHÔNG PHẢI LƯỚI THẺ. 17 dòng cố định theo display_order, không phân trang.
+     Mỗi dòng: số · tên · chip dạng câu hỏi · số câu · điểm cao nhất · lần gần nhất · nút.
+
+  3. CHIP DẠNG CÂU HỎI đếm từ Question.question_type (annotate Count có filter) — không
+     lưu thêm cột. Quan trọng vì BÀI TẬP 3 và 5 toàn dạng ★, BT6/BT8 trộn hai dạng:
+     người học cần biết trước mình sắp làm dạng nào. LUYỆN TẬP có 3 section có đoạn
+     hội thoại → thêm chip "có N đoạn hội thoại".
+
+  4. BẮT ĐẦU / LÀM LẠI LÀ <button> TRONG <form method="post"> (quyết định UI số 2 ở mục 7):
+     tạo UserExerciseAttempt(started_at=now, total=số câu thật) + learning.StudySession
+     (session_type="keigo") rồi redirect sang SC21.
+     Nếu bộ đó đã có một lượt DỞ DANG (finished_at IS NULL) → KHÔNG tạo lượt mới, dẫn về
+     lượt đó (tránh rác lượt khi người học bấm hai lần / mở hai tab).
+
+  5. "LÀM TIẾP" là link GET thường (không tạo gì). Thẻ "Đang làm dở" phía trên chỉ hiện
+     MỘT lượt dở gần nhất; lượt dở của bộ khác vẫn thấy "Làm tiếp" ở dòng của nó.
+     "Bỏ lượt này" = POST xoá lượt dở (UserQuestionAnswer CASCADE theo).
+
+  6. ĐIỂM CAO NHẤT = max(score/total) trên các lượt ĐÃ XONG, một truy vấn
+     values("exercise_set").annotate(...) trong selectors.py. Lượt dở không tính.
+     Màu: ≥80% teal · 50–79% vàng · <50% đỏ — cùng ngưỡng với SC22.
+
+  7. TAB ?view=all|chua|da, link thường, không JS. view lạ → all.
+     Người mới (chưa có lượt nào) thay thẻ "Đang làm dở" bằng thẻ gợi ý bắt đầu từ LUYỆN TẬP.
+
+  8. ExerciseSet.lesson đang RỖNG cả 17 bộ → KHÔNG có cột "chương liên quan". Khi nào
+     Dat điền lesson thì thêm link nhỏ dưới tên bộ; template tự ẩn khi rỗng.
+
+  Dưới 900px: dòng xếp 2 hàng; dưới 720px: mỗi bộ thành thẻ dọc, không cuộn ngang.
+  Thanh MOCKUP màu tối và <script> cuối file CHỈ có trong mockup.
+-->
+<style>
+/* ===== KHỐI 1 — base + app shell, chép nguyên từ SC19 mockup (không phải CSS mới) ===== */
+
+/* Design A - "Washi & Vermillion": warm traditional Japanese paper aesthetic */
+:root{
+  --bg:#FAF6EE;
+  --surface:#FFFFFF;
+  --ink:#24211D;
+  --ink-soft:#6b6455;
+  --accent:#B5432E;
+  --accent-dark:#8f3323;
+  --accent-soft:#f0d9cf;
+  --gold:#B8912B;
+  --teal:#3F6B63;
+  --border:#DCD3C0;
+  --serif: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --sans: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;}
+h1,h2,h3,.serif{font-family:var(--serif);}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+
+/* header */
+.topbar{border-bottom:1px solid var(--border);background:var(--surface);}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:72px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:22px;color:var(--ink);}
+.brand .mark{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-family:var(--serif);}
+nav.mainnav{display:flex;gap:28px;font-size:14.5px;}
+nav.mainnav a{padding:6px 2px;border-bottom:2px solid transparent;color:var(--ink-soft);}
+nav.mainnav a.active{color:var(--accent);border-color:var(--accent);}
+.navmeta{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--ink-soft);}
+.pill{padding:8px 18px;border-radius:3px;background:var(--accent);color:#fff;font-size:14px;}
+.pill.ghost{background:transparent;border:1px solid var(--border);color:var(--ink);}
+
+main{padding:52px 0 80px;}
+.stamp{position:relative;}
+.stamp::before{content:"";position:absolute;top:-6px;right:-6px;width:46px;height:46px;border:2px solid var(--accent);border-radius:50%;opacity:.25;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:28px;}
+.grid{display:grid;gap:20px;}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-2{grid-template-columns:1.4fr 1fr;}
+
+.btn{display:inline-block;padding:13px 26px;border-radius:3px;font-size:15px;cursor:pointer;border:1px solid transparent;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-dark);}
+.btn-outline{border-color:var(--ink);color:var(--ink);background:transparent;}
+.btn-block{display:block;width:100%;text-align:center;}
+
+label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:6px;}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:3px;background:#fff;font-size:15px;font-family:var(--sans);color:var(--ink);}
+input:focus,select:focus{outline:none;border-color:var(--accent);}
+.field{margin-bottom:18px;}
+
+.divider{height:1px;background:var(--border);margin:26px 0;}
+.eyebrow{color:var(--accent);font-size:13px;letter-spacing:.02em;margin-bottom:10px;}
+.muted{color:var(--ink-soft);}
+.tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12.5px;border:1px solid var(--border);color:var(--ink-soft);margin-right:6px;}
+.tag.level{background:var(--accent-soft);border-color:transparent;color:var(--accent-dark);}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+th{text-align:left;color:var(--ink-soft);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;}
+td{padding:14px 12px;border-bottom:1px solid var(--border);}
+tr:hover td{background:#fbf8f2;}
+
+.stat{padding:22px;border:1px solid var(--border);border-radius:4px;background:var(--surface);}
+.stat .num{font-family:var(--serif);font-size:34px;color:var(--accent-dark);}
+.stat .label{font-size:13.5px;color:var(--ink-soft);margin-top:4px;}
+
+.flashcard{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:60px 40px;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
+.flashcard .jp{font-family:var(--serif);font-size:52px;margin-bottom:14px;}
+.flashcard .reading{color:var(--ink-soft);margin-bottom:20px;}
+.progressbar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progressbar span{display:block;height:100%;background:var(--accent);}
+
+.sidebar{width:220px;border-right:1px solid var(--border);padding:32px 20px;}
+.sidebar a{display:block;padding:10px 14px;border-radius:3px;color:var(--ink-soft);margin-bottom:4px;font-size:14.5px;}
+.sidebar a.active{background:var(--accent-soft);color:var(--accent-dark);}
+.admin-layout{display:flex;}
+.admin-content{flex:1;padding:32px 36px;}
+
+footer.note{padding:20px 0;text-align:center;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--border);}
+
+.figrow{display:grid;grid-template-columns:repeat(3,auto);gap:20px 30px;justify-content:start;}
+.figrow div{min-width:78px;}
+.figrow .num{font-family:var(--serif);font-size:28px;color:var(--accent-dark);line-height:1.1;}
+.figrow .label{font-size:13px;color:var(--ink-soft);}
+
+
+.app-shell{display:flex;flex-direction:column;min-height:100vh;}
+.app-shell.app-shell-guest{display:block;min-height:0;}
+
+.site-topbar{display:flex;align-items:center;justify-content:space-between;height:72px;padding:0 24px;flex:none;border-bottom:1px solid var(--border);background:var(--surface);}
+.site-topbar .brand{padding:0;}
+.site-topbar-user{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--ink-soft);}
+.site-topbar-user form{margin:0;}
+.site-topbar-user button{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;}
+
+.app-shell-body{display:flex;align-items:stretch;flex:1;min-height:0;}
+
+.site-sidebar{width:240px;flex:none;display:flex;flex-direction:column;
+  border-right:1px solid var(--border);background:var(--surface);}
+
+.site-sidebar-nav{flex:1;overflow-y:auto;padding:6px 12px;}
+
+.sidenav-link{display:block;padding:10px 14px;border-radius:3px;color:var(--ink-soft);
+  margin-bottom:2px;font-size:14.5px;text-decoration:none;cursor:pointer;
+  transition:background .15s ease,color .15s ease;}
+.sidenav-link:hover{background:var(--accent-soft);color:var(--accent-dark);}
+.sidenav-link.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:600;}
+.sidenav-link .jp{font-family:var(--serif);font-size:14px;margin-right:6px;}
+.sidenav-button{width:100%;text-align:left;background:none;border:0;font:inherit;}
+
+.sidenav-group{margin-bottom:2px;}
+.sidenav-group summary{list-style:none;}
+.sidenav-group summary::-webkit-details-marker{display:none;}
+.sidenav-group summary::after{content:"\203A";float:right;transform:rotate(90deg);
+  transition:transform .15s ease;color:var(--ink-soft);}
+.sidenav-group[open]>summary::after{transform:rotate(-90deg);}
+.sidenav-sub{padding:2px 0 6px 16px;display:flex;flex-direction:column;}
+.sidenav-sublink{display:flex;align-items:center;gap:8px;padding:8px 14px;
+  border-radius:3px;color:var(--ink-soft);font-size:13.5px;text-decoration:none;}
+.sidenav-sublink:hover{background:var(--accent-soft);color:var(--accent-dark);}
+.sidenav-sublink.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:600;}
+.sidenav-sublink.is-soon{color:var(--border);cursor:default;}
+.sidenav-sublink.is-soon .tag{margin:0;font-size:10px;padding:1px 6px;}
+
+.app-main{flex:1;min-width:0;display:flex;flex-direction:column;}
+.app-main>main{flex:1;}
+
+@media (max-width:900px){
+  .site-topbar{height:auto;padding:12px 16px;flex-wrap:wrap;gap:8px 14px;}
+  .site-topbar-user{gap:12px;font-size:13.5px;}
+  .app-shell-body{flex-direction:column;}
+  .site-sidebar{width:auto;flex-direction:row;flex-wrap:wrap;align-items:center;
+    border-right:none;border-bottom:1px solid var(--border);padding:10px 14px;gap:2px 4px;}
+  .site-sidebar-nav{flex:none;display:flex;flex-wrap:wrap;padding:0;overflow:visible;gap:2px;}
+  .sidenav-group{position:relative;}
+  .sidenav-sub{position:absolute;top:100%;left:0;margin-top:4px;background:var(--surface);
+    border:1px solid var(--border);border-radius:4px;padding:6px;z-index:30;min-width:180px;
+    box-shadow:0 6px 18px rgba(0,0,0,.14);}
+}
+
+
+/* ===== KHỐI 2 — .kl-* đã có trong static/css/theme_a.css (SC17), chép để mockup hiện đúng ===== */
+.kl-crumb{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--ink-soft);margin-bottom:14px;}
+.kl-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;
+  padding-bottom:24px;margin-bottom:26px;border-bottom:1px solid var(--border);}
+.kl-h1{font-family:var(--serif);font-size:36px;font-weight:400;margin:0 0 8px;line-height:1.2;}
+.kl-sum{max-width:580px;margin:0;font-size:14.5px;}
+.kl-stage rt,.kl-list rt{font-size:.55em;color:var(--ink-soft);}
+
+.kl-layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:26px;align-items:start;}
+/* Chuong 2 co 14 muc: gioi han chieu cao de nut in khong bi day ra khoi man hinh -- danh sach tu cuon ben trong. */
+.kl-side{position:sticky;top:20px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 40px);}
+.kl-print{flex:none;}
+.kl-print p{margin:8px 2px 0;font-size:12.5px;line-height:1.5;}
+.kl-list{display:flex;flex-direction:column;overflow-y:auto;min-height:0;flex:0 1 auto;
+  background:var(--surface);border:1px solid var(--border);border-radius:4px;}
+.kl-list a{display:flex;gap:12px;align-items:center;padding:11px 16px;font-size:15px;
+  color:var(--ink-soft);border-top:1px solid #efe9dc;}
+.kl-list a:first-child{border-top:none;}
+.kl-list a:hover{background:#fbf8f2;color:var(--ink);}
+.kl-list a.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:600;}
+.kl-list .n{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);flex:none;
+  display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--serif);}
+.kl-list a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;}
+.kl-list .t{font-family:var(--serif);line-height:1.35;}
+
+.kl-stage{padding:34px 40px 26px;min-height:420px;display:flex;flex-direction:column;}
+.kl-pane{flex:1;}
+.kl-kicker{font-size:12.5px;color:var(--accent);letter-spacing:.04em;margin-bottom:6px;}
+.kl-title{font-family:var(--serif);font-weight:400;font-size:32px;margin:0 0 18px;line-height:1.3;}
+.kl-intro{margin:-8px 0 18px;font-size:14px;}
+.kl-subhead{font-size:15px;font-weight:600;margin:24px 0 8px;}
+.kl-subhead .tag{margin:0;}
+.kl-formula{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-bottom:16px;
+  padding:8px 14px;background:#fbf8f2;border:1px dashed var(--border);border-radius:3px;}
+.kl-formula .lbl{font-size:11.5px;color:var(--ink-soft);letter-spacing:.04em;text-transform:uppercase;}
+.kl-formula .jp{font-family:var(--serif);font-size:16px;color:var(--accent-dark);}
+.kl-expl{margin:-4px 0 14px;padding-left:10px;font-size:13.5px;color:var(--ink-soft);border-left:2px solid var(--gold);}
+
+.kl-exlist{list-style:none;margin:0;padding:0;}
+.kl-ex{position:relative;padding:9px 0 9px 18px;border-top:1px solid #efe9dc;}
+.kl-ex:first-child{border-top:none;}
+.kl-ex::before{content:"\30FB";position:absolute;left:0;top:9px;color:var(--accent);}
+.kl-ex.is-wrong::before{content:"\00D7";}
+.kl-ex.is-wrong .jp{color:var(--ink-soft);text-decoration:line-through;}
+.kl-ex .jp,.kl-line .jp{font-family:var(--serif);font-size:17px;line-height:1.9;}
+.kl-ex .vi,.kl-line .vi{display:block;font-size:13.5px;color:var(--ink-soft);}
+.kl-dialog{margin:6px 0;padding:10px 14px;background:#fbf8f2;border-left:3px solid var(--teal);border-radius:3px;}
+.kl-line{display:flex;gap:12px;align-items:baseline;padding:3px 0;}
+.kl-line .spk{flex:none;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:var(--teal);color:#fff;
+  font-size:11.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;}
+
+.kl-irr{display:grid;grid-template-columns:1fr;}
+.kl-irr-row{display:grid;grid-template-columns:110px 20px 1fr;align-items:baseline;padding:9px 0;border-bottom:1px solid #efe9dc;}
+.kl-irr-row .base{font-family:var(--serif);font-size:18px;}
+.kl-irr-row a.base:hover{color:var(--accent);}
+.kl-irr-row .arr{color:var(--ink-soft);}
+.kl-irr-row .forms{display:flex;flex-wrap:wrap;gap:4px 16px;}
+.kl-irr-row .f .jp{font-family:var(--serif);font-size:17px;color:var(--accent-dark);}
+.kl-irr-row .note{font-size:12px;color:var(--ink-soft);}
+.kl-irr-row .vi{grid-column:1;font-size:12px;color:var(--ink-soft);}
+.kl-more{margin:16px 0 0;font-size:14px;}
+
+table.kl-pairs td{padding:9px 10px;font-size:16px;vertical-align:top;}
+table.kl-pairs td.jp{font-family:var(--serif);}
+table.kl-pairs td.arr{width:24px;padding:9px 0;color:var(--ink-soft);}
+table.kl-pairs td.pol{color:var(--accent-dark);}
+table.kl-pairs tr:hover td{background:transparent;}
+.kl-pairs .note,.kl-xo .note{display:block;font-size:12px;color:var(--ink-soft);font-family:var(--sans);}
+.kl-xo{margin-bottom:10px;overflow:hidden;border:1px solid var(--border);border-radius:3px;}
+.kl-xo>div{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:8px 14px;}
+.kl-xo .x{background:#f7ece8;}
+.kl-xo .x .jp{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--accent);}
+.kl-xo .o{background:#eaf1ef;}
+.kl-xo .mk{width:14px;font-weight:700;}
+.kl-xo .x .mk{color:var(--accent);}
+.kl-xo .o .mk{color:var(--teal);}
+.kl-xo .jp{font-family:var(--serif);font-size:16px;}
+
+
+
+/* ===== KHỐI 3a — dùng chung SC20–SC22 (đã có ở SC19, chép lại) ===== */
+.action-link{color:var(--ink-soft);border-bottom:1px solid transparent;}
+.action-link.is-primary{color:var(--accent);}
+.action-link:hover{color:var(--accent);border-bottom-color:var(--accent);}
+button.btn{font:inherit;cursor:pointer;}
+.kwrap{max-width:1000px;}
+main{padding:36px 0 70px;}
+.mstate{display:none;}
+.mstate.is-on{display:block;}
+.bt-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:26px;}
+.bt-hero p{max-width:560px;margin:0;font-size:14.5px;}
+.bt-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.bt-tab{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--border);
+  border-radius:3px;background:var(--surface);font-size:13.5px;color:var(--ink-soft);}
+.bt-tab:hover{border-color:var(--accent);color:var(--accent);}
+.bt-tab .c{font-size:11.5px;min-width:20px;text-align:center;padding:0 5px;border-radius:9px;background:#f1ece1;color:var(--ink-soft);}
+.bt-tab.is-active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.bt-tab.is-active .c{background:rgba(255,255,255,.25);color:#fff;}
+/* chip dạng câu hỏi — màu theo question_type (MasterCode 16) */
+.qt{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:9px;border:1px solid var(--border);color:var(--ink-soft);white-space:nowrap;}
+.qt-mcq_blank{background:#f7f3ea;}
+.qt-ordering{background:#fbf1dc;border-color:#e6cf97;color:#7a5e12;}
+.qt-cloze{background:#e6efec;border-color:#bcd3cc;color:var(--teal);}
+.qt-passage{background:#e6efec;border-color:#bcd3cc;color:var(--teal);}
+/* thanh điểm */
+.bar{height:6px;background:#efe8da;border-radius:3px;overflow:hidden;}
+.bar>i{display:block;height:100%;border-radius:3px;}
+.s-hi{background:var(--teal);} .s-mid{background:var(--gold);} .s-lo{background:var(--accent);}
+.t-hi{color:var(--teal);} .t-mid{color:#8a6b14;} .t-lo{color:var(--accent-dark);}
+/* chỗ trống & ô ★ trong đề */
+.blank{display:inline-block;min-width:3.2em;border-bottom:2px solid var(--ink-soft);margin:0 3px;text-align:center;line-height:1.3;}
+.blank.is-cur{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-dark);font-weight:600;padding:0 6px;border-radius:3px 3px 0 0;}
+.blank.is-ok{border-color:var(--teal);color:var(--teal);padding:0 4px;}
+.blank.is-ng{border-color:var(--accent);color:var(--accent);padding:0 4px;}
+.blank.is-dim{opacity:.45;}
+.jp{font-family:var(--serif);}
+
+
+/* ===== KHỐI 3b — MỚI, đề xuất thêm vào 3 theme_*.css dưới "SC20 — Danh sách bài tập" ===== */
+.btn-sm{padding:8px 16px;font-size:13.5px;}
+.bt-resume{display:flex;justify-content:space-between;align-items:center;gap:20px 30px;flex-wrap:wrap;padding:22px 28px;margin-bottom:26px;border-left:3px solid var(--gold);}
+.bt-resume-act{display:flex;align-items:center;gap:18px;}
+.bt-list{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--border);border-radius:4px;}
+.bt-row{display:grid;grid-template-columns:40px minmax(0,1fr) 64px 120px 170px 190px;gap:16px;align-items:center;padding:16px 22px;border-top:1px solid #efe8da;}
+.bt-row:first-child{border-top:0;}
+.bt-row.is-doing{background:#fdf9ef;}
+.bt-no{font-family:var(--serif);font-size:20px;color:var(--border);}
+.bt-title{font-family:var(--serif);font-size:17px;margin-bottom:5px;}
+.bt-chips{display:flex;flex-wrap:wrap;gap:5px;}
+.bt-n{font-size:13px;color:var(--ink-soft);} .bt-n b{font-size:16px;color:var(--ink);font-weight:500;}
+.bt-score b{font-family:var(--serif);font-size:19px;font-weight:400;} .bt-score b span{font-size:13px;color:var(--ink-soft);}
+.bt-score .bar{margin-top:5px;}
+.bt-meta{font-size:13px;color:var(--ink-soft);}
+.bt-act{display:flex;align-items:center;justify-content:flex-end;gap:14px;font-size:13.5px;}
+.bt-act form{margin:0;}
+.bt-act .btn,.bt-act .action-link{white-space:nowrap;}
+.bt-legend{font-size:12.5px;margin:12px 2px 0;}
+@media (max-width:900px){
+  .bt-row{grid-template-columns:36px minmax(0,1fr) 190px;grid-template-areas:"no main act" "no score meta";}
+  .bt-no{grid-area:no;align-self:start;} .bt-main{grid-area:main;} .bt-n{display:none;}
+  .bt-score{grid-area:score;} .bt-meta{grid-area:meta;text-align:right;} .bt-act{grid-area:act;}
+}
+@media (max-width:720px){
+  .bt-hero{flex-direction:column;align-items:flex-start;}
+  .bt-row{grid-template-columns:28px minmax(0,1fr);grid-template-areas:"no main" "no score" "no meta" "no act";gap:8px 12px;padding:16px;}
+  .bt-meta{text-align:left;} .bt-act{justify-content:flex-start;}
+  .bt-resume{padding:18px;}
+}
+
+.mock-switch{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 16px;background:#24211D;color:#eee;font-size:13px;}
+.mock-switch .lbl{margin-right:8px;opacity:.7;letter-spacing:.04em;}
+.mock-switch button{background:transparent;border:1px solid #666;color:#eee;padding:4px 12px;border-radius:3px;cursor:pointer;font:inherit;}
+.mock-switch button.on{background:#B5432E;border-color:#B5432E;}
+</style></head><body>
+<div class="mock-switch"><span class="lbl">MOCKUP SC20 · trạng thái</span><button data-s="hoc">Đang học (có lượt dở)</button><button data-s="chua">?view=chua</button><button data-s="da">?view=da</button><button data-s="moi">Người mới</button><span class="lbl" style="margin-left:auto">Thu hẹp cửa sổ &lt; 720px để xem bản điện thoại</span></div>
+
+<div class="app-shell"><header class="site-topbar"><a class="brand" href="#"><span class="mark">毎</span>毎日BJT</a><div class="site-topbar-user"><a href="#">Dat</a><a href="#">Cài đặt</a><a href="#">Đăng xuất</a></div></header><div class="app-shell-body"><nav class="site-sidebar"><div class="site-sidebar-nav">
+<a class="sidenav-link" href="#">Trang chủ</a><a class="sidenav-link" href="#">Từ vựng</a><a class="sidenav-link" href="#">Ôn tập</a><a class="sidenav-link" href="#">Luyện viết</a><a class="sidenav-link" href="#">Góp ý</a>
+<details class="sidenav-group" open><summary class="sidenav-link active"><span>Kính ngữ</span></summary><div class="sidenav-sub">
+<a class="sidenav-sublink" href="#">Mục lục</a><a class="sidenav-sublink" href="#">Tra cứu từ</a><a class="sidenav-sublink" href="#">Học từ</a><a class="sidenav-sublink" href="#">Lỗi thường gặp</a><a class="sidenav-sublink active" href="#">Bài tập</a></div></details>
+</div></nav><div class="app-main"><main><div class="wrap kwrap" id="page">
+<section class="mstate" data-s="hoc"><nav class="kl-crumb"><a href="#" class="action-link">Kính ngữ</a><span>&rsaquo;</span><span>Bài tập</span></nav>
+<div class="bt-hero"><div><div class="eyebrow">練習問題 · LUYỆN TẬP + BÀI TẬP 1–16</div><h1 class="kl-h1">Bài tập kính ngữ</h1><p class="muted">17 bộ đề trong sách, làm từng câu một và chấm ngay. Điểm cao nhất và lần làm gần nhất được lưu lại, để bạn biết bộ nào nên làm lại.</p></div><div class="figrow"><div><div class="num">17</div><div class="label">bộ đề</div></div><div><div class="num">262</div><div class="label">câu hỏi</div></div><div><div class="num">6<span style="font-size:16px;color:var(--ink-soft)">/17</span></div><div class="label">bộ đã làm</div></div></div></div>
+<div class="card bt-resume"><div><div class="eyebrow" style="margin-bottom:4px">Đang làm dở</div><div class="serif" style="font-size:20px">BÀI TẬP 5 <span class="muted" style="font-size:14px;font-family:var(--sans)">· đã trả lời 7/15 · bắt đầu 24/09 21:40</span></div><div class="bar" style="margin-top:10px;max-width:360px"><i class="s-mid" style="width:47%"></i></div></div><div class="bt-resume-act"><a class="btn btn-primary" href="SC21_LamBai_A.html">Làm tiếp câu 8 →</a><form method="post" action="#"><button class="action-link" style="background:none;border:0;padding:0;font:inherit;font-size:13.5px;cursor:pointer" type="submit">Bỏ lượt này</button></form></div></div>
+<nav class="bt-tabs"><a class="bt-tab is-active" href="?view=all" data-go="hoc">Tất cả <span class="c">17</span></a><a class="bt-tab" href="?view=chua" data-go="chua">Chưa làm <span class="c">11</span></a><a class="bt-tab" href="?view=da" data-go="da">Đã làm <span class="c">6</span></a></nav>
+<ol class="bt-list">
+<li class="bt-row"><div class="bt-no">練</div><div class="bt-main"><div class="bt-title">LUYỆN TẬP</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 34</span> <span class="qt qt-passage">có 3 đoạn hội thoại</span></div></div><div class="bt-n"><b>34</b> câu</div><div class="bt-score"><b class="t-hi">31<span>/34</span></b><div class="bar"><i class="s-hi" style="width:91%"></i></div></div><div class="bt-meta">3 lượt · gần nhất 22/09 (31/34)</div><div class="bt-act"><form method="post" action="#"><button class="btn btn-outline btn-sm" type="submit">Làm lại</button></form><a class="action-link" href="SC22_KetQua_A.html">Kết quả →</a></div></li>
+<li class="bt-row"><div class="bt-no">01</div><div class="bt-main"><div class="bt-title">BÀI TẬP 1</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><b class="t-hi">9<span>/10</span></b><div class="bar"><i class="s-hi" style="width:90%"></i></div></div><div class="bt-meta">1 lượt · gần nhất 22/09 (9/10)</div><div class="bt-act"><form method="post" action="#"><button class="btn btn-outline btn-sm" type="submit">Làm lại</button></form><a class="action-link" href="SC22_KetQua_A.html">Kết quả →</a></div></li>
+<li class="bt-row"><div class="bt-no">02</div><div class="bt-main"><div class="bt-title">BÀI TẬP 2</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><b class="t-mid">6<span>/10</span></b><div class="bar"><i class="s-mid" style="width:60%"></i></div></div><div class="bt-meta">2 lượt · gần nhất 23/09 (6/10)</div><div class="bt-act"><form method="post" action="#"><button class="btn btn-outline btn-sm" type="submit">Làm lại</button></form><a class="action-link" href="SC22_KetQua_A.html">Kết quả →</a></div></li>
+<li class="bt-row"><div class="bt-no">03</div><div class="bt-main"><div class="bt-title">BÀI TẬP 3</div><div class="bt-chips"><span class="qt qt-ordering">Sắp xếp ★ · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><b class="t-lo">4<span>/10</span></b><div class="bar"><i class="s-lo" style="width:40%"></i></div></div><div class="bt-meta">1 lượt · gần nhất 23/09 (4/10)</div><div class="bt-act"><form method="post" action="#"><button class="btn btn-outline btn-sm" type="submit">Làm lại</button></form><a class="action-link" href="SC22_KetQua_A.html">Kết quả →</a></div></li>
+<li class="bt-row"><div class="bt-no">04</div><div class="bt-main"><div class="bt-title">BÀI TẬP 4</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 15</span></div></div><div class="bt-n"><b>15</b> câu</div><div class="bt-score"><b class="t-hi">12<span>/15</span></b><div class="bar"><i class="s-hi" style="width:80%"></i></div></div><div class="bt-meta">1 lượt · gần nhất 24/09 (12/15)</div><div class="bt-act"><form method="post" action="#"><button class="btn btn-outline btn-sm" type="submit">Làm lại</button></form><a class="action-link" href="SC22_KetQua_A.html">Kết quả →</a></div></li>
+<li class="bt-row is-doing"><div class="bt-no">05</div><div class="bt-main"><div class="bt-title">BÀI TẬP 5</div><div class="bt-chips"><span class="qt qt-ordering">Sắp xếp ★ · 15</span></div></div><div class="bt-n"><b>15</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">Đang làm</span><div class="bar"><i class="s-mid" style="width:46%;opacity:.5"></i></div></div><div class="bt-meta"><span class="t-mid">Dở dang · đã trả lời 7/15</span></div><div class="bt-act"><a class="btn btn-primary btn-sm" href="SC21_LamBai_A.html">Làm tiếp</a></div></li>
+<li class="bt-row"><div class="bt-no">06</div><div class="bt-main"><div class="bt-title">BÀI TẬP 6</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 6</span> <span class="qt qt-ordering">Sắp xếp ★ · 4</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><b class="t-mid">7<span>/10</span></b><div class="bar"><i class="s-mid" style="width:70%"></i></div></div><div class="bt-meta">1 lượt · gần nhất 24/09 (5/10)</div><div class="bt-act"><form method="post" action="#"><button class="btn btn-outline btn-sm" type="submit">Làm lại</button></form><a class="action-link" href="SC22_KetQua_A.html">Kết quả →</a></div></li>
+<li class="bt-row"><div class="bt-no">07</div><div class="bt-main"><div class="bt-title">BÀI TẬP 7</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">08</div><div class="bt-main"><div class="bt-title">BÀI TẬP 8</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 5</span> <span class="qt qt-ordering">Sắp xếp ★ · 5</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">09</div><div class="bt-main"><div class="bt-title">BÀI TẬP 9</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">10</div><div class="bt-main"><div class="bt-title">BÀI TẬP 10</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">11</div><div class="bt-main"><div class="bt-title">BÀI TẬP 11</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 14</span></div></div><div class="bt-n"><b>14</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">12</div><div class="bt-main"><div class="bt-title">BÀI TẬP 12</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span> <span class="qt qt-cloze">Đoạn văn · 5</span></div></div><div class="bt-n"><b>15</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">13</div><div class="bt-main"><div class="bt-title">BÀI TẬP 13</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 19</span></div></div><div class="bt-n"><b>19</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">14</div><div class="bt-main"><div class="bt-title">BÀI TẬP 14</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 18</span></div></div><div class="bt-n"><b>18</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">15</div><div class="bt-main"><div class="bt-title">BÀI TẬP 15</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 20</span></div></div><div class="bt-n"><b>20</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">16</div><div class="bt-main"><div class="bt-title">BÀI TẬP 16</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 32</span></div></div><div class="bt-n"><b>32</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+</ol><p class="muted bt-legend">Màu điểm: <span class="t-hi">■ từ 80%</span> · <span class="t-mid">■ 50–79%</span> · <span class="t-lo">■ dưới 50%</span>. Điểm cao nhất chỉ tính các lượt đã làm xong.</p>
+</section>
+<section class="mstate" data-s="chua"><nav class="kl-crumb"><a href="#" class="action-link">Kính ngữ</a><span>&rsaquo;</span><span>Bài tập</span></nav>
+<div class="bt-hero"><div><div class="eyebrow">練習問題 · LUYỆN TẬP + BÀI TẬP 1–16</div><h1 class="kl-h1">Bài tập kính ngữ</h1><p class="muted">17 bộ đề trong sách, làm từng câu một và chấm ngay. Điểm cao nhất và lần làm gần nhất được lưu lại, để bạn biết bộ nào nên làm lại.</p></div><div class="figrow"><div><div class="num">17</div><div class="label">bộ đề</div></div><div><div class="num">262</div><div class="label">câu hỏi</div></div><div><div class="num">6<span style="font-size:16px;color:var(--ink-soft)">/17</span></div><div class="label">bộ đã làm</div></div></div></div>
+<div class="card bt-resume"><div><div class="eyebrow" style="margin-bottom:4px">Đang làm dở</div><div class="serif" style="font-size:20px">BÀI TẬP 5 <span class="muted" style="font-size:14px;font-family:var(--sans)">· đã trả lời 7/15 · bắt đầu 24/09 21:40</span></div><div class="bar" style="margin-top:10px;max-width:360px"><i class="s-mid" style="width:47%"></i></div></div><div class="bt-resume-act"><a class="btn btn-primary" href="SC21_LamBai_A.html">Làm tiếp câu 8 →</a><form method="post" action="#"><button class="action-link" style="background:none;border:0;padding:0;font:inherit;font-size:13.5px;cursor:pointer" type="submit">Bỏ lượt này</button></form></div></div>
+<nav class="bt-tabs"><a class="bt-tab" href="?view=all" data-go="hoc">Tất cả <span class="c">17</span></a><a class="bt-tab is-active" href="?view=chua" data-go="chua">Chưa làm <span class="c">11</span></a><a class="bt-tab" href="?view=da" data-go="da">Đã làm <span class="c">6</span></a></nav>
+<ol class="bt-list">
+<li class="bt-row"><div class="bt-no">07</div><div class="bt-main"><div class="bt-title">BÀI TẬP 7</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">08</div><div class="bt-main"><div class="bt-title">BÀI TẬP 8</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 5</span> <span class="qt qt-ordering">Sắp xếp ★ · 5</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">09</div><div class="bt-main"><div class="bt-title">BÀI TẬP 9</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">10</div><div class="bt-main"><div class="bt-title">BÀI TẬP 10</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">11</div><div class="bt-main"><div class="bt-title">BÀI TẬP 11</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 14</span></div></div><div class="bt-n"><b>14</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">12</div><div class="bt-main"><div class="bt-title">BÀI TẬP 12</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span> <span class="qt qt-cloze">Đoạn văn · 5</span></div></div><div class="bt-n"><b>15</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">13</div><div class="bt-main"><div class="bt-title">BÀI TẬP 13</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 19</span></div></div><div class="bt-n"><b>19</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">14</div><div class="bt-main"><div class="bt-title">BÀI TẬP 14</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 18</span></div></div><div class="bt-n"><b>18</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">15</div><div class="bt-main"><div class="bt-title">BÀI TẬP 15</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 20</span></div></div><div class="bt-n"><b>20</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">16</div><div class="bt-main"><div class="bt-title">BÀI TẬP 16</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 32</span></div></div><div class="bt-n"><b>32</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+</ol></section>
+<section class="mstate" data-s="da"><nav class="kl-crumb"><a href="#" class="action-link">Kính ngữ</a><span>&rsaquo;</span><span>Bài tập</span></nav>
+<div class="bt-hero"><div><div class="eyebrow">練習問題 · LUYỆN TẬP + BÀI TẬP 1–16</div><h1 class="kl-h1">Bài tập kính ngữ</h1><p class="muted">17 bộ đề trong sách, làm từng câu một và chấm ngay. Điểm cao nhất và lần làm gần nhất được lưu lại, để bạn biết bộ nào nên làm lại.</p></div><div class="figrow"><div><div class="num">17</div><div class="label">bộ đề</div></div><div><div class="num">262</div><div class="label">câu hỏi</div></div><div><div class="num">6<span style="font-size:16px;color:var(--ink-soft)">/17</span></div><div class="label">bộ đã làm</div></div></div></div>
+<div class="card bt-resume"><div><div class="eyebrow" style="margin-bottom:4px">Đang làm dở</div><div class="serif" style="font-size:20px">BÀI TẬP 5 <span class="muted" style="font-size:14px;font-family:var(--sans)">· đã trả lời 7/15 · bắt đầu 24/09 21:40</span></div><div class="bar" style="margin-top:10px;max-width:360px"><i class="s-mid" style="width:47%"></i></div></div><div class="bt-resume-act"><a class="btn btn-primary" href="SC21_LamBai_A.html">Làm tiếp câu 8 →</a><form method="post" action="#"><button class="action-link" style="background:none;border:0;padding:0;font:inherit;font-size:13.5px;cursor:pointer" type="submit">Bỏ lượt này</button></form></div></div>
+<nav class="bt-tabs"><a class="bt-tab" href="?view=all" data-go="hoc">Tất cả <span class="c">17</span></a><a class="bt-tab" href="?view=chua" data-go="chua">Chưa làm <span class="c">11</span></a><a class="bt-tab is-active" href="?view=da" data-go="da">Đã làm <span class="c">6</span></a></nav>
+<ol class="bt-list">
+<li class="bt-row"><div class="bt-no">練</div><div class="bt-main"><div class="bt-title">LUYỆN TẬP</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 34</span> <span class="qt qt-passage">có 3 đoạn hội thoại</span></div></div><div class="bt-n"><b>34</b> câu</div><div class="bt-score"><b class="t-hi">31<span>/34</span></b><div class="bar"><i class="s-hi" style="width:91%"></i></div></div><div class="bt-meta">3 lượt · gần nhất 22/09 (31/34)</div><div class="bt-act"><form method="post" action="#"><button class="btn btn-outline btn-sm" type="submit">Làm lại</button></form><a class="action-link" href="SC22_KetQua_A.html">Kết quả →</a></div></li>
+<li class="bt-row"><div class="bt-no">01</div><div class="bt-main"><div class="bt-title">BÀI TẬP 1</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><b class="t-hi">9<span>/10</span></b><div class="bar"><i class="s-hi" style="width:90%"></i></div></div><div class="bt-meta">1 lượt · gần nhất 22/09 (9/10)</div><div class="bt-act"><form method="post" action="#"><button class="btn btn-outline btn-sm" type="submit">Làm lại</button></form><a class="action-link" href="SC22_KetQua_A.html">Kết quả →</a></div></li>
+<li class="bt-row"><div class="bt-no">02</div><div class="bt-main"><div class="bt-title">BÀI TẬP 2</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><b class="t-mid">6<span>/10</span></b><div class="bar"><i class="s-mid" style="width:60%"></i></div></div><div class="bt-meta">2 lượt · gần nhất 23/09 (6/10)</div><div class="bt-act"><form method="post" action="#"><button class="btn btn-outline btn-sm" type="submit">Làm lại</button></form><a class="action-link" href="SC22_KetQua_A.html">Kết quả →</a></div></li>
+<li class="bt-row"><div class="bt-no">03</div><div class="bt-main"><div class="bt-title">BÀI TẬP 3</div><div class="bt-chips"><span class="qt qt-ordering">Sắp xếp ★ · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><b class="t-lo">4<span>/10</span></b><div class="bar"><i class="s-lo" style="width:40%"></i></div></div><div class="bt-meta">1 lượt · gần nhất 23/09 (4/10)</div><div class="bt-act"><form method="post" action="#"><button class="btn btn-outline btn-sm" type="submit">Làm lại</button></form><a class="action-link" href="SC22_KetQua_A.html">Kết quả →</a></div></li>
+<li class="bt-row"><div class="bt-no">04</div><div class="bt-main"><div class="bt-title">BÀI TẬP 4</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 15</span></div></div><div class="bt-n"><b>15</b> câu</div><div class="bt-score"><b class="t-hi">12<span>/15</span></b><div class="bar"><i class="s-hi" style="width:80%"></i></div></div><div class="bt-meta">1 lượt · gần nhất 24/09 (12/15)</div><div class="bt-act"><form method="post" action="#"><button class="btn btn-outline btn-sm" type="submit">Làm lại</button></form><a class="action-link" href="SC22_KetQua_A.html">Kết quả →</a></div></li>
+<li class="bt-row"><div class="bt-no">06</div><div class="bt-main"><div class="bt-title">BÀI TẬP 6</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 6</span> <span class="qt qt-ordering">Sắp xếp ★ · 4</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><b class="t-mid">7<span>/10</span></b><div class="bar"><i class="s-mid" style="width:70%"></i></div></div><div class="bt-meta">1 lượt · gần nhất 24/09 (5/10)</div><div class="bt-act"><form method="post" action="#"><button class="btn btn-outline btn-sm" type="submit">Làm lại</button></form><a class="action-link" href="SC22_KetQua_A.html">Kết quả →</a></div></li>
+</ol><p class="muted bt-legend">Màu điểm: <span class="t-hi">■ từ 80%</span> · <span class="t-mid">■ 50–79%</span> · <span class="t-lo">■ dưới 50%</span>. Điểm cao nhất chỉ tính các lượt đã làm xong.</p>
+</section>
+<section class="mstate" data-s="moi"><nav class="kl-crumb"><a href="#" class="action-link">Kính ngữ</a><span>&rsaquo;</span><span>Bài tập</span></nav>
+<div class="bt-hero"><div><div class="eyebrow">練習問題 · LUYỆN TẬP + BÀI TẬP 1–16</div><h1 class="kl-h1">Bài tập kính ngữ</h1><p class="muted">17 bộ đề trong sách, làm từng câu một và chấm ngay. Điểm cao nhất và lần làm gần nhất được lưu lại, để bạn biết bộ nào nên làm lại.</p></div><div class="figrow"><div><div class="num">17</div><div class="label">bộ đề</div></div><div><div class="num">262</div><div class="label">câu hỏi</div></div><div><div class="num">0<span style="font-size:16px;color:var(--ink-soft)">/17</span></div><div class="label">bộ đã làm</div></div></div></div>
+<div class="card bt-resume" style="border-style:dashed"><div><div class="eyebrow" style="margin-bottom:4px">Gợi ý cho lần đầu</div><div style="font-size:14.5px">Bắt đầu từ <b>LUYỆN TẬP</b> — mỗi câu chỉ có 2 lựa chọn in sẵn, nhẹ hơn hẳn các bộ sau. <b>BÀI TẬP 3</b> và <b>5</b> toàn dạng sắp xếp ★, khó nhất sách.</div></div><div class="bt-resume-act"><form method="post" action="#"><button class="btn btn-primary" type="submit">Làm LUYỆN TẬP</button></form></div></div>
+<nav class="bt-tabs"><a class="bt-tab is-active" href="?view=all">Tất cả <span class="c">17</span></a><a class="bt-tab" href="?view=chua">Chưa làm <span class="c">17</span></a><a class="bt-tab" href="?view=da">Đã làm <span class="c">0</span></a></nav>
+<ol class="bt-list">
+<li class="bt-row"><div class="bt-no">練</div><div class="bt-main"><div class="bt-title">LUYỆN TẬP</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 34</span> <span class="qt qt-passage">có 3 đoạn hội thoại</span></div></div><div class="bt-n"><b>34</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">01</div><div class="bt-main"><div class="bt-title">BÀI TẬP 1</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">02</div><div class="bt-main"><div class="bt-title">BÀI TẬP 2</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">03</div><div class="bt-main"><div class="bt-title">BÀI TẬP 3</div><div class="bt-chips"><span class="qt qt-ordering">Sắp xếp ★ · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">04</div><div class="bt-main"><div class="bt-title">BÀI TẬP 4</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 15</span></div></div><div class="bt-n"><b>15</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">05</div><div class="bt-main"><div class="bt-title">BÀI TẬP 5</div><div class="bt-chips"><span class="qt qt-ordering">Sắp xếp ★ · 15</span></div></div><div class="bt-n"><b>15</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">06</div><div class="bt-main"><div class="bt-title">BÀI TẬP 6</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 6</span> <span class="qt qt-ordering">Sắp xếp ★ · 4</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">07</div><div class="bt-main"><div class="bt-title">BÀI TẬP 7</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">08</div><div class="bt-main"><div class="bt-title">BÀI TẬP 8</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 5</span> <span class="qt qt-ordering">Sắp xếp ★ · 5</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">09</div><div class="bt-main"><div class="bt-title">BÀI TẬP 9</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">10</div><div class="bt-main"><div class="bt-title">BÀI TẬP 10</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span></div></div><div class="bt-n"><b>10</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">11</div><div class="bt-main"><div class="bt-title">BÀI TẬP 11</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 14</span></div></div><div class="bt-n"><b>14</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">12</div><div class="bt-main"><div class="bt-title">BÀI TẬP 12</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 10</span> <span class="qt qt-cloze">Đoạn văn · 5</span></div></div><div class="bt-n"><b>15</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">13</div><div class="bt-main"><div class="bt-title">BÀI TẬP 13</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 19</span></div></div><div class="bt-n"><b>19</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">14</div><div class="bt-main"><div class="bt-title">BÀI TẬP 14</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 18</span></div></div><div class="bt-n"><b>18</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">15</div><div class="bt-main"><div class="bt-title">BÀI TẬP 15</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 20</span></div></div><div class="bt-n"><b>20</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+<li class="bt-row"><div class="bt-no">16</div><div class="bt-main"><div class="bt-title">BÀI TẬP 16</div><div class="bt-chips"><span class="qt qt-mcq_blank">Điền （ ） · 32</span></div></div><div class="bt-n"><b>32</b> câu</div><div class="bt-score"><span class="muted" style="font-size:13px">—</span></div><div class="bt-meta"><span class="muted">Chưa làm</span></div><div class="bt-act"><form method="post" action="#"><button class="btn btn-primary btn-sm" type="submit">Bắt đầu</button></form></div></li>
+</ol></section>
+
+</div></main></div></div></div>
+<script>
+/* CHỈ MOCKUP — đổi trạng thái để Dat xem. Bản Django: mỗi trạng thái là một lần render thật, không JS. */
+(function(){
+  var btns=[].slice.call(document.querySelectorAll('.mock-switch button[data-s]'));
+  var st=[].slice.call(document.querySelectorAll('.mstate'));
+  function show(s){st.forEach(function(e){e.classList.toggle('is-on',e.dataset.s.split(' ').indexOf(s)>-1);});
+    btns.forEach(function(b){b.classList.toggle('on',b.dataset.s===s);});window.scrollTo(0,0);}
+  btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.s);});});
+  [].slice.call(document.querySelectorAll('[data-go]')).forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();show(a.dataset.go);});});
+  show(btns[0].dataset.s);
+})();
+</script>
+</body></html>

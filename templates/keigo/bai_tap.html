@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC20_BaiTapDanhSach -- danh sach 17 bo de kinh ngu.
+
+Mockup Dat duyet 25/09/2026: htmlTemplate/SC20_BaiTapDanhSach_A.html (doc 8
+quyet dinh o dau file do). Du lieu: apps/keigo/exercises.list_rows().
+  - Tab ?view=all|chua|da la link GET, khong JavaScript.
+  - "Bat dau" / "Lam lai" / "Bo luot nay" la <button> trong <form method=post>
+    (tao/xoa UserExerciseAttempt). "Lam tiep" / "Ket qua" la link GET.
+  - Diem cao nhat chi tinh luot DA XONG; mau hi/mid/lo nguong 80/50 (%).{% endcomment %}
+
+{% block title %}{% label "keigo.exercise.list.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <nav class="kl-crumb">
+    <a href="{% url 'keigo:index' %}" class="action-link">{% label "keigo.tra_cuu.breadcrumb" %}</a>
+    <span>&rsaquo;</span>
+    <span>{% label "keigo.exercise.list.title" %}</span>
+  </nav>
+
+  <div class="kl-hero bt-hero">
+    <div>
+      <div class="eyebrow jp">{% label "keigo.exercise.list.eyebrow" %}</div>
+      <h1 class="kl-h1">{% label "keigo.exercise.list.title" %}</h1>
+      <p class="muted kl-sum">{% label "keigo.exercise.list.intro" %}</p>
+    </div>
+    <div class="figrow">
+      <div><div class="num">{{ set_count }}</div><div class="label">{% label "keigo.exercise.list.stat.sets" %}</div></div>
+      <div><div class="num">{{ question_count }}</div><div class="label">{% label "keigo.exercise.list.stat.questions" %}</div></div>
+      <div><div class="num">{{ done_count }}<span class="of">/{{ set_count }}</span></div><div class="label">{% label "keigo.exercise.list.stat.done" %}</div></div>
+    </div>
+  </div>
+
+  {% if not all_rows %}
+    <div class="card"><p class="muted" style="margin:0;">{% label "keigo.exercise.list.no_data" %}</p></div>
+  {% else %}
+
+  {# ========== LUOT DO DANG / GOI Y NGUOI MOI ========== #}
+  {% if resume %}
+    <div class="card bt-resume">
+      <div>
+        <div class="eyebrow">{% label "keigo.exercise.list.resume.eyebrow" %}</div>
+        <div class="bt-resume-title">{{ resume.exercise_set.title }}
+          <span class="muted">· {% label "keigo.exercise.list.answered" %} {{ resume.open_answered }}/{{ resume.question_total }}
+          · {% label "keigo.exercise.list.started" %} {{ resume.open_attempt.started_at|date:"d/m H:i" }}</span></div>
+        <div class="bar bt-resume-bar"><i class="s-mid" style="width:{{ resume.open_percent }}%"></i></div>
+      </div>
+      <div class="bt-resume-act">
+        <a class="btn btn-primary" href="{% url 'keigo:bai_tap_lam' resume.exercise_set.slug %}">{% label "keigo.exercise.list.resume.button" %}</a>
+        <form method="post" action="{% url 'keigo:bai_tap_bo' resume.exercise_set.slug %}">
+          {% csrf_token %}
+          <button class="bt-linkbtn" type="submit">{% label "keigo.exercise.list.resume.abandon" %}</button>
+        </form>
+      </div>
+    </div>
+  {% elif is_new and first_set %}
+    <div class="card bt-resume is-tip">
+      <div>
+        <div class="eyebrow">{% label "keigo.exercise.list.tip.eyebrow" %}</div>
+        <div class="bt-tip">{% label "keigo.exercise.list.tip.text" %}</div>
+      </div>
+      <div class="bt-resume-act">
+        <form method="post" action="{% url 'keigo:bai_tap_bat_dau' first_set.slug %}">
+          {% csrf_token %}
+          <button class="btn btn-primary" type="submit">{% label "keigo.exercise.list.start" %} {{ first_set.title }}</button>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+
+  {# ========== TAB ========== #}
+  <nav class="bt-tabs" aria-label="{% label 'keigo.exercise.list.tabs_label' %}">
+    {% for code, name, n, url in tabs %}
+      <a class="bt-tab{% if code == view %} is-active{% endif %}" href="{{ url }}"{% if code == view %} aria-current="page"{% endif %}>
+        {{ name }} <span class="c">{{ n }}</span></a>
+    {% endfor %}
+  </nav>
+
+  {# ========== DANH SACH ========== #}
+  {% if rows %}
+  <ol class="bt-list">
+    {% for r in rows %}
+      <li class="bt-row{% if r.open_attempt %} is-doing{% endif %}">
+        <div class="bt-no">{{ r.number_label }}</div>
+        <div class="bt-main">
+          <div class="bt-title">{{ r.exercise_set.title }}</div>
+          <div class="bt-chips">
+            {% for c in r.chips %}
+              <span class="qt qt-{{ c.code }}">{% if c.code == "ordering" %}{% label "keigo.exercise.type.ordering" %}{% elif c.code == "cloze" %}{% label "keigo.exercise.type.cloze" %}{% else %}{% label "keigo.exercise.type.mcq_blank" %}{% endif %} · {{ c.count }}</span>
+            {% endfor %}
+            {% if r.passage_count and not r.has_cloze %}
+              <span class="qt qt-cloze">{% label "keigo.exercise.list.passage_prefix" %} {{ r.passage_count }} {% label "keigo.exercise.list.passage_suffix" %}</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="bt-n"><b>{{ r.question_total }}</b> {% label "keigo.exercise.list.question_unit" %}</div>
+        <div class="bt-score">
+          {% if r.is_done %}
+            <b class="t-{{ r.level }}">{{ r.best_score }}<span>/{{ r.best_total }}</span></b>
+            <div class="bar"><i class="s-{{ r.level }}" style="width:{{ r.best_percent }}%"></i></div>
+          {% elif r.open_attempt %}
+            <span class="muted">{% label "keigo.exercise.list.doing" %}</span>
+            <div class="bar"><i class="s-mid is-faint" style="width:{{ r.open_percent }}%"></i></div>
+          {% else %}
+            <span class="muted">—</span>
+          {% endif %}
+        </div>
+        <div class="bt-meta">
+          {% if r.open_attempt %}
+            <span class="t-mid">{% label "keigo.exercise.list.open_prefix" %} {{ r.open_answered }}/{{ r.question_total }}</span>
+          {% elif r.is_done %}
+            {{ r.attempt_count }} {% label "keigo.exercise.list.attempt_unit" %} · {% label "keigo.exercise.list.last" %}
+            {{ r.last_attempt.finished_at|date:"d/m" }} ({{ r.last_attempt.score }}/{{ r.last_attempt.total }})
+          {% else %}
+            <span class="muted">{% label "keigo.exercise.list.not_started" %}</span>
+          {% endif %}
+        </div>
+        <div class="bt-act">
+          {% if r.open_attempt %}
+            <a class="btn btn-primary btn-sm" href="{% url 'keigo:bai_tap_lam' r.exercise_set.slug %}">{% label "keigo.exercise.list.continue" %}</a>
+          {% else %}
+            <form method="post" action="{% url 'keigo:bai_tap_bat_dau' r.exercise_set.slug %}">
+              {% csrf_token %}
+              <button class="btn btn-sm {% if r.is_done %}btn-outline{% else %}btn-primary{% endif %}" type="submit">
+                {% if r.is_done %}{% label "keigo.exercise.list.retry" %}{% else %}{% label "keigo.exercise.list.start" %}{% endif %}</button>
+            </form>
+            {% if r.is_done %}
+              <a class="action-link" href="{% url 'keigo:bai_tap_ket_qua' r.exercise_set.slug %}">{% label "keigo.exercise.list.result" %} →</a>
+            {% endif %}
+          {% endif %}
+        </div>
+      </li>
+    {% endfor %}
+  </ol>
+  <p class="muted bt-legend">{% label "keigo.exercise.list.legend" %}</p>
+  {% else %}
+    <div class="card"><p class="muted" style="margin:0;">{% label "keigo.exercise.list.empty_tab" %}</p></div>
+  {% endif %}
+
+  {% endif %}
+{% endblock %}

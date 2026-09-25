@@ -24,13 +24,13 @@ Khong view nao phai sua vi giu nguyen ten context.
 Rieng nhom "Kinh ngu" la <details> (khong JavaScript -- dung tinh than da co
 o SC05, xem templates/vocabulary/list.html): bam vao tieu de xo/thu muc con,
 tu mo san khi dang o bat ky trang keigo nao. `active_sub` la context MOI
-("index"/"tra_cuu"/"hoc_tu"/"loi_thuong_gap", apps/keigo/views.py them vao) de to dung muc con dang mo;
+("index"/"tra_cuu"/"hoc_tu"/"loi_thuong_gap"/"bai_tap", apps/keigo/views.py them vao) de to dung muc con dang mo;
 view nao chua truyen thi khong muc con nao sang, khong loi.
 
 "Hoc tu" (SC17, 23/09/2026) tro toi keigo:hoc -- redirect sang chuong dau
 tien, khong hardcode slug o day. "Loi thuong gap" (SC19, 24/09/2026) tro
-toi keigo:loi_thuong_gap. "Bai tap" van la <span> khong phai <a> --
-SC20-22 chua co trang that, hien "sap co".
+toi keigo:loi_thuong_gap. "Bai tap" (SC20-22, 25/09/2026) tro toi
+keigo:bai_tap, active_sub = "bai_tap".
 
 Nhom "Quan tri" (23/09/2026, theo yeu cau cua Dat: "chuyen cac muc trong left
 panel cua trang quan tri thanh nut con trong left panel chinh") cung la
@@ -72,8 +72,8 @@ falsy, khong loi).
            href="{% url 'keigo:hoc' %}">{% label "keigo.nav.hoc_tu" %}</a>
         <a class="sidenav-sublink{% if active_nav == "keigo" and active_sub == "loi_thuong_gap" %} active{% endif %}"
            href="{% url 'keigo:loi_thuong_gap' %}">{% label "keigo.nav.loi_thuong_gap" %}</a>
-        <span class="sidenav-sublink is-soon">{% label "keigo.nav.bai_tap" %}
-          <span class="tag">{% label "keigo.nav.soon" %}</span></span>
+        <a class="sidenav-sublink{% if active_nav == "keigo" and active_sub == "bai_tap" %} active{% endif %}"
+           href="{% url 'keigo:bai_tap' %}">{% label "keigo.nav.bai_tap" %}</a>
       </div>
     </details>
 

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC22 Kết quả bài tập | 毎日BJT</title>
+<!--
+  SC22_KetQua — KẾT QUẢ BÀI TẬP KÍNH NGỮ (mockup 25/09/2026, chờ Dat duyệt)
+  Tham chiếu: claude/keigo-thiet-ke.md mục 3.6 + mục 7 (SC22).
+  Đề + đáp án lấy từ docs/data/keigo/08–10 (BÀI TẬP 12). Câu chọn sai + lịch sử là GIẢ,
+  khớp đúng lượt làm bài ở trạng thái cuối của SC21 mockup (sai câu 3, 6, 8, 12, 14).
+  Theme A — duyệt xong mới làm B/C.
+
+  Bảy quyết định của màn này:
+
+  1. URL: path("bai-tap/<slug:set_slug>/ket-qua/", views.exercise_result_view,
+     name="bai_tap_ket_qua") — đặt TRƯỚC path("<slug:slug>/"). Mặc định: lượt ĐÃ XONG gần
+     nhất của user với bộ đó; ?lan=<attempt_id> xem lượt cũ. Lượt không phải của mình
+     → 404 (lọc theo user trong queryset, không phải kiểm sau). Chưa có lượt xong → về SC20.
+
+  2. KHỐI TỔNG KẾT: điểm to + %, huy hiệu so với điểm cao nhất CÁC LƯỢT TRƯỚC
+     ("Kỷ lục mới" / "Cao nhất: x" / "Lượt đầu tiên"), thời gian làm = finished_at −
+     started_at, và điểm tách THEO DẠNG CÂU (đếm từ UserQuestionAnswer join Question).
+     Ngưỡng màu giống SC20: ≥80 teal · 50–79 vàng · <50 đỏ.
+
+  3. TAB ?view=sai (mặc định) | tat-ca, link thường, không JS.
+     "Câu sai": mỗi câu một thẻ — đề (chỗ trống tô đỏ), ô × bạn chọn, ô ○ đáp án, giải
+     thích NẾU CÓ. Câu đoạn văn: trích câu chứa chỗ trống (cùng selector với SC21 mục 7),
+     không in lại cả đoạn. Câu ★: in câu hoàn chỉnh ghép theo correct_order như SC21.
+     "Tất cả câu": bảng gọn 1 dòng/câu. Không sai câu nào → khối 満点.
+
+  4. ⚠ "LINK VỀ MẪU NGỮ PHÁP LIÊN QUAN" (mục 7 + chữ trên SC16 keigo.index.exercise.desc)
+     KHÔNG LÀM ĐƯỢC với schema hiện tại: Question không có FK tới KeigoPattern, và
+     ExerciseSet.lesson rỗng cả 17 bộ. Mockup BỎ phần này. Hai hướng — Dat chọn:
+       (a) thêm Question.pattern = FK(KeigoPattern, null=True) + cột pattern__code
+           ở file 09, điền dần; template tự hiện link khi có; hoặc
+       (b) bỏ hẳn, sửa lại câu mô tả trên SC16 cho khỏi hứa.
+
+  5. "Làm lại bộ này" và "Bộ tiếp theo" đều là <button> POST (tạo lượt mới), giống SC20.
+     Bộ tiếp theo = display_order kế tiếp; ở BÀI TẬP 16 thì nút này ẩn.
+
+  6. LỊCH SỬ: 5 lượt đã xong gần nhất của bộ này, lượt đang xem tô nền.
+     Chưa làm "Làm lại chỉ các câu sai" — cần lượt có tập câu con, để giai đoạn sau.
+
+  7. Dưới 720px: tổng kết xếp dọc, ô ×/○ xếp dọc, bảng "Tất cả câu" thành dòng gọn.
+
+  Thanh MOCKUP màu tối và <script> cuối file CHỈ có trong mockup.
+-->
+<style>
+/* ===== KHỐI 1 — base + app shell, chép nguyên từ SC19 mockup (không phải CSS mới) ===== */
+
+/* Design A - "Washi & Vermillion": warm traditional Japanese paper aesthetic */
+:root{
+  --bg:#FAF6EE;
+  --surface:#FFFFFF;
+  --ink:#24211D;
+  --ink-soft:#6b6455;
+  --accent:#B5432E;
+  --accent-dark:#8f3323;
+  --accent-soft:#f0d9cf;
+  --gold:#B8912B;
+  --teal:#3F6B63;
+  --border:#DCD3C0;
+  --serif: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --sans: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;}
+h1,h2,h3,.serif{font-family:var(--serif);}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+
+/* header */
+.topbar{border-bottom:1px solid var(--border);background:var(--surface);}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:72px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:22px;color:var(--ink);}
+.brand .mark{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-family:var(--serif);}
+nav.mainnav{display:flex;gap:28px;font-size:14.5px;}
+nav.mainnav a{padding:6px 2px;border-bottom:2px solid transparent;color:var(--ink-soft);}
+nav.mainnav a.active{color:var(--accent);border-color:var(--accent);}
+.navmeta{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--ink-soft);}
+.pill{padding:8px 18px;border-radius:3px;background:var(--accent);color:#fff;font-size:14px;}
+.pill.ghost{background:transparent;border:1px solid var(--border);color:var(--ink);}
+
+main{padding:52px 0 80px;}
+.stamp{position:relative;}
+.stamp::before{content:"";position:absolute;top:-6px;right:-6px;width:46px;height:46px;border:2px solid var(--accent);border-radius:50%;opacity:.25;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:28px;}
+.grid{display:grid;gap:20px;}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-2{grid-template-columns:1.4fr 1fr;}
+
+.btn{display:inline-block;padding:13px 26px;border-radius:3px;font-size:15px;cursor:pointer;border:1px solid transparent;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-dark);}
+.btn-outline{border-color:var(--ink);color:var(--ink);background:transparent;}
+.btn-block{display:block;width:100%;text-align:center;}
+
+label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:6px;}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:3px;background:#fff;font-size:15px;font-family:var(--sans);color:var(--ink);}
+input:focus,select:focus{outline:none;border-color:var(--accent);}
+.field{margin-bottom:18px;}
+
+.divider{height:1px;background:var(--border);margin:26px 0;}
+.eyebrow{color:var(--accent);font-size:13px;letter-spacing:.02em;margin-bottom:10px;}
+.muted{color:var(--ink-soft);}
+.tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12.5px;border:1px solid var(--border);color:var(--ink-soft);margin-right:6px;}
+.tag.level{background:var(--accent-soft);border-color:transparent;color:var(--accent-dark);}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+th{text-align:left;color:var(--ink-soft);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;}
+td{padding:14px 12px;border-bottom:1px solid var(--border);}
+tr:hover td{background:#fbf8f2;}
+
+.stat{padding:22px;border:1px solid var(--border);border-radius:4px;background:var(--surface);}
+.stat .num{font-family:var(--serif);font-size:34px;color:var(--accent-dark);}
+.stat .label{font-size:13.5px;color:var(--ink-soft);margin-top:4px;}
+
+.flashcard{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:60px 40px;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
+.flashcard .jp{font-family:var(--serif);font-size:52px;margin-bottom:14px;}
+.flashcard .reading{color:var(--ink-soft);margin-bottom:20px;}
+.progressbar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progressbar span{display:block;height:100%;background:var(--accent);}
+
+.sidebar{width:220px;border-right:1px solid var(--border);padding:32px 20px;}
+.sidebar a{display:block;padding:10px 14px;border-radius:3px;color:var(--ink-soft);margin-bottom:4px;font-size:14.5px;}
+.sidebar a.active{background:var(--accent-soft);color:var(--accent-dark);}
+.admin-layout{display:flex;}
+.admin-content{flex:1;padding:32px 36px;}
+
+footer.note{padding:20px 0;text-align:center;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--border);}
+
+.figrow{display:grid;grid-template-columns:repeat(3,auto);gap:20px 30px;justify-content:start;}
+.figrow div{min-width:78px;}
+.figrow .num{font-family:var(--serif);font-size:28px;color:var(--accent-dark);line-height:1.1;}
+.figrow .label{font-size:13px;color:var(--ink-soft);}
+
+
+.app-shell{display:flex;flex-direction:column;min-height:100vh;}
+.app-shell.app-shell-guest{display:block;min-height:0;}
+
+.site-topbar{display:flex;align-items:center;justify-content:space-between;height:72px;padding:0 24px;flex:none;border-bottom:1px solid var(--border);background:var(--surface);}
+.site-topbar .brand{padding:0;}
+.site-topbar-user{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--ink-soft);}
+.site-topbar-user form{margin:0;}
+.site-topbar-user button{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;}
+
+.app-shell-body{display:flex;align-items:stretch;flex:1;min-height:0;}
+
+.site-sidebar{width:240px;flex:none;display:flex;flex-direction:column;
+  border-right:1px solid var(--border);background:var(--surface);}
+
+.site-sidebar-nav{flex:1;overflow-y:auto;padding:6px 12px;}
+
+.sidenav-link{display:block;padding:10px 14px;border-radius:3px;color:var(--ink-soft);
+  margin-bottom:2px;font-size:14.5px;text-decoration:none;cursor:pointer;
+  transition:background .15s ease,color .15s ease;}
+.sidenav-link:hover{background:var(--accent-soft);color:var(--accent-dark);}
+.sidenav-link.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:600;}
+.sidenav-link .jp{font-family:var(--serif);font-size:14px;margin-right:6px;}
+.sidenav-button{width:100%;text-align:left;background:none;border:0;font:inherit;}
+
+.sidenav-group{margin-bottom:2px;}
+.sidenav-group summary{list-style:none;}
+.sidenav-group summary::-webkit-details-marker{display:none;}
+.sidenav-group summary::after{content:"\203A";float:right;transform:rotate(90deg);
+  transition:transform .15s ease;color:var(--ink-soft);}
+.sidenav-group[open]>summary::after{transform:rotate(-90deg);}
+.sidenav-sub{padding:2px 0 6px 16px;display:flex;flex-direction:column;}
+.sidenav-sublink{display:flex;align-items:center;gap:8px;padding:8px 14px;
+  border-radius:3px;color:var(--ink-soft);font-size:13.5px;text-decoration:none;}
+.sidenav-sublink:hover{background:var(--accent-soft);color:var(--accent-dark);}
+.sidenav-sublink.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:600;}
+.sidenav-sublink.is-soon{color:var(--border);cursor:default;}
+.sidenav-sublink.is-soon .tag{margin:0;font-size:10px;padding:1px 6px;}
+
+.app-main{flex:1;min-width:0;display:flex;flex-direction:column;}
+.app-main>main{flex:1;}
+
+@media (max-width:900px){
+  .site-topbar{height:auto;padding:12px 16px;flex-wrap:wrap;gap:8px 14px;}
+  .site-topbar-user{gap:12px;font-size:13.5px;}
+  .app-shell-body{flex-direction:column;}
+  .site-sidebar{width:auto;flex-direction:row;flex-wrap:wrap;align-items:center;
+    border-right:none;border-bottom:1px solid var(--border);padding:10px 14px;gap:2px 4px;}
+  .site-sidebar-nav{flex:none;display:flex;flex-wrap:wrap;padding:0;overflow:visible;gap:2px;}
+  .sidenav-group{position:relative;}
+  .sidenav-sub{position:absolute;top:100%;left:0;margin-top:4px;background:var(--surface);
+    border:1px solid var(--border);border-radius:4px;padding:6px;z-index:30;min-width:180px;
+    box-shadow:0 6px 18px rgba(0,0,0,.14);}
+}
+
+
+/* ===== KHỐI 2 — .kl-* đã có trong static/css/theme_a.css (SC17), chép để mockup hiện đúng ===== */
+.kl-crumb{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--ink-soft);margin-bottom:14px;}
+.kl-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;
+  padding-bottom:24px;margin-bottom:26px;border-bottom:1px solid var(--border);}
+.kl-h1{font-family:var(--serif);font-size:36px;font-weight:400;margin:0 0 8px;line-height:1.2;}
+.kl-sum{max-width:580px;margin:0;font-size:14.5px;}
+.kl-stage rt,.kl-list rt{font-size:.55em;color:var(--ink-soft);}
+
+.kl-layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:26px;align-items:start;}
+/* Chuong 2 co 14 muc: gioi han chieu cao de nut in khong bi day ra khoi man hinh -- danh sach tu cuon ben trong. */
+.kl-side{position:sticky;top:20px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 40px);}
+.kl-print{flex:none;}
+.kl-print p{margin:8px 2px 0;font-size:12.5px;line-height:1.5;}
+.kl-list{display:flex;flex-direction:column;overflow-y:auto;min-height:0;flex:0 1 auto;
+  background:var(--surface);border:1px solid var(--border);border-radius:4px;}
+.kl-list a{display:flex;gap:12px;align-items:center;padding:11px 16px;font-size:15px;
+  color:var(--ink-soft);border-top:1px solid #efe9dc;}
+.kl-list a:first-child{border-top:none;}
+.kl-list a:hover{background:#fbf8f2;color:var(--ink);}
+.kl-list a.active{background:var(--accent-soft);color:var(--accent-dark);font-weight:600;}
+.kl-list .n{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);flex:none;
+  display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--serif);}
+.kl-list a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;}
+.kl-list .t{font-family:var(--serif);line-height:1.35;}
+
+.kl-stage{padding:34px 40px 26px;min-height:420px;display:flex;flex-direction:column;}
+.kl-pane{flex:1;}
+.kl-kicker{font-size:12.5px;color:var(--accent);letter-spacing:.04em;margin-bottom:6px;}
+.kl-title{font-family:var(--serif);font-weight:400;font-size:32px;margin:0 0 18px;line-height:1.3;}
+.kl-intro{margin:-8px 0 18px;font-size:14px;}
+.kl-subhead{font-size:15px;font-weight:600;margin:24px 0 8px;}
+.kl-subhead .tag{margin:0;}
+.kl-formula{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-bottom:16px;
+  padding:8px 14px;background:#fbf8f2;border:1px dashed var(--border);border-radius:3px;}
+.kl-formula .lbl{font-size:11.5px;color:var(--ink-soft);letter-spacing:.04em;text-transform:uppercase;}
+.kl-formula .jp{font-family:var(--serif);font-size:16px;color:var(--accent-dark);}
+.kl-expl{margin:-4px 0 14px;padding-left:10px;font-size:13.5px;color:var(--ink-soft);border-left:2px solid var(--gold);}
+
+.kl-exlist{list-style:none;margin:0;padding:0;}
+.kl-ex{position:relative;padding:9px 0 9px 18px;border-top:1px solid #efe9dc;}
+.kl-ex:first-child{border-top:none;}
+.kl-ex::before{content:"\30FB";position:absolute;left:0;top:9px;color:var(--accent);}
+.kl-ex.is-wrong::before{content:"\00D7";}
+.kl-ex.is-wrong .jp{color:var(--ink-soft);text-decoration:line-through;}
+.kl-ex .jp,.kl-line .jp{font-family:var(--serif);font-size:17px;line-height:1.9;}
+.kl-ex .vi,.kl-line .vi{display:block;font-size:13.5px;color:var(--ink-soft);}
+.kl-dialog{margin:6px 0;padding:10px 14px;background:#fbf8f2;border-left:3px solid var(--teal);border-radius:3px;}
+.kl-line{display:flex;gap:12px;align-items:baseline;padding:3px 0;}
+.kl-line .spk{flex:none;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:var(--teal);color:#fff;
+  font-size:11.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;}
+
+.kl-irr{display:grid;grid-template-columns:1fr;}
+.kl-irr-row{display:grid;grid-template-columns:110px 20px 1fr;align-items:baseline;padding:9px 0;border-bottom:1px solid #efe9dc;}
+.kl-irr-row .base{font-family:var(--serif);font-size:18px;}
+.kl-irr-row a.base:hover{color:var(--accent);}
+.kl-irr-row .arr{color:var(--ink-soft);}
+.kl-irr-row .forms{display:flex;flex-wrap:wrap;gap:4px 16px;}
+.kl-irr-row .f .jp{font-family:var(--serif);font-size:17px;color:var(--accent-dark);}
+.kl-irr-row .note{font-size:12px;color:var(--ink-soft);}
+.kl-irr-row .vi{grid-column:1;font-size:12px;color:var(--ink-soft);}
+.kl-more{margin:16px 0 0;font-size:14px;}
+
+table.kl-pairs td{padding:9px 10px;font-size:16px;vertical-align:top;}
+table.kl-pairs td.jp{font-family:var(--serif);}
+table.kl-pairs td.arr{width:24px;padding:9px 0;color:var(--ink-soft);}
+table.kl-pairs td.pol{color:var(--accent-dark);}
+table.kl-pairs tr:hover td{background:transparent;}
+.kl-pairs .note,.kl-xo .note{display:block;font-size:12px;color:var(--ink-soft);font-family:var(--sans);}
+.kl-xo{margin-bottom:10px;overflow:hidden;border:1px solid var(--border);border-radius:3px;}
+.kl-xo>div{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:8px 14px;}
+.kl-xo .x{background:#f7ece8;}
+.kl-xo .x .jp{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--accent);}
+.kl-xo .o{background:#eaf1ef;}
+.kl-xo .mk{width:14px;font-weight:700;}
+.kl-xo .x .mk{color:var(--accent);}
+.kl-xo .o .mk{color:var(--teal);}
+.kl-xo .jp{font-family:var(--serif);font-size:16px;}
+
+
+
+/* ===== KHỐI 3a — dùng chung SC20–SC22 (đã có ở SC19, chép lại) ===== */
+.action-link{color:var(--ink-soft);border-bottom:1px solid transparent;}
+.action-link.is-primary{color:var(--accent);}
+.action-link:hover{color:var(--accent);border-bottom-color:var(--accent);}
+button.btn{font:inherit;cursor:pointer;}
+.kwrap{max-width:1000px;}
+main{padding:36px 0 70px;}
+.mstate{display:none;}
+.mstate.is-on{display:block;}
+.bt-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:26px;}
+.bt-hero p{max-width:560px;margin:0;font-size:14.5px;}
+.bt-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.bt-tab{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--border);
+  border-radius:3px;background:var(--surface);font-size:13.5px;color:var(--ink-soft);}
+.bt-tab:hover{border-color:var(--accent);color:var(--accent);}
+.bt-tab .c{font-size:11.5px;min-width:20px;text-align:center;padding:0 5px;border-radius:9px;background:#f1ece1;color:var(--ink-soft);}
+.bt-tab.is-active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.bt-tab.is-active .c{background:rgba(255,255,255,.25);color:#fff;}
+/* chip dạng câu hỏi — màu theo question_type (MasterCode 16) */
+.qt{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:9px;border:1px solid var(--border);color:var(--ink-soft);white-space:nowrap;}
+.qt-mcq_blank{background:#f7f3ea;}
+.qt-ordering{background:#fbf1dc;border-color:#e6cf97;color:#7a5e12;}
+.qt-cloze{background:#e6efec;border-color:#bcd3cc;color:var(--teal);}
+.qt-passage{background:#e6efec;border-color:#bcd3cc;color:var(--teal);}
+/* thanh điểm */
+.bar{height:6px;background:#efe8da;border-radius:3px;overflow:hidden;}
+.bar>i{display:block;height:100%;border-radius:3px;}
+.s-hi{background:var(--teal);} .s-mid{background:var(--gold);} .s-lo{background:var(--accent);}
+.t-hi{color:var(--teal);} .t-mid{color:#8a6b14;} .t-lo{color:var(--accent-dark);}
+/* chỗ trống & ô ★ trong đề */
+.blank{display:inline-block;min-width:3.2em;border-bottom:2px solid var(--ink-soft);margin:0 3px;text-align:center;line-height:1.3;}
+.blank.is-cur{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-dark);font-weight:600;padding:0 6px;border-radius:3px 3px 0 0;}
+.blank.is-ok{border-color:var(--teal);color:var(--teal);padding:0 4px;}
+.blank.is-ng{border-color:var(--accent);color:var(--accent);padding:0 4px;}
+.blank.is-dim{opacity:.45;}
+.jp{font-family:var(--serif);}
+
+
+/* ===== KHỐI 3b — SC21 (dùng lại: .lb-qhead .lb-num .lb-explain) ===== */
+.lb-qhead{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.lb-num{font-family:var(--serif);font-size:22px;color:var(--accent);min-width:28px;}
+.lb-explain{border-left:3px solid var(--gold);background:#fbf8f2;padding:10px 16px;font-size:14px;}
+/* ===== KHỐI 3c — MỚI, đề xuất thêm vào 3 theme_*.css dưới "SC22 — Kết quả" ===== */
+.kwrap{max-width:880px;}
+.kq-sum{display:grid;grid-template-columns:1.3fr 1fr;gap:30px;padding:30px 34px;}
+.kq-score{display:flex;align-items:baseline;gap:10px;font-family:var(--serif);}
+.kq-score .big{font-size:64px;line-height:1;}
+.kq-score .of{font-size:24px;color:var(--ink-soft);}
+.kq-score .pct{font-size:20px;margin-left:8px;}
+.kq-bar{height:8px;margin:12px 0 12px;max-width:340px;}
+.kq-badge{display:inline-block;font-size:12.5px;padding:3px 10px;border-radius:12px;border:1px solid var(--border);color:var(--ink-soft);}
+.kq-badge.is-new{background:#fbf1dc;border-color:#e6cf97;color:#7a5e12;font-weight:600;}
+.kq-right{border-left:1px solid #efe8da;padding-left:30px;display:flex;flex-direction:column;justify-content:center;gap:14px;}
+.kq-right .lb{font-size:12px;color:var(--ink-soft);letter-spacing:.04em;}
+.kq-part{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;}
+.kq-part b{font-family:var(--serif);font-weight:400;font-size:18px;text-align:right;}
+.kq-part .bar{grid-column:1/-1;}
+.kq-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-top:18px;}
+.kq-actions form{margin:0;} .kq-actions .action-link{font-size:14px;}
+.kq-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;}
+.kq-item{padding:20px 26px;}
+.kq-stem{font-size:17px;line-height:2;margin-bottom:12px;}
+.kq-ans{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.kq-ans>div{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:3px;font-size:16px;}
+.kq-ans .ng{background:#f6e3dc;} .kq-ans .ok{background:#e6efec;}
+.kq-ans .mk{font-weight:700;font-size:17px;} .kq-ans .ng .mk{color:var(--accent);} .kq-ans .ok .mk{color:var(--teal);}
+.kq-ans .lbl{font-size:12px;color:var(--ink-soft);min-width:60px;}
+.kq-table,.kq-hist{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:4px;font-size:14px;}
+.kq-table th{text-align:left;font-weight:500;font-size:12.5px;color:var(--ink-soft);padding:10px 14px;border-bottom:1px solid var(--border);}
+.kq-table td{padding:10px 14px;border-top:1px solid #efe8da;font-size:15px;}
+.kq-table td.n{font-family:var(--serif);color:var(--ink-soft);width:50px;}
+.kq-table td.r{font-weight:700;text-align:center;width:40px;}
+.kq-table tr.is-ok td.r{color:var(--teal);} .kq-table tr.is-ng td.r{color:var(--accent);}
+.kq-table tr.is-ng{background:#fdf6f3;}
+.kq-h2{font-size:20px;font-weight:400;margin:36px 0 12px;}
+.kq-hist td{padding:10px 16px;border-top:1px solid #efe8da;}
+.kq-hist tr:first-child td{border-top:0;}
+.kq-hist tr.is-cur{background:#fdf9ef;font-weight:600;}
+.kq-empty{text-align:center;padding:36px;}
+@media (max-width:720px){
+  .kq-sum{grid-template-columns:1fr;padding:22px 18px;gap:20px;}
+  .kq-right{border-left:0;padding-left:0;border-top:1px solid #efe8da;padding-top:18px;}
+  .kq-score .big{font-size:52px;}
+  .kq-item{padding:18px 16px;} .kq-ans{grid-template-columns:1fr;}
+  .kq-table thead{display:none;} .kq-table tr{display:grid;grid-template-columns:40px 1fr 30px;padding:8px 0;border-top:1px solid #efe8da;}
+  .kq-table td{border:0;padding:3px 10px;} .kq-table td:nth-child(2){display:none;}
+  .kq-table td:nth-child(4){grid-column:2;color:var(--teal);} .kq-table td.r{grid-row:1;grid-column:3;}
+}
+
+.mock-switch{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 16px;background:#24211D;color:#eee;font-size:13px;}
+.mock-switch .lbl{margin-right:8px;opacity:.7;letter-spacing:.04em;}
+.mock-switch button{background:transparent;border:1px solid #666;color:#eee;padding:4px 12px;border-radius:3px;cursor:pointer;font:inherit;}
+.mock-switch button.on{background:#B5432E;border-color:#B5432E;}
+</style></head><body>
+<div class="mock-switch"><span class="lbl">MOCKUP SC22 · trạng thái</span><button data-s="kq">Có câu sai (?view=sai)</button><button data-s="all">?view=tat-ca</button><button data-s="full">Điểm tuyệt đối</button><span class="lbl" style="margin-left:auto">Thu hẹp cửa sổ &lt; 720px để xem bản điện thoại</span></div>
+
+<div class="app-shell"><header class="site-topbar"><a class="brand" href="#"><span class="mark">毎</span>毎日BJT</a><div class="site-topbar-user"><a href="#">Dat</a><a href="#">Cài đặt</a><a href="#">Đăng xuất</a></div></header><div class="app-shell-body"><nav class="site-sidebar"><div class="site-sidebar-nav">
+<a class="sidenav-link" href="#">Trang chủ</a><a class="sidenav-link" href="#">Từ vựng</a><a class="sidenav-link" href="#">Ôn tập</a><a class="sidenav-link" href="#">Luyện viết</a><a class="sidenav-link" href="#">Góp ý</a>
+<details class="sidenav-group" open><summary class="sidenav-link active"><span>Kính ngữ</span></summary><div class="sidenav-sub">
+<a class="sidenav-sublink" href="#">Mục lục</a><a class="sidenav-sublink" href="#">Tra cứu từ</a><a class="sidenav-sublink" href="#">Học từ</a><a class="sidenav-sublink" href="#">Lỗi thường gặp</a><a class="sidenav-sublink active" href="#">Bài tập</a></div></details>
+</div></nav><div class="app-main"><main><div class="wrap kwrap" id="page">
+<section class="mstate" data-s="kq"><nav class="kl-crumb"><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Kính ngữ</a><span>&rsaquo;</span><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Bài tập</a><span>&rsaquo;</span><span>BÀI TẬP 12</span><span>&rsaquo;</span><span>Kết quả</span></nav>
+<div class="card kq-sum"><div class="kq-left"><div class="eyebrow">Kết quả · lượt 3 · 25/09/2026 21:58</div><h1 class="kl-h1" style="margin-bottom:14px">BÀI TẬP 12</h1><div class="kq-score t-mid"><span class="big">10</span><span class="of">/ 15</span><span class="pct">67%</span></div><div class="bar kq-bar"><i class="s-mid" style="width:67%"></i></div><span class="kq-badge is-new">Kỷ lục mới · trước đó 9/15</span><p class="muted" style="font-size:13px;margin:10px 0 0">Làm trong 18 phút</p></div><div class="kq-right"><div class="lb">Theo dạng câu</div><div class="kq-part"><span class="qt qt-mcq_blank">Điền （ ）</span><b>7/10</b><div class="bar"><i class="s-mid" style="width:70%"></i></div></div><div class="kq-part"><span class="qt qt-cloze">Đoạn văn</span><b>3/5</b><div class="bar"><i class="s-mid" style="width:60%"></i></div></div></div></div>
+<div class="kq-actions"><form method="post" action="#"><button class="btn btn-primary" type="submit">Làm lại bộ này</button></form><form method="post" action="#"><button class="btn btn-outline" type="submit">Bộ tiếp theo: BÀI TẬP 13 →</button></form><a class="action-link" href="SC20_BaiTapDanhSach_A.html">Về danh sách bài tập</a></div>
+<nav class="bt-tabs" style="margin-top:30px"><a class="bt-tab is-active" href="?view=sai" data-go="kq">Câu sai <span class="c">5</span></a><a class="bt-tab" href="?view=tat-ca" data-go="all">Tất cả câu <span class="c">15</span></a></nav>
+<ol class="kq-list"><li class="card kq-item"><div class="lb-qhead"><span class="lb-num">3</span><span class="qt qt-mcq_blank">Điền （ ）</span></div><div class="kq-stem jp">ご用が<span class="blank is-cur">　？　</span>、わたくしにおっしゃってください。</div><div class="kq-ans"><div class="ng"><span class="mk">×</span><span class="lbl">Bạn chọn</span><span class="jp">3. いらっしゃったら</span></div><div class="ok"><span class="mk">○</span><span class="lbl">Đáp án</span><span class="jp">1. おありでしたら</span></div></div></li><li class="card kq-item"><div class="lb-qhead"><span class="lb-num">6</span><span class="qt qt-mcq_blank">Điền （ ）</span></div><div class="kq-stem jp">パーティーのご案内状をお送りしたいのですが、つきましてはご住所を<span class="blank is-cur">　？　</span>ませんでしょうか。</div><div class="kq-ans"><div class="ng"><span class="mk">×</span><span class="lbl">Bạn chọn</span><span class="jp">4. お教え願い</span></div><div class="ok"><span class="mk">○</span><span class="lbl">Đáp án</span><span class="jp">3. お教え願え</span></div></div><div class="lb-explain" style="margin:12px 0 0">「教える」 là từ thuần Nhật (和語) nên đi với 「お」. Trước 「ませんでしょうか」 phải là thể khả năng 「願える」. <span class="muted">(ví dụ — explanation_vi đang trống, khi trống khối này ẩn)</span></div></li><li class="card kq-item"><div class="lb-qhead"><span class="lb-num">8</span><span class="qt qt-mcq_blank">Điền （ ）</span></div><div class="kq-stem jp">おじょうさまの結婚式には、ぜひわがホテルをご利用<span class="blank is-cur">　？　</span>でしょうか。</div><div class="kq-ans"><div class="ng"><span class="mk">×</span><span class="lbl">Bạn chọn</span><span class="jp">2. いただかない</span></div><div class="ok"><span class="mk">○</span><span class="lbl">Đáp án</span><span class="jp">4. いただけない</span></div></div></li><li class="card kq-item"><div class="lb-qhead"><span class="lb-num">12</span><span class="qt qt-cloze">Đoạn văn</span><span class="muted" style="font-size:12.5px">câu trích từ đoạn văn</span></div><div class="kq-stem jp">おばあさんは真っ白な髪を後ろに結んでいる。<span class="blank is-cur">（12）</span>腰が少し曲がっているので、つり皮につかまることができず、手すりにつかまっている。</div><div class="kq-ans"><div class="ng"><span class="mk">×</span><span class="lbl">Bạn chọn</span><span class="jp">3. 小柄なわりに</span></div><div class="ok"><span class="mk">○</span><span class="lbl">Đáp án</span><span class="jp">4. 小柄なうえに</span></div></div></li><li class="card kq-item"><div class="lb-qhead"><span class="lb-num">14</span><span class="qt qt-cloze">Đoạn văn</span><span class="muted" style="font-size:12.5px">câu trích từ đoạn văn</span></div><div class="kq-stem jp">ついては、先生に私たちの演奏をぜひ<span class="blank is-cur">（14）</span>と思い、お招きすることになりました。</div><div class="kq-ans"><div class="ng"><span class="mk">×</span><span class="lbl">Bạn chọn</span><span class="jp">1. 召してもらいたい</span></div><div class="ok"><span class="mk">○</span><span class="lbl">Đáp án</span><span class="jp">4. 聞いていただきたい</span></div></div></li></ol>
+<h2 class="serif kq-h2">Các lượt đã làm</h2><table class="kq-hist"><tbody><tr class="is-cur"><td>Lượt 3</td><td>25/09 21:58</td><td><b class="t-mid">10</b>/15</td><td style="width:40%"><div class="bar"><i class="s-mid" style="width:66%"></i></div></td></tr><tr><td>Lượt 2</td><td>23/09 22:10</td><td><b class="t-mid">9</b>/15</td><td style="width:40%"><div class="bar"><i class="s-mid" style="width:60%"></i></div></td></tr><tr><td>Lượt 1</td><td>22/09 21:05</td><td><b class="t-lo">7</b>/15</td><td style="width:40%"><div class="bar"><i class="s-lo" style="width:46%"></i></div></td></tr></tbody></table>
+<p class="muted" style="font-size:12.5px">Hiện tối đa 5 lượt gần nhất. Xem lượt cũ: ?lan=&lt;id&gt;.</p></section>
+<section class="mstate" data-s="all"><nav class="kl-crumb"><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Kính ngữ</a><span>&rsaquo;</span><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Bài tập</a><span>&rsaquo;</span><span>BÀI TẬP 12</span><span>&rsaquo;</span><span>Kết quả</span></nav>
+<div class="card kq-sum"><div class="kq-left"><div class="eyebrow">Kết quả · lượt 3 · 25/09/2026 21:58</div><h1 class="kl-h1" style="margin-bottom:14px">BÀI TẬP 12</h1><div class="kq-score t-mid"><span class="big">10</span><span class="of">/ 15</span><span class="pct">67%</span></div><div class="bar kq-bar"><i class="s-mid" style="width:67%"></i></div><span class="kq-badge is-new">Kỷ lục mới · trước đó 9/15</span><p class="muted" style="font-size:13px;margin:10px 0 0">Làm trong 18 phút</p></div><div class="kq-right"><div class="lb">Theo dạng câu</div><div class="kq-part"><span class="qt qt-mcq_blank">Điền （ ）</span><b>7/10</b><div class="bar"><i class="s-mid" style="width:70%"></i></div></div><div class="kq-part"><span class="qt qt-cloze">Đoạn văn</span><b>3/5</b><div class="bar"><i class="s-mid" style="width:60%"></i></div></div></div></div>
+<div class="kq-actions"><form method="post" action="#"><button class="btn btn-primary" type="submit">Làm lại bộ này</button></form><form method="post" action="#"><button class="btn btn-outline" type="submit">Bộ tiếp theo: BÀI TẬP 13 →</button></form><a class="action-link" href="SC20_BaiTapDanhSach_A.html">Về danh sách bài tập</a></div>
+<nav class="bt-tabs" style="margin-top:30px"><a class="bt-tab" href="?view=sai" data-go="kq">Câu sai <span class="c">5</span></a><a class="bt-tab is-active" href="?view=tat-ca" data-go="all">Tất cả câu <span class="c">15</span></a></nav>
+<table class="kq-table"><thead><tr><th>Câu</th><th>Dạng</th><th>Bạn chọn</th><th>Đáp án đúng</th><th></th></tr></thead><tbody><tr class="is-ok"><td class="n">1</td><td><span class="qt qt-mcq_blank">Điền （ ）</span></td><td class="jp">1. お持ち</td><td class="jp"></td><td class="r">○</td></tr><tr class="is-ok"><td class="n">2</td><td><span class="qt qt-mcq_blank">Điền （ ）</span></td><td class="jp">3. お目にかけ</td><td class="jp"></td><td class="r">○</td></tr><tr class="is-ng"><td class="n">3</td><td><span class="qt qt-mcq_blank">Điền （ ）</span></td><td class="jp">3. いらっしゃったら</td><td class="jp">1. おありでしたら</td><td class="r">×</td></tr><tr class="is-ok"><td class="n">4</td><td><span class="qt qt-mcq_blank">Điền （ ）</span></td><td class="jp">2. 説明していただけません</td><td class="jp"></td><td class="r">○</td></tr><tr class="is-ok"><td class="n">5</td><td><span class="qt qt-mcq_blank">Điền （ ）</span></td><td class="jp">4. いらっしゃいます</td><td class="jp"></td><td class="r">○</td></tr><tr class="is-ng"><td class="n">6</td><td><span class="qt qt-mcq_blank">Điền （ ）</span></td><td class="jp">4. お教え願い</td><td class="jp">3. お教え願え</td><td class="r">×</td></tr><tr class="is-ok"><td class="n">7</td><td><span class="qt qt-mcq_blank">Điền （ ）</span></td><td class="jp">3. おっしゃいました</td><td class="jp"></td><td class="r">○</td></tr><tr class="is-ng"><td class="n">8</td><td><span class="qt qt-mcq_blank">Điền （ ）</span></td><td class="jp">2. いただかない</td><td class="jp">4. いただけない</td><td class="r">×</td></tr><tr class="is-ok"><td class="n">9</td><td><span class="qt qt-mcq_blank">Điền （ ）</span></td><td class="jp">2. お招きいただき</td><td class="jp"></td><td class="r">○</td></tr><tr class="is-ok"><td class="n">10</td><td><span class="qt qt-mcq_blank">Điền （ ）</span></td><td class="jp">4. まいりました</td><td class="jp"></td><td class="r">○</td></tr><tr class="is-ok"><td class="n">11</td><td><span class="qt qt-cloze">Đoạn văn</span></td><td class="jp">1. うかがって</td><td class="jp"></td><td class="r">○</td></tr><tr class="is-ng"><td class="n">12</td><td><span class="qt qt-cloze">Đoạn văn</span></td><td class="jp">3. 小柄なわりに</td><td class="jp">4. 小柄なうえに</td><td class="r">×</td></tr><tr class="is-ok"><td class="n">13</td><td><span class="qt qt-cloze">Đoạn văn</span></td><td class="jp">3. 教えてくださった</td><td class="jp"></td><td class="r">○</td></tr><tr class="is-ng"><td class="n">14</td><td><span class="qt qt-cloze">Đoạn văn</span></td><td class="jp">1. 召してもらいたい</td><td class="jp">4. 聞いていただきたい</td><td class="r">×</td></tr><tr class="is-ok"><td class="n">15</td><td><span class="qt qt-cloze">Đoạn văn</span></td><td class="jp">2. お過ごしください</td><td class="jp"></td><td class="r">○</td></tr></tbody></table>
+<h2 class="serif kq-h2">Các lượt đã làm</h2><table class="kq-hist"><tbody><tr class="is-cur"><td>Lượt 3</td><td>25/09 21:58</td><td><b class="t-mid">10</b>/15</td><td style="width:40%"><div class="bar"><i class="s-mid" style="width:66%"></i></div></td></tr><tr><td>Lượt 2</td><td>23/09 22:10</td><td><b class="t-mid">9</b>/15</td><td style="width:40%"><div class="bar"><i class="s-mid" style="width:60%"></i></div></td></tr><tr><td>Lượt 1</td><td>22/09 21:05</td><td><b class="t-lo">7</b>/15</td><td style="width:40%"><div class="bar"><i class="s-lo" style="width:46%"></i></div></td></tr></tbody></table>
+<p class="muted" style="font-size:12.5px">Hiện tối đa 5 lượt gần nhất. Xem lượt cũ: ?lan=&lt;id&gt;.</p></section>
+<section class="mstate" data-s="full"><nav class="kl-crumb"><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Kính ngữ</a><span>&rsaquo;</span><a href="SC20_BaiTapDanhSach_A.html" class="action-link">Bài tập</a><span>&rsaquo;</span><span>BÀI TẬP 1</span><span>&rsaquo;</span><span>Kết quả</span></nav>
+<div class="card kq-sum"><div class="kq-left"><div class="eyebrow">Kết quả · lượt 1 · 25/09/2026 20:12</div><h1 class="kl-h1" style="margin-bottom:14px">BÀI TẬP 1</h1><div class="kq-score t-hi"><span class="big">10</span><span class="of">/ 10</span><span class="pct">100%</span></div><div class="bar kq-bar"><i class="s-hi" style="width:100%"></i></div><span class="kq-badge">Lượt đầu tiên</span><p class="muted" style="font-size:13px;margin:10px 0 0">Làm trong 6 phút</p></div><div class="kq-right"><div class="lb">Theo dạng câu</div><div class="kq-part"><span class="qt qt-mcq_blank">Điền （ ）</span><b>10/10</b><div class="bar"><i class="s-hi" style="width:100%"></i></div></div></div></div>
+<div class="kq-actions"><form method="post" action="#"><button class="btn btn-primary" type="submit">Làm lại bộ này</button></form><form method="post" action="#"><button class="btn btn-outline" type="submit">Bộ tiếp theo: BÀI TẬP 2 →</button></form><a class="action-link" href="SC20_BaiTapDanhSach_A.html">Về danh sách bài tập</a></div>
+<nav class="bt-tabs" style="margin-top:30px"><a class="bt-tab is-active" href="?view=sai">Câu sai <span class="c">0</span></a><a class="bt-tab" href="?view=tat-ca">Tất cả câu <span class="c">10</span></a></nav>
+<div class="card kq-empty"><div class="serif" style="font-size:40px;color:var(--teal)">満点</div><p style="margin:6px 0 0">Không sai câu nào. Thử bộ tiếp theo, hoặc mở tab <b>Tất cả câu</b> để đọc lại đề.</p></div><h2 class="serif kq-h2">Các lượt đã làm</h2><table class="kq-hist"><tbody><tr class="is-cur"><td>Lượt 1</td><td>25/09 20:12</td><td><b class="t-hi">10</b>/10</td><td style="width:40%"><div class="bar"><i class="s-hi" style="width:100%"></i></div></td></tr></tbody></table>
+<p class="muted" style="font-size:12.5px">Hiện tối đa 5 lượt gần nhất. Xem lượt cũ: ?lan=&lt;id&gt;.</p></section>
+</div></main></div></div></div>
+<script>
+/* CHỈ MOCKUP — đổi trạng thái để Dat xem. Bản Django: mỗi trạng thái là một lần render thật, không JS. */
+(function(){
+  var btns=[].slice.call(document.querySelectorAll('.mock-switch button[data-s]'));
+  var st=[].slice.call(document.querySelectorAll('.mstate'));
+  function show(s){st.forEach(function(e){e.classList.toggle('is-on',e.dataset.s.split(' ').indexOf(s)>-1);});
+    btns.forEach(function(b){b.classList.toggle('on',b.dataset.s===s);});window.scrollTo(0,0);}
+  btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.s);});});
+  [].slice.call(document.querySelectorAll('[data-go]')).forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();show(a.dataset.go);});});
+  show(btns[0].dataset.s);
+})();
+</script>
+</body></html>

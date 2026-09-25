@@ -264,3 +264,257 @@ class PitfallTests(LessonTestCase):
         resp = self.get()
         self.assertContains(resp, f'href="{reverse("keigo:loi_thuong_gap")}"')
         self.assertEqual(resp.context["active_sub"], "loi_thuong_gap")
+
+
+# =============================================================================
+# SC20-SC22 -- Bai tap kinh ngu
+# =============================================================================
+from apps.learning.models import StudySession  # noqa: E402
+
+from . import exercises  # noqa: E402
+from .models import (  # noqa: E402
+    ExerciseSection, ExerciseSet, Question, QuestionOption, UserExerciseAttempt, UserQuestionAnswer,
+)
+
+
+class ExerciseTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        call_command("seed_mastercode", verbosity=0)
+        cls.user = User.objects.create_user(username="nguoihoc", password="MatKhauRatManh123")
+        cls.other = User.objects.create_user(username="nguoikhac", password="MatKhauRatManh123")
+
+        # Bo 1: mot cau dien + mot cau sap xep ★
+        cls.s1 = ExerciseSet.objects.create(title="BÀI TẬP 3", slug="bai-tap-3", display_order=1, question_count=2)
+        sec = ExerciseSection.objects.create(exercise_set=cls.s1, number=1, display_order=1,
+                                             instruction_jp="問題 次の__★__に入れるのに最もよいものを選びなさい。")
+        cls.q_mcq = Question.objects.create(code="bt03-q01", section=sec, number=1, question_type="mcq_blank",
+                                            stem_jp="ご用が____、わたくしに<b>おっしゃって</b>ください。")
+        cls.mcq_ok = QuestionOption.objects.create(question=cls.q_mcq, position=1, text_jp="おありでしたら", is_correct=True)
+        cls.mcq_ng = QuestionOption.objects.create(question=cls.q_mcq, position=2, text_jp="いらっしゃったら")
+        cls.q_ord = Question.objects.create(code="bt03-q02", section=sec, number=2, question_type="ordering",
+                                            stem_jp="建物の前に____ ____ __★__ ____いたします。",
+                                            star_position=3, correct_order="1234")
+        cls.ord_opts = [QuestionOption.objects.create(question=cls.q_ord, position=i, text_jp=t, is_correct=(i == 3))
+                        for i, t in enumerate(["車を", "とめない", "ように", "お願い"], start=1)]
+
+        # Bo 2: doan van cloze, hai cho trong
+        cls.s2 = ExerciseSet.objects.create(title="BÀI TẬP 12", slug="bai-tap-12", display_order=2, question_count=2)
+        sec2 = ExerciseSection.objects.create(
+            exercise_set=cls.s2, number=2, display_order=2,
+            instruction_jp="問題2 次の文章を読んで、（11）から（12）の中に入る最もよいものを選びなさい。",
+            passage_jp="恩師のお宅へ年始に（11）の帰り、電車に乗った。\nおばあさんは髪を結んでいる。（12）腰が少し曲がっている。")
+        cls.q11 = Question.objects.create(code="bt12-q11", section=sec2, number=11, question_type="cloze", stem_jp="(11)")
+        cls.q11_ok = QuestionOption.objects.create(question=cls.q11, position=1, text_jp="うかがって", is_correct=True)
+        cls.q11_ng = QuestionOption.objects.create(question=cls.q11, position=2, text_jp="拝見して")
+        cls.q12 = Question.objects.create(code="bt12-q12", section=sec2, number=12, question_type="cloze", stem_jp="(12)")
+        cls.q12_ok = QuestionOption.objects.create(question=cls.q12, position=1, text_jp="小柄なうえに", is_correct=True)
+        QuestionOption.objects.create(question=cls.q12, position=2, text_jp="小柄なわりに")
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def play(self, s):
+        return reverse("keigo:bai_tap_lam", args=[s.slug])
+
+    def start(self, s):
+        return self.client.post(reverse("keigo:bai_tap_bat_dau", args=[s.slug]))
+
+    def answer(self, s, q, opt):
+        return self.client.post(self.play(s), {"question": q.pk, "option": opt.pk})
+
+    def finish(self, s):
+        return self.client.post(reverse("keigo:bai_tap_nop", args=[s.slug]))
+
+    def do_set1(self, correct_mcq=True, correct_ord=True):
+        self.start(self.s1)
+        self.answer(self.s1, self.q_mcq, self.mcq_ok if correct_mcq else self.mcq_ng)
+        self.answer(self.s1, self.q_ord, self.ord_opts[2] if correct_ord else self.ord_opts[0])
+        return self.finish(self.s1)
+
+
+class ExerciseListTests(ExerciseTestCase):
+    def test_anonymous_is_sent_to_login(self):
+        self.client.logout()
+        url = reverse("keigo:bai_tap")
+        self.assertRedirects(self.client.get(url), reverse("accounts:login") + "?next=" + url)
+
+    def test_route_not_shadowed_by_lesson_slug(self):
+        r = self.client.get(reverse("keigo:bai_tap"))
+        self.assertEqual(r.status_code, 200)
+        self.assertTemplateUsed(r, "keigo/bai_tap.html")
+
+    def test_sidebar_link_is_real_and_active(self):
+        r = self.client.get(reverse("keigo:bai_tap"))
+        self.assertContains(r, f'href="{reverse("keigo:bai_tap")}"')
+        self.assertNotContains(r, "sidenav-sublink is-soon")
+
+    def test_rows_show_type_chips_and_new_user_tip(self):
+        r = self.client.get(reverse("keigo:bai_tap"))
+        rows = r.context["rows"]
+        self.assertEqual([x.question_total for x in rows], [2, 2])
+        self.assertEqual([c.code for c in rows[0].chips], ["mcq_blank", "ordering"])
+        self.assertTrue(r.context["is_new"])
+        self.assertIsNone(r.context["resume"])
+
+    def test_best_score_and_tabs(self):
+        self.do_set1(correct_mcq=False)
+        self.do_set1()
+        r = self.client.get(reverse("keigo:bai_tap"))
+        row = r.context["rows"][0]
+        self.assertEqual((row.attempt_count, row.best_score, row.best_total), (2, 2, 2))
+        done = self.client.get(reverse("keigo:bai_tap") + "?view=da").context["rows"]
+        todo = self.client.get(reverse("keigo:bai_tap") + "?view=chua").context["rows"]
+        self.assertEqual([x.exercise_set for x in done], [self.s1])
+        self.assertEqual([x.exercise_set for x in todo], [self.s2])
+
+    def test_unknown_view_falls_back_to_all(self):
+        r = self.client.get(reverse("keigo:bai_tap") + "?view=xyz")
+        self.assertEqual(r.context["view"], "all")
+        self.assertEqual(len(r.context["rows"]), 2)
+
+
+class ExerciseStartTests(ExerciseTestCase):
+    def test_start_must_be_post(self):
+        r = self.client.get(reverse("keigo:bai_tap_bat_dau", args=[self.s1.slug]))
+        self.assertEqual(r.status_code, 405)
+        self.assertFalse(UserExerciseAttempt.objects.exists())
+
+    def test_start_creates_attempt_once(self):
+        self.assertRedirects(self.start(self.s1), self.play(self.s1))
+        self.start(self.s1)
+        attempt = UserExerciseAttempt.objects.get()
+        self.assertEqual(attempt.total, 2)
+        self.assertIsNone(attempt.finished_at)
+
+    def test_play_without_attempt_goes_back_to_list(self):
+        self.assertRedirects(self.client.get(self.play(self.s1)), reverse("keigo:bai_tap"))
+
+    def test_abandon_deletes_open_attempt(self):
+        self.start(self.s1)
+        self.answer(self.s1, self.q_mcq, self.mcq_ok)
+        self.client.post(reverse("keigo:bai_tap_bo", args=[self.s1.slug]))
+        self.assertFalse(UserExerciseAttempt.objects.exists())
+        self.assertFalse(UserQuestionAnswer.objects.exists())
+
+    def test_list_shows_resume_card(self):
+        self.start(self.s2)
+        r = self.client.get(reverse("keigo:bai_tap"))
+        self.assertEqual(r.context["resume"].exercise_set, self.s2)
+
+
+class ExercisePlayTests(ExerciseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.start(self.s1)
+
+    def test_first_question_escapes_stem(self):
+        r = self.client.get(self.play(self.s1))
+        self.assertEqual(r.context["question"], self.q_mcq)
+        self.assertContains(r, "&lt;b&gt;おっしゃって&lt;/b&gt;")
+        self.assertContains(r, '<span class="blank is-cur">？</span>')
+
+    def test_answer_redirects_to_feedback_and_scores(self):
+        r = self.answer(self.s1, self.q_mcq, self.mcq_ok)
+        self.assertRedirects(r, f"{self.play(self.s1)}?da={self.q_mcq.pk}")
+        attempt = UserExerciseAttempt.objects.get()
+        self.assertEqual(attempt.score, 1)
+        page = self.client.get(r["Location"])
+        self.assertTrue(page.context["answer"].is_correct)
+        self.assertContains(page, '<span class="blank is-ok">おありでしたら</span>')
+
+    def test_second_answer_does_not_overwrite_first(self):
+        self.answer(self.s1, self.q_mcq, self.mcq_ng)
+        self.answer(self.s1, self.q_mcq, self.mcq_ok)
+        a = UserQuestionAnswer.objects.get()
+        self.assertEqual(a.selected_option, self.mcq_ng)
+        self.assertEqual(UserExerciseAttempt.objects.get().score, 0)
+
+    def test_missing_or_foreign_option_is_rejected(self):
+        self.client.post(self.play(self.s1), {"question": self.q_mcq.pk})
+        self.client.post(self.play(self.s1), {"question": self.q_mcq.pk, "option": self.ord_opts[0].pk})
+        self.assertFalse(UserQuestionAnswer.objects.exists())
+
+    def test_question_of_other_set_is_ignored(self):
+        self.client.post(self.play(self.s1), {"question": self.q11.pk, "option": self.q11_ok.pk})
+        self.assertFalse(UserQuestionAnswer.objects.exists())
+
+    def test_ordering_feedback_shows_full_sentence(self):
+        self.answer(self.s1, self.q_mcq, self.mcq_ok)
+        r = self.client.get(self.play(self.s1))
+        self.assertTrue(r.context["is_ordering"])
+        self.assertContains(r, '<span class="slot is-star">★</span>')
+        r = self.client.get(self.answer(self.s1, self.q_ord, self.ord_opts[0])["Location"])
+        self.assertContains(r, '<span class="slot is-filled is-star">ように<sup>3</sup></span>')
+        self.assertTrue(r.context["is_last"])
+        self.assertContains(r, reverse("keigo:bai_tap_nop", args=[self.s1.slug]))
+
+    def test_feedback_param_for_unanswered_question_is_ignored(self):
+        r = self.client.get(f"{self.play(self.s1)}?da={self.q_ord.pk}")
+        self.assertEqual(r.context["question"], self.q_mcq)
+        self.assertIsNone(r.context["answer"])
+
+
+class ExercisePassageTests(ExerciseTestCase):
+    def test_current_blank_highlighted_and_answered_blank_filled(self):
+        self.start(self.s2)
+        r = self.client.get(self.play(self.s2))
+        self.assertContains(r, '<span class="blank is-cur">（11）</span>')
+        # instruction 「（11）から（12）」 KHONG bi doi thanh cho trong
+        self.assertEqual(r.context["instruction_html"].count("blank"), 0)
+        self.answer(self.s2, self.q11, self.q11_ng)
+        r = self.client.get(self.play(self.s2))
+        self.assertEqual(r.context["question"], self.q12)
+        self.assertIn('<span class="blank is-ng">拝見して</span>', r.context["passage_html"])
+        self.assertIn('<span class="blank is-cur">（12）</span>', r.context["passage_html"])
+
+    def test_cloze_sentence_is_cut_from_passage(self):
+        self.assertEqual(exercises.question_sentence(self.q12), "（12）腰が少し曲がっている。")
+
+
+class ExerciseFinishAndResultTests(ExerciseTestCase):
+    def test_cannot_finish_before_all_answered(self):
+        self.start(self.s1)
+        self.answer(self.s1, self.q_mcq, self.mcq_ok)
+        self.assertRedirects(self.finish(self.s1), self.play(self.s1))
+        self.assertIsNone(UserExerciseAttempt.objects.get().finished_at)
+
+    def test_finish_writes_study_session_and_shows_result(self):
+        r = self.do_set1(correct_ord=False)
+        attempt = UserExerciseAttempt.objects.get()
+        self.assertIsNotNone(attempt.finished_at)
+        self.assertEqual(attempt.score, 1)
+        session = StudySession.objects.get()
+        self.assertEqual((session.session_type, session.words_reviewed, session.correct_answers), ("keigo", 2, 1))
+        page = self.client.get(r["Location"])
+        self.assertEqual(page.context["wrong_count"], 1)
+        self.assertEqual([it.question for it in page.context["items"]], [self.q_ord])
+        self.assertIsNone(page.context["best_before"])
+        self.assertEqual(page.context["next_set"], self.s2)
+
+    def test_record_badge_and_perfect_score(self):
+        self.do_set1(correct_mcq=False)
+        self.do_set1()
+        r = self.client.get(reverse("keigo:bai_tap_ket_qua", args=[self.s1.slug]))
+        self.assertTrue(r.context["is_record"])
+        self.assertEqual(r.context["attempt_number"], 2)
+        self.assertContains(r, "満点")
+
+    def test_all_tab_lists_every_question(self):
+        self.do_set1()
+        r = self.client.get(reverse("keigo:bai_tap_ket_qua", args=[self.s1.slug]) + "?view=tat-ca")
+        self.assertEqual(len(r.context["items"]), 2)
+
+    def test_other_users_attempt_is_404(self):
+        self.do_set1()
+        attempt = UserExerciseAttempt.objects.get()
+        self.client.force_login(self.other)
+        url = reverse("keigo:bai_tap_ket_qua", args=[self.s1.slug]) + f"?lan={attempt.pk}"
+        self.assertEqual(self.client.get(url).status_code, 404)
+
+    def test_result_without_finished_attempt_goes_to_list(self):
+        self.assertRedirects(self.client.get(reverse("keigo:bai_tap_ket_qua", args=[self.s1.slug])),
+                             reverse("keigo:bai_tap"))
+
+    def test_index_links_to_exercises(self):
+        self.assertContains(self.client.get(reverse("keigo:index")), f'href="{reverse("keigo:bai_tap")}"')

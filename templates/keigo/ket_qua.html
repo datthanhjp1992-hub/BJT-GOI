@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}SC22_KetQua -- ket qua mot luot bai tap kinh ngu.
+
+Mockup Dat duyet 25/09/2026: htmlTemplate/SC22_KetQua_A.html (7 quyet dinh o
+dau file do). View: keigo.views.exercise_result_view.
+  - Mac dinh luot da xong gan nhat; ?lan=<id> xem luot cu (luot nguoi khac -> 404).
+  - Tab ?view=sai (mac dinh) | tat-ca, link GET.
+  - "Lam lai" / "Bo tiep theo" la <button> POST (tao luot moi).
+  - CHUA co link "mau ngu phap lien quan": Question chua co FK toi KeigoPattern
+    (xem muc 4 o dau mockup) -- them sau khi Dat chot huong.{% endcomment %}
+
+{% block title %}{% label "keigo.exercise.result.title" %} · {{ exercise_set.title }} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+<div class="kq-wrap">
+  <nav class="kl-crumb">
+    <a href="{% url 'keigo:index' %}" class="action-link">{% label "keigo.tra_cuu.breadcrumb" %}</a>
+    <span>&rsaquo;</span>
+    <a href="{% url 'keigo:bai_tap' %}" class="action-link">{% label "keigo.exercise.list.title" %}</a>
+    <span>&rsaquo;</span>
+    <span>{{ exercise_set.title }}</span>
+    <span>&rsaquo;</span>
+    <span>{% label "keigo.exercise.result.title" %}</span>
+  </nav>
+
+  {# ========== TONG KET ========== #}
+  <div class="card kq-sum">
+    <div>
+      <div class="eyebrow">{% label "keigo.exercise.result.title" %} · {% label "keigo.exercise.result.attempt" %} {{ attempt_number }} · {{ attempt.finished_at|date:"d/m/Y H:i" }}</div>
+      <h1 class="kl-h1 kq-h1">{{ exercise_set.title }}</h1>
+      <div class="kq-score t-{{ level }}"><span class="big">{{ attempt.score }}</span><span class="of">/ {{ attempt.total }}</span><span class="pct">{{ percent }}%</span></div>
+      <div class="bar kq-bar"><i class="s-{{ level }}" style="width:{{ percent }}%"></i></div>
+      {% if best_before is None %}
+        <span class="kq-badge">{% label "keigo.exercise.result.first" %}</span>
+      {% elif is_record %}
+        <span class="kq-badge is-new">{% label "keigo.exercise.result.record" %} · {% label "keigo.exercise.result.before" %} {{ best_before.score }}/{{ best_before.total }}</span>
+      {% else %}
+        <span class="kq-badge">{% label "keigo.exercise.result.best" %} {{ best_before.score }}/{{ best_before.total }}</span>
+      {% endif %}
+      <p class="muted kq-time">{% label "keigo.exercise.result.duration_prefix" %} {{ minutes }} {% label "keigo.exercise.result.duration_unit" %}</p>
+    </div>
+    <div class="kq-right">
+      <div class="kq-lb">{% label "keigo.exercise.result.by_type" %}</div>
+      {% for code, ok, n, lv, pct in breakdown %}
+        <div class="kq-part">
+          <span class="qt qt-{{ code }}">{% if code == "ordering" %}{% label "keigo.exercise.type.ordering" %}{% elif code == "cloze" %}{% label "keigo.exercise.type.cloze" %}{% else %}{% label "keigo.exercise.type.mcq_blank" %}{% endif %}</span>
+          <b>{{ ok }}/{{ n }}</b>
+          <div class="bar"><i class="s-{{ lv }}" style="width:{{ pct }}%"></i></div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="kq-actions">
+    <form method="post" action="{% url 'keigo:bai_tap_bat_dau' exercise_set.slug %}">
+      {% csrf_token %}
+      <button class="btn btn-primary" type="submit">{% label "keigo.exercise.result.retry" %}</button>
+    </form>
+    {% if next_set %}
+      <form method="post" action="{% url 'keigo:bai_tap_bat_dau' next_set.slug %}">
+        {% csrf_token %}
+        <button class="btn btn-outline" type="submit">{% label "keigo.exercise.result.next" %} {{ next_set.title }} →</button>
+      </form>
+    {% endif %}
+    <a class="action-link" href="{% url 'keigo:bai_tap' %}">{% label "keigo.exercise.result.back" %}</a>
+  </div>
+
+  {# ========== TAB ========== #}
+  <nav class="bt-tabs kq-tabs">
+    <a class="bt-tab{% if view == 'sai' %} is-active{% endif %}" href="{{ tab_wrong_url }}">{% label "keigo.exercise.result.tab.wrong" %} <span class="c">{{ wrong_count }}</span></a>
+    <a class="bt-tab{% if view == 'tat-ca' %} is-active{% endif %}" href="{{ tab_all_url }}">{% label "keigo.exercise.result.tab.all" %} <span class="c">{{ item_count }}</span></a>
+  </nav>
+
+  {% if view == "sai" %}
+    {% if items %}
+      <ol class="kq-list">
+        {% for it in items %}
+          <li class="card kq-item">
+            <div class="lb-qhead">
+              <span class="lb-num">{{ it.question.number }}</span>
+              <span class="qt qt-{{ it.question.question_type }}">{% if it.question.question_type == "ordering" %}{% label "keigo.exercise.type.ordering" %}{% elif it.question.question_type == "cloze" %}{% label "keigo.exercise.type.cloze" %}{% else %}{% label "keigo.exercise.type.mcq_blank" %}{% endif %}</span>
+              {% if it.question.context_note %}<span class="lb-ctx jp">{{ it.question.context_note }}</span>{% endif %}
+              {% if it.is_passage_excerpt %}<span class="muted kq-excerpt">{% label "keigo.exercise.result.excerpt" %}</span>{% endif %}
+            </div>
+            <div class="kq-stem jp">{{ it.stem_html }}</div>
+            <div class="kq-ans">
+              <div class="ng"><span class="mk">×</span><span class="lbl">{% label "keigo.exercise.result.your_answer" %}</span>
+                <span class="jp">{% if it.answer.selected_option %}{{ it.answer.selected_option.position }}. {{ it.answer.selected_option.text_jp }}{% else %}—{% endif %}</span></div>
+              <div class="ok"><span class="mk">○</span><span class="lbl">{% label "keigo.exercise.result.correct_answer" %}</span>
+                <span class="jp">{% if it.correct %}{{ it.correct.position }}. {{ it.correct.text_jp }}{% else %}—{% endif %}</span></div>
+            </div>
+            {% if it.question.explanation_vi %}
+              <div class="lb-explain">{{ it.question.explanation_vi|linebreaksbr }}</div>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <div class="card kq-empty">
+        <div class="kq-perfect jp">満点</div>
+        <p>{% label "keigo.exercise.result.perfect" %}</p>
+      </div>
+    {% endif %}
+  {% else %}
+    <table class="kq-table">
+      <thead><tr>
+        <th>{% label "keigo.exercise.result.col.no" %}</th><th>{% label "keigo.exercise.result.col.type" %}</th>
+        <th>{% label "keigo.exercise.result.your_answer" %}</th><th>{% label "keigo.exercise.result.correct_answer" %}</th><th></th>
+      </tr></thead>
+      <tbody>
+        {% for it in items %}
+          <tr class="{% if it.is_correct %}is-ok{% else %}is-ng{% endif %}">
+            <td class="n">{{ it.question.number }}</td>
+            <td><span class="qt qt-{{ it.question.question_type }}">{% if it.question.question_type == "ordering" %}{% label "keigo.exercise.type.ordering" %}{% elif it.question.question_type == "cloze" %}{% label "keigo.exercise.type.cloze" %}{% else %}{% label "keigo.exercise.type.mcq_blank" %}{% endif %}</span></td>
+            <td class="jp">{% if it.answer.selected_option %}{{ it.answer.selected_option.position }}. {{ it.answer.selected_option.text_jp }}{% else %}—{% endif %}</td>
+            <td class="jp">{% if not it.is_correct and it.correct %}{{ it.correct.position }}. {{ it.correct.text_jp }}{% endif %}</td>
+            <td class="r">{% if it.is_correct %}○{% else %}×{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  {# ========== LICH SU ========== #}
+  <h2 class="kq-h2">{% label "keigo.exercise.result.history" %}</h2>
+  <table class="kq-hist">
+    <tbody>
+      {% for a in history %}
+        <tr{% if a.pk == attempt.pk %} class="is-cur"{% endif %}>
+          <td><a class="action-link" href="{{ a.url }}">{% label "keigo.exercise.result.attempt" %} {{ a.number }}</a></td>
+          <td>{{ a.finished_at|date:"d/m H:i" }}</td>
+          <td><b class="t-{{ a.level }}">{{ a.score }}</b>/{{ a.total }}</td>
+          <td class="kq-hist-bar"><div class="bar"><i class="s-{{ a.level }}" style="width:{{ a.percent }}%"></i></div></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="muted kq-note">{% label "keigo.exercise.result.history_note" %}</p>
+</div>
+{% endblock %}
