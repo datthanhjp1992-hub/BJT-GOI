@@ -319,7 +319,7 @@ class FlashcardReviewTests(LearningTestCase):
 
 
 class FlashcardCommentTests(LearningTestCase):
-    def test_submitting_creates_a_pending_contribution(self):
+    def test_submitting_publishes_the_comment_immediately(self):
         topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
         vocab = topic.vocabularies.first()
         url = reverse("learning:flashcard_comment", args=[vocab.pk])
@@ -328,7 +328,7 @@ class FlashcardCommentTests(LearningTestCase):
 
         contribution = Contribution.objects.get(target_vocabulary=vocab)
         self.assertEqual(contribution.contribution_type_code, CONTRIBUTION_TYPE_COMMENT)
-        self.assertEqual(contribution.status_code, STATUS_PENDING)
+        self.assertEqual(contribution.status_code, STATUS_APPROVED)
         self.assertEqual(contribution.comment_text, "Ghi chú test")
         self.assertEqual(contribution.user, self.user)
 
@@ -357,6 +357,20 @@ class FlashcardCommentTests(LearningTestCase):
 
         self.assertContains(response, "Đã duyệt")
         self.assertNotContains(response, "Chờ duyệt")
+
+    def test_new_comment_shows_on_the_card_right_away_with_delete_button(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        self.client.post(
+            reverse("learning:flashcard_comment", args=[vocab.pk]),
+            {"comment_text": "Hiện ngay", "topic_slug": "nha-hang"},
+        )
+        c = Contribution.objects.get(target_vocabulary=vocab)
+
+        response = self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+
+        self.assertContains(response, "Hiện ngay")
+        self.assertContains(response, reverse("gamification:comment_delete", args=[c.pk]))
 
 
 class QuizChoicesTests(LearningTestCase):

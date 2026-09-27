@@ -31,6 +31,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from apps.core.properties import message
@@ -146,8 +147,35 @@ def contribution_submit_view(request):
         return render(request, "gamification/contribution_form.html", context)
 
     services.submit_contribution(request.user, type_code, **form.as_contribution_fields())
-    flash.success(request, message("contribution.submit.success"))
+    if type_key == TYPE_COMMENT:
+        # Bình luận đăng thẳng (27/09/2026) — không có bước "admin phản hồi".
+        flash.success(request, message("learning.flashcard.success.comment_submitted"))
+    else:
+        flash.success(request, message("contribution.submit.success"))
     return redirect(f"{reverse('gamification:form')}?tab={TAB_MINE}")
+
+
+@login_required
+@require_POST
+def comment_delete_view(request, pk):
+    """Xoá 1 bình luận — người viết tự xoá, hoặc admin xoá (hậu kiểm).
+
+    Gọi từ flashcard (SC04/SC05) lẫn hòm thư SC12, nên quay về theo `next`
+    (chỉ nhận URL nội bộ). 404 cho cả "không phải bình luận" để không lộ
+    góp ý loại khác qua endpoint này.
+    """
+    contribution = get_object_or_404(
+        Contribution, pk=pk, contribution_type_code=services.CONTRIBUTION_TYPE_COMMENT
+    )
+    services.delete_comment(contribution, request.user)  # PermissionDenied -> 403
+    flash.success(request, message("contribution.comment.delete.success"))
+
+    next_url = request.POST.get("next") or ""
+    if not url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        next_url = f"{reverse('gamification:form')}?tab={TAB_MINE}"
+    return redirect(next_url)
 
 
 # --------------------------------------------------------------------------

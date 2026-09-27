@@ -7,6 +7,8 @@ app_name = "gamification"
 urlpatterns = [
     path("", views.contribution_view, name="form"),
     path("gui/", views.contribution_submit_view, name="submit"),
+    # Xoá bình luận — người viết hoặc staff (27/09/2026, bình luận đăng thẳng).
+    path("binh-luan/<int:pk>/xoa/", views.comment_delete_view, name="comment_delete"),
     # SC13 Điểm & Thành tích — nằm chung app với Góp ý vì điểm/danh hiệu sinh
     # ra từ chính luồng góp ý (xem docs/SPEC_GOP_Y_THANH_TICH.md).
     path("thanh-tich/", views.achievements_view, name="achievements"),

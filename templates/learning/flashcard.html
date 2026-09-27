@@ -134,11 +134,22 @@ tính năng cốt lõi.
       <div style="display:grid;gap:12px;margin-bottom:14px;">
         {% for c in comments %}
           <div class="card" style="padding:16px 18px;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;">
               <strong style="font-size:14px;">{{ c.user.first_name|default:c.user.get_username }}</strong>
-              <span class="muted" style="font-size:12px;">{{ c.created_at|date:"d/m/Y" }}</span>
+              <span style="display:flex;align-items:center;gap:10px;">
+                <span class="muted" style="font-size:12px;">{{ c.created_at|date:"d/m/Y H:i" }}</span>
+                {% comment %}Nút xoá: người viết (bình luận của mình) hoặc staff
+                (hậu kiểm, vì bình luận đăng thẳng không qua duyệt).{% endcomment %}
+                {% if c.user_id == request.user.pk or request.user.is_staff %}
+                  <form method="post" action="{% url 'gamification:comment_delete' c.pk %}" style="margin:0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="btn btn-outline" style="padding:3px 10px;font-size:12px;">{% label "common.button.delete" %}</button>
+                  </form>
+                {% endif %}
+              </span>
             </div>
-            <p style="margin:0;font-size:14px;">{{ c.comment_text }}</p>
+            <p style="margin:0;font-size:14px;white-space:pre-wrap;">{{ c.comment_text }}</p>
           </div>
         {% endfor %}
       </div>
@@ -150,7 +161,7 @@ tính năng cốt lõi.
       {% csrf_token %}
       <input type="hidden" name="topic_slug" value="{{ topic_slug_value }}">
       <label for="id_comment_text" style="margin-bottom:8px;">{% label "learning.flashcard.field.new_comment" %}</label>
-      <input type="text" id="id_comment_text" name="comment_text" maxlength="1000">
+      <input type="text" id="id_comment_text" name="comment_text" maxlength="1000" required>
       <button type="submit" class="btn btn-primary" style="margin-top:10px;padding:9px 18px;font-size:13.5px;">{% label "learning.flashcard.button.submit_comment" %}</button>
       <p class="muted" style="font-size:12px;margin:8px 0 0;">{% message "learning.flashcard.hint.comment_note" %}</p>
     </form>

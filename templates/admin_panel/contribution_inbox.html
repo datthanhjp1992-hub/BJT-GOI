@@ -181,6 +181,18 @@ Khác mockup: bỏ ô "Cấp độ BJT" ở khối chi tiết (cấp độ đã 
                 {% endif %}
               {% endif %}
             </form>
+
+            {% comment %}Bình luận đăng thẳng không qua duyệt (27/09/2026) —
+            admin hậu kiểm bằng nút xoá này. Form riêng, nằm NGOÀI form duyệt
+            ở trên (HTML không cho lồng form).{% endcomment %}
+            {% if selected.contribution_type_code == type_comment %}
+              <form method="post" action="{% url 'gamification:comment_delete' selected.pk %}" style="margin-top:14px;">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{% url 'admin_panel:contribution_inbox' %}?status={{ status_key }}">
+                <button type="submit" class="btn btn-outline" style="width:100%;">🗑 {% label "contribution.inbox.button.delete_comment" %}</button>
+                <p class="muted" style="font-size:12.5px;margin:8px 0 0;">{% message "contribution.inbox.hint.delete_comment" %}</p>
+              </form>
+            {% endif %}
           </div>
         {% endif %}
 

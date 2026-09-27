@@ -88,7 +88,9 @@ Khác mockup 2 chỗ, đều có lý do:
 
         <div class="divider"></div>
         <button type="submit" class="btn btn-primary">{% label "contribution.form.button.submit" %}</button>
-        <p class="muted" style="font-size:12.5px;margin:10px 0 0;">{% message "contribution.form.hint.points" %}</p>
+        {% if type_key != "comment" %}
+          <p class="muted" style="font-size:12.5px;margin:10px 0 0;">{% message "contribution.form.hint.points" %}</p>
+        {% endif %}
       </div>
     </form>
 
@@ -124,7 +126,19 @@ Khác mockup 2 chỗ, đều có lý do:
                 {% endif %}
               </td>
               <td class="muted">{{ c.admin_response|default:"—" }}</td>
-              <td class="muted">{{ c.created_at|date:"d/m/Y" }}</td>
+              <td class="muted">
+                {{ c.created_at|date:"d/m/Y" }}
+                {% comment %}Bình luận đăng thẳng nên người viết tự xoá được
+                (27/09/2026). "003" = mã loại Bình luận, cùng kiểu so mã với cột
+                trạng thái ở trên.{% endcomment %}
+                {% if c.contribution_type_code == "003" %}
+                  <form method="post" action="{% url 'gamification:comment_delete' c.pk %}" style="margin:6px 0 0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="btn btn-outline" style="padding:3px 10px;font-size:12px;">{% label "common.button.delete" %}</button>
+                  </form>
+                {% endif %}
+              </td>
             </tr>
           {% endfor %}
         </table>

@@ -20,9 +20,8 @@ from django.views.decorators.http import require_POST
 
 from apps.core.constants import SESSION_TYPE_FLASHCARD, SESSION_TYPE_QUIZ
 from apps.core.properties import label, message
-from apps.gamification.models import Contribution
 from apps.gamification import services as gamification_services
-from apps.gamification.services import CONTRIBUTION_TYPE_COMMENT, STATUS_APPROVED
+from apps.gamification.services import CONTRIBUTION_TYPE_COMMENT
 from apps.vocabulary import selectors as vocab_selectors
 from apps.vocabulary.models import Topic, Vocabulary
 
@@ -293,11 +292,7 @@ def flashcard_view(request, topic_slug):
         "review_action": reverse("learning:flashcard_review", args=[word.pk]),
         "topic_slug_value": topic.slug,
         "examples": word.examples.all()[:3],
-        "comments": Contribution.objects.filter(
-            target_vocabulary=word,
-            contribution_type_code=CONTRIBUTION_TYPE_COMMENT,
-            status_code=STATUS_APPROVED,
-        ).order_by("-created_at"),
+        "comments": gamification_services.get_vocabulary_comments(word),
         **_card_context(request, word, flow=flow),
     }
     return render(request, "learning/flashcard.html", context)
@@ -376,8 +371,8 @@ def undo_view(request):
 @require_POST
 def flashcard_comment(request, vocabulary_id):
     """Gửi bình luận cho 1 từ ngay trên màn flashcard — tạo Contribution loại
-    'Bình luận', trạng thái mặc định 'Chờ duyệt' (SC12 hòm thư sẽ có màn duyệt,
-    chưa dựng UI). Bình luận đã duyệt mới hiện công khai ở flashcard_view."""
+    'Bình luận'. Từ 27/09/2026 bình luận ĐĂNG THẲNG (không qua admin duyệt),
+    hiện ngay dưới thẻ; người viết/admin xoá được sau."""
     vocab = get_object_or_404(Vocabulary, pk=vocabulary_id)
     topic_slug = request.POST.get("topic_slug", "")
     text = (request.POST.get("comment_text") or "").strip()
@@ -734,11 +729,7 @@ def study_view(request):
         "is_study_session": True,
         "is_extra_review": not touch,
         "examples": word.examples.all()[:3],
-        "comments": Contribution.objects.filter(
-            target_vocabulary=word,
-            contribution_type_code=CONTRIBUTION_TYPE_COMMENT,
-            status_code=STATUS_APPROVED,
-        ).order_by("-created_at"),
+        "comments": gamification_services.get_vocabulary_comments(word),
         **_card_context(request, word, flow=FLOW_STUDY, show_preview=touch),
     }
     return render(request, "learning/flashcard.html", context)

@@ -125,7 +125,7 @@ class EditMeaningForm(_TargetedForm):
 
 
 class CommentForm(_TargetedForm):
-    """Bình luận công khai dưới một từ (hiện sau khi admin duyệt)."""
+    """Bình luận công khai dưới một từ — đăng thẳng, không qua duyệt (27/09/2026)."""
 
     target_vocabulary = _VocabularyChoiceField(queryset=Vocabulary.objects.none())
     comment_text = forms.CharField(max_length=1000, widget=forms.Textarea(attrs={"rows": 3}))

@@ -168,7 +168,93 @@ class FlashcardCommentTests(ContributionTestCase):
         )
         c = Contribution.objects.get()
         self.assertEqual(c.contribution_type_code, services.CONTRIBUTION_TYPE_COMMENT)
-        self.assertEqual(c.status_code, services.STATUS_PENDING)
+        self.assertEqual(c.status_code, services.STATUS_APPROVED)
+
+
+class DirectCommentTests(ContributionTestCase):
+    """27/09/2026: bình luận đăng thẳng, không qua duyệt, không cộng điểm;
+    người viết tự xoá được, staff xoá được mọi bình luận."""
+
+    def _comment(self, user=None, text="Dùng khi gọi món ở nhà hàng."):
+        return services.submit_contribution(
+            user or self.learner, services.CONTRIBUTION_TYPE_COMMENT,
+            target_vocabulary=self.word, comment_text=text,
+        )
+
+    def test_comment_is_published_immediately_without_points(self):
+        c = self._comment()
+        self.assertEqual(c.status_code, services.STATUS_APPROVED)
+        self.assertIsNone(c.reviewed_by)
+        self.assertIn(c, services.get_vocabulary_comments(self.word))
+        self.learner.refresh_from_db()
+        self.assertEqual(self.learner.total_points, 0)
+
+    def test_sc11_comment_is_published_immediately(self):
+        self.client.force_login(self.learner)
+        self.client.post(self.submit_url, {
+            "type": "comment",
+            "target_vocabulary": self.word.pk,
+            "comment_text": "Thường dùng ở nhà hàng.",
+        })
+        self.assertEqual(Contribution.objects.get().status_code, services.STATUS_APPROVED)
+
+    def test_comments_do_not_enter_the_pending_inbox(self):
+        self._comment()
+        self.client.force_login(self.staff)
+        response = self.client.get(self.inbox_url)
+        self.assertEqual(list(response.context["contributions"]), [])
+
+    def test_old_pending_comment_is_hidden_until_admin_approves_without_points(self):
+        c = Contribution.objects.create(
+            user=self.learner, contribution_type_code=services.CONTRIBUTION_TYPE_COMMENT,
+            target_vocabulary=self.word, comment_text="Bình luận cũ",
+            status_code=services.STATUS_PENDING,
+        )
+        self.assertNotIn(c, services.get_vocabulary_comments(self.word))
+        services.approve_contribution(c, self.staff)
+        self.assertIn(c, services.get_vocabulary_comments(self.word))
+        self.learner.refresh_from_db()
+        self.assertEqual(self.learner.total_points, 0)
+
+    def test_author_can_delete_own_comment(self):
+        c = self._comment()
+        self.client.force_login(self.learner)
+        response = self.client.post(
+            reverse("gamification:comment_delete", args=[c.pk]), {"next": "/learning/"}
+        )
+        self.assertRedirects(response, "/learning/", fetch_redirect_response=False)
+        self.assertFalse(Contribution.objects.filter(pk=c.pk).exists())
+
+    def test_other_learner_cannot_delete(self):
+        c = self._comment()
+        other = User.objects.create_user(username="nguoikhac", password="MatKhauRatManh123")
+        self.client.force_login(other)
+        response = self.client.post(reverse("gamification:comment_delete", args=[c.pk]))
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(Contribution.objects.filter(pk=c.pk).exists())
+
+    def test_staff_can_delete_any_comment(self):
+        c = self._comment()
+        self.client.force_login(self.staff)
+        self.client.post(reverse("gamification:comment_delete", args=[c.pk]))
+        self.assertFalse(Contribution.objects.filter(pk=c.pk).exists())
+
+    def test_delete_endpoint_ignores_other_contribution_types(self):
+        c = services.submit_contribution(
+            self.learner, services.CONTRIBUTION_TYPE_EDIT_MEANING,
+            target_vocabulary=self.word, proposed_meaning_vi="đặt món",
+        )
+        self.client.force_login(self.learner)
+        response = self.client.post(reverse("gamification:comment_delete", args=[c.pk]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_external_next_url_is_ignored(self):
+        c = self._comment()
+        self.client.force_login(self.learner)
+        response = self.client.post(
+            reverse("gamification:comment_delete", args=[c.pk]), {"next": "https://evil.example/"}
+        )
+        self.assertTrue(response["Location"].startswith(self.form_url))
 
 
 class InboxTests(ContributionTestCase):

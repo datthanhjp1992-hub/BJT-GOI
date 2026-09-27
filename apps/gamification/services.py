@@ -147,11 +147,19 @@ STATUS_REJECTED = "003"
 # action_code (PointRule / MasterCode code_type=CODE_TYPE_POINT_ACTION) ứng
 # với mỗi loại góp ý ĐƯỢC DUYỆT — tra points thật từ bảng PointRule, không
 # hardcode số điểm ở đây.
+#
+# Bình luận KHÔNG còn trong bảng này (27/09/2026): bình luận đăng thẳng không
+# qua duyệt, nên cũng không cộng điểm — cộng điểm cho thứ không ai kiểm là mời
+# spam. PointRule/MasterCode "005" vẫn để nguyên trong seed để lịch sử điểm cũ
+# còn tra được tên hành động.
 _APPROVAL_ACTION_CODE_BY_TYPE = {
     CONTRIBUTION_TYPE_NEW_WORD: "002",       # "Từ mới được duyệt"
     CONTRIBUTION_TYPE_EDIT_MEANING: "004",   # "Sửa nghĩa được duyệt"
-    CONTRIBUTION_TYPE_COMMENT: "005",        # "Bình luận được duyệt"
 }
+
+# Loại góp ý ĐĂNG THẲNG, không vào hàng chờ duyệt (27/09/2026). Admin vẫn xoá
+# được sau khi đăng (hậu kiểm) — xem delete_comment().
+_AUTO_PUBLISH_TYPES = {CONTRIBUTION_TYPE_COMMENT}
 
 
 # action_code ứng với việc GỬI góp ý (khác với DUYỆT ở dưới). Chỉ "Từ mới" và
@@ -165,21 +173,28 @@ _SUBMIT_ACTION_CODE_BY_TYPE = {
 
 def submit_contribution(user, contribution_type_code, **fields):
     """
-    Tạo 1 góp ý ở trạng thái Chờ duyệt + cộng điểm GỬI nếu loại đó có.
+    Tạo 1 góp ý + cộng điểm GỬI nếu loại đó có.
+
+    Trạng thái ban đầu: "Từ mới"/"Sửa nghĩa" vào hàng Chờ duyệt; "Bình luận"
+    ĐĂNG THẲNG ở trạng thái Đã duyệt (reviewed_by để trống = không ai duyệt)
+    nên hiện công khai ngay dưới từ vựng.
 
     Mọi nơi tạo Contribution đều đi qua đây (màn SC11 lẫn ô bình luận nhanh ở
     flashcard) để điểm gửi không bị sót ở một đường và cộng hai lần ở đường
     kia. Số điểm tra từ PointRule, không hardcode.
     """
     from django.db import transaction
+    from django.utils import timezone
 
     from apps.gamification.models import Contribution, PointRule
 
+    auto_publish = contribution_type_code in _AUTO_PUBLISH_TYPES
     with transaction.atomic():
         contribution = Contribution.objects.create(
             user=user,
             contribution_type_code=contribution_type_code,
-            status_code=STATUS_PENDING,
+            status_code=STATUS_APPROVED if auto_publish else STATUS_PENDING,
+            reviewed_at=timezone.now() if auto_publish else None,
             **fields,
         )
 
@@ -194,6 +209,49 @@ def submit_contribution(user, contribution_type_code, **fields):
                 )
 
     return contribution
+
+
+def get_vocabulary_comments(vocabulary):
+    """Bình luận công khai dưới 1 từ, mới nhất trước.
+
+    Vẫn lọc STATUS_APPROVED: bình luận mới luôn đăng thẳng ở trạng thái đó,
+    còn bình luận CŨ gửi trước 27/09/2026 đang chờ duyệt thì chỉ hiện khi admin
+    duyệt nốt — đúng quyết định "để admin duyệt nốt dữ liệu cũ".
+    """
+    from apps.gamification.models import Contribution
+
+    return (
+        Contribution.objects.filter(
+            target_vocabulary=vocabulary,
+            contribution_type_code=CONTRIBUTION_TYPE_COMMENT,
+            status_code=STATUS_APPROVED,
+        )
+        .select_related("user")
+        .order_by("-created_at")
+    )
+
+
+def can_delete_comment(user, contribution):
+    """Người viết xoá được bình luận của mình; staff xoá được mọi bình luận."""
+    if not getattr(user, "is_authenticated", False):
+        return False
+    if contribution.contribution_type_code != CONTRIBUTION_TYPE_COMMENT:
+        return False
+    return user.is_staff or contribution.user_id == user.pk
+
+
+def delete_comment(contribution, by_user):
+    """Xoá hẳn 1 bình luận. Raise PermissionDenied nếu không đủ quyền.
+
+    Xoá cứng chứ không đổi trạng thái: bình luận không còn cộng điểm nên không
+    có lịch sử điểm nào cần giữ (nếu có điểm cũ, UserPointTransaction.contribution
+    là SET_NULL nên log điểm vẫn còn nguyên).
+    """
+    from django.core.exceptions import PermissionDenied
+
+    if not can_delete_comment(by_user, contribution):
+        raise PermissionDenied
+    contribution.delete()
 
 
 def approve_contribution(contribution, reviewed_by, admin_response=""):

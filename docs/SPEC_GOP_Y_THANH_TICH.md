@@ -176,14 +176,20 @@ Chờ duyệt (001) --admin duyệt--> Đã duyệt (002) --> cộng điểm, c�
 - **Từ chối**: bắt buộc admin nhập `admin_response` (lý do), không cộng điểm, không có "trừ
   điểm" (tránh làm nản người mới góp ý — có thể bật lại sau nếu phát sinh spam).
 
-### 3.2 Vì sao bình luận cũng phải qua duyệt
+### 3.2 Bình luận đăng thẳng, không qua duyệt (cập nhật 27/09/2026)
 
-Yêu cầu gốc ghi "comment sẽ hiển thị trực tiếp dưới phần học từ vựng" — đây là hiểu về **vị
-trí hiển thị** (ngay dưới flashcard/chi tiết từ), không phải "hiện ngay lập tức không qua
-kiểm duyệt". Gộp chung luồng duyệt với 2 loại góp ý kia để: (1) admin chỉ cần 1 hòm thư duy
-nhất thay vì 2 nơi, (2) tránh nội dung sai/spam hiển thị công khai ngay trong app học tiếng
-Nhật. Nếu bạn muốn bình luận hiện ngay không cần duyệt, chỉ cần đổi `status_code` mặc định khi
-tạo thành `"002"` (Đã duyệt) — phần model/luồng còn lại giữ nguyên.
+> Thiết kế ban đầu cho bình luận qua duyệt như 2 loại góp ý kia. Từ 27/09/2026 đổi lại:
+
+- Bình luận (loại `003`) được tạo thẳng ở `status_code = "002"` (Đã duyệt), `reviewed_by`
+  để trống, `reviewed_at` = lúc gửi → hiện ngay dưới flashcard (SC04 và phiên học theo bộ lọc
+  SC05). Logic nằm ở `services.submit_contribution` (`_AUTO_PUBLISH_TYPES`).
+- **Không cộng điểm** cho bình luận (kể cả lúc gửi lẫn "được duyệt") — PointRule `005` bỏ khỏi
+  `_APPROVAL_ACTION_CODE_BY_TYPE`, dữ liệu seed vẫn giữ để lịch sử điểm cũ tra được tên.
+- **Xoá (hậu kiểm)**: người viết tự xoá bình luận của mình (nút "Xoá" trên flashcard và ở tab
+  "Góp ý của tôi"); staff xoá được mọi bình luận (trên flashcard hoặc ở SC12). Endpoint chung
+  `POST /contributions/binh-luan/<pk>/xoa/` (`gamification:comment_delete`), xoá cứng.
+- Bình luận CŨ đang "Chờ duyệt" (gửi trước thay đổi) giữ nguyên, admin duyệt nốt ở SC12 —
+  duyệt xong hiện công khai, không cộng điểm.
 
 ---
 
@@ -201,7 +207,7 @@ class PointRule(AuditableModel):
 | 002 | Từ mới được duyệt & thêm vào hệ thống | +10 | Giá trị nội dung cao nhất — tạo ra từ mới thật sự |
 | 003 | Gửi sửa nghĩa/cách dùng | +1 | Tương tự (001) |
 | 004 | Sửa nghĩa được duyệt | +5 | Cải thiện nội dung có sẵn, giá trị thấp hơn tạo mới |
-| 005 | Bình luận được duyệt | +2 | Đóng góp nhẹ, tần suất cao hơn nên điểm thấp hơn |
+| 005 | ~~Bình luận được duyệt~~ | ~~+2~~ | Ngưng dùng từ 27/09/2026 — bình luận đăng thẳng, không cộng điểm (mục 3.2) |
 
 Ghi log mỗi lần cộng điểm để audit và hiển thị lịch sử ở SC13:
 
@@ -252,6 +258,7 @@ nhanh ở navbar mà không phải query lại `BadgeTier` mỗi request.
    │
    ▼
 Tạo Contribution (status = Chờ duyệt) ── (+1đ nếu là từ mới/sửa nghĩa, xem mục 4)
+   │   (Bình luận: tạo thẳng ở Đã duyệt, hiện ngay, không vào hòm thư — mục 3.2)
    │
    ▼
 [Admin] mở SC12 (Hòm thư góp ý) — lọc theo loại / trạng thái / từ
@@ -264,7 +271,7 @@ Tạo Contribution (status = Chờ duyệt) ── (+1đ nếu là từ mới/s�
    └── Từ chối ─► ghi admin_response (bắt buộc), không cộng điểm, gửi phản hồi cho user
 
 [User] xem lại trạng thái + phản hồi ở SC11 tab "Góp ý của tôi", xem điểm/danh hiệu ở SC13.
-Bình luận đã duyệt hiện công khai ngay dưới SC04 cho mọi user khác xem.
+Bình luận hiện công khai ngay dưới SC04 khi gửi; người viết/admin xoá được sau.
 ```
 
 ---
@@ -287,7 +294,7 @@ style A, để tránh phải sửa lại cả 3 style nếu có thay đổi.
 
 - [ ] Số điểm ở mục 4 và ngưỡng danh hiệu ở mục 5 — dùng số đề xuất hay đổi lại?
 - [ ] Tên 5 danh hiệu có cần đổi không (ví dụ đặt tên gắn với BJT level thay vì số điểm)?
-- [ ] Bình luận có cần qua duyệt như đề xuất ở mục 3.2, hay muốn hiện ngay lập tức?
+- [x] Bình luận hiện ngay, không qua duyệt, không cộng điểm (chốt 27/09/2026 — mục 3.2).
 - [ ] Góp ý bị từ chối có cần cho user gửi lại (sửa nội dung rồi resubmit) hay tạo góp ý mới?
 - [ ] Admin nào được quyền duyệt — mọi user `is_staff`, hay cần thêm quyền riêng (ví dụ
       `can_review_contributions`) tách biệt với admin kỹ thuật?
