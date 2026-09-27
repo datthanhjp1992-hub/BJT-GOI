@@ -25,7 +25,7 @@ from django.utils.http import urlencode
 
 from apps.core.properties import label, message
 
-from . import exercises
+from . import exercise_pdf, exercises
 from . import pdf as keigo_pdf
 from . import selectors
 from .models import ExerciseSet, KeigoForm, KeigoLesson, KeigoPattern, KeigoVerb, Question
@@ -320,6 +320,30 @@ def exercise_list_view(request):
         first_set=rows[0].exercise_set if rows else None,
     )
     return render(request, "keigo/bai_tap.html", context)
+
+
+@login_required
+def exercise_pdf_view(request, set_slug):
+    """Nut "PDF" o SC20 -- de bai tap in ra giay, trang cuoi la dap an.
+
+    Giong lesson_pdf_view: GET khong ghi DB -> link <a>, tra `inline` de mo
+    trong tab moi, sinh moi moi lan (khong luu MEDIA_ROOT). Khong can da lam
+    bai hay dang co luot do dang -- ai vao duoc SC20 cung in duoc."""
+    exercise_set = get_object_or_404(ExerciseSet, slug=set_slug)
+    questions = exercises.set_questions(exercise_set)
+    if not questions:
+        flash.error(request, message("keigo.exercise.error.empty_set"))
+        return redirect("keigo:bai_tap")
+    try:
+        data = exercise_pdf.build_exercise_pdf(exercise_set, questions)
+    except keigo_pdf.KeigoPdfFontError:
+        logger.exception("Thieu font khi sinh PDF bai tap kinh ngu")
+        flash.error(request, message("keigo.exercise.pdf.error.font_missing"))
+        return redirect("keigo:bai_tap")
+    response = HttpResponse(data, content_type="application/pdf")
+    filename = exercise_pdf.exercise_pdf_filename(exercise_set)
+    response["Content-Disposition"] = f'inline; filename="{filename}"'
+    return response
 
 
 @login_required

@@ -167,12 +167,14 @@ UPCOMING_DAYS = 7
 # Sai 1 lần chưa đủ để gọi là "hay quên" — ngưỡng này lọc bớt nhiễu.
 LEECH_MIN_WRONG = 2
 
-# Hai phạm vi này là ÔN THÊM ngoài lịch: người học chủ động ôn sớm những từ
-# chưa đến hạn. Ôn chúng KHÔNG được đẩy `next_review_date` (xem
+# Ba phạm vi này là ÔN THÊM ngoài lịch: người học chủ động ôn những từ phần
+# lớn CHƯA đến hạn. Ôn chúng KHÔNG được đẩy `next_review_date` (xem
 # `apps.learning.services.record_extra_review` và ghi chú ở
 # `apps.learning.views.review_start_view`) — nếu đẩy, ôn 3 lượt trong một tối
 # sẽ thổi `interval_days` lên vô lý và từ đó biến mất khỏi lịch ôn thật.
-SCOPES_WITHOUT_SCHEDULE = (SCOPE_UPCOMING, SCOPE_MASTERED)
+# "Hay quên" cũng thuộc nhóm này (26/09/2026): từ hay quên nào đã đến hạn thì
+# vẫn nằm trong phạm vi "đến hạn" và được xếp lịch ở đó.
+SCOPES_WITHOUT_SCHEDULE = (SCOPE_LEECH, SCOPE_UPCOMING, SCOPE_MASTERED)
 
 
 def clean_review_scope(raw):

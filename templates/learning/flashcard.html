@@ -14,6 +14,8 @@ không còn ở cột thao tác của bảng SC05 — báo lỗi ngay lúc đang
 thì đúng ngữ cảnh hơn, và bảng danh sách nhẹ đi một cột.
 
 Hàng đợi, số thẻ/tổng và StudySession do view tính — template chỉ hiển thị.
+Từ 26/09/2026 (flow ôn tập mới): nhãn giai đoạn của thẻ, khoảng cách ôn lại
+dưới mỗi nút, nút Hoàn tác và khối tổng kết khi hết lượt.
 Lật thẻ xem nghĩa dùng class .is-flipped (static/js/main.js toggle khi click
 .flashcard); tắt JS thì <noscript> bên dưới hiện thẳng nghĩa, không khoá
 tính năng cốt lõi.
@@ -28,15 +30,29 @@ tính năng cốt lõi.
     <p class="muted" style="margin:0 0 10px;">
       {% message "learning.flashcard.hint.progress" topic=scope_label position=position total=total %}
     </p>
-    <div class="progressbar" style="margin-bottom:{% if is_extra_review %}8px{% else %}28px{% endif %};"><span style="width:{{ percent }}%"></span></div>
-    {% comment %}Lượt "ôn thêm" của SC15 (từ chưa đến hạn / đã thuộc) chỉ ghi
-    nhận đúng-sai, không đẩy lịch SM-2 — nói thẳng ra để người học không tưởng
-    mình vừa làm xô lệch lịch ôn.{% endcomment %}
+    <div class="progressbar" style="margin-bottom:{% if is_extra_review or queue %}8px{% else %}28px{% endif %};"><span style="width:{{ percent }}%"></span></div>
+    {% comment %}Ba con số của phiên theo chủ đề (SC04): từ mới / đang học / đến
+    hạn còn lại hôm nay — "đang học" là những từ sẽ quay lại sau vài phút.{% endcomment %}
+    {% if queue %}
+      <p class="muted" style="margin:0 0 24px;font-size:13px;">
+        <span class="tag">{{ queue.n_new }} {% label "learning.flashcard.count.new" %}</span>
+        <span class="tag">{{ queue.n_learning }} {% label "learning.flashcard.count.learning" %}</span>
+        <span class="tag">{{ queue.n_review }} {% label "learning.flashcard.count.review" %}</span>
+        {% message "learning.flashcard.hint.new_today" done=queue.new_today limit=queue.new_limit %}
+      </p>
+    {% endif %}
+    {% comment %}Lượt "ôn thêm" của SC15 (từ chưa đến hạn / đã thuộc / hay quên)
+    chỉ ghi nhận đúng-sai, không đẩy lịch SM-2 — nói thẳng ra để người học
+    không tưởng mình vừa làm xô lệch lịch ôn.{% endcomment %}
     {% if is_extra_review %}
       <p class="muted" style="margin:0 0 24px;font-size:13px;">{% message "learning.review.hint.extra_review" %}</p>
     {% endif %}
+    {% if ahead_minutes %}
+      <p class="muted" style="margin:0 0 14px;font-size:13px;">{% message "learning.flashcard.hint.learn_ahead" minutes=ahead_minutes %}</p>
+    {% endif %}
 
     <div class="flashcard">
+      <span class="tag{% if card_state != "review" %} level{% endif %}">{% label card_state_key %}</span>
       <div class="jp">{{ word.word }}</div>
       <div class="reading">{{ word.reading }}</div>
       <div class="meaning">{{ word.meaning_vi }}</div>
@@ -69,13 +85,25 @@ tính năng cốt lõi.
     <form method="post" action="{{ review_action }}">
       {% csrf_token %}
       <input type="hidden" name="topic_slug" value="{{ topic_slug_value }}">
+      {% comment %}Dưới mỗi nút là khoảng cách ôn lại nếu bấm nút đó (tính
+      sẵn ở view bằng srs.schedule). Lượt ôn thêm không đổi lịch nên ẩn đi.{% endcomment %}
       <div class="grid" style="grid-template-columns:repeat(4,1fr);">
-        <button class="btn" type="submit" name="quality" value="quen" style="background:#e8c4b8;color:#8f3323;">{% label "learning.flashcard.button.forgot" %}</button>
-        <button class="btn" type="submit" name="quality" value="kho" style="background:#f0e0c4;color:#8a6a1a;">{% label "learning.flashcard.button.hard" %}</button>
-        <button class="btn" type="submit" name="quality" value="nho" style="background:#dbe6d8;color:#2f4f47;">{% label "learning.flashcard.button.good" %}</button>
-        <button class="btn btn-primary" type="submit" name="quality" value="de">{% label "learning.flashcard.button.easy" %}</button>
+        {% for b in grade_buttons %}
+          <button class="btn{% if b.primary %} btn-primary{% endif %}" type="submit" name="quality" value="{{ b.code }}"{% if b.style %} style="{{ b.style }}"{% endif %}>
+            {% label b.label_key %}{% if b.delay %}<br><small style="font-weight:400;opacity:.8;">{{ b.delay }}</small>{% endif %}
+          </button>
+        {% endfor %}
       </div>
     </form>
+    {% if not is_extra_review %}
+      <p class="muted" style="text-align:center;margin:10px 0 0;font-size:12.5px;">{% message "learning.flashcard.hint.steps" %}</p>
+    {% endif %}
+    {% if undo_word %}
+      <form method="post" action="{% url 'learning:undo' %}" style="text-align:center;margin:12px 0 0;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline" style="padding:6px 14px;font-size:13px;">{% message "learning.flashcard.button.undo_word" word=undo_word %}</button>
+      </form>
+    {% endif %}
 
     <div style="text-align:center;margin-top:22px;">
       {% if is_study_session %}
@@ -130,10 +158,32 @@ tính năng cốt lõi.
     <div class="card" style="text-align:center;padding:48px 32px;">
       <h1 class="serif" style="margin:0 0 10px;">{% label "learning.flashcard.title.session_complete" %}</h1>
       <p class="muted" style="margin:0 0 20px;">{% message "learning.flashcard.hint.session_complete" topic=scope_label %}</p>
+      {% comment %}Tổng kết lượt vừa xong — lấy từ StudySession vừa đóng.{% endcomment %}
+      {% if summary %}
+        <div class="grid" style="grid-template-columns:repeat(3,1fr);margin:0 0 18px;text-align:center;">
+          <div class="stat"><div class="num">{{ summary.reviewed }}</div><div class="label">{% label "learning.flashcard.summary.reviewed" %}</div></div>
+          <div class="stat"><div class="num">{{ summary.percent }}%</div><div class="label">{% label "learning.flashcard.summary.percent" %}</div></div>
+          <div class="stat"><div class="num">{{ summary.again }}</div><div class="label">{% label "learning.flashcard.summary.again" %}</div></div>
+        </div>
+      {% endif %}
+      {% if queue %}
+        <p class="muted" style="margin:0 0 8px;">{% message "learning.flashcard.hint.new_today" done=queue.new_today limit=queue.new_limit %}</p>
+        {% if queue.more_new %}
+          <p class="muted" style="margin:0 0 8px;">{% message "learning.flashcard.hint.new_limit_reached" limit=queue.new_limit %}
+            <a href="{% url 'accounts:settings' %}">{% label "common.nav.settings" %}</a></p>
+        {% endif %}
+      {% endif %}
+      <p class="muted" style="margin:0 0 20px;">{% message "learning.flashcard.hint.due_tomorrow" count=due_tomorrow %}</p>
       <div class="toolbar" style="justify-content:center;">
         <a class="btn btn-primary" href="{% url 'learning:dashboard' %}">{% label "common.button.back" %}</a>
         <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "learning.flashcard.link.pick_more" %}</a>
       </div>
+      {% if undo_word %}
+        <form method="post" action="{% url 'learning:undo' %}" style="margin:14px 0 0;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline" style="padding:6px 14px;font-size:13px;">{% message "learning.flashcard.button.undo_word" word=undo_word %}</button>
+        </form>
+      {% endif %}
     </div>
   {% endif %}
 {% endblock %}

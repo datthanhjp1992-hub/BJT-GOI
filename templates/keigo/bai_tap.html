@@ -7,7 +7,8 @@ quyet dinh o dau file do). Du lieu: apps/keigo/exercises.list_rows().
   - Tab ?view=all|chua|da la link GET, khong JavaScript.
   - "Bat dau" / "Lam lai" / "Bo luot nay" la <button> trong <form method=post>
     (tao/xoa UserExerciseAttempt). "Lam tiep" / "Ket qua" la link GET.
-  - Diem cao nhat chi tinh luot DA XONG; mau hi/mid/lo nguong 80/50 (%).{% endcomment %}
+  - Diem cao nhat chi tinh luot DA XONG; mau hi/mid/lo nguong 80/50 (%).
+  - Link PDF (27/09/2026): de in ra giay + trang dap an cuoi, apps/keigo/exercise_pdf.py.{% endcomment %}
 
 {% block title %}{% label "keigo.exercise.list.title" %} | {% label "common.brand.name" %}{% endblock %}
 
@@ -127,6 +128,11 @@ quyet dinh o dau file do). Du lieu: apps/keigo/exercises.list_rows().
             {% if r.is_done %}
               <a class="action-link" href="{% url 'keigo:bai_tap_ket_qua' r.exercise_set.slug %}">{% label "keigo.exercise.list.result" %} →</a>
             {% endif %}
+          {% endif %}
+          {# In de ra giay (trang cuoi la dap an). GET, khong tac dung phu -> <a>, mo tab moi nhu nut in on tap SC17. #}
+          {% if r.question_total %}
+            <a class="action-link" href="{% url 'keigo:bai_tap_pdf' r.exercise_set.slug %}" target="_blank" rel="noopener"
+               title="{% label 'keigo.exercise.list.pdf_hint' %}">{% label "keigo.exercise.list.pdf" %}</a>
           {% endif %}
         </div>
       </li>

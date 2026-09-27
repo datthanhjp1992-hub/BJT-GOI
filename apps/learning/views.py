@@ -2,6 +2,12 @@
 View của app learning: SC03 Trang chủ · SC04 Flashcard · SC06 Kiểm tra ·
 SC15 Ôn tập.
 
+Flow ôn tập (26/09/2026, kiểu Anki — xem apps/learning/srs.py):
+  * Bấm "Quên"/"Khó" với từ mới hoặc từ đang học -> từ quay lại sau vài phút
+    NGAY TRONG PHIÊN, nhớ được qua hết các bước mới xếp lịch theo ngày.
+  * SC04 giới hạn từ mới theo `User.daily_review_goal` mỗi ngày.
+  * Mỗi lần chấm có thể HOÀN TÁC (`undo_view`), hết phiên có màn tổng kết.
+
 Mọi truy vấn thống kê nằm ở `apps.learning.services`; view chỉ lắp context.
 """
 from django.contrib import messages as flash
@@ -20,7 +26,7 @@ from apps.gamification.services import CONTRIBUTION_TYPE_COMMENT, STATUS_APPROVE
 from apps.vocabulary import selectors as vocab_selectors
 from apps.vocabulary.models import Topic, Vocabulary
 
-from . import services
+from . import services, srs
 from .models import StudySession, UserVocabularyProgress, UserWordlist
 from .services import QUALITY_MAP, record_extra_review, review_word
 
@@ -45,7 +51,11 @@ def dashboard_view(request):
 def _flashcard_session_keys(topic_slug):
     """Hai khoá trong request.session để nhớ TỔNG số thẻ và bản ghi
     StudySession của phiên flashcard đang chạy cho 1 chủ đề. Khoá theo
-    topic_slug nên user học nhiều chủ đề (tab khác nhau) không đụng nhau."""
+    topic_slug nên user học nhiều chủ đề (tab khác nhau) không đụng nhau.
+
+    (Khoá "total" không còn dùng từ khi có bước học — tổng số thẻ giờ tính
+    lại mỗi lần từ số lượt đã chấm + số từ còn lại — nhưng vẫn giữ để dọn
+    session cũ của người dùng.)"""
     return f"flashcard_total_{topic_slug}", f"flashcard_session_id_{topic_slug}"
 
 
@@ -68,46 +78,215 @@ def _close_flashcard_session(request, session_id_key):
     _close_study_session(request, session_id_key)
 
 
-@login_required
-def flashcard_view(request, topic_slug):
-    """SC04_HocTuVung — 1 thẻ mỗi lần, ưu tiên từ đến hạn ôn rồi tới từ chưa
-    học. Xem apps.learning.services.get_flashcard_queue để biết vì sao không
-    cần tự loại thẻ vừa ôn ra khỏi hàng đợi."""
-    topic = get_object_or_404(Topic, slug=topic_slug)
-    total_key, session_id_key = _flashcard_session_keys(topic.slug)
-    queue = services.get_flashcard_queue(request.user, topic)
+def _ensure_open_session(request, session_id_key, topic, session_type):
+    """StudySession đang mở của phiên theo chủ đề; chưa có thì mở mới.
 
-    if not queue:
-        # Hết thẻ cần ôn (hoặc chủ đề chưa có từ nào) — đóng phiên đang mở và
-        # dọn khoá session để lần mở lại sau tính là một lượt ôn mới.
-        _close_flashcard_session(request, session_id_key)
-        request.session.pop(total_key, None)
-        return render(request, "learning/flashcard.html", {
-            "topic": topic, "word": None, "scope_label": topic.display_name,
-        })
-
-    total = request.session.get(total_key)
-    if not total or len(queue) > total:
-        # Chưa từng mở màn này (chưa có tổng), hoặc hàng đợi vừa dài ra so với
-        # lần tính trước (có thêm từ đến hạn/được thêm mới) — bắt đầu một
-        # phiên StudySession mới, tính lại tổng từ đây.
-        total = len(queue)
-        request.session[total_key] = total
-        study_session = StudySession.objects.create(
-            user=request.user, topic=topic, session_type=SESSION_TYPE_FLASHCARD,
+    Phiên mở từ HÔM TRƯỚC (người học để tab qua đêm) bị đóng và thay bằng
+    phiên mới — nếu không, lượt học hôm nay bị ghi vào phiên hôm qua và
+    streak (tính theo started_at) không nhận ra hôm nay có học.
+    """
+    session_id = request.session.get(session_id_key)
+    session = None
+    if session_id:
+        session = StudySession.objects.filter(
+            pk=session_id, user=request.user, ended_at__isnull=True,
+            started_at__gte=services.local_day_start(request.user),
+        ).first()
+        if session is None:
+            _close_study_session(request, session_id_key)
+    if session is None:
+        session = StudySession.objects.create(
+            user=request.user, topic=topic, session_type=session_type,
             started_at=timezone.now(),
         )
-        request.session[session_id_key] = study_session.pk
+        request.session[session_id_key] = session.pk
+    return session
 
-    word = queue[0]
-    position = total - len(queue) + 1
+
+# =============================================================================
+# Chấm điểm + HOÀN TÁC (dùng chung cho mọi lối vào)
+# -----------------------------------------------------------------------------
+# Trước mỗi lần chấm, bản chụp tiến độ của từ được đẩy vào một ngăn xếp trong
+# request.session (tối đa UNDO_MAX mục). Nút "Hoàn tác" lấy mục trên cùng ra,
+# trả tiến độ + bộ đếm StudySession về như cũ rồi hiện lại đúng từ đó.
+# Không cần bảng log: từ học lần đầu có bản chụp None -> hoàn tác là xoá dòng
+# tiến độ, nên `services.count_new_words_today()` cũng tự lùi lại.
+# =============================================================================
+
+UNDO_KEY = "learning_undo"
+UNDO_MAX = 20
+# {"vocab": id, "flow": "topic:<slug>" | "study"} — từ vừa hoàn tác phải hiện
+# lại NGAY ở đúng màn đó, trước mọi từ khác trong hàng đợi.
+FORCE_KEY = "learning_force_word"
+
+
+def _topic_flow(topic_slug):
+    return f"topic:{topic_slug}"
+
+
+FLOW_STUDY = "study"
+
+
+def _grade(request, vocab, quality, *, flow, session_id=None, touch_schedule=True, extra=None):
+    """Chấm một từ, cộng vào StudySession và ghi mục hoàn tác.
+
+    Trả về `srs.Result` (None nếu là lượt "ôn thêm" không đụng lịch).
+    """
+    user = request.user
+    existing = UserVocabularyProgress.objects.filter(user=user, vocabulary=vocab).first()
+    snapshot = services.progress_snapshot(existing) if existing else None
+    progress = existing or services.get_or_start_progress(user, vocab)
+
+    if touch_schedule:
+        result = review_word(progress, quality)
+    else:
+        record_extra_review(progress, quality)
+        result = None
+
+    # quality >= 3 ("Khó"/"Nhớ"/"Dễ") tính là nhớ đúng, khớp ngưỡng SM-2.
+    correct = 1 if quality >= 3 else 0
+    if session_id:
+        StudySession.objects.filter(pk=session_id).update(
+            words_reviewed=F("words_reviewed") + 1,
+            correct_answers=F("correct_answers") + correct,
+        )
+
+    entry = {
+        "vocab": vocab.pk,
+        "word": vocab.word,
+        "snap": snapshot,
+        "sid": session_id,
+        "correct": correct,
+        "day": user.local_today().isoformat(),
+        "flow": flow,
+    }
+    entry.update(extra or {})
+    stack = list(request.session.get(UNDO_KEY) or [])[-(UNDO_MAX - 1):]
+    stack.append(entry)
+    request.session[UNDO_KEY] = stack
+    request.session.pop(FORCE_KEY, None)
+    return result
+
+
+def _last_undo(request, flow):
+    """Mục hoàn tác trên cùng nếu nó thuộc đúng màn `flow` và là của hôm nay."""
+    stack = request.session.get(UNDO_KEY) or []
+    if not stack:
+        return None
+    entry = stack[-1]
+    if entry.get("flow") != flow or entry.get("day") != request.user.local_today().isoformat():
+        return None
+    return entry
+
+
+def _forced_word(request, flow):
+    forced = request.session.get(FORCE_KEY)
+    if not forced or forced.get("flow") != flow:
+        return None
+    word = Vocabulary.objects.filter(pk=forced.get("vocab")).first()
+    if word is None:
+        request.session.pop(FORCE_KEY, None)
+    return word
+
+
+def _delay_text(parts):
+    unit, value = parts
+    if isinstance(value, float):
+        value = f"{value:g}".replace(".", ",")
+    return message(f"learning.flashcard.delay.{unit}", n=value)
+
+
+# Bốn nút chấm: (mã POST, key nhãn, style nền/chữ — giữ nguyên màu cũ của SC04).
+GRADE_BUTTONS = (
+    ("quen", "learning.flashcard.button.forgot", "background:#e8c4b8;color:#8f3323;", False),
+    ("kho", "learning.flashcard.button.hard", "background:#f0e0c4;color:#8a6a1a;", False),
+    ("nho", "learning.flashcard.button.good", "background:#dbe6d8;color:#2f4f47;", False),
+    ("de", "learning.flashcard.button.easy", "", True),
+)
+
+
+def _card_context(request, word, *, flow, show_preview=True):
+    """Phần context mô tả THẺ đang hiện: giai đoạn, 4 nút kèm khoảng cách, hoàn tác."""
+    progress = UserVocabularyProgress.objects.filter(user=request.user, vocabulary=word).first()
+    state = progress.card_state if progress else srs.NEW
+    previews = services.grade_previews(progress) if show_preview else {}
+    buttons = [
+        {
+            "code": code,
+            "label_key": label_key,
+            "style": style,
+            "primary": primary,
+            "delay": _delay_text(previews[QUALITY_MAP[code]]) if previews else "",
+        }
+        for code, label_key, style, primary in GRADE_BUTTONS
+    ]
+    undo = _last_undo(request, flow)
+    return {
+        "card_state": state,
+        "card_state_key": f"learning.flashcard.state.{state}",
+        "grade_buttons": buttons,
+        "undo_word": undo["word"] if undo else "",
+    }
+
+
+def _session_summary(session):
+    """Tổng kết một phiên đã đóng — hiện trên màn "đã ôn xong"."""
+    if session is None or not session.words_reviewed:
+        return None
+    again = session.words_reviewed - session.correct_answers
+    return {
+        "reviewed": session.words_reviewed,
+        "correct": session.correct_answers,
+        "again": again,
+        "percent": round(session.correct_answers * 100 / session.words_reviewed),
+    }
+
+
+def _progress_numbers(done, remaining):
+    total = done + remaining
+    return {
+        "position": done + 1,
+        "total": total,
+        "percent": round(done * 100 / total) if total else 0,
+    }
+
+
+@login_required
+def flashcard_view(request, topic_slug):
+    """SC04_HocTuVung — 1 thẻ mỗi lần, theo flow ôn tập của
+    `services.get_topic_queue`: từ đang học tới giờ -> từ đến hạn -> từ mới
+    (tối đa `daily_review_goal`/ngày) -> học trước từ đang học chưa tới giờ."""
+    topic = get_object_or_404(Topic, slug=topic_slug)
+    total_key, session_id_key = _flashcard_session_keys(topic.slug)
+    flow = _topic_flow(topic.slug)
+    queue = services.get_topic_queue(request.user, topic)
+    forced = _forced_word(request, flow)
+    word = forced or (queue.words[0] if queue.words else None)
+
+    if word is None:
+        # Hết thẻ cần ôn (hoặc chủ đề chưa có từ nào) — đóng phiên đang mở và
+        # dọn khoá session để lần mở lại sau tính là một lượt ôn mới.
+        session = _close_study_session(request, session_id_key)
+        request.session.pop(total_key, None)
+        undo = _last_undo(request, flow)
+        return render(request, "learning/flashcard.html", {
+            "topic": topic, "word": None, "scope_label": topic.display_name,
+            "summary": _session_summary(session),
+            "queue": queue,
+            "due_tomorrow": services.count_due_tomorrow(request.user),
+            "undo_word": undo["word"] if undo else "",
+        })
+
+    session = _ensure_open_session(request, session_id_key, topic, SESSION_TYPE_FLASHCARD)
+    session.refresh_from_db(fields=["words_reviewed"])
+    remaining = queue.remaining + (1 if forced and forced not in queue.words else 0)
 
     context = {
         "topic": topic,
         "word": word,
-        "position": position,
-        "total": total,
-        "percent": round((position - 1) * 100 / total) if total else 0,
+        **_progress_numbers(session.words_reviewed, remaining),
+        "queue": queue,
+        "ahead_minutes": 0 if forced else queue.ahead_minutes,
         # Ba khoá dưới đây để flashcard.html dùng được cho CẢ HAI lối vào:
         # học theo 1 chủ đề (màn này) và học theo bộ lọc của SC05 (study_view).
         "scope_label": topic.display_name,
@@ -119,6 +298,7 @@ def flashcard_view(request, topic_slug):
             contribution_type_code=CONTRIBUTION_TYPE_COMMENT,
             status_code=STATUS_APPROVED,
         ).order_by("-created_at"),
+        **_card_context(request, word, flow=flow),
     }
     return render(request, "learning/flashcard.html", context)
 
@@ -131,21 +311,65 @@ def flashcard_review(request, vocabulary_id):
     topic_slug = request.POST.get("topic_slug", "")
     quality = QUALITY_MAP.get(request.POST.get("quality"), 3)
 
-    progress, _ = UserVocabularyProgress.objects.get_or_create(
-        user=request.user, vocabulary=vocab
-    )
-    review_word(progress, quality)
-
     _, session_id_key = _flashcard_session_keys(topic_slug)
-    session_id = request.session.get(session_id_key)
-    if session_id:
-        # quality >= 3 ("Khó"/"Nhớ"/"Dễ") tính là nhớ đúng, khớp ngưỡng SM-2
-        # review_word() đang dùng để tăng srs_level.
-        StudySession.objects.filter(pk=session_id).update(
-            words_reviewed=F("words_reviewed") + 1,
-            correct_answers=F("correct_answers") + (1 if quality >= 3 else 0),
-        )
+    _grade(
+        request, vocab, quality,
+        flow=_topic_flow(topic_slug),
+        session_id=request.session.get(session_id_key),
+        extra={"topic": topic_slug},
+    )
     return redirect("learning:flashcard", topic_slug=topic_slug)
+
+
+@login_required
+@require_POST
+def undo_view(request):
+    """Nút "Hoàn tác" — trả lần chấm gần nhất (của hôm nay) về như cũ."""
+    stack = list(request.session.get(UNDO_KEY) or [])
+    today = request.user.local_today().isoformat()
+    if not stack or stack[-1].get("day") != today:
+        flash.info(request, message("learning.flashcard.error.nothing_to_undo"))
+        return redirect("learning:dashboard")
+
+    entry = stack.pop()
+    request.session[UNDO_KEY] = stack
+    vocab_id = entry["vocab"]
+
+    progress = UserVocabularyProgress.objects.filter(
+        user=request.user, vocabulary_id=vocab_id
+    ).first()
+    if entry["snap"] is None:
+        if progress is not None:
+            progress.delete()
+    elif progress is not None:
+        services.restore_progress(progress, entry["snap"])
+
+    # Trừ lại bộ đếm của phiên và MỞ LẠI phiên nếu nó vừa bị đóng vì hết thẻ
+    # (lần chấm cuối cùng của phiên là lần hay bấm nhầm nhất).
+    session = None
+    if entry.get("sid"):
+        session = StudySession.objects.filter(pk=entry["sid"], user=request.user).first()
+    if session is not None:
+        session.words_reviewed = max(0, session.words_reviewed - 1)
+        session.correct_answers = max(0, session.correct_answers - entry.get("correct", 0))
+        session.ended_at = None
+        session.save(update_fields=["words_reviewed", "correct_answers", "ended_at"])
+
+    flow = entry.get("flow", "")
+    request.session[FORCE_KEY] = {"vocab": vocab_id, "flow": flow}
+    flash.info(request, message("learning.flashcard.success.undone", word=entry.get("word", "")))
+
+    if flow == FLOW_STUDY:
+        _restore_study_state(request, entry, session)
+        return redirect("learning:study")
+    topic_slug = entry.get("topic", "")
+    if topic_slug and Topic.objects.filter(slug=topic_slug).exists():
+        if session is not None:
+            _, session_id_key = _flashcard_session_keys(topic_slug)
+            request.session[session_id_key] = session.pk
+        return redirect("learning:flashcard", topic_slug=topic_slug)
+    request.session.pop(FORCE_KEY, None)
+    return redirect("learning:dashboard")
 
 
 @login_required
@@ -188,15 +412,15 @@ def _quiz_session_keys(topic_slug):
 @login_required
 def quiz_view(request, topic_slug):
     """SC06_KiemTra — trắc nghiệm 4 đáp án, dùng CHUNG hàng đợi với SC04
-    (`services.get_flashcard_queue`): từ đến hạn ôn trước, hết thì tới từ
-    chưa học. Bấm thẳng vào 1 đáp án là nộp câu đó luôn (xem
-    `quiz_answer_view`) — không có bước "xác nhận" riêng như mockup tĩnh,
-    cùng ngôn ngữ thiết kế với 4 nút Quên/Khó/Nhớ/Dễ ở SC04."""
+    (`services.get_topic_queue`): từ đang học tới giờ -> từ đến hạn -> từ mới.
+    Bấm thẳng vào 1 đáp án là nộp câu đó luôn (xem `quiz_answer_view`) —
+    không có bước "xác nhận" riêng như mockup tĩnh, cùng ngôn ngữ thiết kế
+    với 4 nút Quên/Khó/Nhớ/Dễ ở SC04."""
     topic = get_object_or_404(Topic, slug=topic_slug)
     total_key, session_id_key = _quiz_session_keys(topic.slug)
-    queue = services.get_flashcard_queue(request.user, topic)
+    queue = services.get_topic_queue(request.user, topic)
 
-    if not queue:
+    if not queue.words:
         # Hết từ cần kiểm tra — đóng phiên đang mở và báo điểm số nếu phiên
         # đó thật sự có câu nào được trả lời (tránh flash "0/0" khi user mới
         # mở màn lần đầu mà chủ đề đã hết hạn ôn sẵn từ trước).
@@ -211,25 +435,14 @@ def quiz_view(request, topic_slug):
             "topic": topic, "word": None, "scope_label": topic.display_name,
         })
 
-    total = request.session.get(total_key)
-    if not total or len(queue) > total:
-        total = len(queue)
-        request.session[total_key] = total
-        study_session = StudySession.objects.create(
-            user=request.user, topic=topic, session_type=SESSION_TYPE_QUIZ,
-            started_at=timezone.now(),
-        )
-        request.session[session_id_key] = study_session.pk
-
-    word = queue[0]
-    position = total - len(queue) + 1
+    session = _ensure_open_session(request, session_id_key, topic, SESSION_TYPE_QUIZ)
+    session.refresh_from_db(fields=["words_reviewed"])
+    word = queue.words[0]
 
     context = {
         "topic": topic,
         "word": word,
-        "position": position,
-        "total": total,
-        "percent": round((position - 1) * 100 / total) if total else 0,
+        **_progress_numbers(session.words_reviewed, queue.remaining),
         "choices": services.get_quiz_choices(word, topic),
         "scope_label": topic.display_name,
         "answer_action": reverse("learning:quiz_answer", args=[topic.slug, word.pk]),
@@ -242,23 +455,19 @@ def quiz_view(request, topic_slug):
 def quiz_answer_view(request, topic_slug, vocabulary_id):
     """Nộp 1 câu trắc nghiệm — mỗi nút đáp án ở quiz.html POST thẳng vào đây.
     Đúng/sai quy đổi sang quality SM-2 (4 = nhớ tốt, 0 = quên) rồi dùng lại
-    NGUYÊN `review_word()` của SC04 — quiz và flashcard cùng một cơ chế SRS."""
+    NGUYÊN `review_word()` của SC04 — quiz và flashcard cùng một cơ chế SRS
+    (trả lời sai thì từ quay lại sau vài phút trong cùng lượt)."""
     vocab = get_object_or_404(Vocabulary, pk=vocabulary_id)
     is_correct = request.POST.get("choice") == str(vocab.pk)
     quality = 4 if is_correct else 0
 
-    progress, _ = UserVocabularyProgress.objects.get_or_create(
-        user=request.user, vocabulary=vocab
-    )
-    review_word(progress, quality)
-
     _, session_id_key = _quiz_session_keys(topic_slug)
-    session_id = request.session.get(session_id_key)
-    if session_id:
-        StudySession.objects.filter(pk=session_id).update(
-            words_reviewed=F("words_reviewed") + 1,
-            correct_answers=F("correct_answers") + (1 if is_correct else 0),
-        )
+    _grade(
+        request, vocab, quality,
+        flow=f"quiz:{topic_slug}",
+        session_id=request.session.get(session_id_key),
+        extra={"topic": topic_slug},
+    )
 
     if is_correct:
         flash.success(request, message("learning.quiz.feedback.correct"))
@@ -285,6 +494,9 @@ STUDY_SCOPE_KEY = "study_scope"
 STUDY_TOUCH_SCHEDULE_KEY = "study_touch_schedule"
 # Flashcard hay trắc nghiệm — quyết định màn nào hiển thị hàng đợi.
 STUDY_MODE_KEY = "study_mode"
+# Id các từ của phiên đang ở BƯỚC HỌC (quên / chưa qua hết bước) — chúng rời
+# STUDY_QUEUE_KEY nhưng phải quay lại sau vài phút, trước khi phiên kết thúc.
+STUDY_LEARNING_KEY = "study_learning"
 
 
 def _clear_study_session(request):
@@ -293,6 +505,7 @@ def _clear_study_session(request):
     request.session.pop(STUDY_SCOPE_KEY, None)
     request.session.pop(STUDY_TOUCH_SCHEDULE_KEY, None)
     request.session.pop(STUDY_MODE_KEY, None)
+    request.session.pop(STUDY_LEARNING_KEY, None)
     return _close_study_session(request, STUDY_SESSION_ID_KEY)
 
 
@@ -306,42 +519,137 @@ def _touches_schedule(request):
 
 
 def _grade_word(request, vocab, quality):
-    """Chấm một từ của phiên theo hàng đợi, tôn trọng cờ "ôn thêm"."""
-    progress, _ = UserVocabularyProgress.objects.get_or_create(
-        user=request.user, vocabulary=vocab
-    )
-    if _touches_schedule(request):
-        review_word(progress, quality)
-    else:
-        record_extra_review(progress, quality)
+    """Chấm một từ của phiên theo hàng đợi, tôn trọng cờ "ôn thêm".
 
-    session_id = request.session.get(STUDY_SESSION_ID_KEY)
-    if session_id:
-        StudySession.objects.filter(pk=session_id).update(
-            words_reviewed=F("words_reviewed") + 1,
-            correct_answers=F("correct_answers") + (1 if quality >= 3 else 0),
-        )
+    * Phiên chính thức: từ còn ở bước học (quên / chưa qua hết bước) chuyển
+      sang STUDY_LEARNING_KEY để quay lại sau vài phút; tốt nghiệp thì rời hẳn.
+    * Phiên ôn thêm: không đụng lịch; bấm "Quên" thì từ được đưa xuống CUỐI
+      hàng đợi để gặp lại một lần nữa trong lượt này.
+    """
+    touch = _touches_schedule(request)
+    queue = list(request.session.get(STUDY_QUEUE_KEY) or [])
+    learning = list(request.session.get(STUDY_LEARNING_KEY) or [])
+    in_queue, in_learning = vocab.pk in queue, vocab.pk in learning
+
+    result = _grade(
+        request, vocab, quality,
+        flow=FLOW_STUDY,
+        session_id=request.session.get(STUDY_SESSION_ID_KEY),
+        touch_schedule=touch,
+        extra={
+            "in_queue": in_queue,
+            "in_learning": in_learning,
+            "touch": touch,
+            "scope": request.session.get(STUDY_SCOPE_KEY) or "",
+            "mode": request.session.get(STUDY_MODE_KEY) or SESSION_TYPE_FLASHCARD,
+            "total": request.session.get(STUDY_TOTAL_KEY) or 0,
+        },
+    )
 
     # Bỏ đúng từ vừa ôn khỏi hàng đợi (không dựa vào vị trí đầu: người dùng
     # bấm nút hai lần / back rồi gửi lại vẫn không làm lệch hàng đợi).
-    queue = list(request.session.get(STUDY_QUEUE_KEY) or [])
-    if vocab.pk in queue:
+    if in_queue:
         queue.remove(vocab.pk)
-        request.session[STUDY_QUEUE_KEY] = queue
+    if touch:
+        if result is not None and result.in_session:
+            if not in_learning:
+                learning.append(vocab.pk)
+        elif in_learning:
+            learning.remove(vocab.pk)
+    elif quality < 3:
+        queue.append(vocab.pk)
+    request.session[STUDY_QUEUE_KEY] = queue
+    request.session[STUDY_LEARNING_KEY] = learning
+
+
+def _restore_study_state(request, entry, session):
+    """Hoàn tác trong phiên theo hàng đợi: đưa từ về đúng chỗ cũ.
+
+    Nếu lần chấm đó làm phiên kết thúc (khoá session đã bị dọn), dựng lại
+    phiên với đúng cờ "ôn thêm" cũ — không thì lượt chấm lại sẽ rơi về mặc
+    định "đẩy lịch" và làm xô lịch của một lượt ôn thêm.
+    """
+    if STUDY_QUEUE_KEY not in request.session:
+        request.session[STUDY_QUEUE_KEY] = []
+        request.session[STUDY_LEARNING_KEY] = []
+        request.session[STUDY_TOTAL_KEY] = entry.get("total") or 1
+        request.session[STUDY_SCOPE_KEY] = entry.get("scope") or message("learning.study.scope.all")
+        request.session[STUDY_TOUCH_SCHEDULE_KEY] = entry.get("touch", True)
+        request.session[STUDY_MODE_KEY] = entry.get("mode") or SESSION_TYPE_FLASHCARD
+    if session is not None:
+        request.session[STUDY_SESSION_ID_KEY] = session.pk
+
+    vocab_id = entry["vocab"]
+    queue = list(request.session.get(STUDY_QUEUE_KEY) or [])
+    learning = list(request.session.get(STUDY_LEARNING_KEY) or [])
+    if entry.get("in_queue") and vocab_id not in queue:
+        queue.insert(0, vocab_id)
+    if entry.get("in_learning") and vocab_id not in learning:
+        learning.append(vocab_id)
+    elif not entry.get("in_learning") and vocab_id in learning:
+        learning.remove(vocab_id)
+    request.session[STUDY_QUEUE_KEY] = queue
+    request.session[STUDY_LEARNING_KEY] = learning
 
 
 def _next_queue_word(request):
-    """Từ kế tiếp của hàng đợi, bỏ qua những từ đã bị xoá khỏi từ điển."""
+    """Từ kế tiếp của phiên theo hàng đợi.
+
+    Thứ tự: từ vừa hoàn tác -> từ đang học đã tới giờ -> đầu hàng đợi ->
+    (hết hàng đợi) học trước từ đang học chưa tới giờ, sớm nhất trước.
+    Trả về (word, remaining, ahead_minutes).
+    """
     queue = list(request.session.get(STUDY_QUEUE_KEY) or [])
-    word = None
-    while queue and word is None:
+    learning = list(request.session.get(STUDY_LEARNING_KEY) or [])
+    now = timezone.now()
+
+    learning_rows = sorted(
+        UserVocabularyProgress.objects.filter(
+            user=request.user, vocabulary_id__in=learning,
+            card_state__in=srs.IN_SESSION_STATES,
+        ).values_list("vocabulary_id", "due_at"),
+        key=lambda row: (row[1] or now, row[0]),
+    )
+    # Từ đã tốt nghiệp ở màn khác / đã bị xoá thì không còn "đang học" nữa.
+    still_learning = [vid for vid, _ in learning_rows]
+    if still_learning != learning:
+        learning = [vid for vid in learning if vid in still_learning]
+        request.session[STUDY_LEARNING_KEY] = learning
+    remaining = len(set(queue) | set(learning))
+
+    forced = _forced_word(request, FLOW_STUDY)
+    if forced is not None:
+        return forced, max(remaining, 1), 0
+
+    due_ids = [vid for vid, due_at in learning_rows if (due_at or now) <= now]
+    ahead_rows = [(vid, due_at) for vid, due_at in learning_rows if (due_at or now) > now]
+    candidates = [(vid, 0) for vid in due_ids] + [(vid, 0) for vid in queue]
+    candidates += [
+        (vid, max(1, round((due_at - now).total_seconds() / 60))) for vid, due_at in ahead_rows
+    ]
+    for vocab_id, ahead in candidates:
         # Từ có thể đã bị xoá sau khi hàng đợi được chốt — bỏ qua, đừng 404
         # giữa lúc người ta đang học.
-        word = Vocabulary.objects.filter(pk=queue[0]).first()
-        if word is None:
-            queue.pop(0)
+        word = Vocabulary.objects.filter(pk=vocab_id).first()
+        if word is not None:
+            return word, remaining, ahead
+        if vocab_id in queue:
+            queue.remove(vocab_id)
             request.session[STUDY_QUEUE_KEY] = queue
-    return word, queue
+        remaining = max(0, remaining - 1)
+    return None, 0, 0
+
+
+def _study_done(request):
+    session_id = request.session.get(STUDY_SESSION_ID_KEY)
+    if not session_id:
+        return 0
+    return (
+        StudySession.objects.filter(pk=session_id)
+        .values_list("words_reviewed", flat=True)
+        .first()
+        or 0
+    )
 
 
 def _scope_label(topics):
@@ -388,6 +696,7 @@ def study_start_view(request):
         started_at=timezone.now(),
     )
     request.session[STUDY_QUEUE_KEY] = queue
+    request.session[STUDY_LEARNING_KEY] = []
     request.session[STUDY_TOTAL_KEY] = len(queue)
     request.session[STUDY_SESSION_ID_KEY] = study_session.pk
     request.session[STUDY_SCOPE_KEY] = _scope_label(topics)
@@ -400,34 +709,37 @@ def study_start_view(request):
 @login_required
 def study_view(request):
     """Màn học một thẻ của phiên theo bộ lọc — dùng CHUNG template với SC04."""
-    total = request.session.get(STUDY_TOTAL_KEY) or len(request.session.get(STUDY_QUEUE_KEY) or [])
     scope_label = request.session.get(STUDY_SCOPE_KEY) or message("learning.study.scope.all")
-    word, queue = _next_queue_word(request)
+    word, remaining, ahead = _next_queue_word(request)
 
     if word is None:
-        _clear_study_session(request)
+        session = _clear_study_session(request)
+        undo = _last_undo(request, FLOW_STUDY)
         return render(request, "learning/flashcard.html", {
             "word": None, "scope_label": scope_label, "is_study_session": True,
+            "summary": _session_summary(session),
+            "due_tomorrow": services.count_due_tomorrow(request.user),
+            "undo_word": undo["word"] if undo else "",
         })
 
-    position = total - len(queue) + 1
+    touch = _touches_schedule(request)
     context = {
         "topic": None,
         "word": word,
-        "position": position,
-        "total": total,
-        "percent": round((position - 1) * 100 / total) if total else 0,
+        **_progress_numbers(_study_done(request), remaining),
+        "ahead_minutes": ahead,
         "scope_label": scope_label,
         "review_action": reverse("learning:study_review", args=[word.pk]),
         "topic_slug_value": "",
         "is_study_session": True,
-        "is_extra_review": not _touches_schedule(request),
+        "is_extra_review": not touch,
         "examples": word.examples.all()[:3],
         "comments": Contribution.objects.filter(
             target_vocabulary=word,
             contribution_type_code=CONTRIBUTION_TYPE_COMMENT,
             status_code=STATUS_APPROVED,
         ).order_by("-created_at"),
+        **_card_context(request, word, flow=FLOW_STUDY, show_preview=touch),
     }
     return render(request, "learning/flashcard.html", context)
 
@@ -583,11 +895,10 @@ def study_quiz_view(request):
 
     `quiz_view` (SC06) chỉ chạy được trong PHẠM VI MỘT CHỦ ĐỀ vì route của nó
     mang slug. Màn này dùng lại y nguyên template và `get_quiz_choices()`,
-    chỉ khác nguồn hàng đợi (session thay vì `get_flashcard_queue`).
+    chỉ khác nguồn hàng đợi (session thay vì `get_topic_queue`).
     """
-    total = request.session.get(STUDY_TOTAL_KEY) or len(request.session.get(STUDY_QUEUE_KEY) or [])
     scope_label = request.session.get(STUDY_SCOPE_KEY) or message("learning.study.scope.all")
-    word, queue = _next_queue_word(request)
+    word, remaining, _ahead = _next_queue_word(request)
 
     if word is None:
         session = _clear_study_session(request)
@@ -600,16 +911,13 @@ def study_quiz_view(request):
             "word": None, "scope_label": scope_label,
         })
 
-    position = total - len(queue) + 1
     # Nhiễu lấy theo chủ đề ĐẦU TIÊN của từ (hàng đợi có thể gộp nhiều chủ
     # đề); từ không có chủ đề nào thì get_quiz_choices tự lấy từ toàn bộ từ điển.
     topic = word.topics.first()
     context = {
         "topic": topic,
         "word": word,
-        "position": position,
-        "total": total,
-        "percent": round((position - 1) * 100 / total) if total else 0,
+        **_progress_numbers(_study_done(request), remaining),
         "choices": services.get_quiz_choices(word, topic),
         "scope_label": scope_label,
         "answer_action": reverse("learning:study_quiz_answer", args=[word.pk]),

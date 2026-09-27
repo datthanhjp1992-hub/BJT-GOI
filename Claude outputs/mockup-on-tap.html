@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup ôn tập</title>
+<style>
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --inset:#F4F7F9;
+  --ink:#131C28; --ink-2:#38485C; --muted:#5F7186; --faint:#8A9AAC;
+  --line:#D6DEE6; --line-soft:#E6ECF1;
+  --accent:#1F4E79; --accent-2:#17395A; --accent-soft:#DDE8F3; --accent-ink:#FFFFFF;
+  --ok:#17714F; --ok-soft:#DFF0E7; --bad:#A33228; --bad-soft:#F8E3E0; --warn:#8A6212; --warn-soft:#F6EBD4;
+  --shadow:0 1px 2px rgba(19,28,40,.06), 0 6px 20px -12px rgba(19,28,40,.28);
+  --jp:"Yu Mincho","Hiragino Mincho ProN",serif;
+  --jpsans:"Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+  --ui:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0E141B; --surface:#161E28; --inset:#1B2530;
+  --ink:#E4EBF3; --ink-2:#C0CDDB; --muted:#94A6BA; --faint:#71849A;
+  --line:#2A3644; --line-soft:#222D3A;
+  --accent:#7FB3E3; --accent-2:#A6CBEE; --accent-soft:#1B2C40; --accent-ink:#0E141B;
+  --ok:#4FBF95; --ok-soft:#122E26; --bad:#E4837A; --bad-soft:#331B1A; --warn:#D6AE5C; --warn-soft:#2E2617;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.7);
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.55}
+h1,h2{margin:0;font-family:var(--jp);font-weight:600;line-height:1.3}
+p{margin:0}
+header{display:flex;align-items:center;justify-content:space-between;padding:11px 20px;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand{font-family:var(--jp);font-size:18px;font-weight:600}
+.tag{font-size:11px;font-weight:700;letter-spacing:.08em;background:var(--warn-soft);color:var(--warn);padding:3px 9px;border-radius:99px}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px}
+@media (max-width:860px){.wrap{grid-template-columns:1fr}}
+.stack{display:grid;gap:14px;align-content:start}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.eyebrow{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-bottom:4px}
+.lead{color:var(--muted);font-size:13.5px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.pill{display:inline-flex;font-size:11.5px;font-weight:600;padding:2.5px 9px;border-radius:99px}
+.k-new{background:var(--accent-soft);color:var(--accent)} .k-learn{background:var(--bad-soft);color:var(--bad)} .k-review{background:var(--ok-soft);color:var(--ok)}
+.btn{font:inherit;cursor:pointer;background:var(--accent);color:var(--accent-ink);border:1px solid var(--accent);border-radius:8px;padding:9px 18px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--accent);border-color:var(--line)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn.sm{padding:5px 11px;font-size:13px}
+.btn:disabled{opacity:.4;cursor:default}
+.counts{display:flex;gap:16px;font-variant-numeric:tabular-nums}
+.counts span{display:grid;justify-items:center;font-size:21px;font-weight:700;line-height:1.1}
+.counts small{font-size:11px;font-weight:500;color:var(--muted)}
+.c-new{color:var(--accent)} .c-learn{color:var(--bad)} .c-review{color:var(--ok)}
+.bar{height:6px;border-radius:99px;background:var(--line-soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.fcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:34px 24px;display:grid;justify-items:center;gap:10px;text-align:center;min-height:270px;align-content:center}
+.term{font-family:var(--jp);font-size:40px;line-height:1.2}
+.rd{font-family:var(--jpsans);color:var(--muted)}
+.mean{font-size:20px;font-weight:600;color:var(--accent)}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:520px){.grades{grid-template-columns:repeat(2,1fr)}.term{font-size:32px}}
+.grade{font:inherit;cursor:pointer;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:10px 6px;display:grid;gap:2px;justify-items:center}
+.grade:hover{border-color:var(--accent);background:var(--accent-soft)}
+.grade b{font-size:14px} .grade span{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.grade.again b{color:var(--bad)}
+.note{background:var(--warn-soft);color:var(--warn);border-radius:8px;padding:9px 12px;font-size:13.5px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+@media (max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stats div{background:var(--inset);border-radius:9px;padding:10px;display:grid;justify-items:center}
+.stats b{font-size:22px;font-variant-numeric:tabular-nums} .stats span{font-size:12px;color:var(--muted)}
+input[type=number]{font:inherit;width:64px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.clock{font-family:ui-monospace,Consolas,monospace;font-size:20px;font-weight:700}
+.log{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:340px;overflow:auto;font-size:12.5px}
+.log li{background:var(--inset);border-radius:7px;padding:6px 9px;color:var(--ink-2)}
+.log li b{color:var(--ink)}
+.queue{display:grid;gap:4px;font-size:12.5px}
+.queue div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--line-soft);padding:3px 0}
+.queue .jp{font-family:var(--jpsans)}
+kbd{font-family:ui-monospace,Consolas,monospace;font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 4px}
+</style>
+</head>
+<body>
+<header>
+  <span class="brand">BJT-WEB</span>
+  <span class="tag">MOCKUP · DỮ LIỆU GIẢ, KHÔNG LƯU</span>
+</header>
+
+<div class="wrap">
+  <main class="stack" id="main"></main>
+
+  <aside class="stack">
+    <div class="card">
+      <p class="eyebrow">Đồng hồ giả lập</p>
+      <div class="row" style="justify-content:space-between">
+        <span class="clock" id="clock"></span>
+        <div class="row" style="gap:6px">
+          <button class="btn ghost sm" data-ff="1">+1 phút</button>
+          <button class="btn ghost sm" data-ff="10">+10 phút</button>
+          <button class="btn ghost sm" data-ff="1440">+1 ngày</button>
+        </div>
+      </div>
+      <p class="lead" style="margin-top:6px">Tua thời gian để thấy thẻ “đang học” quay lại sau vài phút, hoặc sang ngày mai để có phiên mới.</p>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Hàng đợi hiện tại</p>
+      <div class="queue" id="queue"></div>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Nhật ký chấm</p>
+      <ul class="log" id="log"></ul>
+    </div>
+  </aside>
+</div>
+
+<script>
+// ---------- Du lieu gia (lay tu bang vocab) ----------
+const ITEMS = [
+  ["赤字補填","あかじほてん","Bù vào phần lỗ",""],
+  ["撤収","てっしゅう","Dọn đồ ra về, rút quân","前線から撤収する"],
+  ["議事録","ぎじろく","Biên bản cuộc họp",""],
+  ["決算報告","けっさんほうこく","Báo cáo tài chính",""],
+  ["社長補佐","しゃちょうほさ","Trợ lí giám đốc","補佐：assistant"],
+  ["契約を結ぶ","けいやくをむすぶ","Kí hợp đồng",""],
+  ["契約締結","けいやくていけつ","Kí kết hợp đồng",""],
+  ["見積書","みつもりしょ","Bảng báo giá",""],
+  ["納期","のうき","Thời hạn giao hàng",""],
+  ["稟議書","りんぎしょ","Tờ trình xin phê duyệt",""],
+].map((a,i)=>({id:i+1,front:a[0],reading:a[1],back:a[2],note:a[3]}));
+
+// ---------- srs.py viet lai bang JS ----------
+const AGAIN=0,HARD=3,GOOD=4,EASY=5, GRADES=[AGAIN,HARD,GOOD,EASY];
+const LEARN_STEPS=[1,10], RELEARN_STEPS=[10], GRAD=1, EASY_INT=4, MIN_EASE=1.3;
+const MIN=60e3, DAY=1440*MIN;
+
+function schedule(c,q){
+  c={state:"new",step:0,ease:2.5,interval:0,reps:0,lapses:0,...c};
+  if(c.state!=="review"){
+    const ls=c.state==="relearning"?"relearning":"learning";
+    const steps=ls==="relearning"?RELEARN_STEPS:LEARN_STEPS;
+    const step=c.state==="new"?0:Math.min(c.step,steps.length-1);
+    if(q===AGAIN) return {card:{...c,state:ls,step:0},delay:steps[0]*MIN};
+    if(q===HARD){const nx=step+1<steps.length?steps[step+1]:steps[step]*2;
+      return {card:{...c,state:ls,step},delay:(steps[step]+nx)/2*MIN};}
+    if(q===GOOD&&step+1<steps.length) return {card:{...c,state:ls,step:step+1},delay:steps[step+1]*MIN};
+    const iv= ls==="relearning" ? Math.max(1,c.interval)+(q===EASY?1:0) : (q===EASY?EASY_INT:GRAD);
+    return {card:{...c,state:"review",step:0,interval:iv,reps:Math.max(1,ls==="relearning"?c.reps:1)},delay:iv*DAY};
+  }
+  if(q===AGAIN) return {card:{...c,state:"relearning",step:0,ease:Math.max(MIN_EASE,+(c.ease-.2).toFixed(2)),interval:1,reps:0,lapses:c.lapses+1},delay:RELEARN_STEPS[0]*MIN};
+  const prev=Math.max(1,c.interval), reps=c.reps+1;
+  const hard=Math.max(prev+1,Math.round(prev*1.2));
+  let good=(reps===2&&prev<6)?6:Math.round(prev*c.ease); good=Math.max(hard+1,good);
+  const easy=Math.max(good+1,Math.round(good*1.3));
+  const iv={[HARD]:hard,[GOOD]:good,[EASY]:easy}[q];
+  const ease=Math.max(MIN_EASE,+(c.ease+(0.1-(5-q)*(0.08+(5-q)*0.02))).toFixed(2));
+  return {card:{...c,state:"review",step:0,ease,interval:iv,reps},delay:iv*DAY};
+}
+function fmt(ms){const m=ms/MIN;
+  if(m<60)return Math.max(1,Math.round(m))+" phút";
+  if(m<1440)return Math.round(m/60)+" giờ";
+  const d=Math.round(m/1440); return d<30?d+" ngày":(d/30).toFixed(1).replace(".0","").replace(".",",")+" tháng";}
+
+// ---------- Trang thai ----------
+const T0=new Date(2026,8,26,20,0).getTime();
+let S={now:T0, states:{}, logs:[], newPerDay:4, flipped:false, forced:null};
+const dayKey=t=>{const d=new Date(t);return d.getFullYear()*1e4+(d.getMonth()+1)*100+d.getDate();};
+const startOfDay=t=>{const d=new Date(t);d.setHours(0,0,0,0);return d.getTime();};
+
+function queue(){
+  const today=dayKey(S.now), st=Object.values(S.states);
+  const learning=st.filter(s=>s.state!=="review").sort((a,b)=>a.dueAt-b.dueAt);
+  const learnDue=learning.filter(s=>s.dueAt<=S.now);
+  const reviewDue=st.filter(s=>s.state==="review"&&dayKey(s.dueAt)<=today).sort((a,b)=>a.dueAt-b.dueAt);
+  const newDone=S.logs.filter(l=>l.day===today&&l.before==="new").length;
+  const left=Math.max(0,S.newPerDay-newDone);
+  const unseen=ITEMS.filter(i=>!S.states[i.id]);
+  return {learning,learnDue,reviewDue,newIds:unseen.slice(0,left).map(i=>i.id),newDone,moreNew:left===0&&unseen.length>0};
+}
+function pick(q){
+  if(S.forced) return {id:S.forced,ahead:false};
+  if(q.learnDue.length) return {id:q.learnDue[0].id};
+  if(q.reviewDue.length) return {id:q.reviewDue[0].id};
+  if(q.newIds.length) return {id:q.newIds[0]};
+  if(q.learning.length) return {id:q.learning[0].id,ahead:true};
+  return null;
+}
+
+// ---------- Hanh dong ----------
+function grade(id,q){
+  const prev=S.states[id]||null, before=prev?prev.state:"new";
+  const r=schedule(prev||{},q);
+  const inSession=r.card.state!=="review";
+  const dueAt=inSession?S.now+r.delay:startOfDay(S.now)+r.card.interval*DAY;
+  S.states[id]={...r.card,id,dueAt};
+  S.logs.unshift({id,q,before,snap:prev,day:dayKey(S.now),t:S.now,after:r.card.state,delay:r.delay});
+  S.flipped=false; S.forced=null; render();
+}
+function undo(){
+  const today=dayKey(S.now), i=S.logs.findIndex(l=>l.day===today);
+  if(i<0)return; const l=S.logs.splice(i,1)[0];
+  if(l.snap) S.states[l.id]=l.snap; else delete S.states[l.id];
+  S.forced=l.id; S.flipped=false; render();
+}
+
+// ---------- Ve giao dien ----------
+const $=s=>document.querySelector(s);
+const LBL={[AGAIN]:"Quên",[HARD]:"Khó",[GOOD]:"Được",[EASY]:"Dễ"};
+const KIND={new:["k-new","thẻ mới"],learning:["k-learn","đang học"],relearning:["k-learn","học lại"],review:["k-review","ôn lại"]};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function render(){
+  const q=queue(), p=pick(q), today=dayKey(S.now);
+  const todays=S.logs.filter(l=>l.day===today);
+  const nAgain=todays.filter(l=>l.q===AGAIN).length;
+  const remaining=q.newIds.length+q.learning.length+q.reviewDue.length;
+  const pct=(todays.length+remaining)?Math.round(todays.length*100/(todays.length+remaining)):100;
+  const lastLog=S.logs.find(l=>l.day===today);
+
+  let body;
+  if(p){
+    const item=ITEMS.find(i=>i.id===p.id), st=S.states[p.id];
+    const kind=KIND[st?st.state:"new"];
+    const extra=st&&st.state==="relearning"?` · quên ${st.lapses} lần`:"";
+    const aheadMin=p.ahead?Math.max(1,Math.round((st.dueAt-S.now)/MIN)):0;
+    body=`
+    <div class="fcard">
+      <span class="pill ${kind[0]}">${kind[1]}${extra}</span>
+      <div class="term">${esc(item.front)}</div>
+      <div class="rd">${esc(item.reading)}</div>
+      ${S.flipped?`<div class="mean">${esc(item.back)}</div>${item.note?`<div class="lead">${esc(item.note)}</div>`:""}`
+        :`<button class="btn" id="flip">Xem nghĩa</button>`}
+    </div>
+    ${aheadMin?`<p class="note">Thẻ này còn ${aheadMin} phút nữa mới đến hạn — đang học trước vì hết thẻ khác trong phiên.</p>`:""}
+    ${S.flipped?`<div class="grades">${GRADES.map(g=>`<button class="grade${g===AGAIN?" again":""}" data-q="${g}"><b>${LBL[g]}</b><span>${fmt(schedule(st||{},g).delay)}</span></button>`).join("")}</div>
+      <p class="lead" style="text-align:center">Quên / Khó → thẻ quay lại sau vài phút trong phiên này. Nhớ được qua hết các bước mới xếp lịch theo ngày.</p>`:""}`;
+  } else {
+    const tomorrow=dayKey(S.now+DAY);
+    const nTomorrow=Object.values(S.states).filter(s=>s.state==="review"&&dayKey(s.dueAt)===tomorrow).length;
+    body=`
+    <div class="card">
+      <h2 style="font-size:18px">Tổng kết phiên hôm nay</h2>
+      ${todays.length?`<div class="stats">
+        <div><b>${new Set(todays.map(l=>l.id)).size}</b><span>thẻ đã ôn</span></div>
+        <div><b>${todays.filter(l=>l.before==="new").length}</b><span>thẻ mới</span></div>
+        <div><b>${Math.round((todays.length-nAgain)*100/todays.length)}%</b><span>lượt nhớ được</span></div>
+        <div><b>${nAgain}</b><span>lần quên</span></div></div>`:`<p class="lead" style="margin-top:8px">Hôm nay bộ này không có thẻ nào cần ôn.</p>`}
+      <p class="lead" style="margin-top:10px">Ngày mai có <b>${nTomorrow}</b> thẻ đến hạn ôn.</p>
+      ${q.moreNew?`<p class="note" style="margin-top:10px">Đã học đủ ${S.newPerDay} thẻ mới hôm nay. Muốn học thêm thì tăng giới hạn bên dưới.</p>`:""}
+    </div>`;
+  }
+
+  $("#main").innerHTML=`
+    <div class="row" style="justify-content:space-between;align-items:flex-end">
+      <div><p class="eyebrow">Bộ Từ vựng BJT · đã học ${Object.keys(S.states).length}/${ITEMS.length} thẻ</p>
+        <h1 style="font-size:24px">${p?"Phiên ôn hôm nay":"Xong hôm nay"}</h1></div>
+      <div class="counts" title="Mới · Đang học · Ôn tập còn lại hôm nay">
+        <span class="c-new">${q.newIds.length}<small>mới</small></span>
+        <span class="c-learn">${q.learning.length}<small>đang học</small></span>
+        <span class="c-review">${q.reviewDue.length}<small>ôn</small></span>
+      </div>
+    </div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    <p class="lead" style="margin-top:-6px">Hôm nay đã chấm ${todays.length} lượt · ${new Set(todays.map(l=>l.id)).size} thẻ · thẻ mới ${q.newDone}/${S.newPerDay}</p>
+    ${body}
+    <div class="row" style="justify-content:space-between">
+      ${lastLog?`<button class="btn ghost sm" id="undo">↶ Hoàn tác: ${esc(ITEMS.find(i=>i.id===lastLog.id).front)}</button>`:"<span></span>"}
+      <div class="row" style="gap:6px"><label class="lead" for="npd">Thẻ mới/ngày</label>
+        <input id="npd" type="number" min="0" max="500" value="${S.newPerDay}"><button class="btn ghost sm" id="save">Lưu</button></div>
+    </div>
+    <div class="row">${["Từ vựng BJT","Ngữ pháp","Kính ngữ","Từ vựng theo bài"].map((d,i)=>`<button class="btn ${i?"ghost ":""}sm" ${i?"disabled":""}>${d}</button>`).join("")}</div>`;
+
+  // sidebar
+  const d=new Date(S.now);
+  $("#clock").textContent=`${d.getDate()}/${d.getMonth()+1} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+  const rows=[
+    ...q.learning.map(s=>[s.id,`đang học · ${s.dueAt<=S.now?"đến giờ":"còn "+fmt(s.dueAt-S.now)}`,"c-learn"]),
+    ...q.reviewDue.map(s=>[s.id,"ôn đến hạn","c-review"]),
+    ...q.newIds.map(id=>[id,"mới","c-new"]),
+  ];
+  $("#queue").innerHTML=rows.length?rows.map(([id,t,c])=>`<div><span class="jp">${esc(ITEMS.find(i=>i.id===id).front)}</span><span class="${c}">${t}</span></div>`).join("")
+    :`<p class="lead">Trống.</p>`;
+  $("#log").innerHTML=S.logs.length?S.logs.slice(0,30).map(l=>{
+    const t=new Date(l.t);
+    return `<li>${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")} · <b>${esc(ITEMS.find(i=>i.id===l.id).front)}</b> · ${LBL[l.q]} → ${KIND[l.after][1]}, sau ${fmt(l.delay)}</li>`;}).join("")
+    :`<li>Chưa chấm thẻ nào.</li>`;
+
+  // su kien
+  const f=$("#flip"); if(f) f.onclick=()=>{S.flipped=true;render();};
+  document.querySelectorAll(".grade").forEach(b=>b.onclick=()=>grade(p.id,+b.dataset.q));
+  const u=$("#undo"); if(u) u.onclick=undo;
+  $("#save").onclick=()=>{const n=parseInt($("#npd").value,10); if(!isNaN(n)){S.newPerDay=Math.max(0,Math.min(500,n));render();}};
+}
+document.querySelectorAll("[data-ff]").forEach(b=>b.onclick=()=>{S.now+=+b.dataset.ff*MIN;S.forced=null;render();});
+render();
+</script>
+</body>
+</html>

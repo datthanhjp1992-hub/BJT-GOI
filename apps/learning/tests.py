@@ -10,6 +10,7 @@ from django.core.cache import cache
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from apps.vocabulary import selectors as vocab_selectors
 from apps.vocabulary.models import Topic, Vocabulary, VocabularyTopic
@@ -20,7 +21,7 @@ from apps.gamification.services import (
     STATUS_PENDING,
 )
 
-from . import services
+from . import services, srs
 from .models import StudySession, UserVocabularyProgress
 
 User = get_user_model()
@@ -445,7 +446,9 @@ class QuizAnswerTests(LearningTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 405)
 
-    def test_correct_answer_advances_next_review_date(self):
+    def test_correct_answer_on_a_new_word_goes_through_the_learning_steps(self):
+        """Từ mới trả lời đúng lần đầu -> bước học 10 phút (vẫn trong lượt);
+        đúng thêm lần nữa mới tốt nghiệp sang lịch theo ngày."""
         topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
         vocab = topic.vocabularies.first()
         self.client.get(reverse("learning:quiz", args=["nha-hang"]))  # mở phiên
@@ -455,6 +458,13 @@ class QuizAnswerTests(LearningTestCase):
 
         self.assertRedirects(response, reverse("learning:quiz", args=["nha-hang"]))
         progress = UserVocabularyProgress.objects.get(user=self.user, vocabulary=vocab)
+        self.assertEqual(progress.card_state, "learning")
+        self.assertEqual(progress.next_review_date, self.user.local_today())
+        self.assertIsNotNone(progress.due_at)
+
+        self.client.post(url, {"choice": str(vocab.pk)})
+        progress.refresh_from_db()
+        self.assertEqual(progress.card_state, "review")
         self.assertGreater(progress.next_review_date, self.user.local_today())
 
     def test_wrong_answer_resets_srs_level_and_counts_as_wrong(self):
@@ -486,13 +496,15 @@ class QuizAnswerTests(LearningTestCase):
         vocab = topic.vocabularies.first()
         self.client.get(reverse("learning:quiz", args=["nha-hang"]))
         url = reverse("learning:quiz_answer", args=["nha-hang", vocab.pk])
+        # Từ mới phải đúng 2 lần (qua hết bước học) mới rời lượt kiểm tra.
+        self.client.post(url, {"choice": str(vocab.pk)})
         self.client.post(url, {"choice": str(vocab.pk)})
 
         response = self.client.get(reverse("learning:quiz", args=["nha-hang"]))
 
         session = StudySession.objects.get(user=self.user, topic=topic, session_type="quiz")
         self.assertIsNotNone(session.ended_at)
-        self.assertContains(response, "1/1")
+        self.assertContains(response, "2/2")
 
 
 class StudySessionViewTests(LearningTestCase):
@@ -737,7 +749,9 @@ class StudiedVocabularySelectorTests(ReviewTestCase):
 
     def test_only_extra_scopes_skip_the_schedule(self):
         self.assertTrue(vocab_selectors.touches_schedule(vocab_selectors.SCOPE_DUE))
-        self.assertTrue(vocab_selectors.touches_schedule(vocab_selectors.SCOPE_LEECH))
+        # "Hay quên" là ôn thêm từ 26/09/2026 — từ hay quên đã đến hạn thì vẫn
+        # được xếp lịch trong phạm vi "đến hạn".
+        self.assertFalse(vocab_selectors.touches_schedule(vocab_selectors.SCOPE_LEECH))
         self.assertFalse(vocab_selectors.touches_schedule(vocab_selectors.SCOPE_UPCOMING))
         self.assertFalse(vocab_selectors.touches_schedule(vocab_selectors.SCOPE_MASTERED))
 
@@ -978,3 +992,303 @@ class ReviewStartTests(ReviewTestCase):
         session = StudySession.objects.filter(user=self.user).latest("started_at")
         self.assertEqual(session.words_reviewed, 1)
         self.assertEqual(session.correct_answers, 1)
+
+
+# =============================================================================
+# Flow ôn tập kiểu Anki (26/09/2026): bước học, hạn mức từ mới, hoàn tác
+# =============================================================================
+
+
+class SrsScheduleTests(TestCase):
+    """apps.learning.srs — hàm thuần, không chạm DB."""
+
+    def test_new_word_forgot_comes_back_within_the_session(self):
+        r = srs.schedule(srs.Card(), srs.AGAIN)
+        self.assertTrue(r.in_session)
+        self.assertEqual(r.card.state, srs.LEARNING)
+        self.assertEqual(r.delay, timedelta(minutes=srs.LEARN_STEPS[0]))
+
+    def test_new_word_graduates_after_every_step(self):
+        r = srs.schedule(srs.Card(), srs.GOOD)
+        self.assertTrue(r.in_session)
+        r = srs.schedule(r.card, srs.GOOD)
+        self.assertFalse(r.in_session)
+        self.assertEqual(r.card.state, srs.REVIEW)
+        self.assertEqual(r.card.interval_days, srs.GRADUATE_INTERVAL)
+        self.assertEqual(r.card.repetitions, 1)
+
+    def test_easy_on_a_new_word_graduates_at_once(self):
+        r = srs.schedule(srs.Card(), srs.EASY)
+        self.assertEqual(r.card.state, srs.REVIEW)
+        self.assertEqual(r.card.interval_days, srs.EASY_INTERVAL)
+
+    def test_hard_good_easy_always_give_different_delays(self):
+        cards = [
+            srs.Card(),
+            srs.Card(state=srs.LEARNING, step=1),
+            srs.Card(state=srs.REVIEW, interval_days=1, repetitions=1),
+            srs.Card(state=srs.REVIEW, interval_days=6, repetitions=2),
+            srs.Card(state=srs.REVIEW, interval_days=30, repetitions=5, ease=1.3),
+        ]
+        for card in cards:
+            with self.subTest(card=card):
+                hard, good, easy = (srs.schedule(card, q).delay for q in (srs.HARD, srs.GOOD, srs.EASY))
+                self.assertLess(hard, good)
+                self.assertLess(good, easy)
+
+    def test_forgetting_a_review_word_relearns_it_and_lowers_ease(self):
+        card = srs.Card(state=srs.REVIEW, interval_days=15, repetitions=3, ease=2.5)
+        r = srs.schedule(card, srs.AGAIN)
+        self.assertTrue(r.in_session)
+        self.assertEqual(r.card.state, srs.RELEARNING)
+        self.assertEqual(r.card.repetitions, 0)
+        self.assertLess(r.card.ease, 2.5)
+        back = srs.schedule(r.card, srs.GOOD)
+        self.assertEqual(back.card.state, srs.REVIEW)
+        self.assertEqual(back.card.interval_days, 1)
+
+    def test_ease_never_drops_below_the_floor(self):
+        card = srs.Card(state=srs.REVIEW, interval_days=3, repetitions=3, ease=srs.MIN_EASE)
+        self.assertGreaterEqual(srs.schedule(card, srs.HARD).card.ease, srs.MIN_EASE)
+        self.assertGreaterEqual(srs.schedule(card, srs.AGAIN).card.ease, srs.MIN_EASE)
+
+    def test_unknown_quality_is_rejected(self):
+        with self.assertRaises(ValueError):
+            srs.schedule(srs.Card(), 2)
+
+
+class TopicQueueTests(LearningTestCase):
+    """services.get_topic_queue — hàng đợi SC04 theo flow mới."""
+
+    def test_forgotten_word_stays_in_the_queue(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        vocab = topic.vocabularies.first()
+        progress = services.get_or_start_progress(self.user, vocab)
+        services.review_word(progress, 0)
+
+        queue = services.get_topic_queue(self.user, topic)
+        self.assertEqual(queue.words, [vocab])
+        self.assertEqual(queue.n_learning, 1)
+        # Chưa tới giờ và không còn từ nào khác -> học trước, báo còn mấy phút.
+        self.assertGreater(queue.ahead_minutes, 0)
+
+    def test_learning_word_that_is_due_comes_first(self):
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約", "会計"])
+        words = list(topic.vocabularies.order_by("pk"))
+        self._progress(words[0], due_offset=-1)
+        learning = services.get_or_start_progress(self.user, words[1])
+        services.review_word(learning, 0, now=timezone.now() - timedelta(minutes=5))
+
+        queue = services.get_topic_queue(self.user, topic)
+        self.assertEqual(queue.words[:3], [words[1], words[0], words[2]])
+        self.assertEqual((queue.n_learning, queue.n_review, queue.n_new), (1, 1, 1))
+        self.assertEqual(queue.ahead_minutes, 0)
+
+    def test_new_words_are_capped_by_the_daily_goal(self):
+        self.user.daily_review_goal = 2
+        self.user.save(update_fields=["daily_review_goal"])
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約", "会計", "献立"])
+
+        queue = services.get_topic_queue(self.user, topic)
+        self.assertEqual(queue.n_new, 2)
+        self.assertFalse(queue.more_new)
+
+        for vocab in queue.words:
+            services.review_word(services.get_or_start_progress(self.user, vocab), 5)
+        queue = services.get_topic_queue(self.user, topic)
+        self.assertEqual(queue.words, [])
+        self.assertEqual(queue.new_today, 2)
+        self.assertTrue(queue.more_new)
+
+    def test_daily_cap_counts_new_words_of_every_topic(self):
+        self.user.daily_review_goal = 1
+        self.user.save(update_fields=["daily_review_goal"])
+        other = self._make_topic("Họp hành", "hop-hanh", ["議事録"])
+        services.review_word(services.get_or_start_progress(self.user, other.vocabularies.first()), 5)
+
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self.assertEqual(services.get_topic_queue(self.user, topic).n_new, 0)
+
+
+class FlashcardFlowTests(LearningTestCase):
+    """SC04 với bước học, khoảng cách trên nút, hoàn tác và tổng kết."""
+
+    def setUp(self):
+        super().setUp()
+        self.topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self.vocab = self.topic.vocabularies.first()
+        self.page = reverse("learning:flashcard", args=["nha-hang"])
+        self.review = reverse("learning:flashcard_review", args=[self.vocab.pk])
+
+    def _grade(self, code):
+        return self.client.post(self.review, {"quality": code, "topic_slug": "nha-hang"})
+
+    def test_buttons_show_how_long_until_the_next_review(self):
+        response = self.client.get(self.page)
+        delays = [b["delay"] for b in response.context["grade_buttons"]]
+        self.assertEqual(delays, ["1 phút", "6 phút", "10 phút", "4 ngày"])
+        self.assertContains(response, "4 ngày")
+        self.assertEqual(response.context["card_state"], "new")
+
+    def test_forgotten_word_is_shown_again_in_the_same_session(self):
+        self.client.get(self.page)
+        self._grade("quen")
+
+        response = self.client.get(self.page)
+        self.assertEqual(response.context["word"], self.vocab)
+        self.assertEqual(response.context["card_state"], "learning")
+        self.assertGreater(response.context["ahead_minutes"], 0)
+        # Cùng một phiên, không mở phiên mới.
+        self.assertEqual(StudySession.objects.filter(user=self.user).count(), 1)
+
+    def test_session_ends_only_after_the_word_graduates(self):
+        self.client.get(self.page)
+        self._grade("quen")
+        self._grade("nho")
+        self._grade("nho")
+
+        response = self.client.get(self.page)
+        self.assertIsNone(response.context["word"])
+        summary = response.context["summary"]
+        self.assertEqual((summary["reviewed"], summary["again"], summary["percent"]), (3, 1, 67))
+        self.assertIsNotNone(StudySession.objects.get(user=self.user).ended_at)
+
+    def test_undo_a_new_word_forgets_it_completely(self):
+        self.client.get(self.page)
+        self._grade("de")
+        self.assertTrue(UserVocabularyProgress.objects.filter(user=self.user).exists())
+
+        response = self.client.post(reverse("learning:undo"))
+        self.assertRedirects(response, self.page)
+        self.assertFalse(UserVocabularyProgress.objects.filter(user=self.user).exists())
+        self.assertEqual(services.count_new_words_today(self.user), 0)
+
+        session = StudySession.objects.get(user=self.user)
+        self.assertEqual(session.words_reviewed, 0)
+        self.assertIsNone(session.ended_at)
+        self.assertEqual(self.client.get(self.page).context["word"], self.vocab)
+
+    def test_undo_after_the_last_card_reopens_the_session(self):
+        self.client.get(self.page)
+        self._grade("de")
+        done = self.client.get(self.page)
+        self.assertIsNone(done.context["word"])
+        self.assertContains(done, "Hoàn tác")
+
+        self.client.post(reverse("learning:undo"))
+        response = self.client.get(self.page)
+        self.assertEqual(response.context["word"], self.vocab)
+        self.assertEqual(StudySession.objects.filter(user=self.user).count(), 1)
+
+        self._grade("nho")
+        session = StudySession.objects.get(user=self.user)
+        self.assertEqual(session.words_reviewed, 1)
+
+    def test_undo_restores_a_review_word_exactly(self):
+        progress = self._progress(self.vocab, due_offset=0)
+        progress.srs_level, progress.interval_days, progress.correct_count = 3, 12, 3
+        progress.save()
+        self.client.get(self.page)
+        self._grade("quen")
+
+        self.client.post(reverse("learning:undo"))
+        progress.refresh_from_db()
+        self.assertEqual(progress.card_state, "review")
+        self.assertEqual((progress.srs_level, progress.interval_days), (3, 12))
+        self.assertEqual((progress.correct_count, progress.wrong_count), (3, 0))
+        self.assertEqual(progress.next_review_date, self.user.local_today())
+
+    def test_nothing_to_undo_is_harmless(self):
+        response = self.client.post(reverse("learning:undo"))
+        self.assertRedirects(response, reverse("learning:dashboard"))
+
+    def test_undo_is_post_only(self):
+        self.assertEqual(self.client.get(reverse("learning:undo")).status_code, 405)
+
+    def test_a_session_left_open_since_yesterday_is_replaced(self):
+        self.client.get(self.page)
+        old = StudySession.objects.get(user=self.user)
+        StudySession.objects.filter(pk=old.pk).update(
+            started_at=self.user.local_now() - timedelta(days=1)
+        )
+
+        self.client.get(self.page)
+        old.refresh_from_db()
+        self.assertIsNotNone(old.ended_at)
+        self.assertEqual(StudySession.objects.filter(user=self.user).count(), 2)
+
+
+class StudyFlowTests(ReviewTestCase):
+    """Phiên theo hàng đợi (SC05/SC15) với bước học và hoàn tác."""
+
+    def setUp(self):
+        super().setUp()
+        self._make_topic("Họp hành", "hop-hanh", ["会議", "議事録"])
+        self.words = {v.word: v for v in Vocabulary.objects.all()}
+
+    def _review(self, word, code):
+        return self.client.post(
+            reverse("learning:study_review", args=[self.words[word].pk]), {"quality": code}
+        )
+
+    def test_forgotten_word_comes_back_before_the_session_ends(self):
+        self.client.post(reverse("learning:study_start"), {"topic": "hop-hanh", "limit": "0"})
+        first = self.client.get(reverse("learning:study")).context["word"]
+        self._review(first.word, "quen")
+        self.assertIn(first.pk, self.client.session["study_learning"])
+
+        second = self.client.get(reverse("learning:study")).context["word"]
+        self.assertNotEqual(second, first)
+        self._review(second.word, "de")
+
+        # Hàng đợi hết nhưng từ vừa quên vẫn còn -> học trước, không kết thúc.
+        again = self.client.get(reverse("learning:study"))
+        self.assertEqual(again.context["word"], first)
+        self.assertGreater(again.context["ahead_minutes"], 0)
+
+        self._review(first.word, "nho")
+        self._review(first.word, "nho")
+        self.assertIsNone(self.client.get(reverse("learning:study")).context["word"])
+
+    def test_leech_session_does_not_move_the_schedule(self):
+        progress = self._learned(self.words["会議"], due_offset=4, srs_level=2, correct=1, wrong=3)
+        self.client.post(reverse("learning:review_start"), {"scope": "leech", "limit": "0"})
+        self.assertFalse(self.client.session["study_touch_schedule"])
+
+        self._review("会議", "de")
+        progress.refresh_from_db()
+        self.assertEqual(progress.next_review_date, self.user.local_today() + timedelta(days=4))
+        self.assertEqual(progress.srs_level, 2)
+
+    def test_forgetting_in_an_extra_review_sends_the_word_to_the_back(self):
+        self._learned(self.words["会議"], due_offset=3, srs_level=2)
+        self._learned(self.words["議事録"], due_offset=3, srs_level=2)
+        self.client.post(reverse("learning:review_start"), {"scope": "upcoming", "limit": "0"})
+        first_id = self.client.session["study_queue"][0]
+
+        self.client.post(reverse("learning:study_review", args=[first_id]), {"quality": "quen"})
+        self.assertEqual(self.client.session["study_queue"][-1], first_id)
+        self.assertEqual(len(self.client.session["study_queue"]), 2)
+
+    def test_extra_review_hides_the_delay_previews(self):
+        self._learned(self.words["会議"], due_offset=3, srs_level=2)
+        self.client.post(reverse("learning:review_start"), {"scope": "upcoming", "limit": "0"})
+        response = self.client.get(reverse("learning:study"))
+        self.assertEqual([b["delay"] for b in response.context["grade_buttons"]], ["", "", "", ""])
+
+    def test_undo_after_finishing_an_extra_review_keeps_it_extra(self):
+        progress = self._learned(self.words["会議"], due_offset=3, srs_level=2)
+        self.client.post(reverse("learning:review_start"), {"scope": "upcoming", "limit": "0"})
+        self._review("会議", "de")
+        self.assertIsNone(self.client.get(reverse("learning:study")).context["word"])
+
+        response = self.client.post(reverse("learning:undo"))
+        self.assertRedirects(response, reverse("learning:study"))
+        self.assertFalse(self.client.session["study_touch_schedule"])
+        page = self.client.get(reverse("learning:study"))
+        self.assertEqual(page.context["word"], self.words["会議"])
+
+        self._review("会議", "nho")
+        progress.refresh_from_db()
+        self.assertEqual(progress.next_review_date, self.user.local_today() + timedelta(days=3))
+        self.assertEqual(progress.correct_count, 1)

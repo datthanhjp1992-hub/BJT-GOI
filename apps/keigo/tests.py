@@ -518,3 +518,74 @@ class ExerciseFinishAndResultTests(ExerciseTestCase):
 
     def test_index_links_to_exercises(self):
         self.assertContains(self.client.get(reverse("keigo:index")), f'href="{reverse("keigo:bai_tap")}"')
+
+
+class ExercisePdfTests(ExerciseTestCase):
+    """SC20 nut "⎙ PDF" -- de in ra giay + trang dap an (apps/keigo/exercise_pdf.py)."""
+
+    def pdf_url(self, s):
+        return reverse("keigo:bai_tap_pdf", args=[s.slug])
+
+    def test_list_has_pdf_link_for_every_set(self):
+        r = self.client.get(reverse("keigo:bai_tap"))
+        for s in (self.s1, self.s2):
+            self.assertContains(r, f'href="{self.pdf_url(s)}"')
+
+    def test_pdf_without_any_attempt(self):
+        resp = self.client.get(self.pdf_url(self.s1))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp["Content-Type"], "application/pdf")
+        self.assertIn('filename="kinh-ngu-bai-tap-bai-tap-3.pdf"', resp["Content-Disposition"])
+        self.assertTrue(resp.content.startswith(b"%PDF"))
+        self.assertFalse(UserExerciseAttempt.objects.exists())  # GET khong tao luot
+
+    def test_passage_set_renders(self):
+        self.assertEqual(self.client.get(self.pdf_url(self.s2)).status_code, 200)
+
+    def test_anonymous_is_sent_to_login(self):
+        self.client.logout()
+        url = self.pdf_url(self.s1)
+        self.assertRedirects(self.client.get(url), reverse("accounts:login") + "?next=" + url)
+
+    def test_empty_set_redirects_to_list(self):
+        empty = ExerciseSet.objects.create(title="TRỐNG", slug="trong", display_order=9)
+        self.assertRedirects(self.client.get(self.pdf_url(empty)), reverse("keigo:bai_tap"))
+
+    def test_missing_font_only_breaks_this_button(self):
+        from unittest import mock
+
+        from . import pdf as keigo_pdf
+        with mock.patch.object(keigo_pdf, "_font_dirs", return_value=[]), \
+                mock.patch.object(keigo_pdf.pdfmetrics, "getRegisteredFontNames", return_value=[]):
+            resp = self.client.get(self.pdf_url(self.s1))
+        self.assertRedirects(resp, reverse("keigo:bai_tap"))
+
+    def test_paper_blanks_and_escape(self):
+        from . import exercise_pdf
+        one = exercise_pdf.paper_text("ご用が____、<b>おっしゃって</b>")
+        self.assertIn(exercise_pdf.PAPER_BLANK_INNER, one)
+        self.assertIn("&lt;b&gt;", one)
+        star = exercise_pdf.paper_text("前に____ ____ __★__ ____いたします。")
+        self.assertEqual(star.count(exercise_pdf.PAPER_SLOT), 3)
+        self.assertIn('<font color="#B5432E">', star)  # o ★ to mau nhan
+        self.assertIn("★", star)
+
+    def test_passage_question_prints_only_its_number(self):
+        from . import exercise_pdf
+        exercise_pdf._ensure_fonts()  # Paragraph can font da dang ky
+        story = exercise_pdf.question_flowables(self.q11, exercise_pdf._ex_styles(), 170)
+        head = story[0]._content[0].getPlainText()
+        self.assertIn("（11）", head)
+        self.assertNotIn("11.", head)
+
+    def test_sections_with_same_instruction_are_grouped(self):
+        extra = ExerciseSection.objects.create(
+            exercise_set=self.s2, number=3, display_order=3,
+            instruction_jp=self.q11.section.instruction_jp, passage_jp="先生に（13）。")
+        q13 = Question.objects.create(code="bt12-q13", section=extra, number=13, question_type="cloze", stem_jp="(13)")
+        QuestionOption.objects.create(question=q13, position=1, text_jp="お会いしたい", is_correct=True)
+        from . import exercise_pdf
+        groups = exercise_pdf.group_sections(exercises.set_questions(self.s2))
+        self.assertEqual(len(groups), 1)
+        self.assertEqual([len(qs) for _sec, qs in groups[0][1]], [2, 1])
+        self.assertEqual(exercise_pdf.section_label(groups[0][0]), "問題2")

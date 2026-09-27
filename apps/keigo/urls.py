@@ -18,6 +18,7 @@ urlpatterns = [
     path("bai-tap/<slug:set_slug>/bo/", views.exercise_abandon_view, name="bai_tap_bo"),
     path("bai-tap/<slug:set_slug>/nop/", views.exercise_finish_view, name="bai_tap_nop"),
     path("bai-tap/<slug:set_slug>/ket-qua/", views.exercise_result_view, name="bai_tap_ket_qua"),  # SC22
+    path("bai-tap/<slug:set_slug>/pdf/", views.exercise_pdf_view, name="bai_tap_pdf"),  # SC20 in de + dap an
     path("<slug:slug>/pdf/", views.lesson_pdf_view, name="lesson_pdf"),  # SC17 nut in on tap
     # SC17 -- DE CUOI CUNG: <slug:slug> khop moi chuoi slug, ke ca "tra-cuu"/"hoc".
     path("<slug:slug>/", views.lesson_view, name="lesson"),

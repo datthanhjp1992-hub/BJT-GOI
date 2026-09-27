@@ -14,7 +14,23 @@ class UserVocabularyProgress(AuditableModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="progress", on_delete=models.CASCADE)
     vocabulary = models.ForeignKey(Vocabulary, related_name="progress", on_delete=models.CASCADE)
 
+    # Giai đoạn của từ trong vòng lặp ôn tập — xem apps/learning/srs.py.
+    # Mặc định "review" để các dòng có từ trước khi có bước học (migration
+    # 0002) vẫn được xếp lịch theo ngày như cũ. Dòng tạo mới khi học lần đầu
+    # đi qua services.get_or_start_progress() nên được gán "new".
+    card_state = models.CharField(
+        max_length=12,
+        choices=[(s, s) for s in ("new", "learning", "review", "relearning")],
+        default="review",
+    )
+    # Chỉ số bước học (srs.LEARN_STEPS / RELEARN_STEPS) khi đang học/học lại.
+    learning_step = models.PositiveSmallIntegerField(default=0)
+    # Thời điểm đến hạn CHÍNH XÁC của từ đang học (tính bằng phút). Từ ở giai
+    # đoạn "review" chỉ dùng next_review_date, cột này để trống.
+    due_at = models.DateTimeField(null=True, blank=True)
+
     # SM-2 spaced repetition state
+    # srs_level = số lần ôn thành công liên tiếp (repetitions của SM-2).
     srs_level = models.PositiveSmallIntegerField(default=0)
     ease_factor = models.FloatField(default=2.5)
     interval_days = models.PositiveIntegerField(default=0)

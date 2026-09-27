@@ -296,7 +296,16 @@ def build_lesson_pdf(lesson, lesson_number, lesson_total):
         story.append(KeepTogether(head + body[:1]))
         story.extend(body[1:])
 
-    footer_text = f"毎日BJT — {label('common.nav.keigo')} · {chapter}: {title}"
+    return build_document(
+        story,
+        title=f"{label('common.nav.keigo')} — {chapter}: {title}",
+        footer_text=f"毎日BJT — {label('common.nav.keigo')} · {chapter}: {title}",
+    )
+
+
+def build_document(story, title, footer_text):
+    """A4 + le chung + chan trang (dong ke, footer_text, so trang) -> bytes PDF.
+    Dung chung cho PDF on tap chuong (SC17) va PDF de bai tap (exercise_pdf.py)."""
 
     def _footer(canvas, doc):
         canvas.saveState()
@@ -314,8 +323,7 @@ def build_lesson_pdf(lesson, lesson_number, lesson_total):
 
     buf = io.BytesIO()
     doc = SimpleDocTemplate(buf, pagesize=A4, leftMargin=MARGIN, rightMargin=MARGIN,
-                            topMargin=MARGIN, bottomMargin=18 * mm,
-                            title=f"{label('common.nav.keigo')} — {chapter}: {title}", author="毎日BJT")
+                            topMargin=MARGIN, bottomMargin=18 * mm, title=title, author="毎日BJT")
     doc.build(story, onFirstPage=_footer, onLaterPages=_footer)
     return buf.getvalue()
 

@@ -1,21 +1,25 @@
 """
 Logic nghiệp vụ của app learning:
 
-1. Lịch ôn tập SM-2 (`review_word`) — quality 0-5 quy từ 4 nút Quên/Khó/Nhớ/Dễ.
+1. Lịch ôn tập (`review_word`) — SM-2 có bước học theo phút, xem `srs.py`;
+   quality 0-5 quy từ 4 nút Quên/Khó/Nhớ/Dễ. Hàng đợi SC04 (`get_topic_queue`).
 2. Số liệu cho SC03_TrangChu (`get_learning_stats`, `get_streak_days`,
    `get_topic_in_progress`, `get_suggested_topics`).
 
 View chỉ gọi xuống đây rồi đẩy vào template — không tự viết truy vấn.
 """
-from datetime import datetime, time, timedelta
+from dataclasses import dataclass, field
+from datetime import date, datetime, time, timedelta
 
 from django.db.models import Count, F, Q
 from django.db.models.functions import TruncDate
+from django.utils import timezone
 
 import random
 
 from apps.vocabulary.models import Topic, Vocabulary
 
+from . import srs
 from .models import StudySession, UserVocabularyProgress
 
 QUALITY_MAP = {
@@ -26,30 +30,114 @@ QUALITY_MAP = {
 }
 
 
-def get_flashcard_queue(user, topic):
-    """Hàng đợi ôn tập flashcard của 1 chủ đề (SC04).
+def local_day_start(user, day=None):
+    """Nửa đêm (aware) của ngày `day` theo múi giờ NGƯỜI HỌC."""
+    return datetime.combine(day or user.local_today(), time.min, tzinfo=user.tzinfo)
 
-    Ưu tiên từ ĐẾN HẠN (next_review_date <= hôm nay theo giờ user, quá hạn lâu
-    nhất xếp trước), hết thì tới từ CHƯA HỌC LẦN NÀO (chưa có
-    UserVocabularyProgress) theo thứ tự bảng chữ cái.
 
-    Không cần tự loại thẻ vừa ôn khỏi hàng đợi: review_word() luôn đẩy
-    next_review_date sang ít nhất NGÀY MAI (interval_days >= 1 dù quality nào),
-    nên thẻ vừa ôn tự rời khỏi cả hai nhánh truy vấn ở lần gọi kế tiếp.
+def count_new_words_today(user):
+    """Số từ học LẦN ĐẦU hôm nay (theo giờ người học) = số dòng tiến độ tạo hôm nay.
+
+    Không cần bảng log riêng: dòng UserVocabularyProgress chỉ sinh ra khi từ
+    được chấm lần đầu (`get_or_start_progress`), và hoàn tác lần chấm đó thì
+    xoá luôn dòng — nên con số này tự khớp.
     """
+    return UserVocabularyProgress.objects.filter(
+        user=user, created_at__gte=local_day_start(user)
+    ).count()
+
+
+def count_due_tomorrow(user):
+    tomorrow = user.local_today() + timedelta(days=1)
+    return UserVocabularyProgress.objects.filter(
+        user=user, card_state=srs.REVIEW, next_review_date=tomorrow
+    ).count()
+
+
+@dataclass
+class TopicQueue:
+    """Hàng đợi một phiên SC04 kèm các con số hiển thị trên màn học."""
+
+    words: list = field(default_factory=list)
+    n_new: int = 0
+    n_learning: int = 0
+    n_review: int = 0
+    new_limit: int = 0
+    new_today: int = 0
+    more_new: bool = False            # còn từ mới nhưng đã chạm hạn mức/ngày
+    ahead_minutes: int = 0            # >0: từ đầu hàng là từ đang học CHƯA tới giờ
+
+    @property
+    def remaining(self):
+        return self.n_new + self.n_learning + self.n_review
+
+
+def get_topic_queue(user, topic, now=None):
+    """Hàng đợi SC04/SC06 của một chủ đề, theo đúng flow ôn tập:
+
+    1. Từ ĐANG HỌC / HỌC LẠI đã tới giờ (bước học tính bằng phút).
+    2. Từ ĐẾN HẠN ôn (next_review_date <= hôm nay), quá hạn lâu nhất trước.
+    3. Từ MỚI theo bảng chữ cái, tối đa `user.daily_review_goal` từ/ngày
+       (tính chung mọi chủ đề — xem count_new_words_today).
+    4. Hết cả ba thì học trước từ đang học chưa tới giờ (sớm nhất trước) —
+       người học không phải ngồi chờ 10 phút; ahead_minutes cho biết còn bao lâu.
+
+    "Hôm nay" tính theo múi giờ của user (User.local_today()).
+    """
+    now = now or timezone.now()
     today = user.local_today()
-    due = (
-        Vocabulary.objects.filter(
-            topics=topic, progress__user=user, progress__next_review_date__lte=today,
-        )
-        .order_by("progress__next_review_date", "word")
+    progress = {
+        p.vocabulary_id: p
+        for p in UserVocabularyProgress.objects.filter(user=user, vocabulary__topics=topic)
+    }
+    learning = sorted(
+        (p for p in progress.values() if p.card_state in srs.IN_SESSION_STATES),
+        key=lambda p: (p.due_at or now, p.vocabulary_id),
     )
-    new_words = (
-        Vocabulary.objects.filter(topics=topic)
-        .exclude(progress__user=user)
-        .order_by("word")
+    learn_due = [p for p in learning if (p.due_at or now) <= now]
+    learn_ahead = [p for p in learning if (p.due_at or now) > now]
+    review_due = sorted(
+        (
+            p for p in progress.values()
+            if p.card_state == srs.REVIEW
+            and (p.next_review_date is None or p.next_review_date <= today)
+        ),
+        key=lambda p: (p.next_review_date or date.min, p.vocabulary_id),
     )
-    return list(due) + list(new_words)
+
+    new_limit = user.daily_review_goal
+    new_today = count_new_words_today(user)
+    new_left = max(0, new_limit - new_today)
+    unseen = Vocabulary.objects.filter(topics=topic).exclude(progress__user=user).order_by("word")
+    new_words = list(unseen[:new_left]) if new_left else []
+
+    by_id = Vocabulary.objects.in_bulk(
+        [p.vocabulary_id for p in learning] + [p.vocabulary_id for p in review_due]
+    )
+    ordered = (
+        [by_id[p.vocabulary_id] for p in learn_due if p.vocabulary_id in by_id]
+        + [by_id[p.vocabulary_id] for p in review_due if p.vocabulary_id in by_id]
+        + new_words
+        + [by_id[p.vocabulary_id] for p in learn_ahead if p.vocabulary_id in by_id]
+    )
+    ahead = 0
+    if ordered and not learn_due and not review_due and not new_words:
+        ahead = max(1, round((learn_ahead[0].due_at - now).total_seconds() / 60))
+    return TopicQueue(
+        words=ordered,
+        n_new=len(new_words),
+        n_learning=len(learning),
+        n_review=len(review_due),
+        new_limit=new_limit,
+        new_today=new_today,
+        more_new=new_left == 0 and unseen.exists(),
+        ahead_minutes=ahead,
+    )
+
+
+def get_flashcard_queue(user, topic):
+    """Danh sách từ theo thứ tự học của SC04 — xem get_topic_queue()."""
+    return get_topic_queue(user, topic).words
 
 
 QUIZ_CHOICE_COUNT = 4
@@ -83,32 +171,92 @@ def get_quiz_choices(word, topic, count=QUIZ_CHOICE_COUNT):
     return choices
 
 
-def review_word(progress, quality: int):
-    """Update a UserVocabularyProgress instance in place using SM-2."""
-    if quality < 3:
-        progress.srs_level = 0
-        progress.interval_days = 1
-        progress.wrong_count += 1
-    else:
-        progress.correct_count += 1
-        if progress.srs_level == 0:
-            progress.interval_days = 1
-        elif progress.srs_level == 1:
-            progress.interval_days = 6
-        else:
-            progress.interval_days = round(progress.interval_days * progress.ease_factor)
-        progress.srs_level += 1
-
-    progress.ease_factor = max(
-        1.3,
-        progress.ease_factor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)),
+def get_or_start_progress(user, vocab):
+    """Dòng tiến độ của (user, từ); từ học lần đầu thì tạo mới ở giai đoạn NEW."""
+    progress, _ = UserVocabularyProgress.objects.get_or_create(
+        user=user, vocabulary=vocab, defaults={"card_state": srs.NEW}
     )
+    return progress
+
+
+def _card_of(progress):
+    if progress is None:
+        return srs.Card()
+    return srs.Card(
+        state=progress.card_state,
+        step=progress.learning_step,
+        ease=progress.ease_factor,
+        interval_days=progress.interval_days,
+        repetitions=progress.srs_level,
+    )
+
+
+def review_word(progress, quality: int, now=None):
+    """Chấm một từ, cập nhật lịch ôn tại chỗ. Trả về `srs.Result`.
+
+    Từ đang học (bước theo phút) có `due_at` = bây giờ + vài phút và
+    `next_review_date` = hôm nay — nên vẫn được tính là "đến hạn hôm nay" ở
+    SC03/SC15. Từ tốt nghiệp sang REVIEW thì `due_at` rỗng, lịch theo ngày.
+    """
+    now = now or timezone.now()
+    result = srs.schedule(_card_of(progress), quality)
+    card = result.card
+
+    progress.card_state = card.state
+    progress.learning_step = card.step
+    progress.ease_factor = card.ease
+    progress.interval_days = card.interval_days
+    progress.srs_level = card.repetitions
+    if quality >= 3:
+        progress.correct_count += 1
+    else:
+        progress.wrong_count += 1
+
     # "Hôm nay" tính theo múi giờ của NGƯỜI HỌC (User.timezone), không phải
     # TIME_ZONE của server — nếu không, người dùng ở Việt Nam sẽ thấy thẻ đến
     # hạn lệch 2 tiếng so với mốc nửa đêm của họ.
     today = progress.user.local_today()
-    progress.next_review_date = today + timedelta(days=progress.interval_days)
+    if result.in_session:
+        progress.due_at = now + result.delay
+        progress.next_review_date = today
+    else:
+        progress.due_at = None
+        progress.next_review_date = today + timedelta(days=card.interval_days)
     progress.is_mastered = progress.srs_level >= 5
+    progress.save()
+    return result
+
+
+def grade_previews(progress):
+    """{quality: (đơn vị, số)} — khoảng cách ôn lại nếu bấm từng nút."""
+    card = _card_of(progress)
+    return {q: srs.delay_parts(srs.schedule(card, q).delay) for q in srs.GRADES}
+
+
+# Các cột được chụp lại trước mỗi lần chấm để HOÀN TÁC được.
+_SNAPSHOT_FIELDS = (
+    "card_state", "learning_step", "ease_factor", "interval_days", "srs_level",
+    "correct_count", "wrong_count", "is_mastered",
+)
+
+
+def progress_snapshot(progress):
+    """Bản chụp JSON-serializable (cất được vào request.session)."""
+    snap = {f: getattr(progress, f) for f in _SNAPSHOT_FIELDS}
+    snap["next_review_date"] = (
+        progress.next_review_date.isoformat() if progress.next_review_date else None
+    )
+    snap["due_at"] = progress.due_at.isoformat() if progress.due_at else None
+    return snap
+
+
+def restore_progress(progress, snap):
+    for f in _SNAPSHOT_FIELDS:
+        setattr(progress, f, snap[f])
+    progress.next_review_date = (
+        date.fromisoformat(snap["next_review_date"]) if snap["next_review_date"] else None
+    )
+    progress.due_at = datetime.fromisoformat(snap["due_at"]) if snap["due_at"] else None
     progress.save()
     return progress
 
