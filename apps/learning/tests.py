@@ -1140,6 +1140,23 @@ class TopicQueueTests(LearningTestCase):
         self.assertEqual(queue.new_today, 2)
         self.assertTrue(queue.more_new)
 
+    def test_unlocked_words_join_the_queue_past_the_daily_cap(self):
+        self.user.daily_review_goal = 1
+        self.user.save(update_fields=["daily_review_goal"])
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約", "会計"])
+        first = services.get_topic_queue(self.user, topic).words[0]
+        services.review_word(services.get_or_start_progress(self.user, first), 5)
+
+        queue = services.get_topic_queue(self.user, topic)
+        self.assertEqual(queue.words, [])
+        self.assertEqual(queue.more_new_count, 2)
+
+        extra = services.pick_extra_new_words(self.user, topic)
+        self.assertEqual(len(extra), 1)  # tối đa = hạn mức mỗi ngày
+        queue = services.get_topic_queue(self.user, topic, unlocked_ids=extra)
+        self.assertEqual([w.pk for w in queue.words], extra)
+        self.assertEqual(queue.more_new_count, 1)
+
     def test_daily_cap_counts_new_words_of_every_topic(self):
         self.user.daily_review_goal = 1
         self.user.save(update_fields=["daily_review_goal"])
@@ -1148,6 +1165,43 @@ class TopicQueueTests(LearningTestCase):
 
         topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
         self.assertEqual(services.get_topic_queue(self.user, topic).n_new, 0)
+
+
+class MoreNewWordsTests(LearningTestCase):
+    """Nút "Học thêm N từ mới" khi đã chạm hạn mức (trang chủ + màn xong)."""
+
+    def setUp(self):
+        super().setUp()
+        self.user.daily_review_goal = 1
+        self.user.save(update_fields=["daily_review_goal"])
+        self.topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約", "会計"])
+        self.page = reverse("learning:flashcard", args=["nha-hang"])
+        word = self.client.get(self.page).context["word"]
+        self.client.post(
+            reverse("learning:flashcard_review", args=[word.pk]),
+            {"quality": "de", "topic_slug": "nha-hang"},
+        )
+
+    def test_done_screen_offers_more_new_words(self):
+        page = self.client.get(self.page)
+        self.assertIsNone(page.context["word"])
+        self.assertTrue(page.context["queue"].more_new)
+        self.assertContains(page, reverse("learning:flashcard_more_new", args=["nha-hang"]))
+
+    def test_dashboard_explains_the_daily_cap(self):
+        page = self.client.get(reverse("learning:dashboard"))
+        info = page.context["in_progress"]
+        self.assertTrue(info["new_limit_reached"])
+        self.assertEqual(info["unseen"], 2)
+        self.assertContains(page, reverse("learning:flashcard_more_new", args=["nha-hang"]))
+
+    def test_more_new_unlocks_words_for_today(self):
+        url = reverse("learning:flashcard_more_new", args=["nha-hang"])
+        self.assertEqual(self.client.get(url).status_code, 405)
+        self.assertRedirects(self.client.post(url), self.page)
+        page = self.client.get(self.page)
+        self.assertIsNotNone(page.context["word"])
+        self.assertEqual(page.context["queue"].n_new, 1)
 
 
 class FlashcardFlowTests(LearningTestCase):

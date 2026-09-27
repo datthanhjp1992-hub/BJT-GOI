@@ -180,8 +180,14 @@ tính năng cốt lõi.
       {% if queue %}
         <p class="muted" style="margin:0 0 8px;">{% message "learning.flashcard.hint.new_today" done=queue.new_today limit=queue.new_limit %}</p>
         {% if queue.more_new %}
-          <p class="muted" style="margin:0 0 8px;">{% message "learning.flashcard.hint.new_limit_reached" limit=queue.new_limit %}
-            <a href="{% url 'accounts:settings' %}">{% label "common.nav.settings" %}</a></p>
+          <p class="muted" style="margin:0 0 8px;">{% message "learning.flashcard.hint.new_limit_reached" count=queue.more_new_count limit=queue.new_limit %}
+            <a href="{% url 'accounts:settings' %}">{% label "common.nav.settings" %}</a>.</p>
+          {% comment %}Mở thêm một nhóm từ mới cho riêng chủ đề này, hôm nay —
+          không phải sửa hạn mức trong Cài đặt chỉ để học nốt vài từ.{% endcomment %}
+          <form method="post" action="{% url 'learning:flashcard_more_new' topic.slug %}" style="margin:6px 0 12px;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">{% message "learning.flashcard.button.more_new" count=more_new_batch %}</button>
+          </form>
         {% endif %}
       {% endif %}
       <p class="muted" style="margin:0 0 20px;">{% message "learning.flashcard.hint.due_tomorrow" count=due_tomorrow %}</p>

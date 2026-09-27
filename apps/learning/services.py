@@ -65,6 +65,7 @@ class TopicQueue:
     new_limit: int = 0
     new_today: int = 0
     more_new: bool = False            # còn từ mới nhưng đã chạm hạn mức/ngày
+    more_new_count: int = 0           # số từ mới còn bị giữ lại vì hạn mức
     ahead_minutes: int = 0            # >0: từ đầu hàng là từ đang học CHƯA tới giờ
 
     @property
@@ -72,7 +73,7 @@ class TopicQueue:
         return self.n_new + self.n_learning + self.n_review
 
 
-def get_topic_queue(user, topic, now=None):
+def get_topic_queue(user, topic, now=None, unlocked_ids=()):
     """Hàng đợi SC04/SC06 của một chủ đề, theo đúng flow ôn tập:
 
     1. Từ ĐANG HỌC / HỌC LẠI đã tới giờ (bước học tính bằng phút).
@@ -83,6 +84,10 @@ def get_topic_queue(user, topic, now=None):
        người học không phải ngồi chờ 10 phút; ahead_minutes cho biết còn bao lâu.
 
     "Hôm nay" tính theo múi giờ của user (User.local_today()).
+
+    `unlocked_ids`: từ mới người học chủ động mở thêm hôm nay bằng nút "Học
+    thêm N từ mới" (vượt hạn mức, chỉ cho chủ đề này) — xem
+    `pick_extra_new_words()`. Chúng được xếp vào nhóm từ mới dù hạn mức đã hết.
     """
     now = now or timezone.now()
     today = user.local_today()
@@ -110,6 +115,13 @@ def get_topic_queue(user, topic, now=None):
     new_left = max(0, new_limit - new_today)
     unseen = Vocabulary.objects.filter(topics=topic).exclude(progress__user=user).order_by("word")
     new_words = list(unseen[:new_left]) if new_left else []
+    if unlocked_ids:
+        taken = {w.pk for w in new_words}
+        new_words += [
+            w for w in unseen.filter(pk__in=unlocked_ids) if w.pk not in taken
+        ]
+        new_words.sort(key=lambda w: w.word)
+    more_new_count = unseen.count() - len(new_words)
 
     by_id = Vocabulary.objects.in_bulk(
         [p.vocabulary_id for p in learning] + [p.vocabulary_id for p in review_due]
@@ -130,9 +142,20 @@ def get_topic_queue(user, topic, now=None):
         n_review=len(review_due),
         new_limit=new_limit,
         new_today=new_today,
-        more_new=new_left == 0 and unseen.exists(),
+        # Chỉ báo "hết hạn mức" khi hạn mức hôm nay thật sự đã dùng hết.
+        more_new=new_left == 0 and more_new_count > 0,
+        more_new_count=more_new_count,
         ahead_minutes=ahead,
     )
+
+
+def pick_extra_new_words(user, topic, count=None):
+    """Id các từ mới (chưa học lần nào) của `topic` để mở thêm hôm nay khi đã
+    chạm hạn mức — tối đa `count` từ (mặc định = hạn mức mỗi ngày), cùng thứ
+    tự bảng chữ cái với hàng đợi."""
+    count = count or user.daily_review_goal or 1
+    unseen = Vocabulary.objects.filter(topics=topic).exclude(progress__user=user).order_by("word")
+    return list(unseen.values_list("pk", flat=True)[:count])
 
 
 def get_flashcard_queue(user, topic):
@@ -357,11 +380,18 @@ def get_topic_in_progress(user):
     learned = UserVocabularyProgress.objects.filter(
         user=user, vocabulary__topics=topic
     ).count()
+    unseen = max(0, total - learned)
+    # Còn từ chưa học nhưng hôm nay đã hết hạn mức từ mới -> "Học tiếp" sẽ
+    # không đưa ra được từ mới nào; trang chủ phải nói rõ và mời "học thêm".
+    limit_reached = bool(unseen) and count_new_words_today(user) >= user.daily_review_goal
     return {
         "topic": topic,
         "learned": learned,
         "total": total,
         "percent": round(learned * 100 / total) if total else 0,
+        "unseen": unseen,
+        "new_limit_reached": limit_reached,
+        "extra_count": min(unseen, user.daily_review_goal or 1),
     }
 
 

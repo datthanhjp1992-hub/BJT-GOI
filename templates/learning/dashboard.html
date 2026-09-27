@@ -36,7 +36,20 @@ Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endco
           {% message "learning.dashboard.hint.topic_progress" learned=in_progress.learned total=in_progress.total %}
         </p>
         <div class="progressbar" style="margin-bottom:20px;"><span style="width:{{ in_progress.percent }}%"></span></div>
-        <a class="btn btn-primary" href="{% url 'learning:flashcard' in_progress.topic.slug %}">{% label "learning.dashboard.button.continue_learning" %}</a>
+        {% if in_progress.new_limit_reached %}
+          {% comment %}Còn từ chưa học nhưng đã hết hạn mức từ mới hôm nay — "Học tiếp"
+          có thể chỉ ra màn "đã ôn xong", nên nói rõ và cho học thêm luôn.{% endcomment %}
+          <p class="muted" style="margin:-8px 0 16px;font-size:13.5px;">{% message "learning.dashboard.hint.new_limit_reached" count=in_progress.unseen %}</p>
+          <div class="toolbar">
+            <form method="post" action="{% url 'learning:flashcard_more_new' in_progress.topic.slug %}" style="margin:0;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary">{% message "learning.flashcard.button.more_new" count=in_progress.extra_count %}</button>
+            </form>
+            <a class="btn btn-outline" href="{% url 'learning:flashcard' in_progress.topic.slug %}">{% label "learning.dashboard.button.continue_learning" %}</a>
+          </div>
+        {% else %}
+          <a class="btn btn-primary" href="{% url 'learning:flashcard' in_progress.topic.slug %}">{% label "learning.dashboard.button.continue_learning" %}</a>
+        {% endif %}
       {% else %}
         <p class="muted" style="margin:0 0 18px;">{% message "learning.dashboard.hint.no_topic_in_progress" %}</p>
         <a class="btn btn-primary" href="{% url 'vocabulary:index' %}">{% label "learning.dashboard.button.browse_vocabulary" %}</a>

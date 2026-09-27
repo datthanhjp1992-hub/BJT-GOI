@@ -279,7 +279,9 @@ def flashcard_view(request, topic_slug):
     topic = get_object_or_404(Topic, slug=topic_slug)
     total_key, session_id_key = _flashcard_session_keys(topic.slug)
     flow = _topic_flow(topic.slug)
-    queue = services.get_topic_queue(request.user, topic)
+    queue = services.get_topic_queue(
+        request.user, topic, unlocked_ids=_unlocked_new_ids(request, topic.slug)
+    )
     forced = _forced_word(request, flow)
     word = forced or (queue.words[0] if queue.words else None)
 
@@ -293,6 +295,7 @@ def flashcard_view(request, topic_slug):
             "topic": topic, "word": None, "scope_label": topic.display_name,
             "summary": _session_summary(session),
             "queue": queue,
+            "more_new_batch": min(queue.more_new_count, queue.new_limit or 1),
             "due_tomorrow": services.count_due_tomorrow(request.user),
             "undo_word": undo["word"] if undo else "",
         })
@@ -415,6 +418,35 @@ def flashcard_comment(request, vocabulary_id):
     if not topic_slug:
         return redirect("learning:study")
     return redirect("learning:flashcard", topic_slug=topic_slug)
+
+
+def _extra_new_key(topic_slug):
+    return f"flashcard_extra_new_{topic_slug}"
+
+
+def _unlocked_new_ids(request, topic_slug):
+    """Từ mới đã mở thêm HÔM NAY cho chủ đề này (nút "Học thêm N từ mới").
+    Sang ngày khác thì bỏ — hạn mức ngày mới tự cho từ mới trở lại."""
+    data = request.session.get(_extra_new_key(topic_slug))
+    if not isinstance(data, dict) or data.get("date") != request.user.local_today().isoformat():
+        return []
+    return data.get("ids") or []
+
+
+@login_required
+@require_POST
+def flashcard_more_new_view(request, topic_slug):
+    """Mở thêm một nhóm từ mới cho chủ đề khi đã chạm hạn mức ngày — không
+    phải vào Cài đặt đổi "Số từ mới mỗi ngày" chỉ để học nốt vài từ."""
+    topic = get_object_or_404(Topic, slug=topic_slug)
+    ids = services.pick_extra_new_words(request.user, topic)
+    if ids:
+        merged = list(dict.fromkeys(_unlocked_new_ids(request, topic.slug) + ids))
+        request.session[_extra_new_key(topic.slug)] = {
+            "date": request.user.local_today().isoformat(),
+            "ids": merged,
+        }
+    return redirect("learning:flashcard", topic.slug)
 
 
 def _quiz_session_keys(topic_slug):
