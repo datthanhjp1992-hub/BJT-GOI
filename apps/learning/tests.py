@@ -250,6 +250,20 @@ class FlashcardViewTests(LearningTestCase):
         self.assertEqual(response.context["position"], 1)
         self.assertContains(response, response.context["word"].word)
 
+    def test_forgotten_word_does_not_grow_the_total(self):
+        """Bấm Quên thì từ quay lại sau vài phút — "Thẻ x/N" vẫn đếm theo TỪ,
+        mẫu số không được tăng thêm (trước đây 1/2 -> 2/3)."""
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        url = reverse("learning:flashcard", args=["nha-hang"])
+        first = self.client.get(url).context["word"]
+        self.client.post(
+            reverse("learning:flashcard_review", args=[first.pk]),
+            {"quality": "quen", "topic_slug": "nha-hang"},
+        )
+        page = self.client.get(url)
+        self.assertEqual(page.context["total"], 2)
+        self.assertEqual(page.context["position"], 1)
+
     def test_first_visit_creates_a_study_session(self):
         self._make_topic("Nhà hàng", "nha-hang", ["注文"])
         self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
@@ -634,6 +648,18 @@ class StudySessionViewTests(LearningTestCase):
         page = self.client.get(reverse("learning:study"))
         self.assertEqual(page.context["position"], 2)
         self.assertEqual(page.context["total"], 2)
+
+    def test_forgotten_word_does_not_grow_the_total(self):
+        """Quên/Khó đưa từ vào bước học chứ chưa rời phiên — tổng giữ nguyên
+        bằng số từ lúc bắt đầu, tử số chỉ tăng khi từ rời phiên."""
+        self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        self._start(topic="nha-hang", limit="0")
+        first_id = self.client.session["study_queue"][0]
+        self.client.post(reverse("learning:study_review", args=[first_id]), {"quality": "quen"})
+
+        page = self.client.get(reverse("learning:study"))
+        self.assertEqual(page.context["total"], 2)
+        self.assertEqual(page.context["position"], 1)
 
     def test_finishing_the_queue_closes_the_session(self):
         topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])

@@ -52,9 +52,9 @@ def _flashcard_session_keys(topic_slug):
     StudySession của phiên flashcard đang chạy cho 1 chủ đề. Khoá theo
     topic_slug nên user học nhiều chủ đề (tab khác nhau) không đụng nhau.
 
-    (Khoá "total" không còn dùng từ khi có bước học — tổng số thẻ giờ tính
-    lại mỗi lần từ số lượt đã chấm + số từ còn lại — nhưng vẫn giữ để dọn
-    session cũ của người dùng.)"""
+    Khoá "total" giữ {"session": <StudySession.pk>, "ids": [...]} — tập id
+    mọi từ đã xuất hiện trong phiên, để mẫu số "Thẻ x/N" đếm theo TỪ và không
+    tăng mỗi khi một từ quay lại ở bước học (xem `_topic_progress`)."""
     return f"flashcard_total_{topic_slug}", f"flashcard_session_id_{topic_slug}"
 
 
@@ -241,13 +241,34 @@ def _session_summary(session):
     }
 
 
-def _progress_numbers(done, remaining):
-    total = done + remaining
+def _progress_numbers(total, remaining):
+    """Tiến độ "Thẻ x/N" đếm theo TỪ, không theo lượt chấm.
+
+    `total` là số từ của phiên (cố định), `remaining` là số từ còn trong
+    phiên (hàng đợi + đang ở bước học). Từ bấm Quên/Khó quay lại sau vài phút
+    vẫn nằm trong `remaining` nên mẫu số không bị kéo dài ra; chỉ khi từ rời
+    phiên (tốt nghiệp) thì tử số mới tăng.
+    """
+    total = max(total or 0, remaining, 1)
+    done = total - remaining
     return {
-        "position": done + 1,
+        "position": min(done + 1, total),
         "total": total,
-        "percent": round(done * 100 / total) if total else 0,
+        "percent": round(done * 100 / total),
     }
+
+
+def _topic_progress(request, key, session, words):
+    """Tiến độ cho phiên theo 1 chủ đề (SC04/SC06) — hàng đợi ở đây tính lại
+    mỗi lần nên không có tổng chốt sẵn; ta nhớ tập id mọi từ đã xuất hiện
+    trong phiên (theo StudySession) và lấy đó làm mẫu số."""
+    data = request.session.get(key)
+    if not isinstance(data, dict) or data.get("session") != session.pk:
+        data = {"session": session.pk, "ids": []}
+    current = {w.pk for w in words}
+    seen = set(data.get("ids") or []) | current
+    request.session[key] = {"session": session.pk, "ids": sorted(seen)}
+    return _progress_numbers(len(seen), len(current))
 
 
 @login_required
@@ -277,13 +298,12 @@ def flashcard_view(request, topic_slug):
         })
 
     session = _ensure_open_session(request, session_id_key, topic, SESSION_TYPE_FLASHCARD)
-    session.refresh_from_db(fields=["words_reviewed"])
-    remaining = queue.remaining + (1 if forced and forced not in queue.words else 0)
+    words = list(queue.words) + ([forced] if forced and forced not in queue.words else [])
 
     context = {
         "topic": topic,
         "word": word,
-        **_progress_numbers(session.words_reviewed, remaining),
+        **_topic_progress(request, total_key, session, words),
         "queue": queue,
         "ahead_minutes": 0 if forced else queue.ahead_minutes,
         # Ba khoá dưới đây để flashcard.html dùng được cho CẢ HAI lối vào:
@@ -431,13 +451,12 @@ def quiz_view(request, topic_slug):
         })
 
     session = _ensure_open_session(request, session_id_key, topic, SESSION_TYPE_QUIZ)
-    session.refresh_from_db(fields=["words_reviewed"])
     word = queue.words[0]
 
     context = {
         "topic": topic,
         "word": word,
-        **_progress_numbers(session.words_reviewed, queue.remaining),
+        **_topic_progress(request, total_key, session, queue.words),
         "choices": services.get_quiz_choices(word, topic),
         "scope_label": topic.display_name,
         "answer_action": reverse("learning:quiz_answer", args=[topic.slug, word.pk]),
@@ -635,18 +654,6 @@ def _next_queue_word(request):
     return None, 0, 0
 
 
-def _study_done(request):
-    session_id = request.session.get(STUDY_SESSION_ID_KEY)
-    if not session_id:
-        return 0
-    return (
-        StudySession.objects.filter(pk=session_id)
-        .values_list("words_reviewed", flat=True)
-        .first()
-        or 0
-    )
-
-
 def _scope_label(topics):
     """Nhãn "đang học phạm vi nào" hiện trên thanh tiến độ."""
     if not topics:
@@ -721,7 +728,7 @@ def study_view(request):
     context = {
         "topic": None,
         "word": word,
-        **_progress_numbers(_study_done(request), remaining),
+        **_progress_numbers(request.session.get(STUDY_TOTAL_KEY), remaining),
         "ahead_minutes": ahead,
         "scope_label": scope_label,
         "review_action": reverse("learning:study_review", args=[word.pk]),
@@ -913,7 +920,7 @@ def study_quiz_view(request):
     context = {
         "topic": topic,
         "word": word,
-        **_progress_numbers(_study_done(request), remaining),
+        **_progress_numbers(request.session.get(STUDY_TOTAL_KEY), remaining),
         "choices": services.get_quiz_choices(word, topic),
         "scope_label": scope_label,
         "answer_action": reverse("learning:study_quiz_answer", args=[word.pk]),
