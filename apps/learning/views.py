@@ -837,6 +837,11 @@ def review_view(request):
         "topics": Topic.objects.all().order_by("name"),
         "limit_choices": vocab_selectors.SESSION_LIMIT_CHOICES,
         "session_limit": vocab_selectors.DEFAULT_SESSION_LIMIT,
+        # Thẻ "Ôn thêm" và nút "Ôn →" theo chủ đề KHÔNG có ô chọn số từ, còn nút
+        # thì ghi rõ con số ("Ôn 101 từ") -> phải ôn ĐỦ nhóm đó, không được cắt
+        # theo DEFAULT_SESSION_LIMIT (bug 27/09/2026: bấm "Ôn 101 từ" chỉ ra 20 thẻ).
+        # Chỉ khối "Đến hạn hôm nay" có <select> mới dùng session_limit.
+        "full_limit": vocab_selectors.SESSION_LIMIT_ALL,
         "wordlists": UserWordlist.objects.filter(user=user).order_by("-updated_at"),
         # Chỉ truy vấn đúng bảng của tab đang mở — ba tab là ba truy vấn khác
         # nhau, không việc gì chạy cả ba mỗi lần tải trang.

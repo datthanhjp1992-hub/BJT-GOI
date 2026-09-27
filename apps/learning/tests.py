@@ -1292,3 +1292,50 @@ class StudyFlowTests(ReviewTestCase):
         progress.refresh_from_db()
         self.assertEqual(progress.next_review_date, self.user.local_today() + timedelta(days=3))
         self.assertEqual(progress.correct_count, 1)
+
+
+class ReviewDeckFullSessionTests(ReviewTestCase):
+    """Bug 27/09/2026: thẻ "Sắp đến hạn" ghi "Ôn 101 từ" nhưng lượt ôn chỉ có 20
+    thẻ — form của thẻ gửi kèm limit=DEFAULT_SESSION_LIMIT. Các nút không có ô
+    chọn số từ phải ôn ĐỦ con số đang hiện trên nút."""
+
+    WORD_COUNT = 25  # > DEFAULT_SESSION_LIMIT (20)
+
+    def setUp(self):
+        super().setUp()
+        words = [f"語{i:02d}" for i in range(self.WORD_COUNT)]
+        self._make_topic("Nhiều từ", "nhieu-tu", words)
+        for vocab in Vocabulary.objects.all():
+            self._learned(vocab, due_offset=3)          # sắp đến hạn (trong 7 ngày)
+
+    def _posted_limit(self, html, marker):
+        """limit mà form chứa `marker` thật sự gửi đi — đọc từ HTML đã render."""
+        import re
+        for form in re.findall(r"<form[^>]*>.*?</form>", html, flags=re.S):
+            if marker in form:
+                return re.search(r'name="limit" value="([^"]*)"', form).group(1)
+        self.fail(f"Không thấy form chứa {marker!r}")
+
+    def test_deck_button_reviews_every_word_it_announces(self):
+        page = self.client.get(reverse("learning:review"))
+        deck = next(d for d in page.context["decks"] if d["scope"] == "upcoming")
+        self.assertEqual(deck["count"], self.WORD_COUNT)
+
+        limit = self._posted_limit(page.content.decode(), 'name="scope" value="upcoming"')
+        self.client.post(reverse("learning:review_start"), {"scope": "upcoming", "limit": limit})
+        self.assertEqual(len(self.client.session["study_queue"]), self.WORD_COUNT)
+        self.assertEqual(self.client.session["study_total"], self.WORD_COUNT)
+
+    def test_topic_row_button_reviews_every_due_word_of_the_topic(self):
+        UserVocabularyProgress.objects.update(next_review_date=self.user.local_today())
+        page = self.client.get(reverse("learning:review"))
+        limit = self._posted_limit(page.content.decode(), 'type="hidden" name="topic" value="nhieu-tu"')
+        self.client.post(reverse("learning:review_start"),
+                         {"scope": "due", "topic": "nhieu-tu", "limit": limit})
+        self.assertEqual(len(self.client.session["study_queue"]), self.WORD_COUNT)
+
+    def test_due_card_still_honours_the_chosen_limit(self):
+        """Khối "Đến hạn hôm nay" có <select> số từ -> vẫn cắt theo lựa chọn."""
+        UserVocabularyProgress.objects.update(next_review_date=self.user.local_today())
+        self.client.post(reverse("learning:review_start"), {"scope": "due", "limit": "10"})
+        self.assertEqual(len(self.client.session["study_queue"]), 10)

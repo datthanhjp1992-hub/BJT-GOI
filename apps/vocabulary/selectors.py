@@ -44,7 +44,9 @@ SEARCH_LIMIT = 200
 # --- Số từ tối đa cho MỘT phiên học ----------------------------------------
 # 0 = không giới hạn. Mặc định 20 để một lượt học không kéo dài vô tận khi
 # người dùng lọc cả nghìn từ.
-SESSION_LIMIT_CHOICES = (10, 20, 50, 100, 0)
+# 0 = không giới hạn (ôn hết). Hằng số riêng để template/view không rải số 0 "bí ẩn".
+SESSION_LIMIT_ALL = 0
+SESSION_LIMIT_CHOICES = (10, 20, 50, 100, SESSION_LIMIT_ALL)
 DEFAULT_SESSION_LIMIT = 20
 
 
