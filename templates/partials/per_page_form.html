@@ -1,0 +1,16 @@
+{% load properties_tags %}{% comment %}Ô "Hiển thị [10] dòng / trang" — xem apps/core/pagination.py.
+Form GET RIÊNG mang theo các tham số khác của trang dưới dạng input ẩn, luôn về
+trang 1. JS (select[data-autosubmit]) tự gửi khi đổi; tắt JS có nút "Áp dụng".
+Cần `pager`; tuỳ chọn `per_page_suffix_key` (label key của chữ sau ô chọn)
+và `pager_anchor`.{% endcomment %}
+<form method="get" action="{{ pager_anchor }}" class="per-page-form">
+  {% for name, value in pager.hidden_fields %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
+  <label for="id_per_page">{% label "common.pagination.per_page" %}</label>
+  <select id="id_per_page" name="per_page" data-autosubmit>
+    {% for n in pager.per_page_choices %}
+      <option value="{{ n }}"{% if n == pager.per_page %} selected{% endif %}>{{ n }}</option>
+    {% endfor %}
+  </select>
+  <span>{% if per_page_suffix_key %}{% label per_page_suffix_key %}{% else %}{% label "common.pagination.per_page_suffix" %}{% endif %}</span>
+  <noscript><button type="submit" class="btn btn-outline btn-sm">{% label "common.pagination.apply" %}</button></noscript>
+</form>

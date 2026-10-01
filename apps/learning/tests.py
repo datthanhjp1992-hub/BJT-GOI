@@ -954,6 +954,28 @@ class ReviewViewTests(ReviewTestCase):
         self.assertTrue(calendar_view.context["calendar"])
         self.assertFalse(calendar_view.context["topic_rows"])
 
+    def test_topic_table_is_paginated_10_rows_by_default(self):
+        """01/10/2026: bảng theo chủ đề phân trang như SC05 (mặc định 10 dòng)."""
+        for i in range(12):
+            topic = self._make_topic(f"Chủ đề {i:02d}", f"chu-de-{i:02d}", [f"題{i:02d}"])
+            self._learned(topic.vocabularies.first(), due_offset=0)
+
+        page1 = self.client.get(reverse("learning:review"))
+        self.assertEqual(len(page1.context["topic_rows"]), 10)
+        pager = page1.context["topic_pager"]
+        self.assertGreaterEqual(pager["paginator"].count, 12)
+        self.assertIn("view=topic", pager["query"])
+        self.assertIn("per_page=10", pager["query"])
+        self.assertContains(page1, 'name="per_page"')
+
+        page2 = self.client.get(reverse("learning:review"), {"page": 2})
+        self.assertEqual(len(page2.context["topic_rows"]), pager["paginator"].count - 10)
+
+        five = self.client.get(reverse("learning:review"), {"per_page": 5})
+        self.assertEqual(len(five.context["topic_rows"]), 5)
+        bad = self.client.get(reverse("learning:review"), {"per_page": 7})
+        self.assertEqual(bad.context["topic_pager"]["per_page"], 10)
+
     def test_unknown_view_falls_back_to_the_topic_tab(self):
         response = self.client.get(reverse("learning:review") + "?view=linh-tinh")
         self.assertEqual(response.context["active_view"], "topic")

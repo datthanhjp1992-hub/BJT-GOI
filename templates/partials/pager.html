@@ -1,0 +1,26 @@
+{% load properties_tags %}{% comment %}Phân trang có số trang — xem apps/core/pagination.py.
+Cần biến `pager` (dict của paginate()). Tuỳ chọn: `pager_anchor` (vd "#bang")
+để lật trang không nhảy về đầu trang.{% endcomment %}
+{% if pager.page_obj.has_other_pages %}
+  <nav class="pagination pager" aria-label="{% label 'common.pagination.nav' %}">
+    {% if pager.page_obj.has_previous %}
+      <a class="pager-btn" href="?page={{ pager.page_obj.previous_page_number }}{{ pager.query }}{{ pager_anchor }}" rel="prev" aria-label="{% label 'common.pagination.prev' %}">‹</a>
+    {% else %}
+      <span class="pager-btn is-disabled" aria-hidden="true">‹</span>
+    {% endif %}
+    {% for p in pager.page_range %}
+      {% if p == pager.ellipsis %}
+        <span class="pager-gap">…</span>
+      {% elif p == pager.page_obj.number %}
+        <span class="pager-btn is-current" aria-current="page">{{ p }}</span>
+      {% else %}
+        <a class="pager-btn" href="?page={{ p }}{{ pager.query }}{{ pager_anchor }}">{{ p }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if pager.page_obj.has_next %}
+      <a class="pager-btn" href="?page={{ pager.page_obj.next_page_number }}{{ pager.query }}{{ pager_anchor }}" rel="next" aria-label="{% label 'common.pagination.next' %}">›</a>
+    {% else %}
+      <span class="pager-btn is-disabled" aria-hidden="true">›</span>
+    {% endif %}
+  </nav>
+{% endif %}

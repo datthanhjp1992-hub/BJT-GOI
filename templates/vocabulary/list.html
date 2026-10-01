@@ -156,19 +156,9 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
     <div class="result-bar">
       <p class="muted" style="margin:0;font-size:14px;">
         {% message "vocabulary.list.hint.result_count" count=total_count %}
-        <span class="result-range">{% message "vocabulary.list.hint.result_range" start=page_obj.start_index end=page_obj.end_index %}</span>
+        <span class="result-range">{% message "common.pagination.range" start=page_obj.start_index end=page_obj.end_index %}</span>
       </p>
-      <form method="get" action="{% url 'vocabulary:index' %}" class="per-page-form">
-        {% for name, value in filter_hidden_fields %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
-        <label for="id_per_page">{% label "vocabulary.list.field.per_page" %}</label>
-        <select id="id_per_page" name="per_page" data-autosubmit>
-          {% for n in per_page_choices %}
-            <option value="{{ n }}"{% if n == per_page %} selected{% endif %}>{{ n }}</option>
-          {% endfor %}
-        </select>
-        <span>{% label "vocabulary.list.field.per_page_suffix" %}</span>
-        <noscript><button type="submit" class="btn btn-outline btn-sm">{% label "vocabulary.list.button.apply" %}</button></noscript>
-      </form>
+      {% include "partials/per_page_form.html" with per_page_suffix_key="vocabulary.list.field.per_page_suffix" %}
     </div>
 
     <div class="card" style="padding:0;">
@@ -202,29 +192,7 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
       </table>
     </div>
 
-    {% if page_obj.has_other_pages %}
-      <nav class="pagination pager" aria-label="{% label 'common.pagination.nav' %}">
-        {% if page_obj.has_previous %}
-          <a class="pager-btn" href="?page={{ page_obj.previous_page_number }}{{ pagination_query }}" rel="prev" aria-label="{% label 'common.pagination.prev' %}">‹</a>
-        {% else %}
-          <span class="pager-btn is-disabled" aria-hidden="true">‹</span>
-        {% endif %}
-        {% for p in page_range %}
-          {% if p == page_ellipsis %}
-            <span class="pager-gap">…</span>
-          {% elif p == page_obj.number %}
-            <span class="pager-btn is-current" aria-current="page">{{ p }}</span>
-          {% else %}
-            <a class="pager-btn" href="?page={{ p }}{{ pagination_query }}">{{ p }}</a>
-          {% endif %}
-        {% endfor %}
-        {% if page_obj.has_next %}
-          <a class="pager-btn" href="?page={{ page_obj.next_page_number }}{{ pagination_query }}" rel="next" aria-label="{% label 'common.pagination.next' %}">›</a>
-        {% else %}
-          <span class="pager-btn is-disabled" aria-hidden="true">›</span>
-        {% endif %}
-      </nav>
-    {% endif %}
+    {% include "partials/pager.html" %}
 
     {% comment %}Nút bắt đầu học: POST (không phải link GET) vì nó TẠO một
     StudySession và chốt hàng đợi vào session — thao tác có tác dụng phụ thì

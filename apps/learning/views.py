@@ -18,6 +18,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
+from apps.core import pagination
 from apps.core.constants import SESSION_TYPE_FLASHCARD, SESSION_TYPE_QUIZ
 from apps.core.properties import label, message
 from apps.gamification import services as gamification_services
@@ -1016,10 +1017,24 @@ def review_view(request):
         "wordlists": UserWordlist.objects.filter(user=user).order_by("-updated_at"),
         # Chỉ truy vấn đúng bảng của tab đang mở — ba tab là ba truy vấn khác
         # nhau, không việc gì chạy cả ba mỗi lần tải trang.
-        "topic_rows": services.get_topic_review_rows(user) if active_view == REVIEW_VIEW_TOPIC else [],
+        "topic_rows": [],
+        "topic_pager": None,
         "memory_rows": services.get_memory_distribution(user) if active_view == REVIEW_VIEW_MEMORY else [],
         "calendar": services.get_review_calendar(user) if active_view == REVIEW_VIEW_CALENDAR else [],
     }
+    if active_view == REVIEW_VIEW_TOPIC:
+        # Bảng theo chủ đề dài theo số chủ đề đã học (vài chục dòng) -> phân
+        # trang 5/10/20/50/100 dòng như SC05, mặc định 10 (sửa 01/10/2026).
+        # Thứ tự "nợ nhiều từ đến hạn nhất lên đầu" giữ nguyên qua các trang.
+        per_page = pagination.clean_per_page(request.GET.get(pagination.PER_PAGE_PARAM))
+        pager = pagination.paginate(
+            services.get_topic_review_rows(user),
+            request.GET.get(pagination.PAGE_PARAM),
+            per_page,
+            keep={REVIEW_VIEW_PARAM: REVIEW_VIEW_TOPIC},
+        )
+        context["topic_pager"] = pager
+        context["topic_rows"] = pager["page_obj"].object_list
     return render(request, "learning/review.html", context)
 
 

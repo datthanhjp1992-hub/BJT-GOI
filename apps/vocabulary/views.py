@@ -27,11 +27,11 @@ Vì trạng thái bộ lọc nằm ở query string nên trang vẫn bookmark/ch
 import re
 
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
 from django.db.models import Count
 from django.http import QueryDict
 from django.shortcuts import get_object_or_404, render
 
+from apps.core import pagination
 from apps.core.utils import TOPIC_PARAM, topic_filter_bar
 from apps.learning.models import UserVocabularyProgress
 
@@ -39,20 +39,13 @@ from . import selectors
 from .models import Topic
 
 # Số dòng mỗi trang của bảng kết quả — người dùng chọn ngay trên bảng.
-PER_PAGE_PARAM = "per_page"
-PER_PAGE_CHOICES = (5, 10, 20, 50, 100)
-DEFAULT_PER_PAGE = 10
-# Tên cũ, giữ cho code/test ngoài import không gãy.
+# Logic dùng chung nằm ở apps.core.pagination; giữ tên cũ để test/code ngoài
+# import không gãy.
+PER_PAGE_PARAM = pagination.PER_PAGE_PARAM
+PER_PAGE_CHOICES = pagination.PER_PAGE_CHOICES
+DEFAULT_PER_PAGE = pagination.DEFAULT_PER_PAGE
 PAGE_SIZE = DEFAULT_PER_PAGE
-
-
-def clean_per_page(raw):
-    """Giá trị lạ (sửa URL bằng tay) rơi về mặc định thay vì báo lỗi."""
-    try:
-        value = int(raw)
-    except (TypeError, ValueError):
-        return DEFAULT_PER_PAGE
-    return value if value in PER_PAGE_CHOICES else DEFAULT_PER_PAGE
+clean_per_page = pagination.clean_per_page
 
 # Giữ lại tên cũ để test/code ngoài import không gãy.
 SEARCH_LIMIT = selectors.SEARCH_LIMIT
@@ -75,13 +68,6 @@ def _filter_params(selected_slugs, statuses, query, session_limit):
         params[selectors.SEARCH_PARAM] = query
     params[selectors.LIMIT_PARAM] = str(session_limit)
     return params
-
-
-def _pagination_query(params, per_page):
-    """Đuôi query cho link phân trang: bộ lọc + `per_page`, KHÔNG có `page`."""
-    params = params.copy()
-    params[PER_PAGE_PARAM] = str(per_page)
-    return "&" + params.urlencode()
 
 
 def _natural_key(topic):
@@ -199,21 +185,20 @@ def vocabulary_list_view(request, topic_slug=None):
     words = selectors.filter_vocabulary(
         request.user, topics=selected_topics, query=query, statuses=statuses
     )
-    paginator = Paginator(words, per_page)
-    page = paginator.get_page(request.GET.get("page"))
+    params = _filter_params(selected_slugs, statuses, query, session_limit)
+    pager = pagination.paginate(words, request.GET.get(pagination.PAGE_PARAM), per_page, keep=params)
+    page = pager["page_obj"]
     # Chỉ "mượn" chủ đề cho link học khi đang lọc đúng MỘT chủ đề.
     _attach_study_status(request.user, page.object_list, fallback_topic=only_topic)
 
-    params = _filter_params(selected_slugs, statuses, query, session_limit)
     context.update({
+        "pager": pager,
         "page_obj": page,
-        "paginator": paginator,
-        "total_count": paginator.count,
-        "pagination_query": _pagination_query(params, per_page),
-        # 1 2 … 5 [6] 7 … 12 — số trang + dấu lược, Django tự tính.
-        "page_range": list(paginator.get_elided_page_range(page.number, on_each_side=1, on_ends=1)),
-        "page_ellipsis": paginator.ELLIPSIS,
-        # Form "số dòng mỗi trang" gửi lại nguyên bộ lọc dưới dạng input ẩn.
-        "filter_hidden_fields": [(k, v) for k in params for v in params.getlist(k)],
+        "paginator": pager["paginator"],
+        "total_count": pager["paginator"].count,
+        "pagination_query": pager["query"],
+        "page_range": pager["page_range"],
+        "page_ellipsis": pager["ellipsis"],
+        "filter_hidden_fields": pager["hidden_fields"],
     })
     return render(request, "vocabulary/list.html", context)

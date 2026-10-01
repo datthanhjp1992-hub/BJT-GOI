@@ -150,6 +150,18 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
     </div>
 
     {% if active_view == "topic" %}
+      {% comment %}Phân trang + chọn số dòng (01/10/2026) — dùng chung partial
+      với SC05. `pager_anchor` giữ màn hình ở bảng khi lật trang thay vì nhảy
+      về đầu trang (khối "Đến hạn hôm nay" ở trên khá cao).{% endcomment %}
+      {% if topic_pager.paginator.count %}
+        <div class="result-bar" id="topic-table">
+          <p class="muted" style="margin:0;font-size:14px;">
+            {% message "learning.review.hint.topic_count" count=topic_pager.paginator.count %}
+            <span class="result-range">{% message "common.pagination.range" start=topic_pager.page_obj.start_index end=topic_pager.page_obj.end_index %}</span>
+          </p>
+          {% include "partials/per_page_form.html" with pager=topic_pager pager_anchor="#topic-table" per_page_suffix_key="learning.review.field.per_page_suffix" %}
+        </div>
+      {% endif %}
       <div class="card" style="padding:0;">
         <table>
           <tr>
@@ -178,6 +190,7 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
           {% endfor %}
         </table>
       </div>
+      {% include "partials/pager.html" with pager=topic_pager pager_anchor="#topic-table" %}
       <p class="muted" style="margin:14px 0 0;font-size:13px;">
         {% message "learning.review.hint.topic_overlap" count=overview.studied %}
       </p>
