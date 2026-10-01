@@ -581,6 +581,15 @@ class StudySessionViewTests(LearningTestCase):
         queue = self.client.session["study_queue"]
         self.assertLessEqual(len(queue), 10)
 
+    def test_missing_limit_means_every_word(self):
+        """01/10/2026: SC05 mặc định "Tất cả" — POST thiếu/lạ limit thì học hết."""
+        words = [f"語{i:02d}" for i in range(25)]
+        self._make_topic("Nhiều từ", "nhieu-tu", words)
+        self._start(topic="nhieu-tu")
+        self.assertEqual(len(self.client.session["study_queue"]), 25)
+        self._start(topic="nhieu-tu", limit="rac")
+        self.assertEqual(len(self.client.session["study_queue"]), 25)
+
     def test_due_words_come_before_new_ones(self):
         topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
         due = topic.vocabularies.get(word="予約")

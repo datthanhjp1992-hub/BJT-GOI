@@ -762,3 +762,71 @@ label.lb-opt:hover{border-color:var(--accent);}
   .kq-table td{border:0;padding:3px 10px;} .kq-table td:nth-child(2){display:none;}
   .kq-table td:nth-child(4){grid-column:2;color:var(--bt-ok);} .kq-table td.r{grid-row:1;grid-column:3;}
 }
+
+/* ===========================================================================
+   SC05 — sửa 01/10/2026: ô chọn chủ đề dễ dùng hơn + chọn số dòng/trang +
+   phân trang có số. Chỉ dùng biến chung (--accent, --accent-soft, --border,
+   --surface, --ink, --ink-soft) nên khối này giống hệt nhau ở cả 3 theme.
+   =========================================================================== */
+.link-button{background:none;border:0;padding:0;font:inherit;color:var(--accent);cursor:pointer;}
+.link-button:hover{text-decoration:underline;}
+.topic-filter-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 0 6px;}
+.topic-filter-count{font-size:12.5px;white-space:nowrap;}
+
+/* Nút mở: hiện tên các chủ đề đã chọn dưới dạng chip nhỏ. */
+.topic-dropdown > summary.dropdown-toggle{min-height:48px;}
+.dropdown-summary{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-width:0;}
+.summary-placeholder{color:var(--ink-soft);}
+.summary-chip{display:inline-block;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-dark,var(--accent));
+  font-size:13px;font-weight:600;}
+.summary-more{font-size:13px;color:var(--ink-soft);font-weight:600;}
+
+/* Panel: ô tìm, hàng thao tác, lưới chủ đề nhiều cột, nút Xong. */
+.topic-dropdown .dropdown-panel{padding:14px;}
+.dropdown-search input{margin:0;}
+.topic-dropdown .dropdown-actions{justify-content:flex-start;margin:10px 0 8px;}
+.dropdown-list.topic-grid{max-height:320px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;}
+.dropdown-list .topic-option{border:1px solid var(--border);padding:8px 10px;gap:8px;font-size:14px;
+  transition:background .12s,border-color .12s;}
+.dropdown-list .topic-option:hover{border-color:var(--accent);background:var(--surface);}
+.dropdown-list .topic-option.is-checked,
+.dropdown-list .topic-option:has(input:checked){background:var(--accent-soft);border-color:var(--accent);}
+.topic-option input{accent-color:var(--accent);}
+.topic-option-name{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.topic-option-count{flex:none;font-size:11.5px;font-weight:700;color:var(--ink-soft);
+  background:var(--bg,#f4f4f4);border-radius:999px;padding:1px 8px;}
+.topic-option.is-checked .topic-option-count{background:var(--surface);color:var(--accent);}
+.dropdown-footer{display:flex;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+
+/* Hàng chip chủ đề đã chọn (dưới dropdown) + chip "Đang tìm". */
+.filter-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.filter-chips:empty{display:none;}
+.filter-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 12px;border-radius:999px;
+  border:1px solid var(--accent);background:var(--accent-soft);color:var(--ink);font-size:13px;}
+.filter-chip.is-search{padding-left:12px;}
+.filter-chip-remove{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;
+  border:0;border-radius:50%;background:transparent;color:var(--ink-soft);font-size:11px;line-height:1;
+  cursor:pointer;text-decoration:none;padding:0;}
+.filter-chip-remove:hover{background:var(--accent);color:#fff;}
+
+/* Thanh trên bảng: số kết quả + chọn số dòng mỗi trang. */
+.result-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 12px;}
+.result-range{margin-left:4px;}
+.per-page-form{display:flex;align-items:center;gap:8px;margin:0;font-size:14px;color:var(--ink-soft);}
+.per-page-form label{margin:0;font-weight:400;font-size:14px;}
+.per-page-form select{width:auto;padding:6px 30px 6px 12px;font-size:14px;}
+
+/* Phân trang có số trang. */
+.pagination.pager{gap:6px;flex-wrap:wrap;}
+.pager-btn{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 10px;
+  border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--ink);
+  font-size:14px;text-decoration:none;}
+a.pager-btn:hover{border-color:var(--accent);color:var(--accent);}
+.pager-btn.is-current{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;}
+.pager-btn.is-disabled{opacity:.4;}
+.pager-gap{padding:0 4px;color:var(--ink-soft);}
+@media (max-width:640px){
+  .dropdown-list.topic-grid{grid-template-columns:1fr;}
+  .result-bar{align-items:flex-start;}
+}

@@ -3,10 +3,11 @@
 {% comment %}SC05_DanhSachTuVung — port từ htmlTemplate/SC05_DanhSachTuVung_*.html.
 
 Bố cục mới (18/09/2026), xem apps/vocabulary/views.py để biết lý do:
-  1. KHU BỘ LỌC riêng ở đầu trang — một form GET duy nhất (chủ đề, từ khoá,
-     trạng thái học, số từ mỗi phiên).
+  1. KHU BỘ LỌC riêng ở đầu trang — một form GET duy nhất (chủ đề, trạng thái
+     học, số từ mỗi phiên). Ô tìm từ khoá đã bỏ (01/10/2026).
   2. Vào trang chưa bấm "Lọc" thì KHÔNG hiện bảng và view cũng không truy vấn.
-  3. Bảng kết quả 50 dòng/trang, phân trang ngay dưới bảng.
+  3. Bảng kết quả 5/10/20/50/100 dòng/trang (mặc định 10, chọn ngay trên
+     bảng), phân trang có số trang ngay dưới bảng.
   4. Nút "Bắt đầu học" nằm DƯỚI CHÂN BẢNG, học toàn bộ từ khớp bộ lọc — mỗi
      dòng không còn link "Học ngay/Ôn tập" riêng nữa.
   5. Góp ý & báo lỗi đã chuyển vào màn học chi tiết (learning/flashcard.html),
@@ -30,13 +31,15 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
     có nó (và không có tham số lọc nào) thì view không truy vấn từ vựng.{% endcomment %}
     <input type="hidden" name="filtered" value="1">
 
-    <div class="field">
-      <label for="id_q">{% label "vocabulary.list.field.search" %}</label>
-      <input id="id_q" type="search" name="q" value="{{ query }}"
-             placeholder="{% label 'vocabulary.list.hint.search_placeholder' %}">
-    </div>
-
-    <div class="divider"></div>
+    {% comment %}Sửa 01/10/2026: bỏ ô "Tìm kiếm từ vựng" — trang chỉ lọc theo chủ
+    đề. `q` chỉ còn đến từ deep link (màn Kính ngữ): giữ nó dưới dạng input ẩn
+    + một chip "Đang tìm …" có nút bỏ, để người dùng biết vì sao bảng hẹp lại.{% endcomment %}
+    {% if query %}
+      <input type="hidden" name="q" value="{{ query }}">
+      <div class="filter-chips" style="margin:0 0 16px;">
+        <span class="filter-chip is-search">🔎 {% message "vocabulary.list.hint.searching" query=query %}<a class="filter-chip-remove" href="{% url 'vocabulary:index' %}{{ clear_search_query }}" aria-label="{% label 'vocabulary.list.button.clear_search' %}" title="{% label 'vocabulary.list.button.clear_search' %}">✕</a></span>
+      </div>
+    {% endif %}
 
     {% comment %}Ô chọn chủ đề dạng dropdown nhiều-lựa-chọn: <details>/<summary>
     chứ không phải div + JS, để tắt JavaScript vẫn mở/đóng và tích được chủ đề.
@@ -44,42 +47,68 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
     khối ẩn nó đi thay vì để một ô gõ vào không có tác dụng gì.
 
     Ô tìm này KHÔNG có thuộc tính name — nó chỉ lọc danh sách hiển thị tại chỗ,
-    không được lẫn vào query string của form.{% endcomment %}
-    <label style="margin:0 0 6px;">{% label "vocabulary.list.field.filter_topic" %}</label>
-    <details class="dropdown" id="topic-dropdown">
+    không được lẫn vào query string của form.
+
+    UX 01/10/2026: nút mở hiện TÊN các chủ đề đã chọn (không chỉ "1 chủ đề đã
+    chọn"), mỗi chủ đề kèm số từ, mục đã tích được tô nổi, có bộ đếm "đã chọn
+    x/y", nút "Xong" đóng panel, và hàng chip bên dưới để bỏ nhanh từng chủ đề.{% endcomment %}
+    <div class="topic-filter-head">
+      <label style="margin:0;">{% label "vocabulary.list.field.filter_topic" %}</label>
+      <span class="muted topic-filter-count" data-dropdown-count data-for="topic-dropdown"
+            data-label="{% label 'vocabulary.list.option.selected_word' %}"
+            data-total="{{ topic_filters|length }}">{% label "vocabulary.list.option.selected_word" %} {{ selected_topics|length }}/{{ topic_filters|length }}</span>
+    </div>
+    <details class="dropdown topic-dropdown" id="topic-dropdown">
       <summary class="dropdown-toggle" aria-haspopup="true">
-        <span id="topic-dropdown-summary" data-dropdown-summary
+        {% comment %}Nút mở chỉ ghi "N chủ đề đã chọn": tên từng chủ đề đã nằm ở
+        hàng chip ngay bên dưới (có nút ✕), in lại ở đây là lặp thông tin.{% endcomment %}
+        <span class="dropdown-summary" id="topic-dropdown-summary" data-dropdown-summary
               data-all="{% label 'vocabulary.list.option.all_topics' %}"
               data-suffix="{% label 'vocabulary.list.option.topics_selected_suffix' %}">{% if selected_topics %}{{ selected_topics|length }} {% label "vocabulary.list.option.topics_selected_suffix" %}{% else %}{% label "vocabulary.list.option.all_topics" %}{% endif %}</span>
       </summary>
       <div class="dropdown-panel">
-        <div id="topic-search-box">
+        <div id="topic-search-box" class="dropdown-search">
           <input type="search" id="topic-search" data-dropdown-search autocomplete="off"
                  placeholder="{% label 'vocabulary.list.field.topic_search' %}"
                  aria-label="{% label 'vocabulary.list.field.topic_search' %}">
         </div>
         <div class="dropdown-actions">
-          <button type="button" class="action-link" style="background:none;border:0;padding:0;font:inherit;cursor:pointer;" data-dropdown-check="1">{% label "vocabulary.list.button.select_all_topics" %}</button>
+          <button type="button" class="link-button" data-dropdown-check="1">{% label "vocabulary.list.button.select_all_topics" %}</button>
           <span class="action-sep" aria-hidden="true">·</span>
-          <button type="button" class="action-link" style="background:none;border:0;padding:0;font:inherit;cursor:pointer;" data-dropdown-check="0">{% label "vocabulary.list.button.clear_topics" %}</button>
+          <button type="button" class="link-button" data-dropdown-check="0">{% label "vocabulary.list.button.clear_topics" %}</button>
         </div>
-        <div class="dropdown-list" id="topic-list">
+        <div class="dropdown-list topic-grid" id="topic-list">
           {% for f in topic_filters %}
-            <label class="checkbox-row" data-search="{{ f.topic.name }} {{ f.topic.name_ja }} {{ f.topic.slug }}">
+            <label class="checkbox-row topic-option{% if f.is_selected %} is-checked{% endif %}"
+                   data-search="{{ f.topic.name }} {{ f.topic.name_ja }} {{ f.topic.slug }}"
+                   data-label="{{ f.topic.icon_emoji }} {{ f.topic.name_ja|default:f.topic.name }}">
               <input type="checkbox" name="topic" value="{{ f.topic.slug }}"{% if f.is_selected %} checked{% endif %}>
               {% comment %}Trong dropdown hiện ĐỦ cả hai tên (display_name) chứ không
               chỉ tên Nhật như thẻ lọc cũ — người dùng gõ tên Việt phải nhìn thấy
               thứ mình vừa gõ thì mới tin là tìm đúng.{% endcomment %}
-              <span>{{ f.topic.icon_emoji }} {{ f.topic.display_name }}</span>
+              <span class="topic-option-name">{{ f.topic.icon_emoji }} {{ f.topic.display_name }}</span>
+              <span class="topic-option-count" title="{% label 'vocabulary.list.hint.word_count' %}">{{ f.topic.word_count }}</span>
             </label>
           {% empty %}
             <p class="muted" style="margin:0;font-size:14px;">{% message "vocabulary.list.hint.no_topic" %}</p>
           {% endfor %}
         </div>
         <p class="dropdown-empty" id="topic-empty" data-dropdown-empty hidden>{% message "vocabulary.list.hint.topic_search_empty" %}</p>
+        <div class="dropdown-footer">
+          <button type="button" class="btn btn-primary btn-sm" data-dropdown-close>{% label "vocabulary.list.button.done" %}</button>
+        </div>
       </div>
     </details>
-    <noscript><style>#topic-search-box{display:none}</style></noscript>
+    <noscript><style>#topic-search-box,[data-dropdown-close],button.filter-chip-remove{display:none}</style></noscript>
+
+    {% comment %}Hàng chip các chủ đề đang chọn — JS dựng lại mỗi lần tích/bỏ;
+    server in sẵn để tắt JS vẫn thấy mình đang lọc gì.{% endcomment %}
+    <div class="filter-chips" data-dropdown-chips data-for="topic-dropdown"
+         data-remove-label="{% label 'vocabulary.list.button.remove_topic' %}">
+      {% for t in selected_topics %}
+        <span class="filter-chip">{{ t.icon_emoji }} {{ t.name_ja|default:t.name }}<button type="button" class="filter-chip-remove" data-value="{{ t.slug }}" aria-label="{% label 'vocabulary.list.button.remove_topic' %}">✕</button></span>
+      {% endfor %}
+    </div>
     <p class="muted" style="font-size:12.5px;margin:8px 0 0;">{% message "vocabulary.list.hint.topic_is_or" %}</p>
 
     <div class="divider"></div>
@@ -119,9 +148,28 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
   {% if not is_filtered %}
     <div class="card"><p class="muted" style="margin:0;">{% message "vocabulary.list.hint.not_filtered" %}</p></div>
   {% elif page_obj.object_list %}
-    <p class="muted" style="margin:0 0 16px;font-size:14px;">
-      {% message "vocabulary.list.hint.result_count" count=total_count %}
-    </p>
+    {% comment %}Đầu bảng (01/10/2026): số kết quả + "đang hiện a–b" bên trái, ô chọn
+    số dòng mỗi trang bên phải. Ô chọn nằm trong một form GET RIÊNG mang theo
+    bộ lọc đã chuẩn hoá dưới dạng input ẩn — đổi số dòng không lấy theo những
+    checkbox người dùng vừa tích mà chưa bấm Lọc, và luôn quay về trang 1.
+    JS tự submit khi đổi; tắt JS thì có nút "Áp dụng" trong <noscript>.{% endcomment %}
+    <div class="result-bar">
+      <p class="muted" style="margin:0;font-size:14px;">
+        {% message "vocabulary.list.hint.result_count" count=total_count %}
+        <span class="result-range">{% message "vocabulary.list.hint.result_range" start=page_obj.start_index end=page_obj.end_index %}</span>
+      </p>
+      <form method="get" action="{% url 'vocabulary:index' %}" class="per-page-form">
+        {% for name, value in filter_hidden_fields %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
+        <label for="id_per_page">{% label "vocabulary.list.field.per_page" %}</label>
+        <select id="id_per_page" name="per_page" data-autosubmit>
+          {% for n in per_page_choices %}
+            <option value="{{ n }}"{% if n == per_page %} selected{% endif %}>{{ n }}</option>
+          {% endfor %}
+        </select>
+        <span>{% label "vocabulary.list.field.per_page_suffix" %}</span>
+        <noscript><button type="submit" class="btn btn-outline btn-sm">{% label "vocabulary.list.button.apply" %}</button></noscript>
+      </form>
+    </div>
 
     <div class="card" style="padding:0;">
       <table>
@@ -155,15 +203,27 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
     </div>
 
     {% if page_obj.has_other_pages %}
-      <div class="pagination">
+      <nav class="pagination pager" aria-label="{% label 'common.pagination.nav' %}">
         {% if page_obj.has_previous %}
-          <a class="tag" href="?page={{ page_obj.previous_page_number }}{{ pagination_query }}">{% label "common.pagination.prev" %}</a>
+          <a class="pager-btn" href="?page={{ page_obj.previous_page_number }}{{ pagination_query }}" rel="prev" aria-label="{% label 'common.pagination.prev' %}">‹</a>
+        {% else %}
+          <span class="pager-btn is-disabled" aria-hidden="true">‹</span>
         {% endif %}
-        <span>{{ page_obj.number }} / {{ paginator.num_pages }}</span>
+        {% for p in page_range %}
+          {% if p == page_ellipsis %}
+            <span class="pager-gap">…</span>
+          {% elif p == page_obj.number %}
+            <span class="pager-btn is-current" aria-current="page">{{ p }}</span>
+          {% else %}
+            <a class="pager-btn" href="?page={{ p }}{{ pagination_query }}">{{ p }}</a>
+          {% endif %}
+        {% endfor %}
         {% if page_obj.has_next %}
-          <a class="tag" href="?page={{ page_obj.next_page_number }}{{ pagination_query }}">{% label "common.pagination.next" %}</a>
+          <a class="pager-btn" href="?page={{ page_obj.next_page_number }}{{ pagination_query }}" rel="next" aria-label="{% label 'common.pagination.next' %}">›</a>
+        {% else %}
+          <span class="pager-btn is-disabled" aria-hidden="true">›</span>
         {% endif %}
-      </div>
+      </nav>
     {% endif %}
 
     {% comment %}Nút bắt đầu học: POST (không phải link GET) vì nó TẠO một

@@ -705,7 +705,8 @@ def study_start_view(request):
         request.POST.getlist(vocab_selectors.STATUS_PARAM)
     )
     limit = vocab_selectors.clean_session_limit(
-        request.POST.get(vocab_selectors.LIMIT_PARAM)
+        request.POST.get(vocab_selectors.LIMIT_PARAM),
+        default=vocab_selectors.LIBRARY_DEFAULT_SESSION_LIMIT,
     )
 
     words = vocab_selectors.filter_vocabulary(

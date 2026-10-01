@@ -5,19 +5,30 @@ Một view duy nhất phục vụ hai URL:
     /vocabulary/                  -> thư viện từ vựng
     /vocabulary/topic/<slug>/     -> mở sẵn với một chủ đề đã chọn
 
+Sửa 01/10/2026:
+  * Bỏ ô "Tìm kiếm từ vựng" khỏi form — chỉ lọc theo chủ đề (+ trạng thái).
+    `?q=` vẫn được đọc để link "tra trong từ vựng" từ màn Kính ngữ không gãy;
+    khi có `q`, trang hiện một chip "Đang tìm …" kèm nút bỏ.
+  * Số từ mỗi phiên học mặc định = Tất cả.
+  * Bảng kết quả: người dùng chọn 5/10/20/50/100 dòng mỗi trang (mặc định 10)
+    qua tham số `per_page`; phân trang có số trang + dấu "…".
+
 Luồng dùng trang (sửa 18/09/2026):
   1. Vào trang -> CHỈ hiện khu bộ lọc, KHÔNG truy vấn từ vựng. Kho từ tới vài
      nghìn từ nên tải sẵn một trang 50 dòng mà người dùng chưa cần là lãng phí.
   2. Bấm "Lọc" -> form GET nạp lại trang kèm tham số -> bảng kết quả hiện ra,
-     50 dòng mỗi trang, phân trang bên dưới.
+     `per_page` dòng mỗi trang (mặc định 10), phân trang bên dưới.
   3. Bấm "Bắt đầu học" dưới chân bảng -> POST sang learning:study_start, học
      TOÀN BỘ từ khớp bộ lọc (gộp nhiều chủ đề vào một hàng đợi).
 
 Vì trạng thái bộ lọc nằm ở query string nên trang vẫn bookmark/chia sẻ/back
 được và chạy đúng khi trình duyệt tắt JavaScript.
 """
+import re
+
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Count
 from django.http import QueryDict
 from django.shortcuts import get_object_or_404, render
 
@@ -27,7 +38,21 @@ from apps.learning.models import UserVocabularyProgress
 from . import selectors
 from .models import Topic
 
-PAGE_SIZE = 50
+# Số dòng mỗi trang của bảng kết quả — người dùng chọn ngay trên bảng.
+PER_PAGE_PARAM = "per_page"
+PER_PAGE_CHOICES = (5, 10, 20, 50, 100)
+DEFAULT_PER_PAGE = 10
+# Tên cũ, giữ cho code/test ngoài import không gãy.
+PAGE_SIZE = DEFAULT_PER_PAGE
+
+
+def clean_per_page(raw):
+    """Giá trị lạ (sửa URL bằng tay) rơi về mặc định thay vì báo lỗi."""
+    try:
+        value = int(raw)
+    except (TypeError, ValueError):
+        return DEFAULT_PER_PAGE
+    return value if value in PER_PAGE_CHOICES else DEFAULT_PER_PAGE
 
 # Giữ lại tên cũ để test/code ngoài import không gãy.
 SEARCH_LIMIT = selectors.SEARCH_LIMIT
@@ -36,20 +61,33 @@ STATUS_LEARNING = selectors.STATUS_LEARNING
 STATUS_MASTERED = selectors.STATUS_MASTERED
 
 
-def _pagination_query(request, selected_slugs, statuses):
-    """Chuỗi query giữ lại bộ lọc khi bấm sang trang khác.
+def _filter_params(selected_slugs, statuses, query, session_limit):
+    """Bộ lọc ĐÃ CHUẨN HOÁ dưới dạng QueryDict (không có `page`/`per_page`).
 
-    Bỏ `page`, và dựng lại `topic`/`status` từ tập đã chuẩn hoá (giá trị rác bị
-    loại bỏ, slug trên route được đưa vào) để trang 2 lọc y hệt trang 1.
+    Dựng lại từ giá trị sạch thay vì chép request.GET: giá trị rác bị loại,
+    slug trên route được đưa vào, nên trang 2 lọc y hệt trang 1.
     """
     params = QueryDict(mutable=True)
-    params.update(request.GET)
-    params.pop("page", None)
+    params[selectors.FILTERED_PARAM] = "1"
     params.setlist(TOPIC_PARAM, list(selected_slugs))
     params.setlist(selectors.STATUS_PARAM, list(statuses))
-    params[selectors.FILTERED_PARAM] = "1"
-    encoded = params.urlencode()
-    return ("&" + encoded) if encoded else ""
+    if query:
+        params[selectors.SEARCH_PARAM] = query
+    params[selectors.LIMIT_PARAM] = str(session_limit)
+    return params
+
+
+def _pagination_query(params, per_page):
+    """Đuôi query cho link phân trang: bộ lọc + `per_page`, KHÔNG có `page`."""
+    params = params.copy()
+    params[PER_PAGE_PARAM] = str(per_page)
+    return "&" + params.urlencode()
+
+
+def _natural_key(topic):
+    """Khoá sắp xếp tự nhiên: so số theo giá trị, so chữ không phân biệt hoa thường."""
+    text = topic.name_ja or topic.name
+    return [int(part) if part.isdigit() else part.lower() for part in re.split(r"(\d+)", text)]
 
 
 def _attach_study_status(user, words, fallback_topic=None):
@@ -90,7 +128,14 @@ def vocabulary_list_view(request, topic_slug=None):
     route_topic = get_object_or_404(Topic, slug=topic_slug) if topic_slug else None
     query = (request.GET.get(selectors.SEARCH_PARAM) or "").strip()
 
-    all_topics = list(Topic.objects.all())
+    # Số từ mỗi chủ đề hiện cạnh tên trong dropdown. Chỉ đếm trên bảng nối
+    # VocabularyTopic (GROUP BY nhỏ), không chạm vào bảng từ vựng.
+    # Query có GROUP BY thì Django bỏ qua Meta.ordering, nên phải tự sắp: theo
+    # thứ tự "tự nhiên" để レッスン2 đứng trước レッスン10.
+    all_topics = sorted(
+        Topic.objects.annotate(word_count=Count("vocabulary_links")),
+        key=_natural_key,
+    )
     selected_topics, topic_filters, clear_query = topic_filter_bar(
         request,
         all_topics,
@@ -100,8 +145,10 @@ def vocabulary_list_view(request, topic_slug=None):
     selected_slugs = [t.slug for t in selected_topics]
     statuses = selectors.clean_statuses(request.GET.getlist(selectors.STATUS_PARAM))
     session_limit = selectors.clean_session_limit(
-        request.GET.get(selectors.LIMIT_PARAM, selectors.DEFAULT_SESSION_LIMIT)
+        request.GET.get(selectors.LIMIT_PARAM),
+        default=selectors.LIBRARY_DEFAULT_SESSION_LIMIT,
     )
+    per_page = clean_per_page(request.GET.get(PER_PAGE_PARAM))
     is_filtered = selectors.is_filter_request(request.GET, forced=bool(route_topic))
 
     # Nhiều chủ đề thì không chủ đề nào là "chủ đề của trang".
@@ -124,16 +171,26 @@ def vocabulary_list_view(request, topic_slug=None):
             for code in selectors.STATUS_CODES
         ],
         "session_limit": session_limit,
-        "limit_choices": selectors.SESSION_LIMIT_CHOICES,
+        "limit_choices": selectors.LIBRARY_SESSION_LIMIT_CHOICES,
         "is_filtered": is_filtered,
-        "page_size": PAGE_SIZE,
+        "page_size": per_page,
+        "per_page": per_page,
+        "per_page_choices": PER_PAGE_CHOICES,
+        # Link bỏ từ khoá `q` (chỉ đến từ deep link, form không còn ô tìm).
+        "clear_search_query": "",
         "active_nav": "vocabulary",
         # Mặc định của nhánh "chưa lọc" — template không phải kiểm tra None.
         "page_obj": None,
         "paginator": None,
         "total_count": 0,
         "pagination_query": "",
+        "page_range": [],
+        "filter_hidden_fields": [],
     }
+    if query:
+        no_search = _filter_params(selected_slugs, statuses, "", session_limit)
+        no_search[PER_PAGE_PARAM] = str(per_page)
+        context["clear_search_query"] = "?" + no_search.urlencode()
 
     if not is_filtered:
         # Chưa bấm Lọc: KHÔNG chạm vào bảng từ vựng.
@@ -142,15 +199,21 @@ def vocabulary_list_view(request, topic_slug=None):
     words = selectors.filter_vocabulary(
         request.user, topics=selected_topics, query=query, statuses=statuses
     )
-    paginator = Paginator(words, PAGE_SIZE)
+    paginator = Paginator(words, per_page)
     page = paginator.get_page(request.GET.get("page"))
     # Chỉ "mượn" chủ đề cho link học khi đang lọc đúng MỘT chủ đề.
     _attach_study_status(request.user, page.object_list, fallback_topic=only_topic)
 
+    params = _filter_params(selected_slugs, statuses, query, session_limit)
     context.update({
         "page_obj": page,
         "paginator": paginator,
         "total_count": paginator.count,
-        "pagination_query": _pagination_query(request, selected_slugs, statuses),
+        "pagination_query": _pagination_query(params, per_page),
+        # 1 2 … 5 [6] 7 … 12 — số trang + dấu lược, Django tự tính.
+        "page_range": list(paginator.get_elided_page_range(page.number, on_each_side=1, on_ends=1)),
+        "page_ellipsis": paginator.ELLIPSIS,
+        # Form "số dòng mỗi trang" gửi lại nguyên bộ lọc dưới dạng input ẩn.
+        "filter_hidden_fields": [(k, v) for k in params for v in params.getlist(k)],
     })
     return render(request, "vocabulary/list.html", context)

@@ -48,6 +48,12 @@ SEARCH_LIMIT = 200
 SESSION_LIMIT_ALL = 0
 SESSION_LIMIT_CHOICES = (10, 20, 50, 100, SESSION_LIMIT_ALL)
 DEFAULT_SESSION_LIMIT = 20
+# SC05 (sửa 01/10/2026): thư viện từ vựng mặc định học TẤT CẢ từ khớp bộ lọc —
+# người dùng lọc theo chủ đề là đã tự khoanh vùng, cắt còn 20 từ khiến họ phải
+# bấm "Bắt đầu học" nhiều lần cho một chủ đề. Màn Ôn tập (SC15) vẫn giữ 20.
+LIBRARY_DEFAULT_SESSION_LIMIT = SESSION_LIMIT_ALL
+# Cùng tập giá trị với SESSION_LIMIT_CHOICES, chỉ đưa "Tất cả" lên đầu cho khớp mặc định.
+LIBRARY_SESSION_LIMIT_CHOICES = (SESSION_LIMIT_ALL, 10, 20, 50, 100)
 
 
 def is_filter_request(data, forced=False):
@@ -69,13 +75,13 @@ def clean_statuses(values):
     return [code for code in STATUS_CODES if code in picked]
 
 
-def clean_session_limit(raw):
-    """Số từ tối đa mỗi phiên — giá trị lạ thì rơi về mặc định."""
+def clean_session_limit(raw, default=DEFAULT_SESSION_LIMIT):
+    """Số từ tối đa mỗi phiên — giá trị lạ thì rơi về `default`."""
     try:
         value = int(raw)
     except (TypeError, ValueError):
-        return DEFAULT_SESSION_LIMIT
-    return value if value in SESSION_LIMIT_CHOICES else DEFAULT_SESSION_LIMIT
+        return default
+    return value if value in SESSION_LIMIT_CHOICES else default
 
 
 def selected_topics(data, forced_slug=None):

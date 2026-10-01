@@ -61,16 +61,93 @@ function initDropdown(dropdown) {
     if (empty) { empty.hidden = shown !== 0; }
   }
 
-  function refreshSummary() {
-    if (!summary) { return; }
-    var checked = rows.filter(function (row) {
-      var box = row.querySelector("input[type=checkbox]");
-      return box && box.checked;
-    }).length;
-    summary.textContent = checked
-      ? checked + " " + summary.getAttribute("data-suffix")
-      : summary.getAttribute("data-all");
+  // Phần mở rộng tuỳ chọn (SC05, 01/10/2026) — template nào không khai báo thì
+  // dropdown chạy y như cũ (SC10 vẫn hiện "N chủ đề đã chọn"):
+  //   data-names="3" trên [data-dropdown-summary] -> hiện TÊN tối đa 3 mục + "+k"
+  //   data-label trên từng dòng                    -> tên ngắn dùng cho chip
+  //   [data-dropdown-count][data-for=<id>]          -> "Đã chọn x/y"
+  //   [data-dropdown-chips][data-for=<id>]          -> hàng chip có nút ✕ bỏ nhanh
+  //   [data-dropdown-close]                         -> nút "Xong" đóng panel
+  var id = dropdown.id;
+  var counter = id ? document.querySelector('[data-dropdown-count][data-for="' + id + '"]') : null;
+  var chips = id ? document.querySelector('[data-dropdown-chips][data-for="' + id + '"]') : null;
+
+  function boxOf(row) { return row.querySelector("input[type=checkbox]"); }
+  function checkedRows() {
+    return rows.filter(function (row) { var box = boxOf(row); return box && box.checked; });
   }
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) { node.className = cls; }
+    if (text !== undefined) { node.textContent = text; }
+    return node;
+  }
+
+  function refreshSummary() {
+    var picked = checkedRows();
+    rows.forEach(function (row) {
+      var box = boxOf(row);
+      row.classList.toggle("is-checked", !!(box && box.checked));
+    });
+
+    if (summary) {
+      var maxNames = parseInt(summary.getAttribute("data-names"), 10);
+      if (maxNames > 0) {
+        summary.textContent = "";
+        if (!picked.length) {
+          summary.appendChild(el("span", "summary-placeholder", summary.getAttribute("data-all")));
+        } else {
+          picked.slice(0, maxNames).forEach(function (row) {
+            summary.appendChild(el("span", "summary-chip", row.getAttribute("data-label")));
+          });
+          if (picked.length > maxNames) {
+            summary.appendChild(el("span", "summary-more", "+" + (picked.length - maxNames)));
+          }
+        }
+      } else {
+        summary.textContent = picked.length
+          ? picked.length + " " + summary.getAttribute("data-suffix")
+          : summary.getAttribute("data-all");
+      }
+    }
+
+    if (counter) {
+      counter.textContent = counter.getAttribute("data-label") + " " +
+        picked.length + "/" + counter.getAttribute("data-total");
+    }
+
+    if (chips) {
+      chips.textContent = "";
+      picked.forEach(function (row) {
+        var chip = el("span", "filter-chip", row.getAttribute("data-label"));
+        var remove = el("button", "filter-chip-remove", "\u2715");
+        remove.type = "button";
+        remove.setAttribute("data-value", boxOf(row).value);
+        remove.setAttribute("aria-label", chips.getAttribute("data-remove-label") || "");
+        chip.appendChild(remove);
+        chips.appendChild(chip);
+      });
+    }
+  }
+
+  if (chips) {
+    chips.addEventListener("click", function (event) {
+      var button = event.target.closest(".filter-chip-remove");
+      if (!button) { return; }
+      rows.forEach(function (row) {
+        var box = boxOf(row);
+        if (box && box.value === button.getAttribute("data-value")) { box.checked = false; }
+      });
+      refreshSummary();
+    });
+  }
+  dropdown.querySelectorAll("[data-dropdown-close]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      dropdown.open = false;
+      var toggle = dropdown.querySelector("summary");
+      if (toggle) { toggle.focus(); }
+    });
+  });
 
   // "Chọn tất cả / Bỏ chọn hết" chỉ áp cho các mục ĐANG HIỆN — khi đang gõ tìm
   // kiếm thì đó mới là ý người dùng muốn.
@@ -109,6 +186,18 @@ function initDropdown(dropdown) {
 
 function initDropdowns() {
   document.querySelectorAll("details.dropdown").forEach(initDropdown);
+}
+
+// ---------------------------------------------------------------------------
+// 6. <select data-autosubmit>: đổi giá trị là gửi luôn form chứa nó.
+//    Dùng ở SC05 (số dòng mỗi trang). Tắt JS thì template có nút "Áp dụng".
+// ---------------------------------------------------------------------------
+function initAutoSubmit() {
+  document.querySelectorAll("select[data-autosubmit]").forEach(function (select) {
+    select.addEventListener("change", function () {
+      if (select.form) { select.form.submit(); }
+    });
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -213,6 +302,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initRequiredBeforeSubmit();
   initDropdowns();
   initPreviewTables();
+  initAutoSubmit();
 });
 
 // ---------------------------------------------------------------------------

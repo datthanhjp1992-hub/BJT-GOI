@@ -19,8 +19,8 @@ from apps.core.properties import label, message
 from apps.learning.models import UserVocabularyProgress
 
 from .models import Topic, Vocabulary, VocabularyTopic
-from .selectors import DEFAULT_SESSION_LIMIT
-from .views import PAGE_SIZE
+from .selectors import LIBRARY_DEFAULT_SESSION_LIMIT, SESSION_LIMIT_ALL
+from .views import DEFAULT_PER_PAGE, PAGE_SIZE
 
 User = get_user_model()
 
@@ -183,7 +183,7 @@ class ListViewTests(VocabularyTestCase):
         response = self._filtered(topic=["nha-hang", "hop-hanh"])
         self.assertIn("topic=nha-hang", response.context["pagination_query"])
         self.assertIn("topic=hop-hanh", response.context["pagination_query"])
-        self.assertNotIn("page=", response.context["pagination_query"])
+        self.assertNotIn("&page=", response.context["pagination_query"])
 
     def test_search_form_keeps_selected_topics(self):
         """Ô tìm kiếm phải mang theo chủ đề đang lọc (hidden input)."""
@@ -267,7 +267,10 @@ class ListViewTests(VocabularyTestCase):
         self.assertContains(response, message("vocabulary.list.hint.not_filtered"))
         self.assertNotContains(response, "ちゅうもんする")
         # Điều kiện cốt lõi: không có câu SQL nào đụng vào bảng từ vựng.
-        vocabulary_table = Vocabulary._meta.db_table
+        # So theo tên bảng CÓ NGOẶC KÉP: bảng nối "vocabulary_vocabularytopic"
+        # (dùng để đếm số từ mỗi chủ đề trong dropdown) có tên chứa tên bảng
+        # từ vựng, nhưng đếm trên bảng nối không phải là "tải bảng từ vựng".
+        vocabulary_table = '"%s"' % Vocabulary._meta.db_table
         self.assertEqual(
             [q["sql"] for q in captured.captured_queries if vocabulary_table in q["sql"]],
             [],
@@ -326,18 +329,76 @@ class ListViewTests(VocabularyTestCase):
 
     def test_session_limit_falls_back_to_default(self):
         response = self._filtered(limit="999")
-        self.assertEqual(response.context["session_limit"], DEFAULT_SESSION_LIMIT)
+        self.assertEqual(response.context["session_limit"], LIBRARY_DEFAULT_SESSION_LIMIT)
         response = self._filtered(limit="50")
         self.assertEqual(response.context["session_limit"], 50)
 
-    def test_table_shows_50_rows_per_page(self):
-        self.assertEqual(PAGE_SIZE, 50)
-        for index in range(PAGE_SIZE + 2):
+    def test_session_limit_defaults_to_all(self):
+        """01/10/2026: mặc định học TẤT CẢ từ khớp bộ lọc, "Tất cả" đứng đầu và được chọn."""
+        self.assertEqual(LIBRARY_DEFAULT_SESSION_LIMIT, SESSION_LIMIT_ALL)
+        response = self.client.get(reverse("vocabulary:index"))
+        self.assertEqual(response.context["session_limit"], SESSION_LIMIT_ALL)
+        self.assertEqual(response.context["limit_choices"][0], SESSION_LIMIT_ALL)
+        self.assertContains(response, '<option value="0" selected>', html=False)
+
+    def test_search_box_is_gone(self):
+        """01/10/2026: form chỉ lọc theo chủ đề, không còn ô tìm từ vựng."""
+        response = self._filtered()
+        self.assertNotContains(response, 'id="id_q"')
+        self.assertNotContains(response, 'type="search" name="q"')
+
+    def test_deep_link_keyword_shows_a_removable_chip(self):
+        """`?q=` từ màn Kính ngữ vẫn chạy và hiện chip có link bỏ từ khoá."""
+        response = self._filtered(q="ちゅうもん", topic="nha-hang")
+        self.assertContains(response, message("vocabulary.list.hint.searching", query="ちゅうもん"))
+        self.assertNotIn("q=", response.context["clear_search_query"])
+        self.assertIn("topic=nha-hang", response.context["clear_search_query"])
+
+    def test_table_shows_10_rows_per_page_by_default(self):
+        self.assertEqual(PAGE_SIZE, DEFAULT_PER_PAGE)
+        self.assertEqual(DEFAULT_PER_PAGE, 10)
+        for index in range(DEFAULT_PER_PAGE + 2):
             self._word("語%03d" % index, "ご%03d" % index, "nghĩa %03d" % index)
 
         response = self._filtered()
-        self.assertEqual(len(response.context["page_obj"].object_list), 50)
+        self.assertEqual(len(response.context["page_obj"].object_list), 10)
         self.assertEqual(response.context["paginator"].num_pages, 2)
+
+    def test_per_page_can_be_chosen(self):
+        for index in range(25):
+            self._word("語%03d" % index, "ご%03d" % index, "nghĩa %03d" % index)
+
+        response = self._filtered(per_page="5")
+        self.assertEqual(len(response.context["page_obj"].object_list), 5)
+        self.assertEqual(response.context["paginator"].num_pages, 5)
+        self.assertIn("per_page=5", response.context["pagination_query"])
+
+        response = self._filtered(per_page="50")
+        self.assertEqual(len(response.context["page_obj"].object_list), 25)
+
+        response = self._filtered(per_page="7")        # giá trị lạ -> mặc định
+        self.assertEqual(response.context["per_page"], DEFAULT_PER_PAGE)
+
+    def test_pagination_shows_page_numbers(self):
+        for index in range(60):
+            self._word("語%03d" % index, "ご%03d" % index, "nghĩa %03d" % index)
+
+        response = self._filtered(page=3)               # 6 trang x 10 dòng
+        page_range = response.context["page_range"]
+        self.assertEqual(page_range[0], 1)
+        self.assertEqual(page_range[-1], 6)
+        self.assertIn(3, page_range)
+        self.assertContains(response, 'aria-current="page">3<', html=False)
+
+    def test_per_page_form_carries_the_filter(self):
+        """Form chọn số dòng gửi lại bộ lọc ĐÃ chuẩn hoá, không kèm `page`."""
+        self._word("注文する", "ちゅうもんする", "gọi món")
+        response = self._filtered(topic="nha-hang", status="new", page="1")
+        fields = response.context["filter_hidden_fields"]
+        self.assertIn(("topic", "nha-hang"), fields)
+        self.assertIn(("status", "new"), fields)
+        self.assertNotIn("page", [name for name, _ in fields])
+        self.assertNotIn("per_page", [name for name, _ in fields])
 
     def test_start_study_button_carries_the_filter(self):
         self._word("注文する", "ちゅうもんする", "gọi món")
@@ -353,12 +414,13 @@ class ListViewTests(VocabularyTestCase):
 
         first = self.client.get(reverse("vocabulary:list", args=["nha-hang"]), {"page": 1})
         self.assertEqual(len(first.context["page_obj"].object_list), PAGE_SIZE)
-        self.assertNotIn("page=", first.context["pagination_query"])
+        self.assertNotIn("&page=", first.context["pagination_query"])
 
         second = self._filtered(page=2)
         self.assertEqual(len(second.context["page_obj"].object_list), 3)
-        # `page` không được lặp lại trong querystring phân trang.
-        self.assertNotIn("page=", second.context["pagination_query"])
+        # `page` không được lặp lại trong querystring phân trang (chỉ có `per_page`).
+        self.assertNotIn("&page=", second.context["pagination_query"])
+        self.assertIn("per_page=10", second.context["pagination_query"])
 
 
 class SearchTests(VocabularyTestCase):
