@@ -532,7 +532,8 @@ class QuizAnswerTests(LearningTestCase):
 
         session = StudySession.objects.get(user=self.user, topic=topic, session_type="quiz")
         self.assertIsNotNone(session.ended_at)
-        self.assertContains(response, "2/2")
+        # Điểm đếm theo TỪ (1 từ, đúng ngay lần đầu), không theo lượt (2 lượt).
+        self.assertContains(response, "1/1")
 
 
 class StudySessionViewTests(LearningTestCase):
@@ -1121,7 +1122,9 @@ class TopicQueueTests(LearningTestCase):
         # Chưa tới giờ và không còn từ nào khác -> học trước, báo còn mấy phút.
         self.assertGreater(queue.ahead_minutes, 0)
 
-    def test_learning_word_that_is_due_comes_first(self):
+    def test_learning_word_waits_until_the_round_is_done(self):
+        """"Hết lượt rồi mới ôn lại": từ đang học dù đã tới giờ vẫn đứng sau
+        từ đến hạn và từ mới."""
         topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約", "会計"])
         words = list(topic.vocabularies.order_by("pk"))
         self._progress(words[0], due_offset=-1)
@@ -1129,7 +1132,7 @@ class TopicQueueTests(LearningTestCase):
         services.review_word(learning, 0, now=timezone.now() - timedelta(minutes=5))
 
         queue = services.get_topic_queue(self.user, topic)
-        self.assertEqual(queue.words[:3], [words[1], words[0], words[2]])
+        self.assertEqual(queue.words[:3], [words[0], words[2], words[1]])
         self.assertEqual((queue.n_learning, queue.n_review, queue.n_new), (1, 1, 1))
         self.assertEqual(queue.ahead_minutes, 0)
 
@@ -1226,7 +1229,14 @@ class FlashcardFlowTests(LearningTestCase):
     def _grade(self, code):
         return self.client.post(self.review, {"quality": code, "topic_slug": "nha-hang"})
 
+    def test_buttons_hide_the_interval_by_default(self):
+        response = self.client.get(self.page)
+        self.assertEqual([b["delay"] for b in response.context["grade_buttons"]], ["", "", "", ""])
+        self.assertNotContains(response, "4 ngày")
+
     def test_buttons_show_how_long_until_the_next_review(self):
+        self.user.show_review_interval = True
+        self.user.save(update_fields=["show_review_interval"])
         response = self.client.get(self.page)
         delays = [b["delay"] for b in response.context["grade_buttons"]]
         self.assertEqual(delays, ["1 phút", "6 phút", "10 phút", "4 ngày"])
@@ -1253,7 +1263,13 @@ class FlashcardFlowTests(LearningTestCase):
         response = self.client.get(self.page)
         self.assertIsNone(response.context["word"])
         summary = response.context["summary"]
-        self.assertEqual((summary["reviewed"], summary["again"], summary["percent"]), (3, 1, 67))
+        # 1 TỪ, lần đầu bấm Quên -> 0% nhớ ngay, 1 từ cần ôn thêm; 3 lượt chấm.
+        self.assertEqual(
+            (summary["words"], summary["percent"], summary["again"], summary["reviewed"]),
+            (1, 0, 1, 3),
+        )
+        self.assertEqual(summary["again_words"], [self.vocab])
+        self.assertContains(response, reverse("learning:study_retry"))
         self.assertIsNotNone(StudySession.objects.get(user=self.user).ended_at)
 
     def test_undo_a_new_word_forgets_it_completely(self):
@@ -1373,7 +1389,71 @@ class StudyFlowTests(ReviewTestCase):
         self.assertEqual(self.client.session["study_queue"][-1], first_id)
         self.assertEqual(len(self.client.session["study_queue"]), 2)
 
+    def test_learning_word_comes_back_only_after_the_round(self):
+        """Phương án A: từ bấm Quên đã tới giờ vẫn chờ hết hàng đợi."""
+        self.client.post(reverse("learning:study_start"), {"topic": "hop-hanh", "limit": "0"})
+        first = self.client.get(reverse("learning:study")).context["word"]
+        self._review(first.word, "quen")
+        UserVocabularyProgress.objects.filter(user=self.user, vocabulary=first).update(
+            due_at=timezone.now() - timedelta(minutes=5)
+        )
+
+        second = self.client.get(reverse("learning:study"))
+        self.assertNotEqual(second.context["word"], first)
+        self.assertEqual((second.context["seen"], second.context["done"]), (1, 0))
+        self._review(second.context["word"].word, "de")
+
+        again = self.client.get(reverse("learning:study"))
+        self.assertEqual(again.context["word"], first)
+        self.assertTrue(again.context["is_repeat"])
+        self.assertEqual((again.context["seen"], again.context["done"]), (2, 1))
+
+    def test_summary_counts_words_not_gradings(self):
+        self.client.post(reverse("learning:study_start"), {"topic": "hop-hanh", "limit": "0"})
+        self._review("会議", "quen")
+        self._review("議事録", "nho")
+        for _ in range(2):
+            self._review("会議", "nho")
+        self._review("議事録", "nho")
+
+        summary = self.client.get(reverse("learning:study")).context["summary"]
+        self.assertEqual(
+            (summary["words"], summary["remembered"], summary["again"], summary["reviewed"]),
+            (2, 1, 1, 5),
+        )
+        self.assertEqual(summary["again_words"], [self.words["会議"]])
+
+    def test_undo_of_the_first_grade_forgets_it(self):
+        self.client.post(reverse("learning:study_start"), {"topic": "hop-hanh", "limit": "0"})
+        first = self.client.get(reverse("learning:study")).context["word"]
+        self._review(first.word, "quen")
+        self.client.post(reverse("learning:undo"))
+
+        page = self.client.get(reverse("learning:study"))
+        self.assertEqual(page.context["word"], first)
+        self.assertEqual(page.context["seen"], 0)
+        self.assertFalse(page.context["is_repeat"])
+
+    def test_retry_starts_an_extra_review_of_the_given_words(self):
+        response = self.client.post(
+            reverse("learning:study_retry"), {"vocab": [self.words["会議"].pk, "x"]}
+        )
+        self.assertRedirects(response, reverse("learning:study"))
+        self.assertEqual(self.client.session["study_queue"], [self.words["会議"].pk])
+        self.assertFalse(self.client.session["study_touch_schedule"])
+
+        self._review("会議", "de")
+        self.assertFalse(UserVocabularyProgress.objects.filter(
+            user=self.user, vocabulary=self.words["会議"], card_state="review",
+        ).exists())
+
+    def test_retry_with_nothing_valid_goes_home(self):
+        response = self.client.post(reverse("learning:study_retry"), {"vocab": ["0"]})
+        self.assertRedirects(response, reverse("learning:dashboard"))
+
     def test_extra_review_hides_the_delay_previews(self):
+        self.user.show_review_interval = True
+        self.user.save(update_fields=["show_review_interval"])
         self._learned(self.words["会議"], due_offset=3, srs_level=2)
         self.client.post(reverse("learning:review_start"), {"scope": "upcoming", "limit": "0"})
         response = self.client.get(reverse("learning:study"))

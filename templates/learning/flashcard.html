@@ -28,9 +28,12 @@ tính năng cốt lõi.
 {% block content %}
   {% if word %}
     <p class="muted" style="margin:0 0 10px;">
-      {% message "learning.flashcard.hint.progress" topic=scope_label position=position total=total %}
+      {% message "learning.flashcard.hint.progress" topic=scope_label seen=seen total=total done=done %}
     </p>
-    <div class="progressbar" style="margin-bottom:{% if is_extra_review or queue %}8px{% else %}28px{% endif %};"><span style="width:{{ percent }}%"></span></div>
+    {% comment %}Thanh tiến độ HAI LỚP (01/10/2026): lớp nhạt = đã xem (gặp ít
+    nhất một lần), lớp đậm = đã thuộc (rời phiên). Lớp nhạt tăng đều sau mỗi
+    từ mới nên người học thấy mình đang đi tới, kể cả khi có từ quay lại.{% endcomment %}
+    <div class="progressbar progressbar-2" style="margin-bottom:{% if is_extra_review or queue %}8px{% else %}28px{% endif %};"><span class="seen" style="width:{{ seen_percent }}%"></span><span class="done" style="width:{{ percent }}%"></span></div>
     {% comment %}Ba con số của phiên theo chủ đề (SC04): từ mới / đang học / đến
     hạn còn lại hôm nay — "đang học" là những từ sẽ quay lại sau vài phút.{% endcomment %}
     {% if queue %}
@@ -52,7 +55,7 @@ tính năng cốt lõi.
     {% endif %}
 
     <div class="flashcard">
-      <span class="tag{% if card_state != "review" %} level{% endif %}">{% label card_state_key %}</span>
+      <span class="tag{% if card_state != "review" %} level{% endif %}">{% label card_state_key %}</span>{% if is_repeat %}<span class="tag">↻ {% label "learning.flashcard.state.repeat" %}</span>{% endif %}
       <div class="jp">{{ word.word }}</div>
       <div class="reading">{{ word.reading }}</div>
       <div class="meaning">{{ word.meaning_vi }}</div>
@@ -95,9 +98,6 @@ tính năng cốt lõi.
         {% endfor %}
       </div>
     </form>
-    {% if not is_extra_review %}
-      <p class="muted" style="text-align:center;margin:10px 0 0;font-size:12.5px;">{% message "learning.flashcard.hint.steps" %}</p>
-    {% endif %}
     {% if undo_word %}
       <form method="post" action="{% url 'learning:undo' %}" style="text-align:center;margin:12px 0 0;">
         {% csrf_token %}
@@ -169,13 +169,31 @@ tính năng cốt lõi.
     <div class="card" style="text-align:center;padding:48px 32px;">
       <h1 class="serif" style="margin:0 0 10px;">{% label "learning.flashcard.title.session_complete" %}</h1>
       <p class="muted" style="margin:0 0 20px;">{% message "learning.flashcard.hint.session_complete" topic=scope_label %}</p>
-      {% comment %}Tổng kết lượt vừa xong — lấy từ StudySession vừa đóng.{% endcomment %}
-      {% if summary %}
-        <div class="grid" style="grid-template-columns:repeat(3,1fr);margin:0 0 18px;text-align:center;">
-          <div class="stat"><div class="num">{{ summary.reviewed }}</div><div class="label">{% label "learning.flashcard.summary.reviewed" %}</div></div>
+      {% comment %}Tổng kết lượt vừa xong, đếm theo TỪ (01/10/2026) — xem
+      views._session_summary. Số lượt chấm (gồm cả lần từ quay lại) chỉ ghi phụ.{% endcomment %}
+      {% if summary.words %}
+        <div class="grid" style="grid-template-columns:repeat(3,1fr);margin:0 0 10px;text-align:center;">
+          <div class="stat"><div class="num">{{ summary.words }}</div><div class="label">{% label "learning.flashcard.summary.words" %}</div></div>
           <div class="stat"><div class="num">{{ summary.percent }}%</div><div class="label">{% label "learning.flashcard.summary.percent" %}</div></div>
           <div class="stat"><div class="num">{{ summary.again }}</div><div class="label">{% label "learning.flashcard.summary.again" %}</div></div>
         </div>
+        <p class="muted" style="margin:0 0 18px;font-size:12.5px;">{% message "learning.flashcard.hint.reviewed_total" count=summary.reviewed %}</p>
+        {% if summary.again_words %}
+          <div style="margin:0 0 18px;">
+            <p style="margin:0 0 8px;font-weight:600;">{% label "learning.flashcard.summary.again_title" %}</p>
+            <p style="margin:0 0 12px;line-height:2.2;">
+              {% for w in summary.again_words %}<span class="tag">{{ w.word }}</span>{% endfor %}
+            </p>
+            <form method="post" action="{% url 'learning:study_retry' %}" style="margin:0;">
+              {% csrf_token %}
+              {% for w in summary.again_words %}<input type="hidden" name="vocab" value="{{ w.pk }}">{% endfor %}
+              <button type="submit" class="btn btn-primary">{% message "learning.flashcard.button.retry" count=summary.again_words|length %}</button>
+            </form>
+            <p class="muted" style="margin:6px 0 0;font-size:12.5px;">{% message "learning.flashcard.hint.retry" %}</p>
+          </div>
+        {% endif %}
+      {% elif summary %}
+        <div class="stat" style="margin:0 0 18px;"><div class="num">{{ summary.reviewed }}</div><div class="label">{% label "learning.flashcard.summary.reviewed" %}</div></div>
       {% endif %}
       {% if queue %}
         <p class="muted" style="margin:0 0 8px;">{% message "learning.flashcard.hint.new_today" done=queue.new_today limit=queue.new_limit %}</p>

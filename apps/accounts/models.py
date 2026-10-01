@@ -46,6 +46,10 @@ class User(AuditableModel, AbstractUser):
     )
     daily_reminder_enabled = models.BooleanField(default=True)
     weekly_email_summary_enabled = models.BooleanField(default=False)
+    # Hiện khoảng cách ôn lại ("1 phút", "4 ngày") dưới 4 nút chấm của SC04.
+    # Mặc định ẩn: từ 01/10/2026 từ đang học chỉ quay lại khi hết lượt nên
+    # con số phút không còn khớp trải nghiệm; ai quen Anki thì bật ở SC08.
+    show_review_interval = models.BooleanField(default=False)
 
     total_points = models.PositiveIntegerField(
         default=0,

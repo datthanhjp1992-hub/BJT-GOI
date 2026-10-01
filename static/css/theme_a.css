@@ -830,3 +830,9 @@ a.pager-btn:hover{border-color:var(--accent);color:var(--accent);}
   .dropdown-list.topic-grid{grid-template-columns:1fr;}
   .result-bar{align-items:flex-start;}
 }
+
+/* SC04 — thanh tiến độ HAI LỚP (01/10/2026): .seen (nhạt, đã xem) nằm dưới,
+   .done (đậm, đã thuộc) chồng lên trên. Cùng nền/bo góc với .progressbar. */
+.progressbar-2{position:relative;}
+.progressbar-2 > span{position:absolute;top:0;left:0;transition:width .25s ease;}
+.progressbar-2 > span.seen{opacity:.35;}

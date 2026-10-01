@@ -54,6 +54,10 @@ có tác dụng trên MỘT dòng, viết tràn dòng là bị in thẳng ra HTM
       <h3 class="serif" style="margin:0 0 16px;">{% label "accounts.settings.section.goal" %}</h3>
       {% include "partials/field.html" with field=form.daily_review_goal %}
       {% include "partials/field.html" with field=form.timezone %}
+      <label class="checkbox-row">
+        {{ form.show_review_interval }}<span>{{ form.show_review_interval.label }}</span>
+      </label>
+      <p class="muted" style="margin:4px 0 0;font-size:12.5px;">{% label "accounts.settings.hint.show_review_interval" %}</p>
     </div>
 
     <div class="card">

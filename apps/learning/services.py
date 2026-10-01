@@ -76,12 +76,16 @@ class TopicQueue:
 def get_topic_queue(user, topic, now=None, unlocked_ids=()):
     """Hàng đợi SC04/SC06 của một chủ đề, theo đúng flow ôn tập:
 
-    1. Từ ĐANG HỌC / HỌC LẠI đã tới giờ (bước học tính bằng phút).
-    2. Từ ĐẾN HẠN ôn (next_review_date <= hôm nay), quá hạn lâu nhất trước.
-    3. Từ MỚI theo bảng chữ cái, tối đa `user.daily_review_goal` từ/ngày
+    1. Từ ĐẾN HẠN ôn (next_review_date <= hôm nay), quá hạn lâu nhất trước.
+    2. Từ MỚI theo bảng chữ cái, tối đa `user.daily_review_goal` từ/ngày
        (tính chung mọi chủ đề — xem count_new_words_today).
-    4. Hết cả ba thì học trước từ đang học chưa tới giờ (sớm nhất trước) —
-       người học không phải ngồi chờ 10 phút; ahead_minutes cho biết còn bao lâu.
+    3. Từ ĐANG HỌC / HỌC LẠI (bước học tính bằng phút), tới giờ sớm nhất
+       trước. Chưa tới giờ thì "học trước" — ahead_minutes cho biết còn bao lâu.
+
+    Từ 01/10/2026 ("hết lượt rồi mới ôn lại"): từ đang học KHÔNG chen lên
+    trước từ chưa gặp nữa, dù bước học đã tới giờ. Người học đi trọn một lượt
+    các từ đã chọn rồi mới gặp lại những từ bấm Quên/Khó/Nhớ. `due_at` vẫn
+    giữ nguyên nên lịch SM-2 không bị ảnh hưởng — từ chỉ được hỏi lại muộn hơn.
 
     "Hôm nay" tính theo múi giờ của user (User.local_today()).
 
@@ -127,9 +131,9 @@ def get_topic_queue(user, topic, now=None, unlocked_ids=()):
         [p.vocabulary_id for p in learning] + [p.vocabulary_id for p in review_due]
     )
     ordered = (
-        [by_id[p.vocabulary_id] for p in learn_due if p.vocabulary_id in by_id]
-        + [by_id[p.vocabulary_id] for p in review_due if p.vocabulary_id in by_id]
+        [by_id[p.vocabulary_id] for p in review_due if p.vocabulary_id in by_id]
         + new_words
+        + [by_id[p.vocabulary_id] for p in learn_due if p.vocabulary_id in by_id]
         + [by_id[p.vocabulary_id] for p in learn_ahead if p.vocabulary_id in by_id]
     )
     ahead = 0

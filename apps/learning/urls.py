@@ -17,6 +17,7 @@ urlpatterns = [
     path("study/", views.study_view, name="study"),
     path("study/review/<int:vocabulary_id>/", views.study_review_view, name="study_review"),
     path("study/end/", views.study_end_view, name="study_end"),
+    path("study/retry/", views.study_retry_view, name="study_retry"),
     # SC15 Ôn tập — thống kê từ đã học + các lối vào một lượt ôn.
     path("review/", views.review_view, name="review"),
     path("review/start/", views.review_start_view, name="review_start"),

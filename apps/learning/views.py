@@ -126,6 +126,50 @@ def _topic_flow(topic_slug):
 FLOW_STUDY = "study"
 
 
+# Lần chấm ĐẦU TIÊN của từng từ trong một StudySession:
+#   {"<session pk>": {"<vocab id>": quality}}
+# StudySession chỉ đếm LƯỢT chấm (words_reviewed) — một từ quay lại 3 lần là
+# 3 lượt — nên không trả lời được "lượt này học bao nhiêu TỪ, nhớ ngay bao
+# nhiêu từ". Dict này bù đúng chỗ đó cho màn tổng kết và thanh "đã xem".
+# Giữ FIRST_GRADES_MAX phiên gần nhất: hoàn tác ngay sau khi hết lượt vẫn
+# phải tìm thấy dữ liệu của phiên vừa đóng.
+FIRST_GRADES_KEY = "learning_first_grades"
+FIRST_GRADES_MAX = 5
+
+
+def _first_grades(request, session_id):
+    """{vocab_id: quality lần chấm đầu} của một phiên (dict rỗng nếu chưa có)."""
+    if not session_id:
+        return {}
+    data = request.session.get(FIRST_GRADES_KEY) or {}
+    return {int(k): v for k, v in (data.get(str(session_id)) or {}).items()}
+
+
+def _record_first_grade(request, session_id, vocab_id, quality):
+    """Ghi lần chấm đầu của từ trong phiên. True nếu đây đúng là lần đầu."""
+    if not session_id:
+        return False
+    data = dict(request.session.get(FIRST_GRADES_KEY) or {})
+    grades = dict(data.get(str(session_id)) or {})
+    if str(vocab_id) in grades:
+        return False
+    grades[str(vocab_id)] = quality
+    data[str(session_id)] = grades
+    for old in sorted(data, key=int)[:-FIRST_GRADES_MAX]:
+        data.pop(old, None)
+    request.session[FIRST_GRADES_KEY] = data
+    return True
+
+
+def _forget_first_grade(request, session_id, vocab_id):
+    """Hoàn tác đúng lần chấm đầu -> từ coi như chưa gặp trong phiên."""
+    data = dict(request.session.get(FIRST_GRADES_KEY) or {})
+    grades = dict(data.get(str(session_id)) or {})
+    if grades.pop(str(vocab_id), None) is not None:
+        data[str(session_id)] = grades
+        request.session[FIRST_GRADES_KEY] = data
+
+
 def _grade(request, vocab, quality, *, flow, session_id=None, touch_schedule=True, extra=None):
     """Chấm một từ, cộng vào StudySession và ghi mục hoàn tác.
 
@@ -149,6 +193,7 @@ def _grade(request, vocab, quality, *, flow, session_id=None, touch_schedule=Tru
             words_reviewed=F("words_reviewed") + 1,
             correct_answers=F("correct_answers") + correct,
         )
+    first = _record_first_grade(request, session_id, vocab.pk, quality)
 
     entry = {
         "vocab": vocab.pk,
@@ -156,6 +201,7 @@ def _grade(request, vocab, quality, *, flow, session_id=None, touch_schedule=Tru
         "snap": snapshot,
         "sid": session_id,
         "correct": correct,
+        "first": first,
         "day": user.local_today().isoformat(),
         "flow": flow,
     }
@@ -204,10 +250,13 @@ GRADE_BUTTONS = (
 )
 
 
-def _card_context(request, word, *, flow, show_preview=True):
+def _card_context(request, word, *, flow, show_preview=True, session_id=None):
     """Phần context mô tả THẺ đang hiện: giai đoạn, 4 nút kèm khoảng cách, hoàn tác."""
     progress = UserVocabularyProgress.objects.filter(user=request.user, vocabulary=word).first()
     state = progress.card_state if progress else srs.NEW
+    # Khoảng cách ôn lại dưới nút là tuỳ chọn ở SC08 (mặc định ẩn) — với
+    # "hết lượt rồi mới ôn lại", "1 phút / 6 phút" không còn khớp lúc từ quay lại.
+    show_preview = show_preview and getattr(request.user, "show_review_interval", False)
     previews = services.grade_previews(progress) if show_preview else {}
     buttons = [
         {
@@ -223,38 +272,66 @@ def _card_context(request, word, *, flow, show_preview=True):
     return {
         "card_state": state,
         "card_state_key": f"learning.flashcard.state.{state}",
+        # Từ đã gặp trong phiên này và đang quay lại -> nhãn "Gặp lại".
+        "is_repeat": word.pk in _first_grades(request, session_id),
         "grade_buttons": buttons,
         "undo_word": undo["word"] if undo else "",
     }
 
 
-def _session_summary(session):
-    """Tổng kết một phiên đã đóng — hiện trên màn "đã ôn xong"."""
+# Tối đa bao nhiêu từ "cần ôn thêm" được liệt kê/gửi sang lượt ôn thêm.
+RETRY_MAX = 200
+
+
+def _session_summary(request, session):
+    """Tổng kết một phiên đã đóng — hiện trên màn "đã ôn xong".
+
+    Đếm theo TỪ chứ không theo lượt chấm (từ 01/10/2026): bộ 50 từ mà có 15
+    lần gặp lại vẫn là "50 từ", số lượt chấm (65) chỉ ghi phụ bên dưới.
+    "Nhớ ngay" = lần chấm ĐẦU TIÊN của từ là Khó/Nhớ/Dễ (quality >= 3, cùng
+    ngưỡng với StudySession.correct_answers); bấm Quên lần đầu thì từ vào
+    danh sách "cần ôn thêm".
+    """
     if session is None or not session.words_reviewed:
         return None
-    again = session.words_reviewed - session.correct_answers
+    grades = _first_grades(request, session.pk)
+    if not grades:
+        # Phiên mở trước khi có FIRST_GRADES_KEY — chỉ còn số lượt chấm.
+        return {"reviewed": session.words_reviewed, "words": 0}
+    again_ids = [vid for vid, q in grades.items() if q < 3]
+    remembered = len(grades) - len(again_ids)
+    by_id = Vocabulary.objects.in_bulk(again_ids[:RETRY_MAX])
     return {
         "reviewed": session.words_reviewed,
-        "correct": session.correct_answers,
-        "again": again,
-        "percent": round(session.correct_answers * 100 / session.words_reviewed),
+        "words": len(grades),
+        "remembered": remembered,
+        "percent": round(remembered * 100 / len(grades)),
+        "again": len(again_ids),
+        "again_words": [by_id[vid] for vid in again_ids if vid in by_id],
     }
 
 
-def _progress_numbers(total, remaining):
-    """Tiến độ "Thẻ x/N" đếm theo TỪ, không theo lượt chấm.
+def _progress_numbers(total, remaining, seen=0):
+    """Tiến độ đếm theo TỪ, không theo lượt chấm — hai lớp:
 
-    `total` là số từ của phiên (cố định), `remaining` là số từ còn trong
-    phiên (hàng đợi + đang ở bước học). Từ bấm Quên/Khó quay lại sau vài phút
-    vẫn nằm trong `remaining` nên mẫu số không bị kéo dài ra; chỉ khi từ rời
-    phiên (tốt nghiệp) thì tử số mới tăng.
+    * `seen` / `seen_percent`: số từ ĐÃ GẶP ít nhất một lần trong phiên
+      (lớp nhạt của thanh tiến độ). Tăng đều sau mỗi từ mới, nên người học
+      thấy mình đang đi tới dù vừa có từ quay lại.
+    * `done` / `percent`: số từ ĐÃ THUỘC — rời phiên (tốt nghiệp). Từ bấm
+      Quên/Khó/Nhớ còn ở bước học vẫn nằm trong `remaining`.
+
+    `position` giữ cho màn trắc nghiệm ("Câu hỏi x/N").
     """
     total = max(total or 0, remaining, 1)
     done = total - remaining
+    seen = min(max(seen or 0, done), total)
     return {
         "position": min(done + 1, total),
         "total": total,
+        "done": done,
         "percent": round(done * 100 / total),
+        "seen": seen,
+        "seen_percent": round(seen * 100 / total),
     }
 
 
@@ -268,7 +345,9 @@ def _topic_progress(request, key, session, words):
     current = {w.pk for w in words}
     seen = set(data.get("ids") or []) | current
     request.session[key] = {"session": session.pk, "ids": sorted(seen)}
-    return _progress_numbers(len(seen), len(current))
+    return _progress_numbers(
+        len(seen), len(current), seen=len(_first_grades(request, session.pk))
+    )
 
 
 @login_required
@@ -293,7 +372,7 @@ def flashcard_view(request, topic_slug):
         undo = _last_undo(request, flow)
         return render(request, "learning/flashcard.html", {
             "topic": topic, "word": None, "scope_label": topic.display_name,
-            "summary": _session_summary(session),
+            "summary": _session_summary(request, session),
             "queue": queue,
             "more_new_batch": min(queue.more_new_count, queue.new_limit or 1),
             "due_tomorrow": services.count_due_tomorrow(request.user),
@@ -316,7 +395,7 @@ def flashcard_view(request, topic_slug):
         "topic_slug_value": topic.slug,
         "examples": word.examples.all()[:3],
         "comments": gamification_services.get_vocabulary_comments(word),
-        **_card_context(request, word, flow=flow),
+        **_card_context(request, word, flow=flow, session_id=session.pk),
     }
     return render(request, "learning/flashcard.html", context)
 
@@ -372,6 +451,8 @@ def undo_view(request):
         session.correct_answers = max(0, session.correct_answers - entry.get("correct", 0))
         session.ended_at = None
         session.save(update_fields=["words_reviewed", "correct_answers", "ended_at"])
+    if entry.get("first") and entry.get("sid"):
+        _forget_first_grade(request, entry["sid"], vocab_id)
 
     flow = entry.get("flow", "")
     request.session[FORCE_KEY] = {"vocab": vocab_id, "flow": flow}
@@ -456,6 +537,20 @@ def _quiz_session_keys(topic_slug):
     return f"quiz_total_{topic_slug}", f"quiz_session_id_{topic_slug}"
 
 
+def _flash_quiz_score(request, session):
+    """Điểm cuối lượt trắc nghiệm, đếm theo TỪ: "đúng ngay lần đầu / số từ"."""
+    summary = _session_summary(request, session)
+    if not summary:
+        return
+    if summary["words"]:
+        correct, total = summary["remembered"], summary["words"]
+    else:
+        correct, total = session.correct_answers, session.words_reviewed
+    flash.success(request, message(
+        "learning.quiz.success.session_complete", correct=correct, total=total,
+    ))
+
+
 @login_required
 def quiz_view(request, topic_slug):
     """SC06_KiemTra — trắc nghiệm 4 đáp án, dùng CHUNG hàng đợi với SC04
@@ -473,11 +568,7 @@ def quiz_view(request, topic_slug):
         # mở màn lần đầu mà chủ đề đã hết hạn ôn sẵn từ trước).
         session = _close_study_session(request, session_id_key)
         request.session.pop(total_key, None)
-        if session and session.words_reviewed:
-            flash.success(request, message(
-                "learning.quiz.success.session_complete",
-                correct=session.correct_answers, total=session.words_reviewed,
-            ))
+        _flash_quiz_score(request, session)
         return render(request, "learning/quiz.html", {
             "topic": topic, "word": None, "scope_label": topic.display_name,
         })
@@ -641,8 +732,12 @@ def _restore_study_state(request, entry, session):
 def _next_queue_word(request):
     """Từ kế tiếp của phiên theo hàng đợi.
 
-    Thứ tự: từ vừa hoàn tác -> từ đang học đã tới giờ -> đầu hàng đợi ->
-    (hết hàng đợi) học trước từ đang học chưa tới giờ, sớm nhất trước.
+    Thứ tự: từ vừa hoàn tác -> đầu hàng đợi -> (hết hàng đợi) từ đang học,
+    tới giờ sớm nhất trước; chưa tới giờ thì "học trước".
+
+    Hàng đợi luôn đứng trước từ đang học ("hết lượt rồi mới ôn lại", từ
+    01/10/2026): người học đi trọn các từ đã chọn rồi mới gặp lại từ bấm
+    Quên/Khó/Nhớ, thay vì bị chen ngang sau mỗi 1-10 phút.
     Trả về (word, remaining, ahead_minutes).
     """
     queue = list(request.session.get(STUDY_QUEUE_KEY) or [])
@@ -669,7 +764,7 @@ def _next_queue_word(request):
 
     due_ids = [vid for vid, due_at in learning_rows if (due_at or now) <= now]
     ahead_rows = [(vid, due_at) for vid, due_at in learning_rows if (due_at or now) > now]
-    candidates = [(vid, 0) for vid in due_ids] + [(vid, 0) for vid in queue]
+    candidates = [(vid, 0) for vid in queue] + [(vid, 0) for vid in due_ids]
     candidates += [
         (vid, max(1, round((due_at - now).total_seconds() / 60))) for vid, due_at in ahead_rows
     ]
@@ -684,6 +779,13 @@ def _next_queue_word(request):
             request.session[STUDY_QUEUE_KEY] = queue
         remaining = max(0, remaining - 1)
     return None, 0, 0
+
+
+def _study_progress(request, remaining):
+    return _progress_numbers(
+        request.session.get(STUDY_TOTAL_KEY), remaining,
+        seen=len(_first_grades(request, request.session.get(STUDY_SESSION_ID_KEY))),
+    )
 
 
 def _scope_label(topics):
@@ -752,7 +854,7 @@ def study_view(request):
         undo = _last_undo(request, FLOW_STUDY)
         return render(request, "learning/flashcard.html", {
             "word": None, "scope_label": scope_label, "is_study_session": True,
-            "summary": _session_summary(session),
+            "summary": _session_summary(request, session),
             "due_tomorrow": services.count_due_tomorrow(request.user),
             "undo_word": undo["word"] if undo else "",
         })
@@ -761,7 +863,7 @@ def study_view(request):
     context = {
         "topic": None,
         "word": word,
-        **_progress_numbers(request.session.get(STUDY_TOTAL_KEY), remaining),
+        **_study_progress(request, remaining),
         "ahead_minutes": ahead,
         "scope_label": scope_label,
         "review_action": reverse("learning:study_review", args=[word.pk]),
@@ -770,7 +872,10 @@ def study_view(request):
         "is_extra_review": not touch,
         "examples": word.examples.all()[:3],
         "comments": gamification_services.get_vocabulary_comments(word),
-        **_card_context(request, word, flow=FLOW_STUDY, show_preview=touch),
+        **_card_context(
+            request, word, flow=FLOW_STUDY, show_preview=touch,
+            session_id=request.session.get(STUDY_SESSION_ID_KEY),
+        ),
     }
     return render(request, "learning/flashcard.html", context)
 
@@ -782,6 +887,41 @@ def study_review_view(request, vocabulary_id):
     vocab = get_object_or_404(Vocabulary, pk=vocabulary_id)
     quality = QUALITY_MAP.get(request.POST.get("quality"), 3)
     _grade_word(request, vocab, quality)
+    return redirect("learning:study")
+
+
+@login_required
+@require_POST
+def study_retry_view(request):
+    """Nút "Ôn thêm N từ này" trên màn tổng kết — một lượt ÔN THÊM gồm đúng
+    các từ lần đầu bấm Quên của lượt vừa xong.
+
+    Không đẩy lịch SM-2 (STUDY_TOUCH_SCHEDULE_KEY = False, như các phạm vi
+    "ôn thêm" của SC15): lượt chính vừa xếp lịch cho các từ này rồi, ôn thêm
+    chỉ để khắc sâu. Bấm Quên thì từ xuống cuối hàng đợi để gặp lại.
+    """
+    raw_ids = []
+    for value in request.POST.getlist("vocab")[:RETRY_MAX]:
+        if value.isdigit() and int(value) not in raw_ids:
+            raw_ids.append(int(value))
+    existing = set(Vocabulary.objects.filter(pk__in=raw_ids).values_list("pk", flat=True))
+    queue = [vid for vid in raw_ids if vid in existing]
+    if not queue:
+        flash.error(request, message("learning.study.error.empty_queue"))
+        return redirect("learning:dashboard")
+
+    _clear_study_session(request)
+    study_session = StudySession.objects.create(
+        user=request.user, topic=None,
+        session_type=SESSION_TYPE_FLASHCARD, started_at=timezone.now(),
+    )
+    request.session[STUDY_QUEUE_KEY] = queue
+    request.session[STUDY_LEARNING_KEY] = []
+    request.session[STUDY_TOTAL_KEY] = len(queue)
+    request.session[STUDY_SESSION_ID_KEY] = study_session.pk
+    request.session[STUDY_SCOPE_KEY] = message("learning.study.scope.retry")
+    request.session[STUDY_TOUCH_SCHEDULE_KEY] = False
+    request.session[STUDY_MODE_KEY] = SESSION_TYPE_FLASHCARD
     return redirect("learning:study")
 
 
@@ -938,11 +1078,7 @@ def study_quiz_view(request):
 
     if word is None:
         session = _clear_study_session(request)
-        if session and session.words_reviewed:
-            flash.success(request, message(
-                "learning.quiz.success.session_complete",
-                correct=session.correct_answers, total=session.words_reviewed,
-            ))
+        _flash_quiz_score(request, session)
         return render(request, "learning/quiz.html", {
             "word": None, "scope_label": scope_label,
         })
@@ -953,7 +1089,7 @@ def study_quiz_view(request):
     context = {
         "topic": topic,
         "word": word,
-        **_progress_numbers(request.session.get(STUDY_TOTAL_KEY), remaining),
+        **_study_progress(request, remaining),
         "choices": services.get_quiz_choices(word, topic),
         "scope_label": scope_label,
         "answer_action": reverse("learning:study_quiz_answer", args=[word.pk]),
