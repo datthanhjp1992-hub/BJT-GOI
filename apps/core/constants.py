@@ -169,16 +169,6 @@ def question_type_choices():
     return get_choices(CODE_TYPE_QUESTION_TYPE)
 
 
-# --- Giữ server Render free luôn thức (apps/core/keepalive.py) ---
-# Render free cho instance ngủ sau ~15 phút không có request vào. Một luồng nền
-# tự gọi /healthz/ qua URL công khai theo chu kỳ admin chọn ở màn "Cài đặt hệ
-# thống". Mã = SỐ PHÚT (dạng chuỗi) để keepalive.py đọc thẳng int(code), không
-# phải tra thêm bảng nào. Mọi mã PHẢI nhỏ hơn 15 — khoảng lớn hơn thì server đã
-# ngủ trước khi kịp ping lần sau.
-CODE_TYPE_KEEPALIVE_INTERVAL = "17"
-KEEPALIVE_INTERVAL_DEFAULT = "5"
-
-
-def keepalive_interval_choices():
-    """Chu kỳ tự ping (phút) cho dropdown ở màn Cài đặt hệ thống."""
-    return get_choices(CODE_TYPE_KEEPALIVE_INTERVAL)
+# code_type "17" TRỐNG: trước đây là chu kỳ tự ping keep-alive (phút). Gỡ ngày
+# 02/10/2026 cùng apps/core/keepalive.py — xem migration core/0004. Đừng tái
+# sử dụng "17" cho thứ khác, giống quy ước với "05".

@@ -1,0 +1,269 @@
+{% load properties_tags %}
+{% comment %}
+Phần THẺ của màn học SC04 — tách khỏi flashcard.html ngày 02/10/2026
+(spec.md T1.1) để view trả riêng phần này khi JS chấm thẻ bằng fetch()
+(header X-Card-Partial, xem apps/learning/views._render_card). Trang đầy đủ
+thì flashcard.html include file này bên trong #card-panel.
+
+Hai lối vào dùng chung (xem apps/learning/views.py):
+  * flashcard_view — học một chủ đề.
+  * study_view     — học theo bộ lọc SC05 / phạm vi SC15.
+Hai view truyền cùng bộ khoá `review_action` / `topic_slug_value` /
+`scope_label` nên template không phải biết mình đang ở chế độ nào.
+
+HIỆN THẺ 2 BƯỚC (T1.4): mặt trước chỉ có mặt chữ (+ cách đọc nếu
+`show_reading_on_front`); bấm thẻ / nút "Hiện đáp án" / phím Space mới lộ
+nghĩa, ví dụ, 4 nút chấm và khu thảo luận (class .after-reveal). Việc ẩn chỉ
+áp dụng khi <html> có class "js" (đặt ở base.html) — tắt JavaScript thì mọi
+thứ hiện sẵn và chấm được như trước, không khoá tính năng cốt lõi.
+
+Thuộc tính data-* là móc cho static/js/main.js (phím tắt T1.3, vuốt T1.6,
+fetch T1.2) — đổi tên ở đây phải đổi bên đó:
+  data-study-card     khung màn đang học (nhận class is-revealed)
+  data-flashcard      thẻ bấm để lật / vuốt để chấm
+  data-reveal         nút "Hiện đáp án"
+  data-card-ajax      form gửi bằng fetch, thay phần thẻ tại chỗ
+  data-grade-key="N"  nút chấm ứng với phím số N
+  data-undo           nút hoàn tác (phím Z)
+  data-examples       khối ví dụ câu (phím E)
+  data-shortcut-*     bảng phím tắt (phím ?)
+{% endcomment %}
+{% if is_partial %}{% include "partials/messages.html" %}{% endif %}
+
+{% if word %}
+<div class="study-screen" data-study-card>
+  <div class="study-head">
+    <p class="muted study-head-text">
+      {% message "learning.flashcard.hint.progress" topic=scope_label seen=seen total=total done=done %}
+    </p>
+    {% if is_study_session %}
+      {% comment %}Phiên theo bộ lọc phải đóng StudySession và dọn hàng đợi
+      trong request.session, nên "kết thúc" là POST chứ không phải link.{% endcomment %}
+      <form method="post" action="{% url 'learning:study_end' %}" class="study-head-end">
+        {% csrf_token %}
+        <button type="submit" class="link-button muted">{% label "learning.flashcard.link.end_session" %}</button>
+      </form>
+    {% else %}
+      <a href="{% url 'learning:dashboard' %}" class="muted study-head-end">{% label "learning.flashcard.link.end_session" %}</a>
+    {% endif %}
+  </div>
+  {% comment %}Thanh tiến độ HAI LỚP (01/10/2026): lớp nhạt = đã xem (gặp ít
+  nhất một lần), lớp đậm = đã thuộc (rời phiên).{% endcomment %}
+  <div class="progressbar progressbar-2 study-progress"><span class="seen" style="width:{{ seen_percent }}%"></span><span class="done" style="width:{{ percent }}%"></span></div>
+  {% if queue %}
+    <p class="muted study-note">
+      <span class="tag">{{ queue.n_new }} {% label "learning.flashcard.count.new" %}</span>
+      <span class="tag">{{ queue.n_learning }} {% label "learning.flashcard.count.learning" %}</span>
+      <span class="tag">{{ queue.n_review }} {% label "learning.flashcard.count.review" %}</span>
+      {% message "learning.flashcard.hint.new_today" done=queue.new_today limit=queue.new_limit %}
+    </p>
+  {% endif %}
+  {% comment %}Lượt "ôn thêm" của SC15 chỉ ghi nhận đúng-sai, không đẩy lịch
+  SM-2 — nói thẳng ra để người học không tưởng mình vừa làm xô lệch lịch ôn.{% endcomment %}
+  {% if is_extra_review %}
+    <p class="muted study-note">{% message "learning.review.hint.extra_review" %}</p>
+  {% endif %}
+  {% if ahead_minutes %}
+    <p class="muted study-note">{% message "learning.flashcard.hint.learn_ahead" minutes=ahead_minutes %}</p>
+  {% endif %}
+
+  <div class="study-card">
+    <div class="flashcard" data-flashcard tabindex="0" role="button" aria-label="{% label 'learning.flashcard.button.reveal' %}">
+      <div class="flashcard-tags">
+        <span class="tag{% if card_state != "review" %} level{% endif %}">{% label card_state_key %}</span>{% if is_repeat %}<span class="tag">↻ {% label "learning.flashcard.state.repeat" %}</span>{% endif %}
+      </div>
+      <div class="jp">{{ word.word }}</div>
+      <div class="reading{% if not show_reading_on_front %} back-only{% endif %}">{{ word.reading }}</div>
+      <div class="meaning">{{ word.meaning_vi }}</div>
+      <p class="muted hint">{% label "learning.flashcard.hint.tap_to_reveal" %}</p>
+    </div>
+    <noscript><style>.flashcard .meaning,.flashcard .back-only{display:block!important}.flashcard .hint{display:none!important}</style></noscript>
+
+    <div class="before-reveal">
+      <button type="button" class="btn btn-primary btn-block reveal-btn" data-reveal>
+        {% label "learning.flashcard.button.reveal" %} <kbd class="kbd">Space</kbd>
+      </button>
+    </div>
+
+    <div class="after-reveal">
+      {% if word.topics.all %}
+        <p class="muted study-topics">
+          {% for t in word.topics.all %}<span class="tag">{{ t.name_ja|default:t.name }}</span> {% endfor %}
+        </p>
+      {% endif %}
+
+      {% if examples %}
+        <details class="study-examples" data-examples>
+          <summary class="btn btn-outline btn-block">
+            📖 {% label "learning.flashcard.button.view_example" %} <kbd class="kbd">E</kbd>
+          </summary>
+          <div class="card study-examples-body">
+            {% for ex in examples %}
+              <p class="study-example-jp">{{ ex.sentence_jp }}</p>
+              <p class="muted study-example-vi">{{ ex.sentence_vi }}</p>
+            {% endfor %}
+          </div>
+        </details>
+      {% endif %}
+
+      <p class="muted study-prompt">{% label "learning.flashcard.prompt.recall_level" %}</p>
+      {% comment %}Dưới mỗi nút là khoảng cách ôn lại nếu bấm nút đó (tuỳ chọn
+      ở SC08). Trên điện thoại, hàng nút dính ở đáy màn hình (T1.6).{% endcomment %}
+      <form method="post" action="{{ review_action }}" class="grade-form" data-card-ajax>
+        {% csrf_token %}
+        <input type="hidden" name="topic_slug" value="{{ topic_slug_value }}">
+        <div class="grade-row">
+          {% for b in grade_buttons %}
+            <button class="btn btn-grade{% if b.primary %} btn-primary{% endif %}" type="submit" name="quality" value="{{ b.code }}" data-grade-key="{{ b.key }}"{% if b.style %} style="{{ b.style }}"{% endif %}>
+              <span class="btn-grade-label">{% label b.label_key %}</span>
+              {% if b.delay %}<small class="btn-grade-delay">{{ b.delay }}</small>{% endif %}
+              <kbd class="kbd">{{ b.key }}</kbd>
+            </button>
+          {% endfor %}
+        </div>
+      </form>
+      <p class="muted swipe-hint">{% label "learning.flashcard.hint.swipe" %}</p>
+    </div>
+  </div>
+
+  <div class="study-tools">
+    {% if undo_word %}
+      <form method="post" action="{% url 'learning:undo' %}" data-card-ajax>
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline btn-sm" data-undo>{% message "learning.flashcard.button.undo_word" word=undo_word %} <kbd class="kbd">Z</kbd></button>
+      </form>
+    {% endif %}
+    <button type="button" class="link-button muted shortcut-open" data-shortcut-open>⌨ {% label "learning.flashcard.link.shortcuts" %} <kbd class="kbd">?</kbd></button>
+  </div>
+
+  <dialog class="shortcut-dialog" data-shortcut-dialog>
+    <h3 class="serif">{% label "learning.flashcard.shortcut.title" %}</h3>
+    <dl class="shortcut-list">
+      <dt><kbd class="kbd">Space</kbd></dt><dd>{% label "learning.flashcard.shortcut.reveal" %}</dd>
+      <dt><kbd class="kbd">1</kbd> <kbd class="kbd">2</kbd> <kbd class="kbd">3</kbd> <kbd class="kbd">4</kbd></dt><dd>{% label "learning.flashcard.shortcut.grade" %}</dd>
+      <dt><kbd class="kbd">Z</kbd></dt><dd>{% label "learning.flashcard.shortcut.undo" %}</dd>
+      <dt><kbd class="kbd">E</kbd></dt><dd>{% label "learning.flashcard.shortcut.examples" %}</dd>
+      <dt><kbd class="kbd">?</kbd></dt><dd>{% label "learning.flashcard.shortcut.help" %}</dd>
+    </dl>
+    <form method="dialog"><button class="btn btn-outline btn-sm">{% label "common.button.close" %}</button></form>
+  </dialog>
+
+  {% comment %}Khu "phản hồi về từ này" (T1.5): gom góp ý / báo lỗi / bình luận
+  vào một khối gập, mặc định đóng và chỉ hiện sau khi lật thẻ — đang học thì
+  màn hình chỉ còn thẻ và 4 nút chấm. Hai form bình luận/xoá vẫn gửi thường
+  (không fetch) vì chúng không đổi thẻ đang học.{% endcomment %}
+  <details class="study-discussion after-reveal" id="study-discussion">
+    <summary class="study-discussion-toggle">💬 {% label "learning.flashcard.section.discussion" %} ({{ comments|length }})</summary>
+    <div class="study-discussion-body">
+      <div class="toolbar study-discussion-actions">
+        <a class="btn btn-outline btn-sm" href="{% url 'gamification:form' %}?type=meaning&vocabulary={{ word.pk }}">{% label "contribution.form.link.suggest" %}</a>
+        <a class="btn btn-outline btn-sm" href="{% url 'error_reports:create' %}?vocabulary={{ word.pk }}">{% label "error_report.form.link.report" %}</a>
+      </div>
+
+      <h3 class="serif study-discussion-title">{% label "learning.flashcard.section.comments" %}</h3>
+      {% if comments %}
+        <div class="comment-list">
+          {% for c in comments %}
+            <div class="card comment-card">
+              <div class="comment-head">
+                <strong>{{ c.user.first_name|default:c.user.get_username }}</strong>
+                <span class="comment-meta">
+                  <span class="muted">{{ c.created_at|date:"d/m/Y H:i" }}</span>
+                  {% comment %}Nút xoá: người viết hoặc staff (hậu kiểm, vì
+                  bình luận đăng thẳng không qua duyệt).{% endcomment %}
+                  {% if c.user_id == request.user.pk or request.user.is_staff %}
+                    <form method="post" action="{% url 'gamification:comment_delete' c.pk %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                      <button type="submit" class="btn btn-outline btn-xs">{% label "common.button.delete" %}</button>
+                    </form>
+                  {% endif %}
+                </span>
+              </div>
+              <p class="comment-text">{{ c.comment_text }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted">{% message "learning.flashcard.hint.no_comments_yet" %}</p>
+      {% endif %}
+
+      <form method="post" action="{% url 'learning:flashcard_comment' word.pk %}" class="card comment-form">
+        {% csrf_token %}
+        <input type="hidden" name="topic_slug" value="{{ topic_slug_value }}">
+        <label for="id_comment_text">{% label "learning.flashcard.field.new_comment" %}</label>
+        <input type="text" id="id_comment_text" name="comment_text" maxlength="1000" required>
+        <button type="submit" class="btn btn-primary btn-sm">{% label "learning.flashcard.button.submit_comment" %}</button>
+        <p class="muted comment-note">{% message "learning.flashcard.hint.comment_note" %}</p>
+      </form>
+    </div>
+  </details>
+</div>
+{% else %}
+  {% comment %}Màn tổng kết (T1.7). Đếm theo TỪ (01/10/2026) — xem
+  views._session_summary. Chỉ MỘT nút chính theo ngữ cảnh: còn từ cần ôn thêm
+  -> "Ôn thêm N từ"; không thì còn từ mới bị giữ vì hạn mức -> "Học thêm";
+  không thì "Quay lại". Các lựa chọn còn lại là nút phụ.{% endcomment %}
+  <div class="card session-done">
+    <div class="session-done-mark" aria-hidden="true">🎉</div>
+    <h1 class="serif">{% label "learning.flashcard.title.session_complete" %}</h1>
+    <p class="muted">{% message "learning.flashcard.hint.session_complete" topic=scope_label %}</p>
+
+    {% if summary.words %}
+      <div class="grid session-stats">
+        <div class="stat"><div class="num">{{ summary.words }}</div><div class="label">{% label "learning.flashcard.summary.words" %}</div></div>
+        <div class="stat"><div class="num">{{ summary.percent }}%</div><div class="label">{% label "learning.flashcard.summary.percent" %}</div></div>
+        <div class="stat"><div class="num">{{ summary.again }}</div><div class="label">{% label "learning.flashcard.summary.again" %}</div></div>
+      </div>
+      <p class="muted session-note">{% message "learning.flashcard.hint.reviewed_total" count=summary.reviewed %}</p>
+    {% elif summary %}
+      <div class="stat session-stats-single"><div class="num">{{ summary.reviewed }}</div><div class="label">{% label "learning.flashcard.summary.reviewed" %}</div></div>
+    {% endif %}
+    {% if summary.minutes or streak_days %}
+      <p class="session-meta">
+        {% if summary.minutes %}<span>⏱ {% message "learning.flashcard.hint.session_time" minutes=summary.minutes %}</span>{% endif %}
+        {% if streak_days %}<span>🔥 {% message "learning.flashcard.hint.streak" count=streak_days %}</span>{% endif %}
+      </p>
+    {% endif %}
+
+    {% if summary.again_words %}
+      <div class="session-retry">
+        <p class="session-retry-title">{% label "learning.flashcard.summary.again_title" %}</p>
+        <p class="session-retry-words">
+          {% for w in summary.again_words %}<span class="tag">{{ w.word }}</span>{% endfor %}
+        </p>
+        <form method="post" action="{% url 'learning:study_retry' %}" data-card-ajax>
+          {% csrf_token %}
+          {% for w in summary.again_words %}<input type="hidden" name="vocab" value="{{ w.pk }}">{% endfor %}
+          <button type="submit" class="btn btn-primary">{% message "learning.flashcard.button.retry" count=summary.again_words|length %}</button>
+        </form>
+        <p class="muted session-note">{% message "learning.flashcard.hint.retry" %}</p>
+      </div>
+    {% endif %}
+
+    {% if queue %}
+      <p class="muted session-note">{% message "learning.flashcard.hint.new_today" done=queue.new_today limit=queue.new_limit %}</p>
+      {% if queue.more_new %}
+        <p class="muted session-note">{% message "learning.flashcard.hint.new_limit_reached" count=queue.more_new_count limit=queue.new_limit %}
+          <a href="{% url 'accounts:settings' %}">{% label "common.nav.settings" %}</a>.</p>
+        {% comment %}Mở thêm một nhóm từ mới cho riêng chủ đề này, hôm nay.{% endcomment %}
+        <form method="post" action="{% url 'learning:flashcard_more_new' topic.slug %}" class="session-more" data-card-ajax>
+          {% csrf_token %}
+          <button type="submit" class="btn {% if summary.again_words %}btn-outline{% else %}btn-primary{% endif %}">{% message "learning.flashcard.button.more_new" count=more_new_batch %}</button>
+        </form>
+      {% endif %}
+    {% endif %}
+    <p class="muted session-note">{% message "learning.flashcard.hint.due_tomorrow" count=due_tomorrow %}</p>
+
+    <div class="toolbar session-actions">
+      <a class="btn {% if summary.again_words or queue.more_new %}btn-outline{% else %}btn-primary{% endif %}" href="{% url 'learning:dashboard' %}">{% label "common.button.back" %}</a>
+      <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "learning.flashcard.link.pick_more" %}</a>
+    </div>
+    {% if undo_word %}
+      <form method="post" action="{% url 'learning:undo' %}" class="session-undo" data-card-ajax>
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline btn-sm" data-undo>{% message "learning.flashcard.button.undo_word" word=undo_word %} <kbd class="kbd">Z</kbd></button>
+      </form>
+    {% endif %}
+  </div>
+{% endif %}

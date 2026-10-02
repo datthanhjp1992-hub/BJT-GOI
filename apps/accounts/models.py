@@ -50,6 +50,10 @@ class User(AuditableModel, AbstractUser):
     # Mặc định ẩn: từ 01/10/2026 từ đang học chỉ quay lại khi hết lượt nên
     # con số phút không còn khớp trải nghiệm; ai quen Anki thì bật ở SC08.
     show_review_interval = models.BooleanField(default=False)
+    # SC04 hiện thẻ 2 bước (02/10/2026, spec.md T1.4): mặt trước chỉ có mặt
+    # chữ, lật mới thấy nghĩa. Mặc định HIỆN cách đọc ở mặt trước vì người mới
+    # chưa đọc được kanji; người đã quen tắt ở SC08 để tự luyện cả cách đọc.
+    show_reading_on_front = models.BooleanField(default=True)
 
     total_points = models.PositiveIntegerField(
         default=0,

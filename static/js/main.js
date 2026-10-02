@@ -2,12 +2,274 @@
 // Không framework, không build step: file này được base.html nạp ở cuối <body>.
 
 // ---------------------------------------------------------------------------
-// 1. Flashcard (SC04): bấm vào thẻ để lật ra nghĩa.
+// 1. Màn học (SC04 — templates/learning/_card_panel.html), spec.md Phase 1.
+//
+//    a) Hiện thẻ 2 bước: bấm thẻ / nút "Hiện đáp án" / phím Space -> thêm
+//       .is-revealed vào [data-study-card] (lộ nghĩa, ví dụ, 4 nút chấm).
+//    b) Chấm không tải lại trang: form [data-card-ajax] gửi bằng fetch() kèm
+//       header X-Card-Partial: 1; server trả riêng phần thẻ (views._render_card)
+//       và ta thay bên trong #card-panel. Lỗi mạng -> gửi form kiểu thường.
+//    c) Phím tắt: Space lật · 1-4 chấm · Z hoàn tác · E ví dụ · ? bảng phím tắt.
+//    d) Vuốt trên điện thoại: trái = Quên rồi, phải = Nhớ (khi đã lật thẻ).
+//    e) Chế độ tập trung: nút ☰ mở/ẩn sidebar, nhớ trong localStorage.
+//
+//    Mọi listener gắn ở document / #card-panel (event delegation) vì nội dung
+//    thẻ bị thay mới sau mỗi lần chấm. Tắt JS: form gửi thường, mọi thứ hiện
+//    sẵn (CSS chỉ ẩn mặt sau khi <html> có class "js").
 // ---------------------------------------------------------------------------
-function initFlashcards() {
-  document.querySelectorAll(".flashcard").forEach(function (card) {
-    card.addEventListener("click", function () { card.classList.toggle("is-flipped"); });
+var CARD_PARTIAL_HEADER = "X-Card-Partial";
+var SWIPE_THRESHOLD = 80;          // px — vuốt ngắn hơn coi như chạm nhầm
+var SIDEBAR_STORAGE_KEY = "bjt.focus.sidebar";
+var suppressCardClick = false;     // vừa vuốt xong thì bỏ qua click "lật thẻ"
+
+function studyScreen() { return document.querySelector("[data-study-card]"); }
+function cardPanel() { return document.querySelector("[data-card-panel]"); }
+function isRevealed(screen) { return !!(screen && screen.classList.contains("is-revealed")); }
+function isPanelBusy() {
+  var panel = cardPanel();
+  return !!(panel && panel.classList.contains("is-busy"));
+}
+
+function revealCard() {
+  var screen = studyScreen();
+  if (!screen || isRevealed(screen)) { return false; }
+  screen.classList.add("is-revealed");
+  var card = screen.querySelector("[data-flashcard]");
+  if (card) { card.classList.add("is-flipped"); }
+  return true;
+}
+
+function toggleShortcutDialog() {
+  var dialog = document.querySelector("[data-shortcut-dialog]");
+  if (!dialog) { return; }
+  if (dialog.open) {
+    if (dialog.close) { dialog.close(); } else { dialog.removeAttribute("open"); }
+  } else if (dialog.showModal) {
+    dialog.showModal();
+  } else {
+    dialog.setAttribute("open", "");
+  }
+}
+
+function initCardPanel() {
+  var panel = cardPanel();
+  if (!panel || !window.fetch || !window.FormData) { return; }
+  // event.submitter chưa có ở trình duyệt cũ — nhớ nút submit vừa được bấm
+  // (kể cả bấm bằng phím tắt, vì phím tắt gọi button.click()). Thiếu giá trị
+  // "quality" thì server sẽ chấm mặc định, nên không được để mất.
+  var lastSubmitter = null;
+  panel.addEventListener("click", function (event) {
+    var button = event.target.closest("button");
+    if (button && button.type === "submit") { lastSubmitter = button; }
   });
+
+  function submitNormally(form, submitter) {
+    if (submitter && submitter.name) {
+      var hidden = document.createElement("input");
+      hidden.type = "hidden";
+      hidden.name = submitter.name;
+      hidden.value = submitter.value;
+      form.appendChild(hidden);
+    }
+    form.submit();   // không bắn lại sự kiện submit -> không bị chặn lần nữa
+  }
+
+  panel.addEventListener("submit", function (event) {
+    var form = event.target;
+    if (!form.hasAttribute("data-card-ajax")) { return; }
+    event.preventDefault();
+    if (isPanelBusy()) { return; }   // chống bấm 2 lần
+
+    var submitter = event.submitter ||
+      (lastSubmitter && form.contains(lastSubmitter) ? lastSubmitter : null);
+    var body = new FormData(form);
+    if (submitter && submitter.name) { body.append(submitter.name, submitter.value); }
+
+    panel.classList.add("is-busy");
+    form.querySelectorAll("button").forEach(function (button) { button.disabled = true; });
+
+    var headers = {};
+    headers[CARD_PARTIAL_HEADER] = "1";
+    fetch(form.action, { method: "POST", body: body, credentials: "same-origin", headers: headers })
+      .then(function (response) {
+        if (!response.ok) { throw new Error("HTTP " + response.status); }
+        // Server không trả fragment (vd hoàn tác hết lượt bị đẩy về trang
+        // chủ, hoặc phiên đăng nhập hết hạn) -> sang hẳn trang đó.
+        if (response.headers.get(CARD_PARTIAL_HEADER) !== "1") {
+          window.location.href = response.url;
+          return null;
+        }
+        return response.text().then(function (html) {
+          if (response.url && response.url !== window.location.href) {
+            history.replaceState(null, "", response.url);
+          }
+          // Thông báo của lần tải trang đầu (nằm ngoài panel) đã cũ — fragment
+          // mới tự mang theo thông báo của chính nó.
+          document.querySelectorAll(".flash").forEach(function (note) {
+            if (!panel.contains(note)) { note.remove(); }
+          });
+          panel.innerHTML = html;
+          panel.classList.remove("is-busy");
+          panel.focus({ preventScroll: true });
+          if (panel.getBoundingClientRect().top < 0) { panel.scrollIntoView({ block: "start" }); }
+        });
+      })
+      .catch(function () {
+        panel.classList.remove("is-busy");
+        submitNormally(form, submitter);
+      });
+  });
+}
+
+// "?" — một số bàn phím/IME báo key rỗng, nên nhận cả Shift + phím "/".
+function isHelpKey(event) {
+  return event.key === "?" || (event.shiftKey && event.code === "Slash");
+}
+
+function isTypingTarget(el) {
+  return !!(el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)));
+}
+
+function initStudyShortcuts() {
+  document.addEventListener("click", function (event) {
+    if (event.target.closest("[data-shortcut-open]")) {
+      toggleShortcutDialog();
+      return;
+    }
+    if (event.target.closest("[data-reveal]") || event.target.closest("[data-flashcard]")) {
+      if (suppressCardClick) { suppressCardClick = false; return; }
+      revealCard();
+    }
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (!cardPanel()) { return; }
+    if (event.ctrlKey || event.metaKey || event.altKey) { return; }
+    if (isTypingTarget(event.target)) { return; }   // đang gõ bình luận
+
+    var key = event.key;
+    var dialog = document.querySelector("[data-shortcut-dialog]");
+    if (dialog && dialog.open) {
+      if (isHelpKey(event)) { event.preventDefault(); toggleShortcutDialog(); }
+      return;   // Esc do <dialog> tự xử lý
+    }
+    if (isHelpKey(event)) { event.preventDefault(); toggleShortcutDialog(); return; }
+
+    var busy = isPanelBusy();
+    var screen = studyScreen();
+
+    if (key === " " || key === "Spacebar" ||
+        (key === "Enter" && event.target.closest && event.target.closest("[data-flashcard]"))) {
+      if (!screen) { return; }
+      // Space luôn để lật thẻ — không để nó "bấm" nút đang được focus.
+      event.preventDefault();
+      if (!busy) { revealCard(); }
+      return;
+    }
+    if (/^[1-4]$/.test(key)) {
+      if (!screen) { return; }
+      event.preventDefault();
+      if (busy || !isRevealed(screen)) { return; }   // phải lật thẻ rồi mới chấm
+      var grade = screen.querySelector('[data-grade-key="' + key + '"]');
+      if (grade) { grade.click(); }
+      return;
+    }
+    if (key === "z" || key === "Z") {
+      var undo = cardPanel().querySelector("[data-undo]");
+      if (undo && !busy) { event.preventDefault(); undo.click(); }
+      return;
+    }
+    if ((key === "e" || key === "E") && isRevealed(screen)) {
+      var examples = screen.querySelector("[data-examples]");
+      if (examples) { event.preventDefault(); examples.open = !examples.open; }
+    }
+  });
+}
+
+function initCardSwipe() {
+  var card = null;
+  var start = null;
+
+  function reset() {
+    if (card) {
+      card.style.transform = "";
+      card.classList.remove("is-swiping", "swipe-left", "swipe-right");
+    }
+    card = null;
+    start = null;
+  }
+
+  document.addEventListener("touchstart", function (event) {
+    var target = event.target.closest && event.target.closest("[data-flashcard]");
+    if (!target || event.touches.length !== 1 || !isRevealed(studyScreen()) || isPanelBusy()) { return; }
+    card = target;
+    start = { x: event.touches[0].clientX, y: event.touches[0].clientY, dx: 0, horizontal: null };
+  }, { passive: true });
+
+  document.addEventListener("touchmove", function (event) {
+    if (!card || !start) { return; }
+    var dx = event.touches[0].clientX - start.x;
+    var dy = event.touches[0].clientY - start.y;
+    // Quyết định hướng một lần: vuốt dọc là cuộn trang, không đụng tới thẻ.
+    if (start.horizontal === null && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+      start.horizontal = Math.abs(dx) > Math.abs(dy);
+    }
+    if (!start.horizontal) { return; }
+    start.dx = dx;
+    card.classList.add("is-swiping");
+    card.style.transform = "translateX(" + dx + "px) rotate(" + (dx / 25) + "deg)";
+    card.classList.toggle("swipe-left", dx <= -SWIPE_THRESHOLD);
+    card.classList.toggle("swipe-right", dx >= SWIPE_THRESHOLD);
+  }, { passive: true });
+
+  document.addEventListener("touchend", function () {
+    if (!card || !start) { return; }
+    var dx = start.dx;
+    reset();
+    if (Math.abs(dx) < SWIPE_THRESHOLD) { return; }
+    suppressCardClick = true;
+    setTimeout(function () { suppressCardClick = false; }, 400);
+    // Phải = "Nhớ" (phím 3), trái = "Quên rồi" (phím 1).
+    var button = document.querySelector('[data-study-card] [data-grade-key="' + (dx > 0 ? "3" : "1") + '"]');
+    if (button) { button.click(); }
+  });
+  document.addEventListener("touchcancel", reset);
+}
+
+function initSidebarToggle() {
+  var shell = document.querySelector("[data-app-shell]");
+  var button = document.querySelector("[data-sidebar-toggle]");
+  if (!shell || !button || !shell.classList.contains("is-focus")) { return; }
+  // localStorage có thể ném lỗi (trình duyệt chặn lưu trữ) — khi đó chỉ mất
+  // phần "nhớ lựa chọn", nút vẫn chạy.
+  try {
+    if (window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "1") { shell.classList.add("show-sidebar"); }
+  } catch (e) { /* bỏ qua */ }
+  button.setAttribute("aria-expanded", shell.classList.contains("show-sidebar") ? "true" : "false");
+  button.addEventListener("click", function () {
+    var shown = shell.classList.toggle("show-sidebar");
+    button.setAttribute("aria-expanded", shown ? "true" : "false");
+    try { window.localStorage.setItem(SIDEBAR_STORAGE_KEY, shown ? "1" : "0"); } catch (e) { /* bỏ qua */ }
+  });
+}
+
+// Vừa gửi bình luận (views.flashcard_comment redirect kèm #study-discussion)
+// -> lật thẻ và mở sẵn khu thảo luận để thấy ngay bình luận của mình.
+function openDiscussionFromHash() {
+  if (window.location.hash !== "#study-discussion") { return; }
+  var discussion = document.getElementById("study-discussion");
+  if (!discussion) { return; }
+  revealCard();
+  discussion.open = true;
+  discussion.scrollIntoView({ block: "start" });
+}
+
+function initStudyScreen() {
+  openDiscussionFromHash();
+  initCardPanel();
+  initStudyShortcuts();
+  initCardSwipe();
+  initSidebarToggle();
 }
 
 // ---------------------------------------------------------------------------
@@ -298,7 +560,7 @@ function initPreviewTables() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  initFlashcards();
+  initStudyScreen();
   initRequiredBeforeSubmit();
   initDropdowns();
   initPreviewTables();

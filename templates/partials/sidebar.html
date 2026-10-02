@@ -99,8 +99,6 @@ falsy, khong loi).
              href="{% url 'admin_panel:error_report_list' %}">{% label "common.nav.admin_error_reports" %}
             {% if pending_error_reports %}<span class="tag">{{ pending_error_reports }}</span>{% endif %}
           </a>
-          <a class="sidenav-sublink{% if active_admin_nav == "system" %} active{% endif %}"
-             href="{% url 'admin_panel:system_settings' %}">{% label "common.nav.admin_system" %}</a>
         </div>
       </details>
     {% endif %}

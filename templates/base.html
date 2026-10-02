@@ -6,6 +6,7 @@ bộ class trong htmlTemplate/STYLE_GUIDE.md, nên template con chỉ được d
 các class ở đó, không tự đặt class mới.
 
 Block cho template con:
+  shell_class class thêm cho .app-shell (vd " is-focus" ẩn sidebar khi học — SC04)
   title       tiêu đề tab
   wrap_attrs  thuộc tính thêm cho <div class="wrap"> (vd thu hẹp trang login)
   content     nội dung chính
@@ -13,7 +14,12 @@ Block cho template con:
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  {% comment %}Đánh dấu "trình duyệt có chạy JavaScript" càng sớm càng tốt, để CSS
+  chỉ ẩn những gì JS sẽ mở lại (vd mặt sau thẻ SC04) — tắt JS thì mọi thứ
+  hiện sẵn, không khoá chức năng. viewport-fit=cover cho phép CSS đọc
+  env(safe-area-inset-bottom) ở hàng nút chấm dính đáy màn hình.{% endcomment %}
+  <script>document.documentElement.classList.add("js");</script>
   <title>{% block title %}{% label "common.brand.name" %}{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/theme_'|add:ui_theme|lower|add:'.css' %}">
   {% block extra_head %}{% endblock %}
@@ -37,7 +43,7 @@ Block cho template con:
   khong co CSS rieng cho truong hop nay -- xem ghi chu trong 3 file
   static/css/theme_*.css.
   {% endcomment %}
-  <div class="app-shell{% if not user.is_authenticated %} app-shell-guest{% endif %}">
+  <div class="app-shell{% if not user.is_authenticated %} app-shell-guest{% endif %}{% block shell_class %}{% endblock %}" data-app-shell>
     {% if user.is_authenticated %}
       {% include "partials/topbar_brand.html" %}
     {% else %}

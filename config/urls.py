@@ -7,7 +7,7 @@ from apps.core.views import healthz_view
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # Đích tự ping giữ Render free thức — xem apps/core/keepalive.py.
+    # Health check của Render + đích cho cron ping từ ngoài — xem apps/core/views.py.
     path("healthz/", healthz_view, name="healthz"),
     path("accounts/", include("apps.accounts.urls")),
     path("vocabulary/", include("apps.vocabulary.urls")),

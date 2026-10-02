@@ -16,6 +16,7 @@ from django.db.models import F
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.cache import patch_vary_headers
 from django.views.decorators.http import require_POST
 
 from apps.core import pagination
@@ -46,6 +47,44 @@ def dashboard_view(request):
         "active_nav": "home",
     }
     return render(request, "learning/dashboard.html", context)
+
+
+# =============================================================================
+# Render màn học dạng FRAGMENT (spec.md T1.2 — chấm thẻ không tải lại trang)
+# -----------------------------------------------------------------------------
+# static/js/main.js gửi các form của màn học bằng fetch() kèm header
+# X-Card-Partial: 1. View POST (chấm điểm, hoàn tác...) KHÔNG đổi gì — vẫn
+# redirect như cũ; fetch() tự đi theo redirect cùng origin và giữ header tự
+# đặt, nên GET sau redirect nhận được header và chỉ trả phần thẻ
+# (learning/_card_panel.html), không kèm sidebar/CSS/JS. Response fragment mang
+# header X-Card-Partial: 1 để JS phân biệt với trang đầy đủ (vd hoàn tác hết
+# lượt bị đẩy về dashboard) — trang đầy đủ thì JS chuyển hẳn sang URL đó.
+# Tắt JavaScript: không có header -> trang đầy đủ, chạy y như trước.
+# =============================================================================
+
+PARTIAL_HEADER = "X-Card-Partial"
+CARD_TEMPLATE = "learning/flashcard.html"
+CARD_PANEL_TEMPLATE = "learning/_card_panel.html"
+
+
+def _wants_partial(request):
+    return request.headers.get(PARTIAL_HEADER) == "1"
+
+
+def _render_card(request, context):
+    """Render màn học: trang đầy đủ, hoặc chỉ phần thẻ khi JS yêu cầu."""
+    partial = _wants_partial(request)
+    context = {
+        **context,
+        "is_partial": partial,
+        "show_reading_on_front": getattr(request.user, "show_reading_on_front", True),
+    }
+    response = render(request, CARD_PANEL_TEMPLATE if partial else CARD_TEMPLATE, context)
+    if partial:
+        response[PARTIAL_HEADER] = "1"
+    # Cùng URL nhưng hai dạng nội dung — trình duyệt/proxy không được cache lẫn.
+    patch_vary_headers(response, [PARTIAL_HEADER])
+    return response
 
 
 def _flashcard_session_keys(topic_slug):
@@ -262,12 +301,14 @@ def _card_context(request, word, *, flow, show_preview=True, session_id=None):
     buttons = [
         {
             "code": code,
+            # Phím tắt 1-4 (static/js/main.js) — theo đúng thứ tự hiển thị.
+            "key": index,
             "label_key": label_key,
             "style": style,
             "primary": primary,
             "delay": _delay_text(previews[QUALITY_MAP[code]]) if previews else "",
         }
-        for code, label_key, style, primary in GRADE_BUTTONS
+        for index, (code, label_key, style, primary) in enumerate(GRADE_BUTTONS, start=1)
     ]
     undo = _last_undo(request, flow)
     return {
@@ -303,6 +344,7 @@ def _session_summary(request, session):
     remembered = len(grades) - len(again_ids)
     by_id = Vocabulary.objects.in_bulk(again_ids[:RETRY_MAX])
     return {
+        "minutes": _session_minutes(session),
         "reviewed": session.words_reviewed,
         "words": len(grades),
         "remembered": remembered,
@@ -310,6 +352,14 @@ def _session_summary(request, session):
         "again": len(again_ids),
         "again_words": [by_id[vid] for vid in again_ids if vid in by_id],
     }
+
+
+def _session_minutes(session):
+    """Thời gian học của phiên, làm tròn LÊN theo phút (học 20 giây vẫn là
+    "1 phút", không phải 0). Phiên chưa đóng thì tính tới bây giờ."""
+    end = session.ended_at or timezone.now()
+    seconds = max(0, (end - session.started_at).total_seconds())
+    return max(1, -(-int(seconds) // 60))
 
 
 def _progress_numbers(total, remaining, seen=0):
@@ -371,9 +421,10 @@ def flashcard_view(request, topic_slug):
         session = _close_study_session(request, session_id_key)
         request.session.pop(total_key, None)
         undo = _last_undo(request, flow)
-        return render(request, "learning/flashcard.html", {
+        return _render_card(request, {
             "topic": topic, "word": None, "scope_label": topic.display_name,
             "summary": _session_summary(request, session),
+            "streak_days": services.get_streak_days(request.user),
             "queue": queue,
             "more_new_batch": min(queue.more_new_count, queue.new_limit or 1),
             "due_tomorrow": services.count_due_tomorrow(request.user),
@@ -398,7 +449,7 @@ def flashcard_view(request, topic_slug):
         "comments": gamification_services.get_vocabulary_comments(word),
         **_card_context(request, word, flow=flow, session_id=session.pk),
     }
-    return render(request, "learning/flashcard.html", context)
+    return _render_card(request, context)
 
 
 @login_required
@@ -472,6 +523,9 @@ def undo_view(request):
     return redirect("learning:dashboard")
 
 
+DISCUSSION_ANCHOR = "study-discussion"
+
+
 @login_required
 @require_POST
 def flashcard_comment(request, vocabulary_id):
@@ -497,9 +551,13 @@ def flashcard_comment(request, vocabulary_id):
         flash.error(request, message("common.validation.required"))
     # topic_slug rỗng = bình luận gửi từ phiên học theo bộ lọc (SC05) — quay
     # về đúng màn đó thay vì reverse một route bắt buộc phải có slug.
+    # Neo #study-discussion: main.js lật thẻ + mở sẵn khu thảo luận để người
+    # gửi thấy ngay bình luận của mình (khu này mặc định gập, xem T1.5).
     if not topic_slug:
-        return redirect("learning:study")
-    return redirect("learning:flashcard", topic_slug=topic_slug)
+        target = reverse("learning:study")
+    else:
+        target = reverse("learning:flashcard", kwargs={"topic_slug": topic_slug})
+    return redirect(f"{target}#{DISCUSSION_ANCHOR}")
 
 
 def _extra_new_key(topic_slug):
@@ -853,9 +911,10 @@ def study_view(request):
     if word is None:
         session = _clear_study_session(request)
         undo = _last_undo(request, FLOW_STUDY)
-        return render(request, "learning/flashcard.html", {
+        return _render_card(request, {
             "word": None, "scope_label": scope_label, "is_study_session": True,
             "summary": _session_summary(request, session),
+            "streak_days": services.get_streak_days(request.user),
             "due_tomorrow": services.count_due_tomorrow(request.user),
             "undo_word": undo["word"] if undo else "",
         })
@@ -878,7 +937,7 @@ def study_view(request):
             session_id=request.session.get(STUDY_SESSION_ID_KEY),
         ),
     }
-    return render(request, "learning/flashcard.html", context)
+    return _render_card(request, context)
 
 
 @login_required

@@ -200,8 +200,9 @@ def model_label(model):
 
 
 # Bảng cấu hình hệ thống, không phải dữ liệu học — không đưa ra màn nhập/xuất.
-# SiteSetting là bảng một dòng, sửa ở màn "Cài đặt hệ thống".
-NON_DATA_MODELS = frozenset({"core.sitesetting"})
+# Hiện trống: core.sitesetting (keep-alive) đã gỡ ngày 02/10/2026. Giữ cơ chế
+# để bảng cấu hình sau này thêm vào đây là đủ.
+NON_DATA_MODELS = frozenset()
 
 
 def _all_local_models():

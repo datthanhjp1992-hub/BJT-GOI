@@ -257,6 +257,7 @@ class SettingsForm(forms.ModelForm):
             "daily_reminder_enabled",
             "weekly_email_summary_enabled",
             "show_review_interval",
+            "show_reading_on_front",
         ]
         widgets = {"ui_theme": forms.RadioSelect}
 
@@ -276,6 +277,9 @@ class SettingsForm(forms.ModelForm):
         )
         self.fields["show_review_interval"].label = label(
             "accounts.settings.field.show_review_interval"
+        )
+        self.fields["show_reading_on_front"].label = label(
+            "accounts.settings.field.show_reading_on_front"
         )
 
         # Danh sách múi giờ dựng lúc chạy chứ không phải lúc import: giá trị

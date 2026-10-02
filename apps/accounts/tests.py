@@ -270,6 +270,20 @@ class SettingsViewTests(AccountsTestCase):
         # test để không ai "sửa" thành giữ nguyên giá trị cũ.
         self.assertFalse(self.user.weekly_email_summary_enabled)
 
+    def test_reading_on_front_defaults_on_and_can_be_turned_off(self):
+        """SC04 hiện thẻ 2 bước (spec.md T1.4): mặc định hiện cách đọc ở mặt
+        trước; bỏ tích ở SC08 thì cách đọc chỉ hiện sau khi lật thẻ."""
+        self.assertTrue(self.user.show_reading_on_front)
+        self.assertContains(self.client.get(self.url), 'name="show_reading_on_front"')
+
+        self.client.post(self.url, self._prefs())
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.show_reading_on_front)
+
+        self.client.post(self.url, self._prefs(show_reading_on_front="on"))
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.show_reading_on_front)
+
     def test_changing_theme_flashes_name_from_mastercode(self):
         response = self.client.post(self.url, self._prefs(ui_theme="C"), follow=True)
         self.user.refresh_from_db()

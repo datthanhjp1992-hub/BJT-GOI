@@ -827,3 +827,159 @@ a.pager-btn:hover{border-color:var(--accent);color:var(--accent);}
 .progressbar-2{position:relative;}
 .progressbar-2 > span{position:absolute;top:0;left:0;transition:width .25s ease;}
 .progressbar-2 > span.seen{opacity:.35;}
+
+/* =============================================================================
+   SC04 — Màn học, Phase 1 (02/10/2026, spec.md T1.1-T1.7). KHỐI NÀY GIỐNG HỆT
+   Ở CẢ 3 FILE THEME, chỉ khác dòng --study-radius ngay dưới — sửa thì sửa cả
+   3 (Phase 2 sẽ gom về một base.css chung).
+   Template: learning/_card_panel.html · JS: static/js/main.js mục 1.
+   ========================================================================== */
+:root{--study-radius:18px;}
+
+/* -- Chế độ tập trung (T1.5): ẩn sidebar khi học, nút ☰ ở top panel mở lại -- */
+.sidebar-toggle{display:none;align-items:center;justify-content:center;flex:none;
+  width:38px;height:38px;padding:0;background:none;border:1px solid var(--border);
+  border-radius:var(--study-radius);font-size:18px;line-height:1;color:var(--ink);cursor:pointer;}
+.sidebar-toggle:hover{border-color:var(--accent);color:var(--accent);}
+.sidebar-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.app-shell.is-focus .sidebar-toggle{display:inline-flex;}
+.app-shell.is-focus .site-topbar{justify-content:flex-start;gap:14px;}
+.app-shell.is-focus .site-topbar-user{margin-left:auto;}
+.app-shell.is-focus .site-sidebar{display:none;}
+.app-shell.is-focus.show-sidebar .site-sidebar{display:flex;}
+
+/* -- Đầu màn học: tiến độ + nút kết thúc trên cùng một hàng -- */
+.card-panel{outline:none;}
+.card-panel.is-busy{opacity:.55;pointer-events:none;transition:opacity .15s ease .12s;}
+.study-head{display:flex;justify-content:space-between;align-items:baseline;gap:6px 14px;margin:0 0 10px;}
+.study-head-text{margin:0;font-size:14px;}
+.study-head-end{margin:0;font-size:13px;white-space:nowrap;}
+.study-head-end .link-button{color:var(--ink-soft);}
+.study-progress{margin-bottom:10px;}
+.study-note{margin:0 0 8px;font-size:13px;}
+.study-card{margin-top:18px;}
+
+/* -- Thẻ hiện 2 bước (T1.4). Chỉ ẩn khi <html> có class "js" (base.html):
+      tắt JavaScript thì mặt sau + 4 nút chấm hiện sẵn như trước. -- */
+.flashcard{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+  touch-action:pan-y;-webkit-user-select:none;user-select:none;}
+.flashcard:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+.flashcard-tags{margin-bottom:12px;}
+.flashcard-tags .tag:last-child{margin-right:0;}
+.flashcard .back-only{display:none;}
+.flashcard.is-flipped .back-only{display:block;}
+.flashcard .hint{font-size:14px;margin:6px 0 0;}
+.js .study-screen:not(.is-revealed) .after-reveal{display:none;}
+.study-screen.is-revealed .before-reveal{display:none;}
+html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
+.reveal-btn{margin-top:16px;}
+
+.study-topics{text-align:center;margin:12px 0 0;font-size:13px;}
+.study-examples{margin-top:12px;}
+.study-examples>summary{list-style:none;}
+.study-examples>summary::-webkit-details-marker{display:none;}
+.study-examples-body{margin-top:10px;}
+.study-example-jp{margin:0 0 4px;}
+.study-example-vi{margin:0 0 14px;}
+.study-example-vi:last-child{margin-bottom:0;}
+.study-prompt{text-align:center;margin:22px 0 12px;}
+
+.grade-form{margin:0;}
+.grade-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.btn-grade{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;padding-left:8px;padding-right:8px;}
+.btn-grade-delay{font-weight:400;opacity:.8;font-size:12px;}
+.btn-grade .kbd{position:absolute;top:4px;right:6px;}
+
+/* -- Vuốt để chấm (T1.6): màu viền báo trước khi thả tay -- */
+.flashcard.is-swiping{transition:none;}
+.flashcard.swipe-left{border-color:#B23A2A;box-shadow:0 0 0 3px rgba(178,58,42,.22);}
+.flashcard.swipe-right{border-color:#2E7D5B;box-shadow:0 0 0 3px rgba(46,125,91,.22);}
+.swipe-hint{display:none;text-align:center;font-size:12.5px;margin:10px 0 0;}
+
+/* -- Phím tắt (T1.3) -- */
+.kbd{display:inline-block;min-width:1.6em;padding:0 5px;border:1px solid currentColor;border-bottom-width:2px;
+  border-radius:4px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;font-weight:400;
+  line-height:1.5;text-align:center;opacity:.55;vertical-align:middle;}
+.study-tools{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:12px 18px;margin:18px 0 0;}
+.study-tools form{margin:0;}
+.study-tools .link-button.shortcut-open{color:var(--ink-soft);font-size:13px;}
+.shortcut-dialog{width:calc(100% - 32px);max-width:400px;padding:22px 26px;border:1px solid var(--border);
+  border-radius:var(--study-radius);background:var(--surface);color:var(--ink);}
+.shortcut-dialog::backdrop{background:rgba(0,0,0,.35);}
+.shortcut-dialog h3{margin:0 0 14px;}
+.shortcut-list{display:grid;grid-template-columns:auto 1fr;gap:10px 16px;align-items:center;margin:0 0 18px;font-size:14px;}
+.shortcut-list dt,.shortcut-list dd{margin:0;}
+.shortcut-list dt{white-space:nowrap;}
+.shortcut-list .kbd{opacity:.85;font-size:12px;}
+.shortcut-dialog form{margin:0;text-align:right;}
+
+/* Thiết bị cảm ứng: không có bàn phím -> ẩn gợi ý phím, hiện gợi ý vuốt. */
+@media (hover:none) and (pointer:coarse){
+  .kbd,.shortcut-open{display:none !important;}
+  .swipe-hint{display:block;}
+}
+
+/* -- Khu thảo luận gập lại (T1.5) -- */
+.study-discussion{margin-top:28px;padding-top:12px;border-top:1px solid var(--border);}
+.study-discussion-toggle{cursor:pointer;list-style:none;padding:6px 0;font-weight:600;}
+.study-discussion-toggle::-webkit-details-marker{display:none;}
+.study-discussion-toggle::after{content:"\203A";display:inline-block;margin-left:8px;transform:rotate(90deg);
+  transition:transform .15s ease;color:var(--ink-soft);}
+.study-discussion[open] .study-discussion-toggle::after{transform:rotate(-90deg);}
+.study-discussion-body{padding-top:12px;}
+.study-discussion-actions{justify-content:center;margin-bottom:18px;}
+.study-discussion-title{margin:0 0 14px;font-size:18px;}
+.comment-list{display:grid;gap:12px;margin-bottom:14px;}
+.comment-card{padding:16px 18px;}
+.comment-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;font-size:14px;}
+.comment-meta{display:flex;align-items:center;gap:10px;font-size:12px;}
+.comment-meta form{margin:0;}
+.comment-text{margin:0;font-size:14px;white-space:pre-wrap;}
+.comment-form{padding:16px 18px;}
+.comment-form label{margin-bottom:8px;}
+.comment-form .btn{margin-top:10px;}
+.comment-note{font-size:12px;margin:8px 0 0;}
+.btn-xs{padding:3px 10px;font-size:12px;}
+
+/* -- Màn tổng kết (T1.7) -- */
+.session-done{text-align:center;padding:44px 32px;}
+.session-done h1{margin:0 0 10px;}
+.session-done>p.muted{margin:0 0 18px;}
+.session-done-mark{font-size:44px;line-height:1;margin-bottom:12px;
+  animation:session-pop .5s cubic-bezier(.2,1.4,.4,1) both;}
+@keyframes session-pop{from{transform:scale(.3);opacity:0;}to{transform:scale(1);opacity:1;}}
+.session-stats{grid-template-columns:repeat(3,1fr);margin:0 0 10px;}
+.session-stats-single{max-width:220px;margin:0 auto 18px;}
+.session-note{margin:0 0 12px;font-size:13px;}
+.session-meta{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 20px;margin:4px 0 18px;font-size:14px;}
+.session-retry{margin:0 0 18px;padding:16px;border:1px dashed var(--border);border-radius:var(--study-radius);}
+.session-retry-title{margin:0 0 8px;font-weight:600;}
+.session-retry-words{margin:0 0 12px;line-height:2.2;}
+.session-retry form,.session-more{margin:0 0 10px;}
+.session-actions{justify-content:center;margin:8px 0 0;}
+.session-undo{margin:14px 0 0;}
+
+@media (prefers-reduced-motion:reduce){
+  .session-done-mark{animation:none;}
+  .flashcard,.card-panel.is-busy{transition:none;}
+}
+
+/* -- Điện thoại (T1.6): nút "Hiện đáp án" và 4 nút chấm GHIM ở đáy màn hình
+      để bấm bằng ngón cái; chừa chỗ dưới cùng cho thanh ghim không che nội dung. -- */
+@media (max-width:560px){
+  .study-head{flex-wrap:wrap;}
+  .flashcard{padding:40px 20px;min-height:220px;}
+  .flashcard .jp{font-size:42px;}
+  .study-screen{padding-bottom:96px;}
+  .js .before-reveal,.js .study-screen .grade-form{position:fixed;left:0;right:0;bottom:0;z-index:20;
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--bg);
+    border-top:1px solid var(--border);box-shadow:0 -6px 16px rgba(0,0,0,.07);}
+  .reveal-btn{margin-top:0;}
+  .grade-row{gap:6px;}
+  .btn-grade{min-height:54px;padding:10px 4px;font-size:14px;}
+  .session-done{padding:32px 18px;}
+  .session-stats{gap:8px;}
+  .session-stats .stat{padding:12px 6px;}
+  .session-stats .num{font-size:24px;}
+}

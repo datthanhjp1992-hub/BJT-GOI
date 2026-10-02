@@ -1544,3 +1544,239 @@ class ReviewDeckFullSessionTests(ReviewTestCase):
         UserVocabularyProgress.objects.update(next_review_date=self.user.local_today())
         self.client.post(reverse("learning:review_start"), {"scope": "due", "limit": "10"})
         self.assertEqual(len(self.client.session["study_queue"]), 10)
+
+
+# =============================================================================
+# Phase 1 (02/10/2026, spec.md T1.1-T1.7) — màn học SC04
+# =============================================================================
+
+PARTIAL = {"HTTP_X_CARD_PARTIAL": "1"}
+
+
+class CardPartialTests(LearningTestCase):
+    """T1.1/T1.2 — cùng URL trả trang đầy đủ hoặc chỉ phần thẻ (fetch)."""
+
+    def setUp(self):
+        super().setUp()
+        self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        self.words = {v.word: v for v in Vocabulary.objects.all()}
+        self.page = reverse("learning:flashcard", args=["nha-hang"])
+
+    def _review_url(self, word):
+        return reverse("learning:flashcard_review", args=[self.words[word].pk])
+
+    def test_full_page_without_header(self):
+        response = self.client.get(self.page)
+        self.assertTemplateUsed(response, "learning/flashcard.html")
+        self.assertTemplateUsed(response, "learning/_card_panel.html")
+        self.assertContains(response, 'id="card-panel"')
+        self.assertContains(response, "<html")
+        self.assertNotIn("X-Card-Partial", response)
+        # Hai dạng nội dung trên cùng URL -> phải khai Vary để không cache lẫn.
+        self.assertIn("X-Card-Partial", response["Vary"])
+
+    def test_header_returns_only_the_card(self):
+        response = self.client.get(self.page, **PARTIAL)
+        self.assertTemplateUsed(response, "learning/_card_panel.html")
+        self.assertTemplateNotUsed(response, "learning/flashcard.html")
+        self.assertTemplateNotUsed(response, "base.html")
+        self.assertNotContains(response, "<html")
+        self.assertNotContains(response, 'id="card-panel"')
+        self.assertEqual(response["X-Card-Partial"], "1")
+        self.assertIn("X-Card-Partial", response["Vary"])
+        self.assertContains(response, "data-study-card")
+
+    def test_grading_follows_redirect_into_a_fragment(self):
+        """JS gửi POST kèm header; view POST vẫn redirect như cũ, GET sau
+        redirect phải trả fragment của thẻ KẾ TIẾP."""
+        first = self.client.get(self.page).context["word"]
+        response = self.client.post(
+            self._review_url(first.word), {"quality": "de", "topic_slug": "nha-hang"},
+            follow=True, **PARTIAL,
+        )
+        self.assertEqual(response["X-Card-Partial"], "1")
+        self.assertNotContains(response, "<html")
+        self.assertNotEqual(response.context["word"], first)
+        self.assertTrue(
+            UserVocabularyProgress.objects.filter(user=self.user, vocabulary=first).exists()
+        )
+
+    def test_grading_without_header_still_renders_the_full_page(self):
+        first = self.client.get(self.page).context["word"]
+        response = self.client.post(
+            self._review_url(first.word), {"quality": "de", "topic_slug": "nha-hang"},
+            follow=True,
+        )
+        self.assertTemplateUsed(response, "learning/flashcard.html")
+        self.assertContains(response, "<html")
+
+    def test_undo_fragment_carries_its_flash_message(self):
+        """Fragment tự mang thông báo "Đã hoàn tác" (trang đầy đủ thì base.html in)."""
+        first = self.client.get(self.page).context["word"]
+        self.client.post(self._review_url(first.word), {"quality": "de", "topic_slug": "nha-hang"})
+        response = self.client.post(reverse("learning:undo"), follow=True, **PARTIAL)
+        self.assertEqual(response["X-Card-Partial"], "1")
+        self.assertEqual(response.context["word"], first)
+        self.assertContains(response, 'class="flash"')
+
+    def test_full_page_does_not_print_flash_messages_twice(self):
+        first = self.client.get(self.page).context["word"]
+        self.client.post(self._review_url(first.word), {"quality": "de", "topic_slug": "nha-hang"})
+        response = self.client.post(reverse("learning:undo"), follow=True)
+        self.assertEqual(response.content.decode().count('class="flash"'), 1)
+
+    def test_undo_with_nothing_left_is_not_a_fragment(self):
+        """Hết gì để hoàn tác -> server đẩy về trang chủ (trang đầy đủ, không
+        mang header) — JS dựa vào đó để chuyển hẳn trang thay vì nhét trang
+        chủ vào khung thẻ."""
+        response = self.client.post(reverse("learning:undo"), follow=True, **PARTIAL)
+        self.assertTemplateUsed(response, "learning/dashboard.html")
+        self.assertNotIn("X-Card-Partial", response)
+
+    def test_finished_session_fragment_shows_the_summary(self):
+        for word in ("予約", "注文"):
+            self.client.get(self.page)
+            self.client.post(self._review_url(word), {"quality": "de", "topic_slug": "nha-hang"})
+        response = self.client.get(self.page, **PARTIAL)
+        self.assertIsNone(response.context["word"])
+        self.assertContains(response, "session-done")
+
+    def test_study_view_supports_fragments_too(self):
+        self.client.post(reverse("learning:study_start"), {"topic": "nha-hang", "limit": "0"})
+        response = self.client.get(reverse("learning:study"), **PARTIAL)
+        self.assertEqual(response["X-Card-Partial"], "1")
+        self.assertTemplateNotUsed(response, "learning/flashcard.html")
+        self.assertIsNotNone(response.context["word"])
+
+
+class StudyScreenMarkupTests(LearningTestCase):
+    """T1.3-T1.5 — móc data-* cho JS, hiện thẻ 2 bước, khu thảo luận gập."""
+
+    def setUp(self):
+        super().setUp()
+        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self.page = reverse("learning:flashcard", args=["nha-hang"])
+
+    def test_grade_buttons_are_numbered_for_shortcuts(self):
+        response = self.client.get(self.page)
+        self.assertEqual([b["key"] for b in response.context["grade_buttons"]], [1, 2, 3, 4])
+        for key in "1234":
+            self.assertContains(response, f'data-grade-key="{key}"')
+        self.assertContains(response, "data-shortcut-dialog")
+
+    def test_card_hides_the_answer_behind_a_reveal_button(self):
+        response = self.client.get(self.page)
+        self.assertContains(response, "data-reveal")
+        self.assertContains(response, 'class="after-reveal"')
+        self.assertContains(response, "data-card-ajax")
+
+    def test_reading_is_on_the_front_by_default(self):
+        response = self.client.get(self.page)
+        self.assertContains(response, 'class="reading"')
+        self.assertNotContains(response, 'class="reading back-only"')
+
+    def test_reading_moves_to_the_back_when_disabled(self):
+        self.user.show_reading_on_front = False
+        self.user.save(update_fields=["show_reading_on_front"])
+        response = self.client.get(self.page)
+        self.assertContains(response, 'class="reading back-only"')
+
+    def test_page_turns_on_focus_mode(self):
+        response = self.client.get(self.page)
+        self.assertContains(response, "is-focus")
+        self.assertContains(response, "data-sidebar-toggle")
+
+    def test_other_pages_keep_the_sidebar(self):
+        response = self.client.get(reverse("learning:dashboard"))
+        self.assertNotContains(response, "is-focus")
+
+    def test_discussion_shows_the_comment_count(self):
+        vocab = Vocabulary.objects.get(word="注文")
+        Contribution.objects.create(
+            user=self.user, contribution_type_code=CONTRIBUTION_TYPE_COMMENT,
+            status_code=STATUS_APPROVED, target_vocabulary=vocab, comment_text="Hay",
+        )
+        response = self.client.get(self.page)
+        self.assertContains(response, "study-discussion")
+        self.assertContains(response, "(1)")
+
+    def test_posting_a_comment_returns_to_the_open_discussion(self):
+        """Khu thảo luận mặc định gập — gửi xong phải quay về đúng neo để JS
+        mở sẵn, người gửi thấy ngay bình luận của mình."""
+        vocab = Vocabulary.objects.get(word="注文")
+        response = self.client.post(
+            reverse("learning:flashcard_comment", args=[vocab.pk]),
+            {"comment_text": "Hay", "topic_slug": "nha-hang"},
+        )
+        self.assertRedirects(
+            response, self.page + "#study-discussion", fetch_redirect_response=False
+        )
+
+
+class SessionSummaryTimeTests(LearningTestCase):
+    """T1.7 — màn tổng kết có thời gian học (làm tròn lên) và streak."""
+
+    def setUp(self):
+        super().setUp()
+        self.topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self.vocab = self.topic.vocabularies.first()
+        self.page = reverse("learning:flashcard", args=["nha-hang"])
+
+    def test_summary_has_minutes_and_streak(self):
+        self.client.get(self.page)
+        self.client.post(
+            reverse("learning:flashcard_review", args=[self.vocab.pk]),
+            {"quality": "de", "topic_slug": "nha-hang"},
+        )
+        response = self.client.get(self.page)
+        self.assertIsNone(response.context["word"])
+        self.assertEqual(response.context["summary"]["minutes"], 1)
+        self.assertEqual(response.context["streak_days"], 1)
+
+    def test_minutes_round_up(self):
+        from .views import _session_minutes
+
+        now = timezone.now()
+        session = StudySession(started_at=now - timedelta(seconds=61), ended_at=now)
+        self.assertEqual(_session_minutes(session), 2)
+        session.ended_at = session.started_at
+        self.assertEqual(_session_minutes(session), 1)
+
+    def test_retry_is_the_only_primary_action_when_words_were_forgotten(self):
+        self.client.get(self.page)
+        review = reverse("learning:flashcard_review", args=[self.vocab.pk])
+        for code in ("quen", "nho", "nho"):
+            self.client.post(review, {"quality": code, "topic_slug": "nha-hang"})
+        html = self.client.get(self.page).content.decode()
+        back = reverse("learning:dashboard")
+        self.assertIn(f'class="btn btn-outline" href="{back}"', html)
+
+
+class StudyScreenCssTests(TestCase):
+    """Phase 1 thêm class mới cho màn học — cả 3 theme phải có (cùng tinh
+    thần với accounts.tests ThemeCssTests cho SC08)."""
+
+    REQUIRED_RULES = (
+        ".js .study-screen:not(.is-revealed) .after-reveal",
+        ".study-screen.is-revealed .before-reveal",
+        ".app-shell.is-focus .site-sidebar",
+        ".app-shell.is-focus.show-sidebar .site-sidebar",
+        ".grade-row",
+        ".kbd",
+        ".shortcut-dialog",
+        ".flashcard.swipe-left",
+        ".session-done",
+        "env(safe-area-inset-bottom)",
+        "prefers-reduced-motion",
+    )
+
+    def test_every_theme_styles_the_study_screen(self):
+        from pathlib import Path
+
+        from django.conf import settings
+
+        for name in ("theme_a.css", "theme_b.css", "theme_c.css"):
+            css = (Path(settings.BASE_DIR) / "static" / "css" / name).read_text(encoding="utf-8")
+            for rule in self.REQUIRED_RULES:
+                with self.subTest(file=name, rule=rule):
+                    self.assertIn(rule, css, msg=f"{name} thiếu rule {rule} cho màn học")

@@ -29,21 +29,9 @@ if RENDER_EXTERNAL_HOSTNAME:
     if _origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS = [*CSRF_TRUSTED_ORIGINS, _origin]
 
-# Đích tự ping giữ server free thức (apps/core/keepalive.py). Có thể ghi đè
-# bằng biến môi trường KEEPALIVE_URL; đặt KEEPALIVE_URL="" để tắt hẳn ở mức
-# hạ tầng (khi đó bật/tắt trên màn quản trị không còn tác dụng).
-KEEPALIVE_URL = os.environ.get(
-    "KEEPALIVE_URL",
-    f"https://{RENDER_EXTERNAL_HOSTNAME}/healthz/" if RENDER_EXTERNAL_HOSTNAME else "",
-)
-
-# TẠM TẮT keep-alive (25/09/2026): luồng nền làm server tắc nghẽn.
-# Mặc định TẮT -> KEEPALIVE_URL rỗng -> keepalive.start() thoát ngay, không tạo
-# luồng, không đọc DB mỗi 30 s. Muốn bật lại: đặt biến môi trường
-# KEEPALIVE_DISABLED=0 trên Render, hoặc đổi mặc định "1" bên dưới thành "0".
-KEEPALIVE_DISABLED = os.environ.get("KEEPALIVE_DISABLED", "1").lower() in ("1", "true", "yes", "on")
-if KEEPALIVE_DISABLED:
-    KEEPALIVE_URL = ""
+# Keep-alive dạng luồng nền trong app đã GỠ BỎ (02/10/2026) vì làm server tắc
+# nghẽn. Giữ server free thức sẽ làm bằng cron gọi /healthz/ từ bên ngoài —
+# xem spec.md mục T4.1.
 
 # Render gom stdout/stderr vào tab Logs — ghi thẳng ra đó, không ghi ra file
 # vì đĩa của instance là tạm, mất sạch sau mỗi lần deploy.
