@@ -25,7 +25,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone as dj_timezone
 
-from apps.core.constants import ui_theme_choices
+from apps.core.constants import COLOR_SCHEME_AUTO, color_scheme_choices, ui_theme_choices
 from apps.core.models import AuditableModel
 
 
@@ -33,6 +33,12 @@ class User(AuditableModel, AbstractUser):
     ui_theme = models.CharField(
         max_length=1, choices=ui_theme_choices, default="A",
         help_text="Selected UI style, set from the Settings screen (SC08_CaiDat).",
+    )
+    # Sáng / tối / theo thiết bị (spec.md T2.3) — base.html đặt thành
+    # <html data-scheme="...">, CSS theme đổi bảng màu theo đó.
+    color_scheme = models.CharField(
+        max_length=10, choices=color_scheme_choices, default=COLOR_SCHEME_AUTO,
+        help_text="MasterCode code_type 18: auto / light / dark.",
     )
     daily_review_goal = models.PositiveSmallIntegerField(default=20)
 

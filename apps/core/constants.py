@@ -169,6 +169,21 @@ def question_type_choices():
     return get_choices(CODE_TYPE_QUESTION_TYPE)
 
 
+# --- Chế độ sáng / tối (spec.md T2.3, 02/10/2026) ---
+# Mã PHẢI khớp selector trong static/css/theme_*.css (:root[data-scheme="..."])
+# nên là chuỗi có nghĩa, không phải "001". Thêm mã mới = thêm cả bảng màu CSS.
+CODE_TYPE_COLOR_SCHEME = "18"
+COLOR_SCHEME_AUTO = "auto"    # theo cài đặt sáng/tối của thiết bị
+COLOR_SCHEME_LIGHT = "light"
+COLOR_SCHEME_DARK = "dark"
+COLOR_SCHEMES = (COLOR_SCHEME_AUTO, COLOR_SCHEME_LIGHT, COLOR_SCHEME_DARK)
+
+
+def color_scheme_choices():
+    """Lựa chọn sáng/tối ở SC08 — tên hiển thị lấy từ MasterCode."""
+    return get_choices(CODE_TYPE_COLOR_SCHEME)
+
+
 # code_type "17" TRỐNG: trước đây là chu kỳ tự ping keep-alive (phút). Gỡ ngày
 # 02/10/2026 cùng apps/core/keepalive.py — xem migration core/0004. Đừng tái
 # sử dụng "17" cho thứ khác, giống quy ước với "05".

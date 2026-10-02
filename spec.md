@@ -451,11 +451,11 @@ luồng nền đã phải tắt (25/09/2026) vì làm nghẽn server.
 - [x] T1.6 Tối ưu điện thoại (nút cố định đáy, vuốt)
 - [x] T1.7 Màn tổng kết
 
-### Phase 2 — Thiết kế
-- [ ] T2.1 Gom CSS về `base.css` + token
-- [ ] T2.2 Bỏ inline style, màu nút chấm ra CSS
-- [ ] T2.3 Dark mode (MasterCode "18")
-- [ ] T2.4 Kiểm tra mobile toàn site
+### Phase 2 — Thiết kế (code xong 02/10/2026 — chờ Dat chạy test trên DB thật)
+- [x] T2.1 Gom CSS về `base.css` + token — theme ~190 dòng (gồm cả token tối), base ~880 dòng
+- [x] T2.2 Bỏ inline style, màu nút chấm ra CSS — `templates/learning`: 71 → 8 (chỉ còn style theo dữ liệu)
+- [x] T2.3 Dark mode (MasterCode "18")
+- [~] T2.4 Kiểm tra mobile — xong màn `learning`; các màn khác chờ chạy server (xem nhật ký)
 
 ### Phase 3 — Luồng
 - [x] Duyệt các điểm cần chốt của T3.1
@@ -486,6 +486,27 @@ luồng nền đã phải tắt (25/09/2026) vì làm nghẽn server.
 
 ## Nhật ký kiểm tra mobile (T2.4)
 
+Cách kiểm: render template bằng dữ liệu giả rồi đo trong trình duyệt ở 375px — trang có
+tràn ngang không (`scrollWidth`), phần tử nào vượt mép phải — cho cả 3 theme, menu mở/đóng.
+
 | Màn | Theme | Vấn đề | Trạng thái |
 |---|---|---|---|
-| | | | |
+| Mọi trang có sidebar | A, B, C | Sidebar ≤900px thành hàng link ngang, ở 375px rộng ~600px → cả trang tràn ngang | ✅ Sửa: sidebar ẩn, nút ☰ mở danh sách dọc |
+| Bảng dữ liệu (`<table>` không class) | A, B, C | Không có khung cuộn — bảng rộng sẽ đẩy trang tràn | ✅ Sửa: ≤720px bảng tự cuộn ngang |
+| SC03 Trang chủ, SC04, SC06, SC15 (4 góc nhìn + trống) | A, B, C | Sau 2 sửa trên: không còn tràn | ✅ Đã đo |
+| SC01-02, SC05, SC07, SC08-14, SC16-22 | A, B, C | Chưa đo được — cần server chạy (dữ liệu thật) | ⏳ Chờ |
+
+### Ghi chú T2.1–T2.3 (để đối chiếu khi review)
+- **Không đổi giao diện ở chế độ sáng**: so computed style của MỌI phần tử (cả `::before/::after`)
+  giữa CSS cũ và mới trên 53 trang mockup + 6 trang SC04 render × 3 theme × 2 bề rộng
+  (1280/375): 0 khác biệt — làm lại sau T2.1, T2.2 (so template trước/sau) và T2.3.
+- **T2.1 thứ tự nạp đổi**: `theme_x.css` trước, `base.css` sau. Một số rule giống nhau vẫn
+  nằm trong theme vì tách ra sẽ đổi thứ tự cascade (script tách tự kiểm từng cặp khai báo có
+  thể đè nhau). Mục tiêu ≤150 dòng/theme chưa đạt hẳn (~165 dòng trước khi thêm token tối).
+- **T2.2 utility dùng `!important`** (như Bootstrap) để giữ đúng độ ưu tiên của style inline cũ.
+  Số utility nhiều hơn dự kiến (~30) vì giữ nguyên từng con số khoảng cách cũ thay vì làm tròn.
+- **T2.3 tương phản**: chế độ tối mọi cặp chữ/nền ≥ 5.0:1. Chế độ SÁNG có sẵn vài chỗ < 4.5:1
+  từ thiết kế gốc, CHƯA sửa vì đổi giao diện đã duyệt — cần Dat quyết:
+  - Theme C: chữ trắng trên nút coral 2.7:1; link coral trên nền trắng 2.7:1; chữ phụ trên nền 4.2:1;
+    thông báo lỗi 4.0:1; `tag.level` 3.1:1.
+  - Cả 3 theme: chữ nút "Khó" 3.9:1.

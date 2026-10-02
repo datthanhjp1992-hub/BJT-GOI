@@ -72,5 +72,42 @@ Tươi sáng, bo tròn, gamified — phù hợp học nhẹ nhàng, vui vẻ m�
 - Quy tắc đặt tên file mockup: `SCxx_TenManHinh_X.html` với `X` ∈ {A, B, C}. CSS riêng theo style: `style_X.css`.
 
 ## Ghi chú cho bản Django thật
-- Trong Django, khuyến nghị thay vì 3 file CSS riêng, dùng 1 file `theme.css` chứa 3 khối biến CSS custom properties theo class `body.theme-a`, `body.theme-b`, `body.theme-c`, rồi set class đó dựa theo `request.user.profile.ui_theme`.
-- Các token màu/font nêu trên nên được định nghĩa làm biến CSS (`:root` hoặc theo class theme) để designer/dev sau này chỉ cần đổi giá trị biến, không sửa từng component.
+
+### Cấu trúc CSS (từ 02/10/2026 — spec.md Phase 2)
+`templates/base.html` nạp **hai** file, theo đúng thứ tự:
+
+1. `static/css/theme_x.css` (x = a/b/c theo `User.ui_theme`) — token (`:root`) + những rule
+   mà theme này THẬT SỰ khác hai theme kia (bo góc, cỡ chữ, độ đậm, viền...).
+2. `static/css/base.css` — mọi rule giống nhau ở cả 3 theme. Nạp SAU nên khi trùng
+   thuộc tính với theme thì base thắng.
+
+Quy tắc khi sửa:
+- Rule mới dùng chung → viết ở `base.css`, chỉ dùng biến (`var(--surface)`...). Không chép vào 3 file theme.
+- Theme cần giá trị khác → đè trong `theme_x.css`, và KHÔNG khai báo cùng thuộc tính cho cùng selector ở `base.css` (base nạp sau sẽ thắng).
+- Không viết `style="..."` cố định trong template — dùng class ở mục "T2.2" cuối `base.css`
+  (`.m-0`, `.mb-18`, `.text-sm`...). Chỉ style phụ thuộc dữ liệu (`width:{{ percent }}%`) mới để inline.
+- `apps/accounts/tests.py` kiểm tra mọi `var(--token)` đều được khai ở cả 3 theme.
+
+### Token bổ sung (T2.2 / T2.3)
+Ngoài bảng token gốc ở trên, mỗi theme khai thêm (giá trị ở chế độ sáng giữ nguyên màu cũ):
+
+| Token | Dùng cho |
+|---|---|
+| `--accent-text`, `--accent-text-strong` | CHỮ màu nhấn (link, nhãn, mục đang chọn). Chế độ tối sáng hơn `--accent` để đủ tương phản. `--accent` vẫn là màu TÔ NỀN nút (chữ trắng). |
+| `--surface-alt`, `--row-hover`, `--line-soft`, `--chip-bg` | Nền phụ nhạt, hàng bảng khi rê chuột, đường kẻ mảnh, chip đếm |
+| `--good-bg`, `--good-line`, `--bad-bg` | Nền đúng/sai (kính ngữ, bài tập) |
+| `--error`, `--error-bg` | Thông báo lỗi (`.flash.error`) |
+| `--grade-{forgot,hard,good}-{bg,fg}` | 4 nút chấm SC04 |
+| `--ink-fill` (theme B) | Nền nút màu mực — tối thì đổi sang xám đậm để chữ trắng còn đọc được |
+| `--study-radius` | Bo góc riêng các khối của màn học SC04 |
+
+### Chế độ sáng / tối (T2.3)
+- `User.color_scheme` = `auto` | `light` | `dark` (MasterCode `code_type` 18), chọn ở SC08.
+- `base.html` đặt `<html data-scheme="...">`. Mỗi theme có bảng màu tối ở
+  `:root[data-scheme="dark"]` và (giống hệt) trong `@media (prefers-color-scheme:dark){:root[data-scheme="auto"]}`.
+- Bảng màu tối chỉ ĐỔI GIÁ TRỊ TOKEN — muốn một màu mới đổi theo chế độ tối thì phải dùng token, không viết mã màu cứng.
+- Mọi cặp chữ/nền ở chế độ tối đạt tương phản ≥ 4.5:1 (đo lúc làm T2.3).
+
+### Điện thoại (T2.4)
+- ≤ 900px: sidebar ẩn, nút ☰ ở top panel mở thành danh sách dọc.
+- ≤ 720px: `<table>` không class tự cuộn ngang trong chính nó. Bảng có bố cục mobile riêng (kính ngữ) thì đặt class và tự lo.

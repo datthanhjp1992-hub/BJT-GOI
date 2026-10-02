@@ -236,20 +236,29 @@ function initCardSwipe() {
   document.addEventListener("touchcancel", reset);
 }
 
+// Nút ☰ hiện ở 2 nơi (CSS quyết định): trang có chế độ tập trung (SC04) và
+// mọi trang trên màn ≤900px (T2.4 — sidebar thành menu mở bằng nút). Chỉ chế
+// độ tập trung mới NHỚ lựa chọn: trên điện thoại menu luôn đóng khi sang
+// trang mới, mở sẵn sẽ che nội dung.
 function initSidebarToggle() {
   var shell = document.querySelector("[data-app-shell]");
   var button = document.querySelector("[data-sidebar-toggle]");
-  if (!shell || !button || !shell.classList.contains("is-focus")) { return; }
+  if (!shell || !button) { return; }
+  var remember = shell.classList.contains("is-focus");
   // localStorage có thể ném lỗi (trình duyệt chặn lưu trữ) — khi đó chỉ mất
   // phần "nhớ lựa chọn", nút vẫn chạy.
-  try {
-    if (window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "1") { shell.classList.add("show-sidebar"); }
-  } catch (e) { /* bỏ qua */ }
+  if (remember) {
+    try {
+      if (window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "1") { shell.classList.add("show-sidebar"); }
+    } catch (e) { /* bỏ qua */ }
+  }
   button.setAttribute("aria-expanded", shell.classList.contains("show-sidebar") ? "true" : "false");
   button.addEventListener("click", function () {
     var shown = shell.classList.toggle("show-sidebar");
     button.setAttribute("aria-expanded", shown ? "true" : "false");
-    try { window.localStorage.setItem(SIDEBAR_STORAGE_KEY, shown ? "1" : "0"); } catch (e) { /* bỏ qua */ }
+    if (remember) {
+      try { window.localStorage.setItem(SIDEBAR_STORAGE_KEY, shown ? "1" : "0"); } catch (e) { /* bỏ qua */ }
+    }
   });
 }
 

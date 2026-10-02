@@ -26,16 +26,16 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
   <div class="eyebrow">{% label "learning.review.eyebrow" %}</div>
 
   {% if overview.studied %}
-    <h1 class="serif" style="font-size:32px;margin:0 0 6px;">
+    <h1 class="serif fs-32 m-0 mb-6">
       {% if overview.due_total %}
         {% message "learning.review.title.due" count=overview.due_total %}
       {% else %}
         {% label "learning.review.title.all_caught_up" %}
       {% endif %}
     </h1>
-    <p class="muted" style="margin:0 0 22px;">{% message "learning.review.hint.intro" %}</p>
+    <p class="muted m-0 mb-22">{% message "learning.review.hint.intro" %}</p>
 
-    <div class="card stamp" style="margin-bottom:34px;">
+    <div class="card stamp mb-34">
       {% if overview.due_total %}
         {% comment %}Một form duy nhất cho cả khối: nút chính nộp luôn những
         gì đang chọn trong <details> bên dưới.{% endcomment %}
@@ -44,9 +44,9 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
           <input type="hidden" name="scope" value="due">
 
           <div class="review-hero">
-            <div style="flex:1 1 320px;">
-              <p style="margin:0 0 16px;display:flex;align-items:baseline;gap:12px;">
-                <span class="serif" style="font-size:46px;line-height:1;">{{ overview.due_total }}</span>
+            <div class="review-hero-main">
+              <p class="review-count">
+                <span class="serif review-count-num">{{ overview.due_total }}</span>
                 <span class="muted">{% message "learning.review.hint.minutes" minutes=overview.minutes %}</span>
               </p>
 
@@ -60,18 +60,18 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
               </p>
             </div>
 
-            <div style="flex:0 0 auto;">
-              <button type="submit" class="btn btn-primary" style="font-size:17px;padding:16px 38px;">
+            <div class="flex-none">
+              <button type="submit" class="btn btn-primary btn-lg">
                 {% label "learning.review.button.start" %}
               </button>
             </div>
           </div>
 
-          <div class="divider" style="margin:24px 0 0;"></div>
+          <div class="divider review-divider"></div>
           <details class="review-options">
             <summary>{% label "learning.review.button.customize" %}</summary>
-            <div style="padding-top:20px;">
-              <label style="margin:0 0 8px;">{% label "learning.review.field.topic" %}</label>
+            <div class="pt-20">
+              <label class="m-0 mb-8">{% label "learning.review.field.topic" %}</label>
               <div class="checkbox-grid">
                 {% for topic in topics %}
                   <label class="checkbox-row">
@@ -79,12 +79,12 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
                     <span>{{ topic.icon_emoji }} {{ topic.display_name }}</span>
                   </label>
                 {% empty %}
-                  <p class="muted" style="margin:0;font-size:14px;">{% message "vocabulary.list.hint.no_topic" %}</p>
+                  <p class="muted m-0 text-sm">{% message "vocabulary.list.hint.no_topic" %}</p>
                 {% endfor %}
               </div>
 
-              <div class="grid cols-2" style="margin-top:18px;">
-                <div class="field" style="margin:0;">
+              <div class="grid cols-2 mt-18">
+                <div class="field m-0">
                   <label for="id_limit">{% label "learning.review.field.limit" %}</label>
                   <select id="id_limit" name="limit">
                     {% for choice in limit_choices %}
@@ -94,7 +94,7 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
                     {% endfor %}
                   </select>
                 </div>
-                <div class="field" style="margin:0;">
+                <div class="field m-0">
                   <label for="id_mode">{% label "learning.review.field.mode" %}</label>
                   <select id="id_mode" name="mode">
                     <option value="flashcard">{% label "learning.review.option.flashcard" %}</option>
@@ -106,30 +106,30 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
           </details>
         </form>
       {% else %}
-        <p style="font-size:24px;margin:0 0 8px;">🎉</p>
-        <h2 class="serif" style="margin:0 0 6px;font-size:22px;">{% label "learning.review.title.all_caught_up" %}</h2>
-        <p class="muted" style="margin:0;">{% message "learning.review.hint.all_caught_up" %}</p>
+        <p class="fs-24 m-0 mb-8">🎉</p>
+        <h2 class="serif m-0 mb-6 fs-22">{% label "learning.review.title.all_caught_up" %}</h2>
+        <p class="muted m-0">{% message "learning.review.hint.all_caught_up" %}</p>
       {% endif %}
     </div>
 
     <div class="eyebrow">{% label "learning.review.section.decks" %}</div>
-    <div class="grid cols-3" style="margin-bottom:34px;">
+    <div class="grid cols-3 mb-34">
       {% for deck in decks %}
         <form method="post" action="{% url 'learning:review_start' %}" class="card deck">
           {% csrf_token %}
           <input type="hidden" name="scope" value="{{ deck.scope }}">
           <input type="hidden" name="limit" value="{{ full_limit }}">
-          <p style="font-size:24px;line-height:1;margin:0 0 12px;">{{ deck.emoji }}</p>
-          <h3 class="serif" style="margin:0 0 6px;font-size:19px;">{% label deck.label_key %}</h3>
-          <p class="muted" style="margin:0 0 16px;font-size:14px;flex:1;">{% message deck.hint_key count=deck.count %}</p>
+          <p class="fs-24 lh-1 m-0 mb-12">{{ deck.emoji }}</p>
+          <h3 class="serif m-0 mb-6 fs-19">{% label deck.label_key %}</h3>
+          <p class="muted m-0 mb-16 text-sm flex-1">{% message deck.hint_key count=deck.count %}</p>
           {% comment %}Nhãn "không đổi lịch ôn" đứng TRƯỚC nút, không phải sau:
           nút phải là thứ cuối cùng của mọi thẻ thì ba thẻ mới thẳng hàng nút
           dù đoạn mô tả dài ngắn khác nhau.{% endcomment %}
-          {% if deck.is_extra %}<span class="tag" style="margin:0 0 12px;">{% label "learning.review.tag.extra" %}</span>{% endif %}
+          {% if deck.is_extra %}<span class="tag m-0 mb-12">{% label "learning.review.tag.extra" %}</span>{% endif %}
           {% if deck.count %}
             <button type="submit" class="btn btn-outline">{% message "learning.review.button.start_deck" count=deck.count %}</button>
           {% else %}
-            <p class="muted" style="margin:0;font-size:14px;">{% message "learning.review.hint.deck_empty" %}</p>
+            <p class="muted m-0 text-sm">{% message "learning.review.hint.deck_empty" %}</p>
           {% endif %}
         </form>
       {% endfor %}
@@ -139,8 +139,8 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
 
     <div class="review-head">
       <div>
-        <div class="eyebrow" style="margin-bottom:4px;">{% label "learning.review.section.all" %}</div>
-        <h2 class="serif" style="margin:0;font-size:24px;">{% message "learning.review.hint.studied_total" count=overview.studied %}</h2>
+        <div class="eyebrow mb-4">{% label "learning.review.section.all" %}</div>
+        <h2 class="serif m-0 fs-24">{% message "learning.review.hint.studied_total" count=overview.studied %}</h2>
       </div>
       <div class="tabrow">
         <a class="tag{% if active_view == 'topic' %} level{% endif %}" href="?view=topic">{% label "learning.review.tab.topic" %}</a>
@@ -155,20 +155,20 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
       về đầu trang (khối "Đến hạn hôm nay" ở trên khá cao).{% endcomment %}
       {% if topic_pager.paginator.count %}
         <div class="result-bar" id="topic-table">
-          <p class="muted" style="margin:0;font-size:14px;">
+          <p class="muted m-0 text-sm">
             {% message "learning.review.hint.topic_count" count=topic_pager.paginator.count %}
             <span class="result-range">{% message "common.pagination.range" start=topic_pager.page_obj.start_index end=topic_pager.page_obj.end_index %}</span>
           </p>
           {% include "partials/per_page_form.html" with pager=topic_pager pager_anchor="#topic-table" per_page_suffix_key="learning.review.field.per_page_suffix" %}
         </div>
       {% endif %}
-      <div class="card" style="padding:0;">
+      <div class="card p-0">
         <table>
           <tr>
             <th>{% label "learning.review.table.topic" %}</th>
             <th>{% label "learning.review.table.learned" %}</th>
             <th>{% label "learning.review.table.due" %}</th>
-            <th style="width:200px;">{% label "learning.review.table.progress" %}</th>
+            <th class="col-progress">{% label "learning.review.table.progress" %}</th>
             <th></th>
           </tr>
           {% for row in topic_rows %}
@@ -177,8 +177,8 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
               <td>{{ row.learned }} / {{ row.total }}</td>
               <td>{% if row.due %}<strong>{{ row.due }}</strong>{% else %}<span class="muted">—</span>{% endif %}</td>
               <td><div class="progressbar"><span style="width:{{ row.percent }}%"></span></div></td>
-              <td style="text-align:right;">
-                <form method="post" action="{% url 'learning:review_start' %}" style="margin:0;">
+              <td class="text-right">
+                <form method="post" action="{% url 'learning:review_start' %}" class="m-0">
                   {% csrf_token %}
                   <input type="hidden" name="scope" value="due">
                   <input type="hidden" name="topic" value="{{ row.topic.slug }}">
@@ -191,14 +191,14 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
         </table>
       </div>
       {% include "partials/pager.html" with pager=topic_pager pager_anchor="#topic-table" %}
-      <p class="muted" style="margin:14px 0 0;font-size:13px;">
+      <p class="muted m-0 mt-14 text-xs">
         {% message "learning.review.hint.topic_overlap" count=overview.studied %}
       </p>
     {% elif active_view == "memory" %}
       <div class="card">
         {% for band in memory_rows %}
           <div class="band-row">
-            <div style="flex:1;">
+            <div class="flex-1">
               <p class="band-head"><span>{% label band.label_key %}</span><span class="muted">{{ band.count }}</span></p>
               <div class="progressbar"><span style="width:{{ band.percent }}%"></span></div>
             </div>
@@ -235,24 +235,24 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
     <div class="grid cols-3">
       {% for wordlist in wordlists %}
         <div class="card">
-          <h3 class="serif" style="margin:0 0 6px;font-size:18px;">{{ wordlist.name }}</h3>
-          <p class="muted" style="margin:0;font-size:14px;">
+          <h3 class="serif m-0 mb-6 fs-18">{{ wordlist.name }}</h3>
+          <p class="muted m-0 text-sm">
             {% message "learning.review.hint.wordlist_count" count=wordlist.words.count %}
           </p>
         </div>
       {% empty %}
         <div class="card">
-          <p class="muted" style="margin:0 0 14px;font-size:14px;">{% message "learning.review.hint.no_wordlist" %}</p>
+          <p class="muted m-0 mb-14 text-sm">{% message "learning.review.hint.no_wordlist" %}</p>
           <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "learning.review.button.new_wordlist" %}</a>
         </div>
       {% endfor %}
     </div>
 
   {% else %}
-    <h1 class="serif" style="font-size:30px;margin:0 0 20px;">{% label "learning.review.title.empty" %}</h1>
+    <h1 class="serif fs-30 m-0 mb-20">{% label "learning.review.title.empty" %}</h1>
     <div class="card">
-      <p style="font-size:24px;margin:0 0 8px;">🌱</p>
-      <p class="muted" style="margin:0 0 20px;">{% message "learning.review.hint.empty" %}</p>
+      <p class="fs-24 m-0 mb-8">🌱</p>
+      <p class="muted m-0 mb-20">{% message "learning.review.hint.empty" %}</p>
       <a class="btn btn-primary" href="{% url 'vocabulary:index' %}">{% label "learning.review.button.browse" %}</a>
     </div>
   {% endif %}

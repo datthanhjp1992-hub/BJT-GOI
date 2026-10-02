@@ -15,6 +15,7 @@ from django.db import transaction
 
 from apps.core.constants import (
     CODE_TYPE_UI_THEME,
+    CODE_TYPE_COLOR_SCHEME,
     CODE_TYPE_CONTRIBUTION_TYPE,
     CODE_TYPE_CONTRIBUTION_STATUS,
     CODE_TYPE_POINT_ACTION,
@@ -37,6 +38,12 @@ SEED_DATA = {
         ("A", "Washi & Vermillion", None, "", 1),
         ("B", "Studio Mono", None, "", 2),
         ("C", "Genki Playful", None, "", 3),
+    ],
+    # Chế độ sáng/tối (T2.3) — mã khớp selector :root[data-scheme] trong CSS.
+    CODE_TYPE_COLOR_SCHEME: [
+        ("auto", "Theo thiết bị", None, "Tự đổi theo cài đặt sáng/tối của máy", 1),
+        ("light", "Sáng", None, "", 2),
+        ("dark", "Tối", None, "", 3),
     ],
     CODE_TYPE_SESSION_TYPE: [
         ("flashcard", "Flashcard", None, "Phiên học thẻ từ", 1),

@@ -1660,6 +1660,12 @@ class StudyScreenMarkupTests(LearningTestCase):
     def test_grade_buttons_are_numbered_for_shortcuts(self):
         response = self.client.get(self.page)
         self.assertEqual([b["key"] for b in response.context["grade_buttons"]], [1, 2, 3, 4])
+        # T2.2: màu nút đi qua class + token CSS, không còn style inline.
+        self.assertEqual(
+            [b["css"] for b in response.context["grade_buttons"]],
+            ["is-forgot", "is-hard", "is-good", ""],
+        )
+        self.assertContains(response, "btn-grade is-forgot")
         for key in "1234":
             self.assertContains(response, f'data-grade-key="{key}"')
         self.assertContains(response, "data-shortcut-dialog")
@@ -1769,6 +1775,35 @@ class StudyScreenCssTests(TestCase):
         "env(safe-area-inset-bottom)",
         "prefers-reduced-motion",
     )
+
+    def test_learning_templates_have_no_fixed_inline_style(self):
+        """spec.md T2.2 — style cố định đi qua class trong base.css; chỉ style
+        phụ thuộc dữ liệu (có {{ }}, vd width:{{ percent }}%) được để inline."""
+        import re
+        from pathlib import Path
+
+        from django.conf import settings
+
+        folder = Path(settings.BASE_DIR) / "templates" / "learning"
+        for path in folder.glob("*.html"):
+            html = path.read_text(encoding="utf-8")
+            for style in re.findall(r'style="([^"]*)"', html):
+                with self.subTest(file=path.name, style=style):
+                    self.assertIn("{{", style, msg=f"{path.name}: style cố định {style!r}")
+
+    def test_mobile_rules_exist(self):
+        """spec.md T2.4 — sidebar thành menu ☰ và bảng tự cuộn ngang ở màn hẹp."""
+        from pathlib import Path
+
+        from django.conf import settings
+
+        css = (Path(settings.BASE_DIR) / "static" / "css" / "base.css").read_text(encoding="utf-8")
+        for rule in (
+            ".app-shell.show-sidebar .site-sidebar",
+            "table:not([class]){display:block;max-width:100%;overflow-x:auto;",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, css)
 
     def test_every_theme_styles_the_study_screen(self):
         from pathlib import Path

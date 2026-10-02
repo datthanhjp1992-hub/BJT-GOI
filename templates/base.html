@@ -6,11 +6,12 @@ processor apps.accounts.context_processors.ui_theme, rồi nạp static/css/base
 
 Block cho template con:
   shell_class class thêm cho .app-shell (vd " is-focus" ẩn sidebar khi học — SC04)
+  wrap_class  class thêm cho <div class="wrap"> (vd " wrap-md" thu hẹp khung — base.css)
   title       tiêu đề tab
   wrap_attrs  thuộc tính thêm cho <div class="wrap"> (vd thu hẹp trang login)
   content     nội dung chính
 {% endcomment %}
-<html lang="vi">
+<html lang="vi" data-scheme="{{ color_scheme|default:'auto' }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -61,7 +62,7 @@ Block cho template con:
           khác hẳn (khu quản trị: sidebar riêng + nội dung, tràn hết chiều
           ngang) thì override cả `main` để thoát khỏi khung .wrap.{% endcomment %}
           {% block main %}
-          <div class="wrap"{% block wrap_attrs %}{% endblock %}>
+          <div class="wrap{% block wrap_class %}{% endblock %}"{% block wrap_attrs %}{% endblock %}>
             {% include "partials/messages.html" %}
             {% block content %}{% endblock %}
           </div>

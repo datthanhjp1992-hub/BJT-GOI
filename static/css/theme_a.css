@@ -15,7 +15,7 @@ h1,h2,h3,.serif{font-family:var(--serif);}
 .brand .mark{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-family:var(--serif);}
 nav.mainnav{gap:28px;font-size:14.5px;}
 nav.mainnav a{padding:6px 2px;border-bottom:2px solid transparent;}
-nav.mainnav a.active{color:var(--accent);border-color:var(--accent);}
+nav.mainnav a.active{color:var(--accent-text);border-color:var(--accent);}
 .navmeta{gap:16px;font-size:14px;color:var(--ink-soft);}
 .pill{padding:8px 18px;border-radius:3px;background:var(--accent);color:#fff;font-size:14px;}
 .pill.ghost{background:transparent;border:1px solid var(--border);color:var(--ink);}
@@ -35,29 +35,29 @@ input,select{padding:12px 14px;border:1px solid var(--border);border-radius:3px;
 input:focus,select:focus{border-color:var(--accent);}
 .field{margin-bottom:18px;}
 .divider{height:1px;background:var(--border);margin:26px 0;}
-.eyebrow{color:var(--accent);font-size:13px;letter-spacing:.02em;margin-bottom:10px;}
+.eyebrow{color:var(--accent-text);font-size:13px;letter-spacing:.02em;margin-bottom:10px;}
 .muted{color:var(--ink-soft);}
 .tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12.5px;border:1px solid var(--border);color:var(--ink-soft);margin-right:6px;}
-.tag.level{background:var(--accent-soft);border-color:transparent;color:var(--accent-dark);}
+.tag.level{background:var(--accent-soft);border-color:transparent;color:var(--accent-text-strong);}
 .tag-filter{cursor:pointer;user-select:none;margin-right:0;background:var(--surface);transition:background .18s ease,border-color .18s ease,color .18s ease,transform .12s ease,box-shadow .18s ease;}
-.tag-filter:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);box-shadow:0 2px 6px rgba(181,67,46,.18);}
+.tag-filter:hover{border-color:var(--accent);color:var(--accent-text);transform:translateY(-1px);box-shadow:0 2px 6px rgba(181,67,46,.18);}
 .tag-filter:active{transform:translateY(0);box-shadow:none;}
 .tag-filter:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 .tag-filter.is-active{background:var(--accent);border-color:var(--accent);color:#fff;}
 .tag-filter.is-active:hover{background:var(--accent-dark);border-color:var(--accent-dark);color:#fff;}
 /* Lối tải/xuất/nhập ở bảng SC07b: vẫn là chữ, nhưng phải thấy rõ khi rê chuột. */
 .action-link{color:var(--ink-soft);border-bottom:1px solid transparent;transition:color .16s ease,border-color .16s ease;}
-.action-link:hover{color:var(--accent);border-bottom-color:var(--accent);}
+.action-link:hover{color:var(--accent-text);border-bottom-color:var(--accent);}
 .action-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px;}
-.action-link.is-primary{color:var(--accent);}
-.action-link.is-primary:hover{color:var(--accent-dark);border-bottom-color:var(--accent-dark);}
+.action-link.is-primary{color:var(--accent-text);}
+.action-link.is-primary:hover{color:var(--accent-text-strong);border-bottom-color:var(--accent-dark);}
 .action-sep{color:var(--border);margin:0 3px;user-select:none;}
 table{font-size:14.5px;}
 th{font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;}
 td{padding:14px 12px;}
-tr:hover td{background:#fbf8f2;}
+tr:hover td{background:var(--surface-alt);}
 .stat{padding:22px;border:1px solid var(--border);border-radius:4px;background:var(--surface);}
-.stat .num{font-family:var(--serif);font-size:34px;color:var(--accent-dark);}
+.stat .num{font-family:var(--serif);font-size:34px;color:var(--accent-text-strong);}
 .stat .label{font-size:13.5px;color:var(--ink-soft);margin-top:4px;}
 .flashcard{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:60px 40px;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
 .flashcard .jp{font-family:var(--serif);font-size:52px;}
@@ -66,7 +66,7 @@ tr:hover td{background:#fbf8f2;}
 .progressbar span{background:var(--accent);}
 .sidebar{width:220px;border-right:1px solid var(--border);padding:32px 20px;}
 .sidebar a{padding:10px 14px;border-radius:3px;margin-bottom:4px;font-size:14.5px;}
-.sidebar a.active{background:var(--accent-soft);color:var(--accent-dark);}
+.sidebar a.active{background:var(--accent-soft);color:var(--accent-text-strong);}
 .admin-content{flex:1;padding:32px 36px;}
 footer.note{font-size:13px;border-top:1px solid var(--border);}
 .flash{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin-bottom:14px;font-size:14.5px;}
@@ -74,9 +74,9 @@ footer.note{font-size:13px;border-top:1px solid var(--border);}
    nhìn hệt thông báo thành công. Lỗi thật đã gặp (19/09/2026): admin bấm
    "Từ chối" mà chưa ghi lý do, trang báo lỗi ở đầu trang nhưng nhạt tới mức
    tưởng là hệ thống không xử lý gì. Dấu ⚠ là tín hiệu KHÔNG dựa vào màu. */
-.flash.error{border-color:#9C2B1B;border-left-color:#9C2B1B;background:#F6E3DD;color:#9C2B1B;font-weight:600;}
+.flash.error{border-color:var(--error);border-left-color:var(--error);background:var(--error-bg);color:var(--error);font-weight:600;}
 .flash.success{border-left-color:var(--teal);}
-.field .error{color:var(--accent);}
+.field .error{color:var(--accent-text);}
 .pagination{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:24px;font-size:14px;color:var(--ink-soft);}
 .checkbox-row{display:flex;align-items:center;gap:10px;font-size:14.5px;color:var(--ink);margin-bottom:12px;cursor:pointer;}
 .choice-card{display:block;margin:0;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--ink);font-size:14px;cursor:pointer;}
@@ -89,7 +89,7 @@ footer.note{font-size:13px;border-top:1px solid var(--border);}
 /* SC10 — hai tab nguồn từ (chọn sẵn / upload). Là <button> chứ không phải <a>
    để bấm bằng bàn phím đúng cách; reset lại nền và viền mà theme áp cho button. */
 .sheet-tab{background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;padding:10px 4px 12px;margin-right:20px;font-family:inherit;font-size:15px;color:var(--ink-soft);}
-.sheet-tab.is-active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600;}
+.sheet-tab.is-active{color:var(--accent-text);border-bottom-color:var(--accent);font-weight:600;}
 .dropdown > summary.dropdown-toggle{padding:11px 14px;border:1px solid var(--border);border-radius:3px;}
 .dropdown-panel{border:1px solid var(--border);border-radius:3px;}
 .dropdown-list .checkbox-row{border-radius:3px;}
@@ -97,7 +97,7 @@ footer.note{font-size:13px;border-top:1px solid var(--border);}
 /* <details> tuỳ chỉnh: bỏ mũi tên mặc định của cả Chrome lẫn Safari. */
 .review-options > summary{cursor:pointer;padding-top:16px;font-size:14px;color:var(--ink-soft);list-style:none;}
 .daybar i{border-radius:4px 4px 0 0;}
-.navmeta-feature:hover,.navmeta-feature.active{color:var(--accent);border-bottom-color:var(--accent);}
+.navmeta-feature:hover,.navmeta-feature.active{color:var(--accent-text);border-bottom-color:var(--accent);}
 .lesson-card{border:1px solid var(--border);border-radius:4px;}
 a.lesson-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(181,67,46,.14);}
 .lesson-card .vi{font-weight:600;}
@@ -109,49 +109,49 @@ a.lesson-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(181,67
 .site-sidebar{width:240px;border-right:1px solid var(--border);}
 .site-sidebar-nav{padding:6px 12px;}
 .sidenav-link{padding:10px 14px;border-radius:3px;margin-bottom:2px;}
-.sidenav-link:hover{color:var(--accent-dark);}
-.sidenav-link.active{color:var(--accent-dark);font-weight:600;}
+.sidenav-link:hover{color:var(--accent-text-strong);}
+.sidenav-link.active{color:var(--accent-text-strong);font-weight:600;}
 .sidenav-group{margin-bottom:2px;}
 .sidenav-sub{padding:2px 0 6px 16px;}
 .sidenav-sublink{padding:8px 14px;border-radius:3px;}
-.sidenav-sublink:hover{color:var(--accent-dark);}
-.sidenav-sublink.active{color:var(--accent-dark);font-weight:600;}
+.sidenav-sublink:hover{color:var(--accent-text-strong);}
+.sidenav-sublink.active{color:var(--accent-text-strong);font-weight:600;}
 @media (max-width:900px){
   .site-sidebar{border-bottom:1px solid var(--border);}
   .sidenav-sub{border:1px solid var(--border);border-radius:4px;box-shadow:0 6px 18px rgba(0,0,0,.14);}
 }
 .kl-h1{font-weight:400;}
 .kl-list{border:1px solid var(--border);border-radius:4px;}
-.kl-list a{border-top:1px solid #efe9dc;}
-.kl-list a:hover{background:#fbf8f2;}
+.kl-list a{border-top:1px solid var(--line-soft);}
+.kl-list a:hover{background:var(--surface-alt);}
 .kl-list a.active{font-weight:600;}
 .kl-kicker{font-size:12.5px;}
 .kl-title{font-weight:400;}
-.kl-formula{background:#fbf8f2;border-radius:3px;}
+.kl-formula{background:var(--surface-alt);border-radius:3px;}
 .kl-expl{border-left:2px solid var(--gold);}
-.kl-ex{border-top:1px solid #efe9dc;}
-.kl-dialog{background:#fbf8f2;border-left:3px solid var(--teal);border-radius:3px;}
+.kl-ex{border-top:1px solid var(--line-soft);}
+.kl-dialog{background:var(--surface-alt);border-left:3px solid var(--teal);border-radius:3px;}
 .kl-line .spk{background:var(--teal);}
-.kl-irr-row{border-bottom:1px solid #efe9dc;}
+.kl-irr-row{border-bottom:1px solid var(--line-soft);}
 .kl-xo{border-radius:3px;}
-.kl-xo .x{background:#f7ece8;}
-.kl-xo .o{background:#eaf1ef;}
-.kl-xo .x .mk{color:var(--accent);}
+.kl-xo .x{background:var(--bad-bg);}
+.kl-xo .o{background:var(--good-bg);}
+.kl-xo .x .mk{color:var(--accent-text);}
 .kl-xo .o .mk{color:var(--teal);}
 @media (max-width:900px){
-  .kl-list a{border-left:1px solid #efe9dc;}
+  .kl-list a{border-left:1px solid var(--line-soft);}
 }
 .lt-check .box{border-radius:3px;}
 .lt-tab{border-radius:3px;}
-.lt-tab .c{background:#f1ece1;}
-.lt-formula{background:#fbf8f2;border-left:3px solid var(--gold);border-radius:3px;}
-.kl-xo .o+.o{border-top:1px dashed #cfe0db;}
+.lt-tab .c{background:var(--chip-bg);}
+.lt-formula{background:var(--surface-alt);border-left:3px solid var(--gold);border-radius:3px;}
+.kl-xo .o+.o{border-top:1px dashed var(--good-line);}
 tr.lt-rule td::before{color:var(--gold);}
-.lt-cush li{border-top:1px solid #efe9dc;}
-.lt-nocheck{background:#fbf8f2;border-radius:3px;}
+.lt-cush li{border-top:1px solid var(--line-soft);}
+.lt-nocheck{background:var(--surface-alt);border-radius:3px;}
 .lt-reveal summary{color:var(--teal);border:1px dashed var(--teal);border-radius:3px;}
 @media (max-width:720px){
-  table.lt-conv tr{border-bottom:1px solid #efe9dc;}
+  table.lt-conv tr{border-bottom:1px solid var(--line-soft);}
 }
 /* =============================================================================
    SC20-SC22 -- Bai tap kinh ngu (25/09/2026). Mockup: htmlTemplate/SC20_BaiTapDanhSach_A.html,
@@ -169,3 +169,17 @@ tr.lt-rule td::before{color:var(--gold);}
 /* Màu 4 nút chấm SC04 (T2.2) — trước đây viết cứng trong
    apps/learning/views.GRADE_BUTTONS, giống nhau ở cả 3 theme. */
 :root{--grade-forgot-bg:#e8c4b8;--grade-forgot-fg:#8f3323;--grade-hard-bg:#f0e0c4;--grade-hard-fg:#8a6a1a;--grade-good-bg:#dbe6d8;--grade-good-fg:#2f4f47;}
+
+/* =============================================================================
+   T2.3 Chế độ sáng/tối (02/10/2026). Token mới cho những màu trước đây viết
+   cứng (giá trị SÁNG giữ nguyên như cũ) + bảng màu TỐI của theme này.
+   <html data-scheme="auto|light|dark"> do base.html đặt theo User.color_scheme
+   (MasterCode code_type 18). :root[data-scheme] mạnh hơn :root nên thắng
+   bất kể thứ tự. Chữ màu nhấn dùng --accent-text (tối: sáng hơn để đủ tương
+   phản), còn --accent vẫn là màu TÔ NỀN nút với chữ trắng.
+   ========================================================================== */
+:root{--accent-text:var(--accent);--accent-text-strong:var(--accent-dark);--surface-alt:#fbf8f2;--line-soft:#efe9dc;--chip-bg:#f1ece1;--bad-bg:#f7ece8;--good-bg:#eaf1ef;--good-line:#cfe0db;--error:#9C2B1B;--error-bg:#F6E3DD;}
+:root[data-scheme="dark"]{color-scheme:dark;--bg:#1A1815;--surface:#24211D;--ink:#EDE7DB;--ink-soft:#ADA493;--border:#3E3931;--accent-soft:#3F2822;--accent-text:#EE8C74;--accent-text-strong:#F4A893;--gold:#D2AA4A;--teal:#7DB2A6;--surface-alt:#2A2621;--line-soft:#332E27;--chip-bg:#38322A;--bad-bg:#3A2420;--good-bg:#1F322D;--good-line:#2F4B44;--error:#FF9583;--error-bg:#3B211C;--bt-ok-bg:#1F322D;--bt-ok-line:#2F4B44;--bt-mid-ink:#E3C77A;--bt-mid-bg:#3A311C;--bt-mid-line:#5A4A22;--bt-ng-bg:#3A2420;--bt-ng-line:#5E3328;--bt-soft:#2A2621;--bt-line:#332E27;--bt-chip:#2E2A24;--bt-c:#38322A;--bt-doing:#2C281F;--grade-forgot-bg:#4A2A22;--grade-forgot-fg:#F3B6A6;--grade-hard-bg:#463A20;--grade-hard-fg:#EFD79F;--grade-good-bg:#24362E;--grade-good-fg:#ABD6C4;}
+@media (prefers-color-scheme:dark){
+  :root[data-scheme="auto"]{color-scheme:dark;--bg:#1A1815;--surface:#24211D;--ink:#EDE7DB;--ink-soft:#ADA493;--border:#3E3931;--accent-soft:#3F2822;--accent-text:#EE8C74;--accent-text-strong:#F4A893;--gold:#D2AA4A;--teal:#7DB2A6;--surface-alt:#2A2621;--line-soft:#332E27;--chip-bg:#38322A;--bad-bg:#3A2420;--good-bg:#1F322D;--good-line:#2F4B44;--error:#FF9583;--error-bg:#3B211C;--bt-ok-bg:#1F322D;--bt-ok-line:#2F4B44;--bt-mid-ink:#E3C77A;--bt-mid-bg:#3A311C;--bt-mid-line:#5A4A22;--bt-ng-bg:#3A2420;--bt-ng-line:#5E3328;--bt-soft:#2A2621;--bt-line:#332E27;--bt-chip:#2E2A24;--bt-c:#38322A;--bt-doing:#2C281F;--grade-forgot-bg:#4A2A22;--grade-forgot-fg:#F3B6A6;--grade-hard-bg:#463A20;--grade-hard-fg:#EFD79F;--grade-good-bg:#24362E;--grade-good-fg:#ABD6C4;}
+}

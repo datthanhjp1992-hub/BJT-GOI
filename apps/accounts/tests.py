@@ -232,6 +232,7 @@ class SettingsViewTests(AccountsTestCase):
         data = {
             "section": "preferences",
             "ui_theme": "A",
+            "color_scheme": "auto",
             "daily_review_goal": "20",
             "timezone": "Asia/Tokyo",
         }
@@ -269,6 +270,29 @@ class SettingsViewTests(AccountsTestCase):
         # Checkbox không gửi lên = tắt; đây là hành vi mặc định của HTML form,
         # test để không ai "sửa" thành giữ nguyên giá trị cũ.
         self.assertFalse(self.user.weekly_email_summary_enabled)
+
+    def test_color_scheme_defaults_to_device_and_reaches_the_html_tag(self):
+        """spec.md T2.3 — sáng/tối lưu ở User.color_scheme, base.html đặt
+        <html data-scheme> để CSS đổi bảng màu."""
+        self.assertEqual(self.user.color_scheme, "auto")
+        page = self.client.get(self.url)
+        self.assertContains(page, 'data-scheme="auto"')
+        self.assertContains(page, 'name="color_scheme"')
+
+        self.client.post(self.url, self._prefs(color_scheme="dark"))
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.color_scheme, "dark")
+        self.assertContains(self.client.get(self.url), 'data-scheme="dark"')
+
+    def test_unknown_color_scheme_is_rejected(self):
+        response = self.client.post(self.url, self._prefs(color_scheme="neon"))
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.color_scheme, "auto")
+
+    def test_guest_pages_follow_the_device(self):
+        self.client.logout()
+        self.assertContains(self.client.get(reverse("accounts:login")), 'data-scheme="auto"')
 
     def test_reading_on_front_defaults_on_and_can_be_turned_off(self):
         """SC04 hiện thẻ 2 bước (spec.md T1.4): mặc định hiện cách đọc ở mặt
@@ -500,6 +524,28 @@ class ThemeCssContractTests(TestCase):
         '.swatch[data-theme="b"]',
         '.swatch[data-theme="c"]',
     )
+
+    def test_every_token_used_is_defined_and_dark_mode_is_complete(self):
+        """spec.md T2.1/T2.3 — base.css dùng chung chỉ được dùng biến mà MỖI
+        theme đều khai; bảng màu tối khai 2 nơi (chọn "Tối" và "Theo thiết bị"
+        khi máy đang tối) phải giống hệt nhau."""
+        import re
+
+        css_dir = Path(settings.BASE_DIR) / "static" / "css"
+        shared = (css_dir / "base.css").read_text(encoding="utf-8")
+        for name in ("theme_a.css", "theme_b.css", "theme_c.css"):
+            theme = (css_dir / name).read_text(encoding="utf-8")
+            css = re.sub(r"/\*.*?\*/", "", shared + theme, flags=re.S)
+            used = set(re.findall(r"var\((--[\w-]+)\)", css))
+            defined = set(re.findall(r"(--[\w-]+)\s*:", css))
+            with self.subTest(file=name):
+                self.assertEqual(used - defined, set(), msg=f"{name} thiếu token")
+                dark = re.search(r':root\[data-scheme="dark"\]\{([^}]*)\}', theme)
+                auto = re.search(r':root\[data-scheme="auto"\]\{([^}]*)\}', theme)
+                self.assertIsNotNone(dark, msg=f"{name} chưa có bảng màu tối")
+                self.assertIsNotNone(auto, msg=f"{name} chưa theo chế độ tối của thiết bị")
+                self.assertEqual(dark.group(1), auto.group(1))
+                self.assertIn("prefers-color-scheme:dark", theme)
 
     def test_every_theme_defines_settings_rules(self):
         css_dir = Path(settings.BASE_DIR) / "static" / "css"

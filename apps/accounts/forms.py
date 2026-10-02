@@ -252,6 +252,7 @@ class SettingsForm(forms.ModelForm):
         model = User
         fields = [
             "ui_theme",
+            "color_scheme",
             "daily_review_goal",
             "timezone",
             "daily_reminder_enabled",
@@ -259,11 +260,12 @@ class SettingsForm(forms.ModelForm):
             "show_review_interval",
             "show_reading_on_front",
         ]
-        widgets = {"ui_theme": forms.RadioSelect}
+        widgets = {"ui_theme": forms.RadioSelect, "color_scheme": forms.RadioSelect}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["ui_theme"].label = label("accounts.settings.section.theme")
+        self.fields["color_scheme"].label = label("accounts.settings.field.color_scheme")
         self.fields["daily_review_goal"].label = label(
             "accounts.settings.field.daily_review_goal"
         )

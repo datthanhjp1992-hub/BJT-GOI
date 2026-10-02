@@ -7,11 +7,11 @@ Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endco
 
 {% block content %}
   <div class="eyebrow">{% label greeting_key %}</div>
-  <h1 class="serif" style="font-size:32px;margin:0 0 28px;">
+  <h1 class="serif fs-32 m-0 mb-28">
     {% message "learning.dashboard.greeting" name=display_name %}
   </h1>
 
-  <div class="grid cols-3" style="margin-bottom:28px;">
+  <div class="grid cols-3 mb-28">
     <div class="stat">
       <div class="num">{{ stats.words_mastered }}</div>
       <div class="label">{% label "learning.dashboard.stat.words_mastered" %}</div>
@@ -31,17 +31,17 @@ Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endco
     <div class="card stamp">
       <div class="eyebrow">{% label "learning.dashboard.section.continue" %}</div>
       {% if in_progress %}
-        <h3 class="serif" style="margin:0 0 6px;">{{ in_progress.topic.icon_emoji }} {{ in_progress.topic.display_name }}</h3>
-        <p class="muted" style="margin:0 0 18px;">
+        <h3 class="serif m-0 mb-6">{{ in_progress.topic.icon_emoji }} {{ in_progress.topic.display_name }}</h3>
+        <p class="muted m-0 mb-18">
           {% message "learning.dashboard.hint.topic_progress" learned=in_progress.learned total=in_progress.total %}
         </p>
-        <div class="progressbar" style="margin-bottom:20px;"><span style="width:{{ in_progress.percent }}%"></span></div>
+        <div class="progressbar mb-20"><span style="width:{{ in_progress.percent }}%"></span></div>
         {% if in_progress.new_limit_reached %}
           {% comment %}Còn từ chưa học nhưng đã hết hạn mức từ mới hôm nay — "Học tiếp"
           có thể chỉ ra màn "đã ôn xong", nên nói rõ và cho học thêm luôn.{% endcomment %}
-          <p class="muted" style="margin:-8px 0 16px;font-size:13.5px;">{% message "learning.dashboard.hint.new_limit_reached" count=in_progress.unseen %}</p>
+          <p class="muted card-note">{% message "learning.dashboard.hint.new_limit_reached" count=in_progress.unseen %}</p>
           <div class="toolbar">
-            <form method="post" action="{% url 'learning:flashcard_more_new' in_progress.topic.slug %}" style="margin:0;">
+            <form method="post" action="{% url 'learning:flashcard_more_new' in_progress.topic.slug %}" class="m-0">
               {% csrf_token %}
               <button type="submit" class="btn btn-primary">{% message "learning.flashcard.button.more_new" count=in_progress.extra_count %}</button>
             </form>
@@ -51,7 +51,7 @@ Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endco
           <a class="btn btn-primary" href="{% url 'learning:flashcard' in_progress.topic.slug %}">{% label "learning.dashboard.button.continue_learning" %}</a>
         {% endif %}
       {% else %}
-        <p class="muted" style="margin:0 0 18px;">{% message "learning.dashboard.hint.no_topic_in_progress" %}</p>
+        <p class="muted m-0 mb-18">{% message "learning.dashboard.hint.no_topic_in_progress" %}</p>
         <a class="btn btn-primary" href="{% url 'vocabulary:index' %}">{% label "learning.dashboard.button.browse_vocabulary" %}</a>
       {% endif %}
     </div>
@@ -60,8 +60,8 @@ Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endco
     <div class="card">
       <div class="eyebrow">{% label "learning.dashboard.section.review_due" %}</div>
       {% if due_count %}
-        <h3 class="serif" style="margin:0 0 6px;">{% message "learning.dashboard.hint.review_due" count=due_count %}</h3>
-        <p class="muted" style="margin:0 0 18px;">{% message "learning.dashboard.hint.review_due_desc" %}</p>
+        <h3 class="serif m-0 mb-6">{% message "learning.dashboard.hint.review_due" count=due_count %}</h3>
+        <p class="muted m-0 mb-18">{% message "learning.dashboard.hint.review_due_desc" %}</p>
         {% if in_progress %}
           <a class="btn btn-outline" href="{% url 'learning:quiz' in_progress.topic.slug %}">{% label "learning.dashboard.button.start_quiz" %}</a>
         {% else %}
@@ -71,8 +71,8 @@ Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endco
         {% comment %}Trước đây chỗ này in thẳng {{ daily_goal }} — một con số không nhãn,
            đọc lên không hiểu là gì. Mục tiêu mỗi ngày thuộc về màn Cài đặt,
            không phải tiêu đề của thẻ này.{% endcomment %}
-        <h3 class="serif" style="margin:0 0 6px;">{% label "learning.dashboard.title.all_caught_up" %}</h3>
-        <p class="muted" style="margin:0 0 18px;">{% message "learning.dashboard.hint.no_review_due" %}</p>
+        <h3 class="serif m-0 mb-6">{% label "learning.dashboard.title.all_caught_up" %}</h3>
+        <p class="muted m-0 mb-18">{% message "learning.dashboard.hint.no_review_due" %}</p>
         <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "learning.dashboard.button.browse_vocabulary" %}</a>
       {% endif %}
     </div>
@@ -86,8 +86,8 @@ Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endco
       {% for topic in suggested_topics %}
         <a class="card" href="{% url 'vocabulary:list' topic.slug %}">
           {% if topic.name_ja %}<span class="tag level">{{ topic.name_ja }}</span>{% endif %}
-          <h3 class="serif" style="margin:12px 0 6px;">{{ topic.icon_emoji }} {{ topic.name }}</h3>
-          <p class="muted" style="margin:0;">{% message "vocabulary.topic.hint.word_count" count=topic.word_count %}</p>
+          <h3 class="serif m-0 mt-12 mb-6">{{ topic.icon_emoji }} {{ topic.name }}</h3>
+          <p class="muted m-0">{% message "vocabulary.topic.hint.word_count" count=topic.word_count %}</p>
         </a>
       {% endfor %}
     </div>

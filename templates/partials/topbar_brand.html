@@ -15,8 +15,9 @@ muon hien thi thong tin nguoi dung o do". Noi dung 3 link/form giu NGUYEN
 ngang (.site-topbar-user thay vi .sidenav-link/.sidenav-button).
 {% endcomment %}
 <header class="site-topbar">
-  {% comment %}Nút ☰ chỉ hiện ở trang có chế độ tập trung (.app-shell.is-focus,
-  vd SC04) — bấm để mở/ẩn lại sidebar, main.js nhớ lựa chọn trong localStorage.{% endcomment %}
+  {% comment %}Nút ☰ hiện ở trang có chế độ tập trung (.app-shell.is-focus, vd
+  SC04 — main.js nhớ lựa chọn) và ở MỌI trang trên màn ≤900px, nơi sidebar
+  thành menu mở bằng nút này (T2.4, xem cuối static/css/base.css).{% endcomment %}
   <button type="button" class="sidebar-toggle" data-sidebar-toggle aria-label="{% label 'common.nav.toggle_sidebar' %}" title="{% label 'common.nav.toggle_sidebar' %}">☰</button>
   <a class="brand" href="{% url 'learning:dashboard' %}">
     <span class="mark">{% label "common.brand.mark" %}</span>{% label "common.brand.name" %}

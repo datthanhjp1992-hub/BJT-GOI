@@ -1,6 +1,8 @@
 """Bơm theme của user vào mọi template để base.html nạp đúng file CSS
-(theme_a.css / theme_b.css / theme_c.css).
+(theme_a.css / theme_b.css / theme_c.css) và đặt chế độ sáng/tối
+(<html data-scheme="...">, spec.md T2.3).
 """
+from apps.core.constants import COLOR_SCHEME_AUTO, COLOR_SCHEMES
 
 DEFAULT_THEME = "A"
 VALID_THEMES = {"A", "B", "C"}
@@ -16,9 +18,15 @@ def ui_theme(request):
     cũ có ui_theme rỗng (import dữ liệu, tạo bằng SQL tay) là đủ để dính.
     """
     theme = DEFAULT_THEME
+    # Khách chưa đăng nhập: theo thiết bị. Giá trị lạ cũng rơi về "auto" —
+    # CSS chỉ có bảng màu cho đúng các mã trong COLOR_SCHEMES.
+    scheme = COLOR_SCHEME_AUTO
     user = getattr(request, "user", None)
     if user is not None and user.is_authenticated:
         candidate = (user.ui_theme or "").strip().upper()
         if candidate in VALID_THEMES:
             theme = candidate
-    return {"ui_theme": theme}
+        candidate = (getattr(user, "color_scheme", "") or "").strip().lower()
+        if candidate in COLOR_SCHEMES:
+            scheme = candidate
+    return {"ui_theme": theme, "color_scheme": scheme}

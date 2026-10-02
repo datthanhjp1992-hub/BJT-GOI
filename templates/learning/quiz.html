@@ -18,24 +18,24 @@ không cần biết mình đang ở lối vào nào.
 
 {% block title %}{% label "common.nav.quiz" %} | {% label "common.brand.name" %}{% endblock %}
 
-{% block wrap_attrs %} style="max-width:560px;"{% endblock %}
+{% block wrap_class %} wrap-sm{% endblock %}
 
 {% block content %}
   {% if word %}
-    <p class="muted" style="margin:0 0 10px;">
+    <p class="muted m-0 mb-10">
       {% message "learning.quiz.hint.progress" topic=scope_label position=position total=total %}
     </p>
-    <div class="progressbar" style="margin-bottom:32px;"><span style="width:{{ percent }}%"></span></div>
+    <div class="progressbar mb-32"><span style="width:{{ percent }}%"></span></div>
 
     <div class="card">
       <div class="eyebrow">{% label "learning.quiz.title.choose_meaning" %}</div>
-      {% if is_extra_review %}<p class="muted" style="margin:0 0 4px;font-size:13px;">{% message "learning.review.hint.extra_review" %}</p>{% endif %}
-      <h2 class="serif" style="font-size:38px;margin:6px 0 30px;">{{ word.word }}</h2>
-      <div style="display:grid;gap:12px;">
+      {% if is_extra_review %}<p class="muted m-0 mb-4 text-xs">{% message "learning.review.hint.extra_review" %}</p>{% endif %}
+      <h2 class="serif quiz-word">{{ word.word }}</h2>
+      <div class="stack">
         {% for choice in choices %}
           <form method="post" action="{{ answer_action }}">
             {% csrf_token %}
-            <button type="submit" name="choice" value="{{ choice.pk }}" class="btn btn-outline" style="width:100%;text-align:left;">
+            <button type="submit" name="choice" value="{{ choice.pk }}" class="btn btn-outline quiz-choice">
               {{ choice.meaning_vi }}
             </button>
           </form>
@@ -43,9 +43,9 @@ không cần biết mình đang ở lối vào nào.
       </div>
     </div>
   {% else %}
-    <div class="card" style="text-align:center;padding:48px 32px;">
-      <h1 class="serif" style="margin:0 0 10px;">{% label "learning.quiz.title.session_complete" %}</h1>
-      <p class="muted" style="margin:0 0 20px;">{% message "learning.quiz.hint.session_complete" topic=scope_label %}</p>
+    <div class="card done-card">
+      <h1 class="serif m-0 mb-10">{% label "learning.quiz.title.session_complete" %}</h1>
+      <p class="muted m-0 mb-20">{% message "learning.quiz.hint.session_complete" topic=scope_label %}</p>
       <a class="btn btn-primary" href="{% url 'learning:dashboard' %}">{% label "common.button.back" %}</a>
     </div>
   {% endif %}

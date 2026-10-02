@@ -48,6 +48,16 @@ có tác dụng trên MỘT dòng, viết tràn dòng là bị in thẳng ra HTM
         {% endfor %}
       </div>
       {% for error in form.ui_theme.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+      {% comment %}Sáng / tối / theo thiết bị (T2.3) — áp cho cả 3 phong cách ở trên.{% endcomment %}
+      <p class="m-0 mt-18 mb-8"><strong>{{ form.color_scheme.label }}</strong></p>
+      <div class="scheme-row">
+        {% for choice in form.color_scheme %}
+          <label class="checkbox-row">{{ choice.tag }}<span>{{ choice.choice_label }}</span></label>
+        {% endfor %}
+      </div>
+      <p class="muted m-0 mt-12 text-sm">{% label "accounts.settings.hint.color_scheme" %}</p>
+      {% for error in form.color_scheme.errors %}<p class="error">{{ error }}</p>{% endfor %}
     </div>
 
     <div class="card" style="margin-bottom:20px;">
