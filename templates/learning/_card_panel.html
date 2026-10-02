@@ -114,7 +114,7 @@ fetch T1.2) — đổi tên ở đây phải đổi bên đó:
         <input type="hidden" name="topic_slug" value="{{ topic_slug_value }}">
         <div class="grade-row">
           {% for b in grade_buttons %}
-            <button class="btn btn-grade{% if b.primary %} btn-primary{% endif %}" type="submit" name="quality" value="{{ b.code }}" data-grade-key="{{ b.key }}"{% if b.style %} style="{{ b.style }}"{% endif %}>
+            <button class="btn btn-grade{% if b.css %} {{ b.css }}{% endif %}{% if b.primary %} btn-primary{% endif %}" type="submit" name="quality" value="{{ b.code }}" data-grade-key="{{ b.key }}">
               <span class="btn-grade-label">{% label b.label_key %}</span>
               {% if b.delay %}<small class="btn-grade-delay">{{ b.delay }}</small>{% endif %}
               <kbd class="kbd">{{ b.key }}</kbd>

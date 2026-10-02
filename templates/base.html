@@ -1,9 +1,8 @@
 {% load static properties_tags %}<!DOCTYPE html>
 {% comment %}
-Layout gốc. File CSS được chọn theo User.ui_theme (A/B/C) nhờ context
-processor apps.accounts.context_processors.ui_theme — cả 3 file dùng CHUNG
-bộ class trong htmlTemplate/STYLE_GUIDE.md, nên template con chỉ được dùng
-các class ở đó, không tự đặt class mới.
+Layout gốc. File CSS theme được chọn theo User.ui_theme (A/B/C) nhờ context
+processor apps.accounts.context_processors.ui_theme, rồi nạp static/css/base.css
+(phần dùng chung cả 3 theme, spec.md T2.1). Class mới dùng chung viết ở base.css.
 
 Block cho template con:
   shell_class class thêm cho .app-shell (vd " is-focus" ẩn sidebar khi học — SC04)
@@ -21,7 +20,10 @@ Block cho template con:
   env(safe-area-inset-bottom) ở hàng nút chấm dính đáy màn hình.{% endcomment %}
   <script>document.documentElement.classList.add("js");</script>
   <title>{% block title %}{% label "common.brand.name" %}{% endblock %}</title>
+  {% comment %}Thứ tự BẮT BUỘC: theme trước (token + phần riêng), base.css sau
+  (phần dùng chung, xem chú thích đầu static/css/base.css).{% endcomment %}
   <link rel="stylesheet" href="{% static 'css/theme_'|add:ui_theme|lower|add:'.css' %}">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
   {% block extra_head %}{% endblock %}
 </head>
 <body>

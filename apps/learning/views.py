@@ -281,11 +281,12 @@ def _delay_text(parts):
     return message(f"learning.flashcard.delay.{unit}", n=value)
 
 
-# Bốn nút chấm: (mã POST, key nhãn, style nền/chữ — giữ nguyên màu cũ của SC04).
+# Bốn nút chấm: (mã POST, key nhãn, class màu, là nút chính). Màu nằm ở CSS
+# (base.css .btn-grade.is-* + token --grade-* của theme) — spec.md T2.2.
 GRADE_BUTTONS = (
-    ("quen", "learning.flashcard.button.forgot", "background:#e8c4b8;color:#8f3323;", False),
-    ("kho", "learning.flashcard.button.hard", "background:#f0e0c4;color:#8a6a1a;", False),
-    ("nho", "learning.flashcard.button.good", "background:#dbe6d8;color:#2f4f47;", False),
+    ("quen", "learning.flashcard.button.forgot", "is-forgot", False),
+    ("kho", "learning.flashcard.button.hard", "is-hard", False),
+    ("nho", "learning.flashcard.button.good", "is-good", False),
     ("de", "learning.flashcard.button.easy", "", True),
 )
 
@@ -304,11 +305,11 @@ def _card_context(request, word, *, flow, show_preview=True, session_id=None):
             # Phím tắt 1-4 (static/js/main.js) — theo đúng thứ tự hiển thị.
             "key": index,
             "label_key": label_key,
-            "style": style,
+            "css": css,
             "primary": primary,
             "delay": _delay_text(previews[QUALITY_MAP[code]]) if previews else "",
         }
-        for index, (code, label_key, style, primary) in enumerate(GRADE_BUTTONS, start=1)
+        for index, (code, label_key, css, primary) in enumerate(GRADE_BUTTONS, start=1)
     ]
     undo = _last_undo(request, flow)
     return {

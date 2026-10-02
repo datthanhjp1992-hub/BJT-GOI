@@ -1775,8 +1775,10 @@ class StudyScreenCssTests(TestCase):
 
         from django.conf import settings
 
+        css_dir = Path(settings.BASE_DIR) / "static" / "css"
+        shared = (css_dir / "base.css").read_text(encoding="utf-8")   # spec.md T2.1
         for name in ("theme_a.css", "theme_b.css", "theme_c.css"):
-            css = (Path(settings.BASE_DIR) / "static" / "css" / name).read_text(encoding="utf-8")
+            css = (css_dir / name).read_text(encoding="utf-8") + shared
             for rule in self.REQUIRED_RULES:
                 with self.subTest(file=name, rule=rule):
                     self.assertIn(rule, css, msg=f"{name} thiếu rule {rule} cho màn học")

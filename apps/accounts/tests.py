@@ -502,10 +502,12 @@ class ThemeCssContractTests(TestCase):
     )
 
     def test_every_theme_defines_settings_rules(self):
+        css_dir = Path(settings.BASE_DIR) / "static" / "css"
+        # Từ 02/10/2026 phần dùng chung nằm ở base.css (nạp sau theme) — một
+        # theme "có" rule khi rule nằm ở theme đó hoặc ở base.css.
+        shared = (css_dir / "base.css").read_text(encoding="utf-8")
         for name in ("theme_a.css", "theme_b.css", "theme_c.css"):
-            css = (Path(settings.BASE_DIR) / "static" / "css" / name).read_text(
-                encoding="utf-8"
-            )
+            css = (css_dir / name).read_text(encoding="utf-8") + shared
             for rule in self.REQUIRED_RULES:
                 with self.subTest(file=name, rule=rule):
                     self.assertIn(rule, css, msg=f"{name} thiếu rule {rule} cho SC08")
