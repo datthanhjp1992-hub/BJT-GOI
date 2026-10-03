@@ -71,6 +71,8 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 # Injects the current user's chosen UI theme (A/B/C) into templates
                 "apps.accounts.context_processors.ui_theme",
+                # Badge số từ đến hạn cạnh mục "Ôn tập" ở sidebar (spec.md T3.4)
+                "apps.learning.context_processors.learning_badges",
             ],
         },
     },

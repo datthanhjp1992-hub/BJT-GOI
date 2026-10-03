@@ -9,9 +9,9 @@ so sánh chuỗi mã "001" và cũng không in thẳng tiếng Việt.{% endcomm
 {% block title %}{% label "error_report.mine.title" %} | {% label "common.brand.name" %}{% endblock %}
 
 {% block content %}
-  <div class="eyebrow">{% label "error_report.mine.eyebrow" %}</div>
-  <h1 class="serif" style="font-size:28px;margin:0 0 6px;">{% label "error_report.mine.title" %}</h1>
-  <p class="muted" style="margin:0 0 20px;font-size:14px;">{% message "error_report.mine.hint.intro" %}</p>
+  {% label "error_report.mine.eyebrow" as eyebrow %}{% label "error_report.mine.title" as title %}
+  {% message "error_report.mine.hint.intro" as subtitle %}
+  {% include "partials/page_header.html" with eyebrow=eyebrow title=title subtitle=subtitle %}
 
   <div class="toolbar">
     <a class="btn btn-primary" href="{% url 'error_reports:create' %}">{% label "error_report.mine.button.new" %}</a>

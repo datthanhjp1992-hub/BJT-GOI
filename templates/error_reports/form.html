@@ -12,9 +12,9 @@ class mới.{% endcomment %}
 {% block wrap_attrs %} style="max-width:720px;"{% endblock %}
 
 {% block content %}
-  <div class="eyebrow">{% label "error_report.form.eyebrow" %}</div>
-  <h1 class="serif" style="font-size:28px;margin:0 0 6px;">{% label "error_report.form.title" %}</h1>
-  <p class="muted" style="margin:0 0 20px;font-size:14px;">{% message "error_report.form.hint.intro" %}</p>
+  {% label "error_report.form.eyebrow" as eyebrow %}{% label "error_report.form.title" as title %}
+  {% message "error_report.form.hint.intro" as subtitle %}
+  {% include "partials/page_header.html" with eyebrow=eyebrow title=title subtitle=subtitle %}
 
   <form method="post" action="{% url 'error_reports:create' %}">
     {% csrf_token %}

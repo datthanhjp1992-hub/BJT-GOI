@@ -26,8 +26,8 @@ với nút Đăng xuất ở topbar.
 {% block wrap_attrs %} style="max-width:900px;"{% endblock %}
 
 {% block content %}
-  <div class="eyebrow">{% label "badge.page.eyebrow" %}</div>
-  <h1 class="serif" style="font-size:28px;margin:0 0 26px;">{% label "badge.page.title" %}</h1>
+  {% label "badge.page.eyebrow" as eyebrow %}{% label "badge.page.title" as title %}
+  {% include "partials/page_header.html" with eyebrow=eyebrow title=title %}
 
   {# ---------- Khối lớn: danh hiệu đang khoe + tiến độ lên bậc kế ---------- #}
   {% if highlight %}
@@ -122,8 +122,8 @@ với nút Đăng xuất ở topbar.
       </div>
     </div>
   {% empty %}
-    <div class="card" style="margin-bottom:22px;">
-      <p class="muted" style="margin:0;">{% label "common.empty.no_data" %}</p>
+    <div class="mb-22">
+      {% include "partials/empty_state.html" with icon="🎖" title_key="common.empty.no_data" %}
     </div>
   {% endfor %}
 
@@ -151,7 +151,7 @@ với nút Đăng xuất ở topbar.
           {% endfor %}
         </table>
       {% else %}
-        <p class="muted" style="margin:0;">{% message "badge.history.empty" %}</p>
+        {% include "partials/empty_state.html" with icon="✨" text_key="badge.history.empty" compact=True %}
       {% endif %}
     </div>
 
@@ -183,7 +183,7 @@ với nút Đăng xuất ở topbar.
           {% endfor %}
         </table>
       {% else %}
-        <p class="muted" style="margin:0;">{% label "common.empty.no_data" %}</p>
+        {% include "partials/empty_state.html" with icon="🏆" title_key="common.empty.no_data" compact=True %}
       {% endif %}
     </div>
   </div>

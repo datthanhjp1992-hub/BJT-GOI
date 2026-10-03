@@ -23,17 +23,15 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
 {% block title %}{% label "common.nav.review" %} | {% label "common.brand.name" %}{% endblock %}
 
 {% block content %}
-  <div class="eyebrow">{% label "learning.review.eyebrow" %}</div>
-
+  {% label "learning.review.eyebrow" as eyebrow %}
   {% if overview.studied %}
-    <h1 class="serif fs-32 m-0 mb-6">
-      {% if overview.due_total %}
-        {% message "learning.review.title.due" count=overview.due_total %}
-      {% else %}
-        {% label "learning.review.title.all_caught_up" %}
-      {% endif %}
-    </h1>
-    <p class="muted m-0 mb-22">{% message "learning.review.hint.intro" %}</p>
+    {% if overview.due_total %}
+      {% message "learning.review.title.due" count=overview.due_total as title %}
+    {% else %}
+      {% label "learning.review.title.all_caught_up" as title %}
+    {% endif %}
+    {% message "learning.review.hint.intro" as subtitle %}
+    {% include "partials/page_header.html" with eyebrow=eyebrow title=title subtitle=subtitle %}
 
     <div class="card stamp mb-34">
       {% if overview.due_total %}
@@ -249,11 +247,9 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
     </div>
 
   {% else %}
-    <h1 class="serif fs-30 m-0 mb-20">{% label "learning.review.title.empty" %}</h1>
-    <div class="card">
-      <p class="fs-24 m-0 mb-8">🌱</p>
-      <p class="muted m-0 mb-20">{% message "learning.review.hint.empty" %}</p>
-      <a class="btn btn-primary" href="{% url 'vocabulary:index' %}">{% label "learning.review.button.browse" %}</a>
-    </div>
+    {% label "learning.review.title.empty" as title %}
+    {% include "partials/page_header.html" with eyebrow=eyebrow title=title %}
+    {% url 'vocabulary:index' as browse_url %}
+    {% include "partials/empty_state.html" with icon="🌱" text_key="learning.review.hint.empty" action_url=browse_url action_key="learning.review.button.browse" %}
   {% endif %}
 {% endblock %}

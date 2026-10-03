@@ -55,8 +55,12 @@ Moi cau tieng Nhat di qua |ruby (escape TRUOC roi moi ghep <ruby>).{% endcomment
 
       {# In on tap: PDF TOAN BO chuong (moi muc), khong chi muc dang mo. GET, khong tac dung phu -> <a>. #}
       <div class="kl-print">
-        <a class="btn btn-outline btn-block" href="{% url 'keigo:lesson_pdf' lesson.slug %}"
+        {% url 'keigo:lesson_pdf' lesson.slug as pdf_url %}
+        {# Hai lua chon: mo xem/in ngay trong tab moi, hoac tai file ve may (?download=1). #}
+        <a class="btn btn-outline btn-block" href="{{ pdf_url }}"
            target="_blank" rel="noopener">{% label "keigo.lesson.print.button" %}</a>
+        <a class="btn btn-outline btn-block" href="{{ pdf_url }}?download=1" download
+           data-loading-text="{% label 'common.loading' %}">{% label "keigo.pdf.button.download" %}</a>
         <p class="muted">{% label "keigo.lesson.print.hint" %}</p>
       </div>
     </div>

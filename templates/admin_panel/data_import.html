@@ -72,7 +72,7 @@ vào của bước xem trước.{% endcomment %}
         <label for="data_file">{% label "admin.data.field.file" %}</label>
         <input type="file" id="data_file" name="data_file" accept=".csv,.xlsx,.xlsm" required>
         <div class="toolbar" style="margin-top:12px;">
-          <button type="submit">{% label "admin.data.button.preview" %}</button>
+          <button type="submit" data-loading-text="{% label 'common.loading' %}">{% label "admin.data.button.preview" %}</button>
           <a class="action-link" href="{% url 'admin_panel:data_template' model_label 'xlsx' %}">{% label "admin.data.button.template_xlsx" %}</a>
           <a class="action-link" href="{% url 'admin_panel:data_template' model_label 'csv' %}">{% label "admin.data.button.template_csv" %}</a>
         </div>
@@ -198,7 +198,7 @@ vào của bước xem trước.{% endcomment %}
           {% csrf_token %}
           <input type="hidden" name="token" value="{{ token }}">
           <p class="muted" style="font-size:13px;">{% message "admin.data.hint.confirm" created=report.new_count updated=report.update_count skipped=report.skipped_count %}</p>
-          <button type="submit">{% label "admin.data.button.confirm" %}</button>
+          <button type="submit" data-loading-text="{% label 'common.loading' %}">{% label "admin.data.button.confirm" %}</button>
         </form>
       {% elif report.error_count %}
         <p style="font-size:14px;">{% message "admin.data.error.has_errors" count=report.error_count %}</p>

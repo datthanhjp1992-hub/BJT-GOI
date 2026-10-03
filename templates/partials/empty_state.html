@@ -1,0 +1,19 @@
+{% load properties_tags %}
+{% comment %}Trạng thái trống dùng chung (spec.md T3.3, 03/10/2026).
+
+  {% include "partials/empty_state.html" with icon="📚" title_key="..." text_key="..." action_url=url action_key="..." %}
+
+  icon        emoji lớn ở đầu khối (tuỳ chọn)
+  title_key   key trong label.properties — tiêu đề ngắn (tuỳ chọn)
+  text_key    key trong message.properties — một câu giải thích (tuỳ chọn)
+  action_url  + action_key (label): nút hành động duy nhất (tuỳ chọn)
+  compact     True: bỏ khung card, dùng khi đã nằm trong một card khác
+
+Chuỗi đi qua key chứ không truyền thẳng chữ vào include — giữ đúng quy ước
+"không hardcode chuỗi hiển thị". Text có tham số thì tự viết khối riêng.{% endcomment %}
+<div class="empty-state{% if not compact %} card{% endif %}">
+  {% if icon %}<div class="empty-state-icon" aria-hidden="true">{{ icon }}</div>{% endif %}
+  {% if title_key %}<h3 class="serif m-0">{% label title_key %}</h3>{% endif %}
+  {% if text_key %}<p class="muted m-0">{% message text_key %}</p>{% endif %}
+  {% if action_url %}<a class="btn btn-primary" href="{{ action_url }}">{% label action_key %}</a>{% endif %}
+</div>

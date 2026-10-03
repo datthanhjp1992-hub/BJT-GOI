@@ -129,10 +129,13 @@ quyet dinh o dau file do). Du lieu: apps/keigo/exercises.list_rows().
               <a class="action-link" href="{% url 'keigo:bai_tap_ket_qua' r.exercise_set.slug %}">{% label "keigo.exercise.list.result" %} →</a>
             {% endif %}
           {% endif %}
-          {# In de ra giay (trang cuoi la dap an). GET, khong tac dung phu -> <a>, mo tab moi nhu nut in on tap SC17. #}
+          {# In de ra giay (trang cuoi la dap an). GET, khong tac dung phu -> <a>: mo tab moi hoac tai ve (?download=1), nhu SC17. #}
           {% if r.question_total %}
-            <a class="action-link" href="{% url 'keigo:bai_tap_pdf' r.exercise_set.slug %}" target="_blank" rel="noopener"
+            {% url 'keigo:bai_tap_pdf' r.exercise_set.slug as pdf_url %}
+            <a class="action-link" href="{{ pdf_url }}" target="_blank" rel="noopener"
                title="{% label 'keigo.exercise.list.pdf_hint' %}">{% label "keigo.exercise.list.pdf" %}</a>
+            <a class="action-link" href="{{ pdf_url }}?download=1" download
+               data-loading-text="{% label 'common.loading' %}">{% label "keigo.pdf.button.download" %}</a>
           {% endif %}
         </div>
       </li>

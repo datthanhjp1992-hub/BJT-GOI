@@ -133,7 +133,8 @@ class RegisterViewTests(AccountsTestCase):
 
     def test_register_creates_user_and_logs_in(self):
         response = self.client.post(reverse("accounts:register"), self._payload())
-        self.assertRedirects(response, reverse("learning:dashboard"))
+        # spec.md T3.2: đăng ký xong sang màn hướng dẫn lần đầu.
+        self.assertRedirects(response, reverse("accounts:onboarding"))
 
         user = User.objects.get(username="nguyenvana")
         self.assertTrue(user.check_password("MatKhauRatManh123"))
@@ -170,6 +171,59 @@ class RegisterViewTests(AccountsTestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertFalse(User.objects.filter(username="nguyenvana").exists())
+
+
+class OnboardingViewTests(AccountsTestCase):
+    """spec.md T3.2 — mục tiêu mỗi ngày (MasterCode "19") + chọn chủ đề."""
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(username="moi", password="MatKhauRatManh123")
+        self.client.force_login(self.user)
+        self.topic = Topic.objects.create(name="Nhà hàng", slug="nha-hang", icon_emoji="🍣")
+        vocab = Vocabulary.objects.create(word="注文", reading="ちゅうもん", meaning_vi="đặt món")
+        VocabularyTopic.objects.create(vocabulary=vocab, topic=self.topic)
+        # Chủ đề rỗng không được mời chọn — mở ra chỉ thấy màn "đã học xong".
+        Topic.objects.create(name="Trống", slug="trong")
+        self.url = reverse("accounts:onboarding")
+
+    def test_requires_login(self):
+        self.client.logout()
+        self.assertRedirects(self.client.get(self.url), reverse("accounts:login") + "?next=" + self.url)
+
+    def test_lists_goals_from_mastercode_and_topics_with_words(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        goals = [code for code, _ in response.context["form"].fields["daily_goal"].choices]
+        self.assertEqual(goals, ["5", "10", "20", "30"])
+        self.assertContains(response, "Nhà hàng")
+        self.assertNotContains(response, "Trống")
+        # Mục tiêu đang lưu (mặc định 20) được chọn sẵn.
+        self.assertEqual(response.context["form"]["daily_goal"].value(), "20")
+
+    def test_start_saves_goal_and_opens_the_topic(self):
+        response = self.client.post(self.url, {"daily_goal": "10", "topic": self.topic.pk})
+        self.assertRedirects(
+            response, reverse("learning:flashcard", args=["nha-hang"]), fetch_redirect_response=False
+        )
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.daily_review_goal, 10)
+
+    def test_missing_topic_shows_an_error_and_saves_nothing(self):
+        response = self.client.post(self.url, {"daily_goal": "5"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, message("common.validation.required"))
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.daily_review_goal, 20)
+
+    def test_goal_outside_mastercode_is_rejected(self):
+        response = self.client.post(self.url, {"daily_goal": "999", "topic": self.topic.pk})
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.daily_review_goal, 20)
+
+    def test_has_a_skip_link_to_the_dashboard(self):
+        self.assertContains(self.client.get(self.url), reverse("learning:dashboard"))
 
 
 class ThemeRenderingTests(AccountsTestCase):

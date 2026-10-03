@@ -139,6 +139,18 @@ class LessonPdfTests(LessonTestCase):
         self.assertIn('filename="kinh-ngu-chuong-1-ton-kinh-ngu.pdf"', resp["Content-Disposition"])
         self.assertTrue(resp.content.startswith(b"%PDF"))
 
+    def test_opens_inline_by_default_and_downloads_on_request(self):
+        """Nguoi hoc chon: mo xem tren trinh duyet (inline) hoac tai ve may."""
+        self.assertTrue(self.client.get(self.pdf_url(self.ch1))["Content-Disposition"].startswith("inline;"))
+        resp = self.client.get(self.pdf_url(self.ch1) + "?download=1")
+        self.assertTrue(resp["Content-Disposition"].startswith("attachment;"))
+        self.assertIn('filename="kinh-ngu-chuong-1-ton-kinh-ngu.pdf"', resp["Content-Disposition"])
+
+    def test_lesson_page_offers_open_and_download(self):
+        resp = self.client.get(self.url(self.ch1))
+        self.assertContains(resp, f'href="{self.pdf_url(self.ch1)}"')
+        self.assertContains(resp, f'href="{self.pdf_url(self.ch1)}?download=1" download')
+
     def test_every_block_type_renders(self):
         for lesson in (self.ch1, self.ch3, self.ch7):
             with self.subTest(lesson=lesson.slug):
@@ -530,6 +542,15 @@ class ExercisePdfTests(ExerciseTestCase):
         r = self.client.get(reverse("keigo:bai_tap"))
         for s in (self.s1, self.s2):
             self.assertContains(r, f'href="{self.pdf_url(s)}"')
+
+    def test_list_offers_open_and_download(self):
+        r = self.client.get(reverse("keigo:bai_tap"))
+        self.assertContains(r, f'href="{self.pdf_url(self.s1)}?download=1" download')
+
+    def test_download_param_returns_attachment(self):
+        self.assertTrue(self.client.get(self.pdf_url(self.s1))["Content-Disposition"].startswith("inline;"))
+        resp = self.client.get(self.pdf_url(self.s1) + "?download=1")
+        self.assertTrue(resp["Content-Disposition"].startswith("attachment;"))
 
     def test_pdf_without_any_attempt(self):
         resp = self.client.get(self.pdf_url(self.s1))

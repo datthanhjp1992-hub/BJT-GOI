@@ -1,0 +1,28 @@
+{% load properties_tags %}
+{% comment %}Tiêu đề trang + breadcrumb ngắn, cùng một vị trí ở mọi màn (spec.md T3.4, 03/10/2026).
+
+  {% label "vocabulary.list.eyebrow" as eyebrow %}
+  {% label "vocabulary.list.title.all" as title %}
+  {% include "partials/page_header.html" with eyebrow=eyebrow title=title subtitle=sub %}
+
+  eyebrow    tên khu vực — dòng breadcrumb "Trang chủ / <eyebrow>"
+  title      tiêu đề <h1>
+  subtitle   một dòng mô tả dưới tiêu đề (tuỳ chọn)
+  no_crumbs  True: chỉ in eyebrow, không có link "Trang chủ" (màn hướng dẫn lần đầu)
+
+Nhận CHUỖI đã tra sẵn (`{% label ... as x %}` / `{% message ... as x %}`) chứ
+không nhận key, vì nhiều tiêu đề có tham số (SC15 "N từ đến hạn") hoặc dựng từ
+dữ liệu (SC05 tên chủ đề) — vẫn không có chữ nào hardcode trong template.{% endcomment %}
+<header class="page-header">
+  {% if eyebrow %}
+    {% if no_crumbs %}
+      <div class="eyebrow">{{ eyebrow }}</div>
+    {% else %}
+      <nav class="eyebrow page-crumbs" aria-label="breadcrumb">
+        <a href="{% url 'learning:dashboard' %}">{% label "common.nav.home" %}</a><span aria-hidden="true">/</span><span aria-current="page">{{ eyebrow }}</span>
+      </nav>
+    {% endif %}
+  {% endif %}
+  <h1 class="serif page-title">{{ title }}</h1>
+  {% if subtitle %}<p class="muted page-subtitle">{{ subtitle }}</p>{% endif %}
+</header>

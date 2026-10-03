@@ -5,12 +5,15 @@ Logic nghiệp vụ của app learning:
    quality 0-5 quy từ 4 nút Quên/Khó/Nhớ/Dễ. Hàng đợi SC04 (`get_topic_queue`).
 2. Số liệu cho SC03_TrangChu (`get_learning_stats`, `get_streak_days`,
    `get_topic_in_progress`, `get_suggested_topics`).
+3. Nút "Học hôm nay" của SC03 (`build_daily_queue`, `get_daily_overview`) và
+   badge "Ôn tập" ở sidebar (`get_due_badge_count`) — spec.md Phase 3.
 
 View chỉ gọi xuống đây rồi đẩy vào template — không tự viết truy vấn.
 """
 from dataclasses import dataclass, field
 from datetime import date, datetime, time, timedelta
 
+from django.core.cache import cache
 from django.db.models import Count, F, Q
 from django.db.models.functions import TruncDate
 from django.utils import timezone
@@ -251,6 +254,7 @@ def review_word(progress, quality: int, now=None):
         progress.next_review_date = today + timedelta(days=card.interval_days)
     progress.is_mastered = progress.srs_level >= 5
     progress.save()
+    invalidate_due_badge(progress.user_id)
     return result
 
 
@@ -285,6 +289,7 @@ def restore_progress(progress, snap):
     )
     progress.due_at = datetime.fromisoformat(snap["due_at"]) if snap["due_at"] else None
     progress.save()
+    invalidate_due_badge(progress.user_id)
     return progress
 
 
@@ -352,31 +357,16 @@ def get_learning_stats(user):
 
 
 def get_topic_in_progress(user):
-    """Chủ đề để nút "Học tiếp" trỏ tới, kèm tiến độ.
+    """Chủ đề user đang học dở, kèm tiến độ.
 
     Ưu tiên chủ đề của PHIÊN HỌC gần nhất (đúng nghĩa "đang học dở"); chưa
     có phiên nào thì lấy chủ đề mà user có nhiều từ đang theo dõi nhất.
-    Trả None nếu user chưa động vào chủ đề nào — template sẽ hiện gợi ý.
+    Trả None nếu user chưa động vào chủ đề nào.
+
+    Từ 03/10/2026 (spec.md T3.1 c) trang chủ không còn khối "Học tiếp" —
+    `build_daily_queue` dùng chủ đề này làm nguồn từ mới đầu tiên.
     """
-    last_session = (
-        StudySession.objects.filter(user=user, topic__isnull=False)
-        .select_related("topic")
-        .order_by("-started_at")
-        .first()
-    )
-    topic = last_session.topic if last_session else None
-
-    if topic is None:
-        row = (
-            UserVocabularyProgress.objects.filter(user=user, vocabulary__topics__isnull=False)
-            .values("vocabulary__topics")
-            .annotate(n=Count("pk"))
-            .order_by("-n")
-            .first()
-        )
-        if row:
-            topic = Topic.objects.filter(pk=row["vocabulary__topics"]).first()
-
+    topic = _topic_in_progress(user)
     if topic is None:
         return None
 
@@ -399,6 +389,39 @@ def get_topic_in_progress(user):
     }
 
 
+def _topic_in_progress(user):
+    """Chỉ riêng Topic của `get_topic_in_progress()` — không đếm tiến độ."""
+    last_session = (
+        StudySession.objects.filter(user=user, topic__isnull=False)
+        .select_related("topic")
+        .order_by("-started_at")
+        .first()
+    )
+    topic = last_session.topic if last_session else None
+
+    if topic is None:
+        row = (
+            UserVocabularyProgress.objects.filter(user=user, vocabulary__topics__isnull=False)
+            .values("vocabulary__topics")
+            .annotate(n=Count("pk"))
+            .order_by("-n")
+            .first()
+        )
+        if row:
+            topic = Topic.objects.filter(pk=row["vocabulary__topics"]).first()
+    return topic
+
+
+def get_startable_topics():
+    """Chủ đề có từ, kèm `word_count`, nhiều từ nhất trước — nguồn của mục
+    "Chủ đề gợi ý" (SC03) và lưới chọn chủ đề ở màn hướng dẫn lần đầu."""
+    return (
+        Topic.objects.annotate(word_count=Count("vocabularies", distinct=True))
+        .filter(word_count__gt=0)
+        .order_by("-word_count", "name")
+    )
+
+
 def get_suggested_topics(user, limit=3):
     """Chủ đề gợi ý: ưu tiên chủ đề user CHƯA đụng tới, nhiều từ nhất trước.
 
@@ -412,11 +435,7 @@ def get_suggested_topics(user, limit=3):
     )
     studied_topic_ids.discard(None)
 
-    base = (
-        Topic.objects.annotate(word_count=Count("vocabularies", distinct=True))
-        .filter(word_count__gt=0)
-        .order_by("-word_count", "name")
-    )
+    base = get_startable_topics()
     topics = list(base.exclude(pk__in=studied_topic_ids)[:limit])
     if len(topics) < limit:
         topics += list(base.exclude(pk__in=[t.pk for t in topics])[: limit - len(topics)])
@@ -709,3 +728,136 @@ def get_topic_review_rows(user):
     # không phải để tra cứu theo tên.
     rows.sort(key=lambda r: (-r["due"], -r["learned"]))
     return rows
+
+
+# =============================================================================
+# "Học hôm nay" — nút chính của SC03 (spec.md T3.1, Dat duyệt 02/10/2026)
+# -----------------------------------------------------------------------------
+# Một hàng đợi gom MỌI chủ đề, rồi đi qua đúng luồng study_* như SC05/SC15
+# (không có luồng học thứ tư):
+#   1. Từ đến hạn ôn (REVIEW, next_review_date <= hôm nay), quá hạn lâu nhất
+#      trước; tiếp theo là từ đang ở bước học (quên/chưa qua hết bước).
+#   2. Từ mới, tối đa `daily_review_goal - count_new_words_today()`, lấy từ
+#      chủ đề đang học dở trước, hết thì sang chủ đề gợi ý — không trộn ngẫu
+#      nhiên. Hoàn tác lần chấm đầu của từ mới xoá dòng tiến độ, nên hạn mức
+#      tự lùi lại mà không cần sổ sách riêng.
+# =============================================================================
+
+# Số chủ đề gợi ý xét thêm khi chủ đề đang học dở đã hết từ mới. Mỗi chủ đề
+# tốn 1 query và vòng lặp dừng ngay khi đủ hạn mức, nên đặt rộng tay được.
+DAILY_NEW_TOPIC_LOOKAHEAD = 10
+
+
+def _daily_due_ids(user):
+    """Id từ cần ôn hôm nay ở mọi chủ đề: đến hạn trước, đang học sau."""
+    today = user.local_today()
+    rows = UserVocabularyProgress.objects.filter(user=user).filter(
+        Q(card_state=srs.REVIEW, next_review_date__lte=today)
+        | Q(card_state=srs.REVIEW, next_review_date__isnull=True)
+        | Q(card_state__in=srs.IN_SESSION_STATES)
+    ).values_list("vocabulary_id", "card_state", "next_review_date", "due_at")
+
+    review, learning = [], []
+    for vocab_id, state, review_date, due_at in rows:
+        if state == srs.REVIEW:
+            # Chưa xếp lịch = đến hạn ngay, như build_study_queue.
+            review.append(((review_date or date.min), vocab_id))
+        else:
+            learning.append(((due_at or timezone.now()), vocab_id))
+    return [vid for _, vid in sorted(review)] + [vid for _, vid in sorted(learning)]
+
+
+def _daily_new_ids(user, count):
+    """Tối đa `count` id từ mới: chủ đề đang học dở trước, rồi chủ đề gợi ý."""
+    if count <= 0:
+        return []
+    topics = []
+    first = _topic_in_progress(user)
+    if first is not None:
+        topics.append(first)
+    topics += [
+        topic for topic in get_suggested_topics(user, limit=DAILY_NEW_TOPIC_LOOKAHEAD)
+        if topic not in topics
+    ]
+
+    picked = []
+    for topic in topics:
+        rest = count - len(picked)
+        if rest <= 0:
+            break
+        # Một từ có thể thuộc nhiều chủ đề — đừng lấy trùng.
+        picked += list(
+            Vocabulary.objects.filter(topics=topic)
+            .exclude(progress__user=user)
+            .exclude(pk__in=picked)
+            .order_by("word")
+            .values_list("pk", flat=True)[:rest]
+        )
+    return picked
+
+
+def _daily_parts(user):
+    due = _daily_due_ids(user)[:STUDY_SOURCE_CAP]
+    new_left = max(0, user.daily_review_goal - count_new_words_today(user))
+    return due, _daily_new_ids(user, new_left)
+
+
+def build_daily_queue(user):
+    """Hàng đợi "Học hôm nay" (list id, cất được vào request.session)."""
+    due, new = _daily_parts(user)
+    return due + new
+
+
+def get_daily_overview(user):
+    """Con số trên nút "Học hôm nay": {due, new, total, minutes, due_tomorrow}.
+
+    `due_tomorrow` chỉ tính khi hôm nay đã xong (total == 0) — đó là lúc trang
+    chủ cần nói "mai có N từ"; còn việc thì khỏi tốn thêm query.
+    """
+    due, new = _daily_parts(user)
+    total = len(due) + len(new)
+    return {
+        "due": len(due),
+        "new": len(new),
+        "total": total,
+        # Làm tròn LÊN như get_review_overview(): 3 từ vẫn là "khoảng 1 phút".
+        "minutes": -(-total * SECONDS_PER_WORD // 60),
+        "due_tomorrow": count_due_tomorrow(user) if total == 0 else 0,
+    }
+
+
+# =============================================================================
+# Badge "Ôn tập" ở sidebar (spec.md T3.4) — xem apps/learning/context_processors.py
+# -----------------------------------------------------------------------------
+# Cùng định nghĩa "đến hạn" với SC15 (get_review_overview().due_total): ngày ôn
+# <= hôm nay, hoặc chưa xếp lịch. Cache 60 giây/user để không tốn 1 query mỗi
+# trang; giá trị kèm NGÀY của user nên qua nửa đêm là tự tính lại.
+# =============================================================================
+
+DUE_BADGE_TTL_SECONDS = 60
+
+
+def _due_badge_key(user_id):
+    return f"learning:due_badge:{user_id}"
+
+
+def count_due_today(user):
+    today = user.local_today()
+    return UserVocabularyProgress.objects.filter(
+        Q(next_review_date__lte=today) | Q(next_review_date__isnull=True), user=user,
+    ).count()
+
+
+def get_due_badge_count(user):
+    today = user.local_today().isoformat()
+    cached = cache.get(_due_badge_key(user.pk))
+    if cached and cached[0] == today:
+        return cached[1]
+    count = count_due_today(user)
+    cache.set(_due_badge_key(user.pk), (today, count), DUE_BADGE_TTL_SECONDS)
+    return count
+
+
+def invalidate_due_badge(user_id):
+    """Gọi sau mỗi lần lịch ôn của user đổi (chấm / hoàn tác)."""
+    cache.delete(_due_badge_key(user_id))

@@ -52,8 +52,13 @@ falsy, khong loi).
        href="{% url 'learning:dashboard' %}">{% label "common.nav.home" %}</a>
     <a class="sidenav-link{% if active_nav == "vocabulary" %} active{% endif %}"
        href="{% url 'vocabulary:index' %}">{% label "common.nav.vocabulary" %}</a>
-    <a class="sidenav-link{% if active_nav == "review" %} active{% endif %}"
-       href="{% url 'learning:review' %}">{% label "common.nav.review" %}</a>
+    {% comment %}Badge = số từ đến hạn hôm nay (context processor
+    apps.learning.context_processors.learning_badges, cache 60 giây).{% endcomment %}
+    <a class="sidenav-link has-badge{% if active_nav == "review" %} active{% endif %}"
+       href="{% url 'learning:review' %}">
+      <span>{% label "common.nav.review" %}</span>
+      {% if due_badge %}<span class="nav-badge" title="{% message 'learning.dashboard.hint.review_due' count=due_badge %}">{{ due_badge }}</span>{% endif %}
+    </a>
     <a class="sidenav-link{% if active_nav == "practice_sheet" %} active{% endif %}"
        href="{% url 'practice_sheets:create' %}">{% label "common.nav.practice_sheet" %}</a>
     <a class="sidenav-link{% if active_nav == "contribution" %} active{% endif %}"

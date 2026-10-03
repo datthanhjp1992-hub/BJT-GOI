@@ -16,11 +16,9 @@ tác dụng trên MỘT dòng, viết tràn dòng là bị in thẳng ra HTML.{%
 {% block title %}{% label "practice_sheets.create.title" %} | {% label "common.brand.name" %}{% endblock %}
 
 {% block content %}
-  <div class="eyebrow">{% label "practice_sheets.create.eyebrow" %}</div>
-  <h1 class="serif" style="font-size:28px;margin:0 0 8px;">{% label "practice_sheets.create.title" %}</h1>
-  <p class="muted" style="margin:0 0 24px;font-size:14px;">
-    {% message "practice_sheets.upload.hint.multi_page" %}
-  </p>
+  {% label "practice_sheets.create.eyebrow" as eyebrow %}{% label "practice_sheets.create.title" as title %}
+  {% message "practice_sheets.upload.hint.multi_page" as subtitle %}
+  {% include "partials/page_header.html" with eyebrow=eyebrow title=title subtitle=subtitle %}
 
   <div style="display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--border);">
     <button type="button" id="tab-existing-btn" onclick="showSource('existing')" class="sheet-tab is-active">{% label "practice_sheets.create.tab.select_existing" %}</button>
@@ -113,7 +111,7 @@ tác dụng trên MỘT dòng, viết tràn dòng là bị in thẳng ra HTML.{%
           </p>
         {% endif %}
       {% else %}
-        <p class="muted" style="margin:0;font-size:14px;">{% message "practice_sheets.create.hint.no_word_matches" %}</p>
+        {% include "partials/empty_state.html" with icon="🔍" text_key="practice_sheets.create.hint.no_word_matches" compact=True %}
       {% endif %}
     </div>
 

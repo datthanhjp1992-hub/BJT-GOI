@@ -24,8 +24,8 @@ có tác dụng trên MỘT dòng, viết tràn dòng là bị in thẳng ra HTM
 {% block wrap_attrs %} style="max-width:640px;"{% endblock %}
 
 {% block content %}
-  <div class="eyebrow">{% label "accounts.settings.eyebrow" %}</div>
-  <h1 class="serif" style="font-size:28px;margin:0 0 28px;">{% label "accounts.settings.title" %}</h1>
+  {% label "accounts.settings.eyebrow" as eyebrow %}{% label "accounts.settings.title" as title %}
+  {% include "partials/page_header.html" with eyebrow=eyebrow title=title %}
 
   <form method="post" novalidate>
     {% csrf_token %}

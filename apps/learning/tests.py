@@ -178,16 +178,17 @@ class DashboardViewTests(LearningTestCase):
         self.assertEqual(response.context["stats"]["words_mastered"], 1)
         self.assertEqual(response.context["stats"]["due_today"], 1)
         self.assertEqual(response.context["stats"]["streak_days"], 1)
-        self.assertEqual(response.context["in_progress"]["topic"], topic)
-        self.assertContains(response, "Nhà hàng")
-        # Nút "Học tiếp" phải trỏ đúng chủ đề đang học dở.
-        self.assertContains(response, reverse("learning:flashcard", args=[topic.slug]))
+        # spec.md T3.1 (c): một nút chính "Học hôm nay", không còn "Học tiếp chủ đề X".
+        self.assertContains(response, reverse("learning:daily_start"))
+        self.assertNotContains(response, reverse("learning:flashcard", args=[topic.slug]))
+        self.assertNotIn("in_progress", response.context)
 
     def test_renders_for_brand_new_user(self):
         """Chưa có dữ liệu gì thì trang chủ vẫn phải ra 200, không 500."""
         response = self.client.get(reverse("learning:dashboard"))
         self.assertEqual(response.status_code, 200)
-        self.assertIsNone(response.context["in_progress"])
+        self.assertEqual(response.context["daily"]["total"], 0)
+        self.assertContains(response, "Hôm nay xong rồi")
 
 
 class FlashcardQueueTests(LearningTestCase):
@@ -1222,12 +1223,16 @@ class MoreNewWordsTests(LearningTestCase):
         self.assertTrue(page.context["queue"].more_new)
         self.assertContains(page, reverse("learning:flashcard_more_new", args=["nha-hang"]))
 
-    def test_dashboard_explains_the_daily_cap(self):
+    def test_dashboard_says_done_when_the_daily_cap_is_used(self):
+        """Hết hạn mức từ mới + không còn từ đến hạn -> "xong" và mời học thêm
+        ở SC05 (khối "Học tiếp" cũ đã gỡ, spec.md T3.1 c)."""
+        UserVocabularyProgress.objects.filter(user=self.user).update(
+            card_state=srs.REVIEW, next_review_date=self.user.local_today() + timedelta(days=3),
+        )
         page = self.client.get(reverse("learning:dashboard"))
-        info = page.context["in_progress"]
-        self.assertTrue(info["new_limit_reached"])
-        self.assertEqual(info["unseen"], 2)
-        self.assertContains(page, reverse("learning:flashcard_more_new", args=["nha-hang"]))
+        self.assertEqual(page.context["daily"]["new"], 0)
+        self.assertEqual(page.context["daily"]["total"], 0)
+        self.assertContains(page, reverse("vocabulary:index"))
 
     def test_more_new_unlocks_words_for_today(self):
         url = reverse("learning:flashcard_more_new", args=["nha-hang"])
@@ -1817,3 +1822,192 @@ class StudyScreenCssTests(TestCase):
             for rule in self.REQUIRED_RULES:
                 with self.subTest(file=name, rule=rule):
                     self.assertIn(rule, css, msg=f"{name} thiếu rule {rule} cho màn học")
+
+
+# =============================================================================
+# Phase 3 — luồng sử dụng (spec.md T3.1 – T3.4)
+# =============================================================================
+
+
+class DailyQueueTests(LearningTestCase):
+    """T3.1 — hàng đợi "Học hôm nay" gom mọi chủ đề."""
+
+    def _state(self, vocab, state, due_offset=0, due_at=None):
+        progress = self._progress(vocab, due_offset=due_offset)
+        progress.card_state = state
+        progress.due_at = due_at
+        progress.save()
+        # Từ đã học từ hôm trước — không ăn vào hạn mức từ mới của hôm nay
+        # (count_new_words_today đếm theo created_at).
+        UserVocabularyProgress.objects.filter(pk=progress.pk).update(
+            created_at=timezone.now() - timedelta(days=2)
+        )
+        return progress
+
+    def _goal(self, value):
+        self.user.daily_review_goal = value
+        self.user.save(update_fields=["daily_review_goal"])
+
+    def test_due_words_of_every_topic_oldest_first_then_learning(self):
+        a = self._make_topic("A", "a", ["あ"]).vocabularies.get()
+        b = self._make_topic("B", "b", ["い"]).vocabularies.get()
+        c = self._make_topic("C", "c", ["う", "え"])
+        c_learning, c_later = c.vocabularies.get(word="う"), c.vocabularies.get(word="え")
+        self._state(a, srs.REVIEW, due_offset=0)
+        self._state(b, srs.REVIEW, due_offset=-3)
+        self._state(c_learning, srs.LEARNING, due_at=timezone.now())
+        self._state(c_later, srs.REVIEW, due_offset=2)       # chưa tới hạn
+        self._goal(0)
+
+        self.assertEqual(services.build_daily_queue(self.user), [b.pk, a.pk, c_learning.pk])
+
+    def test_new_words_come_from_the_topic_in_progress_then_suggestions(self):
+        self._goal(3)
+        current = self._make_topic("Đang học", "dang-hoc", ["か", "き", "く"])
+        self._make_topic("Khác", "khac", ["さ", "し", "す", "せ"])
+        self._state(current.vocabularies.get(word="か"), srs.REVIEW, due_offset=5)
+        self._session(1, topic=current)
+
+        queue = services.build_daily_queue(self.user)
+        words = dict(Vocabulary.objects.filter(pk__in=queue).values_list("pk", "word"))
+        # Hết 2 từ còn lại của chủ đề đang học mới sang chủ đề gợi ý.
+        self.assertEqual([words[pk] for pk in queue], ["き", "く", "さ"])
+
+    def test_new_words_never_exceed_the_daily_cap(self):
+        self._goal(2)
+        topic = self._make_topic("A", "a", ["あ", "い", "う", "え"])
+        # Hôm nay đã học 1 từ mới -> còn 1.
+        services.get_or_start_progress(self.user, topic.vocabularies.get(word="あ"))
+        self.assertEqual(services.get_daily_overview(self.user)["new"], 1)
+
+    def test_overview_counts_and_minutes(self):
+        self._goal(2)
+        topic = self._make_topic("A", "a", ["あ", "い", "う", "え"])
+        self._state(topic.vocabularies.get(word="あ"), srs.REVIEW, due_offset=-1)
+        overview = services.get_daily_overview(self.user)
+        self.assertEqual((overview["due"], overview["new"], overview["total"]), (1, 2, 3))
+        self.assertEqual(overview["minutes"], 1)   # 3 x 20 giây, làm tròn lên
+
+    def test_done_state_reports_tomorrow(self):
+        topic = self._make_topic("A", "a", ["あ"])
+        self._state(topic.vocabularies.get(), srs.REVIEW, due_offset=1)
+        overview = services.get_daily_overview(self.user)
+        self.assertEqual(overview["total"], 0)
+        self.assertEqual(overview["due_tomorrow"], 1)
+
+
+class DailyStartViewTests(LearningTestCase):
+    """T3.1 — nút "Học hôm nay" chạy bằng đúng luồng study_*."""
+
+    def setUp(self):
+        super().setUp()
+        self.user.daily_review_goal = 1
+        self.user.save(update_fields=["daily_review_goal"])
+        self.topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        self.url = reverse("learning:daily_start")
+
+    def test_post_only(self):
+        self.assertEqual(self.client.get(self.url).status_code, 405)
+
+    def test_starts_a_study_session_with_the_daily_queue(self):
+        response = self.client.post(self.url)
+        self.assertRedirects(response, reverse("learning:study"), fetch_redirect_response=False)
+        self.assertIsNone(StudySession.objects.get(user=self.user).topic)
+        self.assertEqual(self.client.session["study_total"], 1)
+        self.assertTrue(self.client.session["study_touch_schedule"])
+        page = self.client.get(reverse("learning:study"))
+        expected = Vocabulary.objects.filter(topics=self.topic).order_by("word").first()
+        self.assertEqual(page.context["word"], expected)
+
+    def test_undoing_a_new_word_gives_the_cap_back(self):
+        self.client.post(self.url)
+        word = self.client.get(reverse("learning:study")).context["word"]
+        self.client.post(reverse("learning:study_review", args=[word.pk]), {"quality": "de"})
+        self.assertEqual(services.get_daily_overview(self.user)["new"], 0)
+
+        self.client.post(reverse("learning:undo"))
+        self.assertEqual(services.count_new_words_today(self.user), 0)
+        self.assertEqual(services.get_daily_overview(self.user)["new"], 1)
+
+    def test_nothing_left_goes_back_to_the_dashboard(self):
+        self.user.daily_review_goal = 0
+        self.user.save(update_fields=["daily_review_goal"])
+        response = self.client.post(self.url, follow=True)
+        self.assertRedirects(response, reverse("learning:dashboard"))
+        self.assertContains(response, "Hôm nay bạn đã học xong")
+        self.assertFalse(StudySession.objects.filter(user=self.user).exists())
+
+    def test_review_start_still_keeps_its_flags_through_the_shared_helper(self):
+        """review_start giờ đi qua _start_study_session — phiên "ôn thêm" phải
+        giữ đúng cờ không đẩy lịch và chế độ trắc nghiệm."""
+        self._progress(self.topic.vocabularies.get(word="注文"), due_offset=3)
+        self.client.post(reverse("learning:review_start"), {
+            "scope": vocab_selectors.SCOPE_UPCOMING, "mode": "quiz",
+        })
+        self.assertFalse(self.client.session["study_touch_schedule"])
+        self.assertEqual(self.client.session["study_mode"], "quiz")
+        self.assertEqual(self.client.session["study_learning"], [])
+
+
+class OnboardingNudgeTests(LearningTestCase):
+    """T3.2 — trang chủ mời mở lại hướng dẫn khi chưa học gì."""
+
+    def test_brand_new_user_sees_the_nudge(self):
+        response = self.client.get(reverse("learning:dashboard"))
+        self.assertTrue(response.context["show_onboarding"])
+        self.assertContains(response, reverse("accounts:onboarding"))
+
+    def test_nudge_disappears_after_the_first_session(self):
+        self._session(0)
+        response = self.client.get(reverse("learning:dashboard"))
+        self.assertFalse(response.context["show_onboarding"])
+        self.assertNotContains(response, reverse("accounts:onboarding"))
+
+
+class EmptyAndLoadingStateTests(LearningTestCase):
+    """T3.3 — partial empty_state dùng chung + nút có data-loading-text."""
+
+    def test_review_page_without_history_uses_the_shared_empty_state(self):
+        response = self.client.get(reverse("learning:review"))
+        self.assertTemplateUsed(response, "partials/empty_state.html")
+        self.assertContains(response, "empty-state")
+
+    def test_daily_button_has_a_loading_text(self):
+        self._make_topic("A", "a", ["あ"])
+        self.assertContains(self.client.get(reverse("learning:dashboard")), "data-loading-text")
+
+
+class NavigationTests(LearningTestCase):
+    """T3.4 — badge số từ đến hạn ở sidebar + tiêu đề trang dùng chung."""
+
+    def test_sidebar_badge_shows_due_words(self):
+        topic = self._make_topic("A", "a", ["あ", "い"])
+        for vocab in topic.vocabularies.all():
+            self._progress(vocab, due_offset=-1)
+        response = self.client.get(reverse("vocabulary:index"))
+        self.assertContains(response, '<span class="nav-badge"', count=1)
+        self.assertEqual(str(response.context["due_badge"]), "2")
+
+    def test_badge_is_cached_but_refreshed_after_grading(self):
+        topic = self._make_topic("A", "a", ["あ"])
+        progress = self._progress(topic.vocabularies.get(), due_offset=-1)
+        self.assertEqual(services.get_due_badge_count(self.user), 1)
+        # Đổi thẳng DB: cache vẫn giữ số cũ (tối đa 60 giây)...
+        UserVocabularyProgress.objects.filter(pk=progress.pk).update(
+            next_review_date=self.user.local_today() + timedelta(days=9)
+        )
+        self.assertEqual(services.get_due_badge_count(self.user), 1)
+        # ...nhưng chấm một từ thì xoá cache ngay.
+        progress.refresh_from_db()
+        services.review_word(progress, 5)
+        self.assertEqual(services.get_due_badge_count(self.user), 0)
+
+    def test_no_badge_when_nothing_is_due(self):
+        self.assertNotContains(self.client.get(reverse("learning:review")), '<span class="nav-badge"')
+
+    def test_pages_share_the_page_header_with_a_breadcrumb(self):
+        for name in ("learning:review", "vocabulary:index", "accounts:settings"):
+            with self.subTest(page=name):
+                response = self.client.get(reverse(name))
+                self.assertTemplateUsed(response, "partials/page_header.html")
+                self.assertContains(response, 'class="eyebrow page-crumbs"')

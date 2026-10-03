@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 {% load properties_tags mastercode_tags %}
 {% comment %}SC03_TrangChu — port từ htmlTemplate/SC03_TrangChu_*.html.
-Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endcomment %}
+Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.
+
+03/10/2026 (spec.md T3.1): trang chủ chỉ còn MỘT nút chính "Học hôm nay" —
+hàng đợi gom từ đến hạn của mọi chủ đề + từ mới trong hạn mức. Khối "Tiếp tục
+học chủ đề X" và thẻ "Ôn tập hôm nay" đã gỡ; muốn học riêng một chủ đề thì
+vào SC05.{% endcomment %}
 
 {% block title %}{% label "common.nav.home" %} | {% label "common.brand.name" %}{% endblock %}
 
@@ -10,6 +15,42 @@ Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endco
   <h1 class="serif fs-32 m-0 mb-28">
     {% message "learning.dashboard.greeting" name=display_name %}
   </h1>
+
+  {% if show_onboarding %}
+    {% comment %}spec.md T3.2 — chưa có tiến độ lẫn phiên học nào (vd bấm "Bỏ qua"
+    ở màn hướng dẫn) thì mời quay lại đó. Tự biến mất sau lần chấm đầu tiên.{% endcomment %}
+    <div class="flash onboarding-nudge">
+      <span>{% message "learning.dashboard.hint.onboarding" %}</span>
+      <a class="btn btn-outline btn-sm" href="{% url 'accounts:onboarding' %}">{% label "learning.dashboard.button.onboarding" %}</a>
+    </div>
+  {% endif %}
+
+  {# --- Nút chính "Học hôm nay" --- #}
+  <div class="card stamp daily-hero mb-28">
+    <div class="daily-hero-main">
+      <div class="eyebrow">{% label "learning.daily.eyebrow" %}</div>
+      {% if daily.total %}
+        <h2 class="serif m-0">{% message "learning.daily.hint.summary" due=daily.due new=daily.new minutes=daily.minutes %}</h2>
+      {% else %}
+        <h2 class="serif m-0 mb-6">{% label "learning.daily.title.done" %}</h2>
+        <p class="muted m-0">
+          {% if daily.due_tomorrow %}
+            {% message "learning.daily.hint.due_tomorrow" count=daily.due_tomorrow %}
+          {% else %}
+            {% message "learning.daily.hint.nothing_tomorrow" %}
+          {% endif %}
+        </p>
+      {% endif %}
+    </div>
+    {% if daily.total %}
+      <form method="post" action="{% url 'learning:daily_start' %}" class="m-0">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary btn-lg" data-loading-text="{% label 'common.loading' %}">{% label "learning.daily.button.start" %}</button>
+      </form>
+    {% else %}
+      <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "learning.daily.link.more_new" %}</a>
+    {% endif %}
+  </div>
 
   <div class="grid cols-3 mb-28">
     <div class="stat">
@@ -23,58 +64,6 @@ Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endco
     <div class="stat">
       <div class="num">{{ stats.due_today }}</div>
       <div class="label">{% label "learning.dashboard.stat.due_today" %}</div>
-    </div>
-  </div>
-
-  <div class="grid cols-2">
-    {# --- Thẻ "Tiếp tục học" --- #}
-    <div class="card stamp">
-      <div class="eyebrow">{% label "learning.dashboard.section.continue" %}</div>
-      {% if in_progress %}
-        <h3 class="serif m-0 mb-6">{{ in_progress.topic.icon_emoji }} {{ in_progress.topic.display_name }}</h3>
-        <p class="muted m-0 mb-18">
-          {% message "learning.dashboard.hint.topic_progress" learned=in_progress.learned total=in_progress.total %}
-        </p>
-        <div class="progressbar mb-20"><span style="width:{{ in_progress.percent }}%"></span></div>
-        {% if in_progress.new_limit_reached %}
-          {% comment %}Còn từ chưa học nhưng đã hết hạn mức từ mới hôm nay — "Học tiếp"
-          có thể chỉ ra màn "đã ôn xong", nên nói rõ và cho học thêm luôn.{% endcomment %}
-          <p class="muted card-note">{% message "learning.dashboard.hint.new_limit_reached" count=in_progress.unseen %}</p>
-          <div class="toolbar">
-            <form method="post" action="{% url 'learning:flashcard_more_new' in_progress.topic.slug %}" class="m-0">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-primary">{% message "learning.flashcard.button.more_new" count=in_progress.extra_count %}</button>
-            </form>
-            <a class="btn btn-outline" href="{% url 'learning:flashcard' in_progress.topic.slug %}">{% label "learning.dashboard.button.continue_learning" %}</a>
-          </div>
-        {% else %}
-          <a class="btn btn-primary" href="{% url 'learning:flashcard' in_progress.topic.slug %}">{% label "learning.dashboard.button.continue_learning" %}</a>
-        {% endif %}
-      {% else %}
-        <p class="muted m-0 mb-18">{% message "learning.dashboard.hint.no_topic_in_progress" %}</p>
-        <a class="btn btn-primary" href="{% url 'vocabulary:index' %}">{% label "learning.dashboard.button.browse_vocabulary" %}</a>
-      {% endif %}
-    </div>
-
-    {# --- Thẻ "Ôn tập hôm nay" --- #}
-    <div class="card">
-      <div class="eyebrow">{% label "learning.dashboard.section.review_due" %}</div>
-      {% if due_count %}
-        <h3 class="serif m-0 mb-6">{% message "learning.dashboard.hint.review_due" count=due_count %}</h3>
-        <p class="muted m-0 mb-18">{% message "learning.dashboard.hint.review_due_desc" %}</p>
-        {% if in_progress %}
-          <a class="btn btn-outline" href="{% url 'learning:quiz' in_progress.topic.slug %}">{% label "learning.dashboard.button.start_quiz" %}</a>
-        {% else %}
-          <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "learning.dashboard.button.browse_vocabulary" %}</a>
-        {% endif %}
-      {% else %}
-        {% comment %}Trước đây chỗ này in thẳng {{ daily_goal }} — một con số không nhãn,
-           đọc lên không hiểu là gì. Mục tiêu mỗi ngày thuộc về màn Cài đặt,
-           không phải tiêu đề của thẻ này.{% endcomment %}
-        <h3 class="serif m-0 mb-6">{% label "learning.dashboard.title.all_caught_up" %}</h3>
-        <p class="muted m-0 mb-18">{% message "learning.dashboard.hint.no_review_due" %}</p>
-        <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "learning.dashboard.button.browse_vocabulary" %}</a>
-      {% endif %}
     </div>
   </div>
 
@@ -92,6 +81,6 @@ Số liệu do apps.learning.services tính, view chỉ chuyển tiếp.{% endco
       {% endfor %}
     </div>
   {% else %}
-    <p class="muted">{% label "common.empty.no_data" %}</p>
+    {% include "partials/empty_state.html" with icon="📚" title_key="learning.empty.no_topics.title" text_key="learning.empty.no_topics.text" %}
   {% endif %}
 {% endblock %}

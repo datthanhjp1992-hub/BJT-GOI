@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}Hướng dẫn lần đầu (spec.md T3.2, 03/10/2026) — đăng ký xong là tới đây.
+
+Hai bước nằm trong MỘT form POST (tắt JS vẫn chạy): chọn mục tiêu mỗi ngày
+(MasterCode "19") rồi chọn một chủ đề. "Bắt đầu học" -> SC04 của chủ đề đó.
+Lưới chủ đề lặp qua form.topic (radio thật); emoji + số từ lấy từ
+choice.data.value.instance — queryset đã annotate word_count ở
+apps.learning.services.get_startable_topics().{% endcomment %}
+
+{% block title %}{% label "accounts.onboarding.title" %} | {% label "common.brand.name" %}{% endblock %}
+{% block wrap_class %} wrap-md{% endblock %}
+
+{% block content %}
+  {% label "accounts.onboarding.eyebrow" as eyebrow %}{% label "accounts.onboarding.title" as title %}
+  {% label "accounts.onboarding.subtitle" as subtitle %}
+  {% include "partials/page_header.html" with eyebrow=eyebrow title=title subtitle=subtitle no_crumbs=True %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="card mb-20">
+      <h3 class="serif m-0 mb-6"><span class="onboarding-step">1</span>{{ form.daily_goal.label }}</h3>
+      <p class="muted m-0 mb-18 text-sm">{% label "accounts.onboarding.hint.goal" %}</p>
+      <div class="onboarding-goals">
+        {% for choice in form.daily_goal %}
+          <label class="choice-card">
+            <span class="choice-name">{{ choice.tag }}<strong>{{ choice.choice_label }}</strong></span>
+          </label>
+        {% endfor %}
+      </div>
+      {% for error in form.daily_goal.errors %}<p class="error">{{ error }}</p>{% endfor %}
+    </div>
+
+    <div class="card mb-20">
+      <h3 class="serif m-0 mb-18"><span class="onboarding-step">2</span>{{ form.topic.label }}</h3>
+      {% if form.topic.field.queryset %}
+        <div class="onboarding-topics">
+          {% for choice in form.topic %}
+            {% with topic=choice.data.value.instance %}
+              <label class="choice-card">
+                <span class="choice-name">{{ choice.tag }}<strong>{{ topic.icon_emoji }} {{ topic.display_name }}</strong></span>
+                <span class="muted text-sm">{% message "vocabulary.topic.hint.word_count" count=topic.word_count %}</span>
+              </label>
+            {% endwith %}
+          {% endfor %}
+        </div>
+      {% else %}
+        {% include "partials/empty_state.html" with icon="📚" title_key="learning.empty.no_topics.title" text_key="learning.empty.no_topics.text" compact=True %}
+      {% endif %}
+      {% for error in form.topic.errors %}<p class="error">{{ error }}</p>{% endfor %}
+    </div>
+
+    <div class="toolbar">
+      <button type="submit" class="btn btn-primary btn-lg" data-loading-text="{% label 'common.loading' %}">{% label "accounts.onboarding.button.start" %}</button>
+      <a class="muted" href="{% url 'learning:dashboard' %}">{% label "accounts.onboarding.link.skip" %}</a>
+    </div>
+  </form>
+{% endblock %}

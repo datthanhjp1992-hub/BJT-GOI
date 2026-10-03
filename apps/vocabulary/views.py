@@ -32,6 +32,7 @@ from django.http import QueryDict
 from django.shortcuts import get_object_or_404, render
 
 from apps.core import pagination
+from apps.core.properties import label
 from apps.core.utils import TOPIC_PARAM, topic_filter_bar
 from apps.learning.models import UserVocabularyProgress
 
@@ -144,6 +145,11 @@ def vocabulary_list_view(request, topic_slug=None):
         "topic": only_topic,  # tương thích ngược: template/test cũ đọc biến này
         "topics": all_topics,
         "selected_topics": selected_topics,
+        # Tiêu đề trang (partials/page_header.html nhận chuỗi): tên các chủ đề
+        # đang lọc, không lọc chủ đề nào thì "Tất cả từ vựng".
+        "page_title": " + ".join(
+            f"{t.icon_emoji} {t.display_name}".strip() for t in selected_topics
+        ) or label("vocabulary.list.title.all"),
         "topic_filters": topic_filters,
         "clear_query": clear_query,
         "query": query,

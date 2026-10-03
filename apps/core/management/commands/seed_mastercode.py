@@ -16,6 +16,7 @@ from django.db import transaction
 from apps.core.constants import (
     CODE_TYPE_UI_THEME,
     CODE_TYPE_COLOR_SCHEME,
+    CODE_TYPE_DAILY_GOAL,
     CODE_TYPE_CONTRIBUTION_TYPE,
     CODE_TYPE_CONTRIBUTION_STATUS,
     CODE_TYPE_POINT_ACTION,
@@ -44,6 +45,13 @@ SEED_DATA = {
         ("auto", "Theo thiết bị", None, "Tự đổi theo cài đặt sáng/tối của máy", 1),
         ("light", "Sáng", None, "", 2),
         ("dark", "Tối", None, "", 3),
+    ],
+    # Màn hướng dẫn lần đầu (T3.2) — mã = số từ mới mỗi ngày (User.daily_review_goal).
+    CODE_TYPE_DAILY_GOAL: [
+        ("5", "5 từ — nhẹ nhàng", None, "", 1),
+        ("10", "10 từ — vừa sức", None, "", 2),
+        ("20", "20 từ — nghiêm túc", None, "", 3),
+        ("30", "30 từ — tăng tốc", None, "", 4),
     ],
     CODE_TYPE_SESSION_TYPE: [
         ("flashcard", "Flashcard", None, "Phiên học thẻ từ", 1),

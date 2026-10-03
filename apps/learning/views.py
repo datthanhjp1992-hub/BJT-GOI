@@ -41,8 +41,12 @@ def dashboard_view(request):
         "greeting_key": services.get_greeting_label_key(user),
         "display_name": (user.first_name or "").strip() or user.get_username(),
         "stats": stats,
-        "due_count": stats["due_today"],
-        "in_progress": services.get_topic_in_progress(user),
+        # spec.md T3.1: một nút chính "Học hôm nay" thay cho "Học tiếp chủ đề X".
+        "daily": services.get_daily_overview(user),
+        # spec.md T3.2: chưa học gì (không tiến độ, không phiên) -> mời mở lại
+        # màn hướng dẫn lần đầu. stats đã đếm tiến độ, không tốn thêm query đó.
+        "show_onboarding": not stats["words_started"]
+        and not StudySession.objects.filter(user=user).exists(),
         "suggested_topics": services.get_suggested_topics(user),
         "active_nav": "home",
     }
@@ -491,6 +495,7 @@ def undo_view(request):
     if entry["snap"] is None:
         if progress is not None:
             progress.delete()
+            services.invalidate_due_badge(request.user.pk)
     elif progress is not None:
         services.restore_progress(progress, entry["snap"])
 
@@ -857,6 +862,47 @@ def _scope_label(topics):
     return message("learning.study.scope.many", count=len(topics))
 
 
+def _start_study_session(request, queue, scope_label, topic=None, touch=True,
+                         mode=SESSION_TYPE_FLASHCARD):
+    """Chốt `queue` (list id) thành một phiên study_* mới.
+
+    Dùng chung cho mọi lối vào phiên theo hàng đợi: SC05 (`study_start_view`),
+    SC15 (`review_start_view`), "Ôn thêm" ở màn tổng kết (`study_retry_view`)
+    và "Học hôm nay" ở SC03 (`daily_start_view`). Phiên đang dở (nếu có) coi
+    như kết thúc tại đây — người dùng vừa chủ động chọn một tập từ khác.
+    `touch=False`: phiên "ôn thêm", chỉ ghi đúng/sai, không đẩy lịch SM-2.
+    """
+    _clear_study_session(request)
+    study_session = StudySession.objects.create(
+        user=request.user,
+        # Một chủ đề thì ghi nhận được vào lịch sử/streak theo chủ đề; nhiều
+        # chủ đề thì để trống (StudySession.topic cho phép null).
+        topic=topic,
+        session_type=mode,
+        started_at=timezone.now(),
+    )
+    request.session[STUDY_QUEUE_KEY] = queue
+    request.session[STUDY_LEARNING_KEY] = []
+    request.session[STUDY_TOTAL_KEY] = len(queue)
+    request.session[STUDY_SESSION_ID_KEY] = study_session.pk
+    request.session[STUDY_SCOPE_KEY] = scope_label
+    request.session[STUDY_TOUCH_SCHEDULE_KEY] = touch
+    request.session[STUDY_MODE_KEY] = mode
+    return study_session
+
+
+@login_required
+@require_POST
+def daily_start_view(request):
+    """Nút "Học hôm nay" ở SC03 — hàng đợi gom mọi chủ đề (spec.md T3.1)."""
+    queue = services.build_daily_queue(request.user)
+    if not queue:
+        flash.info(request, message("learning.daily.hint.nothing_left"))
+        return redirect("learning:dashboard")
+    _start_study_session(request, queue, message("learning.daily.scope"))
+    return redirect("learning:study")
+
+
 @login_required
 @require_POST
 def study_start_view(request):
@@ -880,26 +926,11 @@ def study_start_view(request):
         flash.error(request, message("learning.study.error.empty_queue"))
         return redirect("vocabulary:index")
 
-    # Phiên đang dở (nếu có) coi như kết thúc tại đây — người dùng vừa chủ
-    # động chọn một tập từ khác.
-    _clear_study_session(request)
-
-    study_session = StudySession.objects.create(
-        user=request.user,
-        # Một chủ đề thì ghi nhận được vào lịch sử/streak theo chủ đề; nhiều
-        # chủ đề thì để trống (StudySession.topic cho phép null).
-        topic=topics[0] if len(topics) == 1 else None,
-        session_type=SESSION_TYPE_FLASHCARD,
-        started_at=timezone.now(),
-    )
-    request.session[STUDY_QUEUE_KEY] = queue
-    request.session[STUDY_LEARNING_KEY] = []
-    request.session[STUDY_TOTAL_KEY] = len(queue)
-    request.session[STUDY_SESSION_ID_KEY] = study_session.pk
-    request.session[STUDY_SCOPE_KEY] = _scope_label(topics)
     # Phiên bắt đầu từ SC05 luôn là ôn "chính thức": chấm điểm và đẩy lịch.
-    request.session[STUDY_TOUCH_SCHEDULE_KEY] = True
-    request.session[STUDY_MODE_KEY] = SESSION_TYPE_FLASHCARD
+    _start_study_session(
+        request, queue, _scope_label(topics),
+        topic=topics[0] if len(topics) == 1 else None,
+    )
     return redirect("learning:study")
 
 
@@ -971,18 +1002,7 @@ def study_retry_view(request):
         flash.error(request, message("learning.study.error.empty_queue"))
         return redirect("learning:dashboard")
 
-    _clear_study_session(request)
-    study_session = StudySession.objects.create(
-        user=request.user, topic=None,
-        session_type=SESSION_TYPE_FLASHCARD, started_at=timezone.now(),
-    )
-    request.session[STUDY_QUEUE_KEY] = queue
-    request.session[STUDY_LEARNING_KEY] = []
-    request.session[STUDY_TOTAL_KEY] = len(queue)
-    request.session[STUDY_SESSION_ID_KEY] = study_session.pk
-    request.session[STUDY_SCOPE_KEY] = message("learning.study.scope.retry")
-    request.session[STUDY_TOUCH_SCHEDULE_KEY] = False
-    request.session[STUDY_MODE_KEY] = SESSION_TYPE_FLASHCARD
+    _start_study_session(request, queue, message("learning.study.scope.retry"), touch=False)
     return redirect("learning:study")
 
 
@@ -1121,19 +1141,12 @@ def review_start_view(request):
         flash.error(request, message("learning.review.error.empty_queue"))
         return redirect("learning:review")
 
-    _clear_study_session(request)
-    study_session = StudySession.objects.create(
-        user=request.user,
+    _start_study_session(
+        request, queue, _review_scope_label(scope, topics),
         topic=topics[0] if len(topics) == 1 else None,
-        session_type=mode,
-        started_at=timezone.now(),
+        touch=vocab_selectors.touches_schedule(scope),
+        mode=mode,
     )
-    request.session[STUDY_QUEUE_KEY] = queue
-    request.session[STUDY_TOTAL_KEY] = len(queue)
-    request.session[STUDY_SESSION_ID_KEY] = study_session.pk
-    request.session[STUDY_SCOPE_KEY] = _review_scope_label(scope, topics)
-    request.session[STUDY_TOUCH_SCHEDULE_KEY] = vocab_selectors.touches_schedule(scope)
-    request.session[STUDY_MODE_KEY] = mode
 
     if mode == SESSION_TYPE_QUIZ:
         return redirect("learning:study_quiz")

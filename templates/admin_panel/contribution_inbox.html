@@ -198,7 +198,7 @@ Khác mockup: bỏ ô "Cấp độ BJT" ở khối chi tiết (cấp độ đã 
 
       </div>
     {% else %}
-      <div class="card"><p class="muted" style="margin:0;">{% message "contribution.inbox.empty" %}</p></div>
+      {% include "partials/empty_state.html" with icon="📭" text_key="contribution.inbox.empty" %}
     {% endif %}
   </div>
 {% endblock %}

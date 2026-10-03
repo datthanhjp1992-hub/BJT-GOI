@@ -457,12 +457,12 @@ luồng nền đã phải tắt (25/09/2026) vì làm nghẽn server.
 - [x] T2.3 Dark mode (MasterCode "18")
 - [~] T2.4 Kiểm tra mobile — xong màn `learning`; các màn khác chờ chạy server (xem nhật ký)
 
-### Phase 3 — Luồng
+### Phase 3 — Luồng (code xong 03/10/2026 — chờ Dat chạy test trên DB thật)
 - [x] Duyệt các điểm cần chốt của T3.1
-- [ ] T3.1 Nút "Học hôm nay" + helper `_start_study_session` (bỏ link "Học tiếp chủ đề X")
-- [ ] T3.2 Onboarding (MasterCode "19")
-- [ ] T3.3 Empty state + loading state
-- [ ] T3.4 Badge sidebar + page header
+- [x] T3.1 Nút "Học hôm nay" + helper `_start_study_session` (bỏ link "Học tiếp chủ đề X")
+- [x] T3.2 Onboarding (MasterCode "19")
+- [x] T3.3 Empty state + loading state
+- [x] T3.4 Badge sidebar + page header — header áp cho các màn người học (xem ghi chú)
 
 ### Phase 4 — Hiệu năng
 - [ ] T4.1 Cron ngoài cho `/healthz/` (⏸ Dat nghiên cứu sau)
@@ -470,6 +470,32 @@ luồng nền đã phải tắt (25/09/2026) vì làm nghẽn server.
 - [ ] T4.2 `assertNumQueries` + giảm query
 
 ---
+
+### Ghi chú Phase 3 (03/10/2026) — để đối chiếu khi review
+- **T3.1** `services.build_daily_queue()` / `get_daily_overview()`; view `daily_start_view`
+  (`POST /learning/daily/start/`). `study_start_view`, `study_retry_view`, `review_start_view`
+  giờ cùng gọi `_start_study_session()` (sửa luôn chỗ `review_start_view` trước đây không
+  reset `study_learning`). Phiên "Học hôm nay" lưu `StudySession.topic = None`.
+  `get_topic_in_progress()` vẫn giữ (tách `_topic_in_progress()` cho hàng đợi dùng).
+  Gỡ 11 key label/message của khối "Học tiếp"/"Ôn tập hôm nay" không còn dùng.
+- **T3.2** `accounts:onboarding` + `OnboardingForm`; MasterCode "19" = 5/10/20/30 (mã = số từ,
+  chỉ seed — build.sh đã chạy `seed_mastercode`). Trang chủ hiện lời mời mở lại khi user
+  chưa có tiến độ lẫn phiên học.
+- **T3.3** `partials/empty_state.html` áp cho SC05, SC10, SC11 (góp ý của tôi), SC12 (hòm thư),
+  SC13, SC15. `data-loading-text` cho: "Học hôm nay", onboarding, tạo PDF SC10, xem trước +
+  xác nhận nhập dữ liệu SC07b. PDF kính ngữ (SC17 ôn tập, SC20 bài tập): theo yêu cầu Dat
+  03/10/2026, người học chọn **"Xem / in"** (mở tab mới, `inline`) hoặc **"⬇ Tải PDF về máy"**
+  (`?download=1` → `attachment`); link tải có trạng thái "Đang tải..." (main.js, khoá 4 giây).
+- **T3.4** Context processor `learning_badges` (lười, cache 60 giây/user, xoá cache khi chấm
+  / hoàn tác). Badge cùng định nghĩa "đến hạn" với SC15. `partials/page_header.html` áp cho
+  SC05, SC08, SC09, SC10, SC11, SC13, SC14 (form + của tôi), SC15, onboarding. **Chưa áp**:
+  SC03 (trang gốc, giữ lời chào), các màn học SC04/SC06, khu quản trị (header có nút bên phải)
+  và khu kính ngữ (layout riêng `kl-*`) — làm khi có yêu cầu.
+- Kiểm thử: 24 test mới (`DailyQueueTests`, `DailyStartViewTests`, `OnboardingNudgeTests`,
+  `EmptyAndLoadingStateTests`, `NavigationTests`, `OnboardingViewTests`). Máy dev không có
+  PostgreSQL nên đã chạy toàn bộ test trên SQLite tạm: 526 test, chỉ còn 8 lỗi CÓ SẴN từ
+  trước do SQLite thiếu `SIMILARITY`/`pg_extension` — cần Dat chạy lại trên DB thật.
+  Đã xem giao diện thật ở theme A, B (sáng) và C (tối), desktop + 375px: không tràn ngang.
 
 ## Các quyết định đã chốt (02/10/2026)
 

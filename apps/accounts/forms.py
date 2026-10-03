@@ -24,6 +24,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+from apps.core.constants import daily_goal_choices
 from apps.core.properties import label, message
 
 User = get_user_model()
@@ -329,3 +330,38 @@ class PasswordUpdateForm(PasswordChangeForm):
         for field in self.fields.values():
             field.help_text = ""
         _required_message(*self.fields.values())
+
+
+class OnboardingForm(forms.Form):
+    """Màn hướng dẫn lần đầu (spec.md T3.2) — 2 bước trong MỘT form POST.
+
+    1. Mục tiêu mỗi ngày: choices từ MasterCode code_type "19", mã = số từ
+       mới/ngày, ghi thẳng vào User.daily_review_goal.
+    2. Một chủ đề để bắt đầu — chỉ chủ đề có từ (chủ đề rỗng mở ra là màn
+       "đã học xong", vô nghĩa với người mới).
+
+    `topics` truyền từ view (đã annotate word_count để template in số từ),
+    form không tự truy vấn.
+    """
+
+    daily_goal = forms.ChoiceField(choices=(), widget=forms.RadioSelect)
+    topic = forms.ModelChoiceField(queryset=None, widget=forms.RadioSelect, empty_label=None)
+
+    def __init__(self, *args, topics, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["daily_goal"].choices = daily_goal_choices()
+        self.fields["daily_goal"].label = label("accounts.onboarding.section.goal")
+        self.fields["topic"].queryset = topics
+        self.fields["topic"].label = label("accounts.onboarding.section.topic")
+        _required_message(*self.fields.values())
+
+    def clean_daily_goal(self):
+        # Mã MasterCode do admin sửa được — chặn mã không phải số / ngoài
+        # khoảng SC08 cho phép, thay vì ghi bậy vào daily_review_goal.
+        raw = self.cleaned_data["daily_goal"]
+        if not raw.isdigit() or not DAILY_GOAL_MIN <= int(raw) <= DAILY_GOAL_MAX:
+            raise ValidationError(message(
+                "accounts.settings.validation.goal_range",
+                min=DAILY_GOAL_MIN, max=DAILY_GOAL_MAX,
+            ))
+        return int(raw)

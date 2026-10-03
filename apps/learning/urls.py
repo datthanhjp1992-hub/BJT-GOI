@@ -6,6 +6,8 @@ app_name = "learning"
 
 urlpatterns = [
     path("dashboard/", views.dashboard_view, name="dashboard"),
+    # Nút "Học hôm nay" của SC03 — hàng đợi gom mọi chủ đề, chạy bằng luồng study_*.
+    path("daily/start/", views.daily_start_view, name="daily_start"),
     path("flashcard/<slug:topic_slug>/", views.flashcard_view, name="flashcard"),
     path("flashcard/<slug:topic_slug>/more-new/", views.flashcard_more_new_view, name="flashcard_more_new"),
     path("flashcard/review/<int:vocabulary_id>/", views.flashcard_review, name="flashcard_review"),

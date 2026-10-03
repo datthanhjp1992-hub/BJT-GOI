@@ -20,6 +20,7 @@ from apps.learning import services as learning_services
 
 from .forms import (
     LoginForm,
+    OnboardingForm,
     PasswordUpdateForm,
     ProfileForm,
     RegisterForm,
@@ -71,7 +72,8 @@ def login_view(request):
 
 
 def register_view(request):
-    """SC02_DangKy. Đăng ký xong đăng nhập luôn, khỏi bắt nhập lại."""
+    """SC02_DangKy. Đăng ký xong đăng nhập luôn, khỏi bắt nhập lại, rồi sang
+    màn hướng dẫn lần đầu (spec.md T3.2)."""
     if request.user.is_authenticated:
         return redirect(DEFAULT_REDIRECT)
 
@@ -80,9 +82,33 @@ def register_view(request):
         user = form.save()
         login(request, user)
         flash.success(request, message("accounts.register.success"))
-        return redirect(DEFAULT_REDIRECT)
+        return redirect("accounts:onboarding")
 
     return render(request, "accounts/register.html", {"form": form})
+
+
+@login_required
+def onboarding_view(request):
+    """Hướng dẫn lần đầu (spec.md T3.2): chọn mục tiêu mỗi ngày + một chủ đề,
+    bấm "Bắt đầu" là vào thẳng SC04 của chủ đề đó.
+
+    Không có cờ "đã xem onboarding" trong DB: link "Bỏ qua" về trang chủ, và
+    trang chủ tự mời quay lại đây khi user chưa có tiến độ lẫn phiên học nào
+    (apps.learning.views.dashboard_view). Mở lại sau này vẫn dùng được — nó
+    chỉ đổi mục tiêu mỗi ngày, không xoá gì.
+    """
+    user = request.user
+    form = OnboardingForm(
+        request.POST or None,
+        topics=learning_services.get_startable_topics(),
+        initial={"daily_goal": str(user.daily_review_goal)},
+    )
+    if request.method == "POST" and form.is_valid():
+        user.daily_review_goal = form.cleaned_data["daily_goal"]
+        user.save(update_fields=["daily_review_goal", "updated_at", "updated_by"])
+        return redirect("learning:flashcard", topic_slug=form.cleaned_data["topic"].slug)
+
+    return render(request, "accounts/onboarding.html", {"form": form})
 
 
 @require_POST

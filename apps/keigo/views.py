@@ -209,12 +209,24 @@ def lesson_view(request, slug):
     return render(request, "keigo/lesson.html", context)
 
 
+# ?download=1 -> tra `attachment` (trinh duyet tai file ve may); khong co thi
+# `inline` (mo xem/in ngay trong tab moi). Nguoi hoc tu chon o SC17/SC20.
+PDF_DOWNLOAD_PARAM = "download"
+
+
+def _pdf_response(request, data, filename):
+    disposition = "attachment" if request.GET.get(PDF_DOWNLOAD_PARAM) == "1" else "inline"
+    response = HttpResponse(data, content_type="application/pdf")
+    response["Content-Disposition"] = f'{disposition}; filename="{filename}"'
+    return response
+
+
 @login_required
 def lesson_pdf_view(request, slug):
     """Nut "In on tap chuong nay" o SC17 -- PDF TOAN BO noi dung chuong.
 
-    GET, khong ghi gi vao DB nen la link <a> binh thuong. Tra `inline` de
-    trinh duyet mo san trong tab moi: xem, in giay hay luu file deu duoc.
+    GET, khong ghi gi vao DB nen la link <a> binh thuong. Mac dinh `inline`
+    (mo trong tab moi de xem/in); ?download=1 thi tai file ve may.
     Sinh moi moi lan (vai tram dong, duoi 1 giay), khong luu vao MEDIA_ROOT --
     MEDIA_ROOT tren Render la ephemeral, va du lieu sua qua SC07b thi PDF tu
     cap nhat theo."""
@@ -228,10 +240,7 @@ def lesson_pdf_view(request, slug):
         logger.exception("Thieu font khi sinh PDF on tap kinh ngu")
         flash.error(request, message("keigo.pdf.error.font_missing"))
         return redirect("keigo:lesson", slug=lesson.slug)
-    response = HttpResponse(data, content_type="application/pdf")
-    filename = keigo_pdf.lesson_pdf_filename(lesson, position + 1)
-    response["Content-Disposition"] = f'inline; filename="{filename}"'
-    return response
+    return _pdf_response(request, data, keigo_pdf.lesson_pdf_filename(lesson, position + 1))
 
 
 def _pitfall_url(view, check, query=""):
@@ -326,8 +335,8 @@ def exercise_list_view(request):
 def exercise_pdf_view(request, set_slug):
     """Nut "PDF" o SC20 -- de bai tap in ra giay, trang cuoi la dap an.
 
-    Giong lesson_pdf_view: GET khong ghi DB -> link <a>, tra `inline` de mo
-    trong tab moi, sinh moi moi lan (khong luu MEDIA_ROOT). Khong can da lam
+    Giong lesson_pdf_view: GET khong ghi DB -> link <a>, `inline` hoac
+    ?download=1 de tai ve, sinh moi moi lan (khong luu MEDIA_ROOT). Khong can da lam
     bai hay dang co luot do dang -- ai vao duoc SC20 cung in duoc."""
     exercise_set = get_object_or_404(ExerciseSet, slug=set_slug)
     questions = exercises.set_questions(exercise_set)
@@ -340,10 +349,7 @@ def exercise_pdf_view(request, set_slug):
         logger.exception("Thieu font khi sinh PDF bai tap kinh ngu")
         flash.error(request, message("keigo.exercise.pdf.error.font_missing"))
         return redirect("keigo:bai_tap")
-    response = HttpResponse(data, content_type="application/pdf")
-    filename = exercise_pdf.exercise_pdf_filename(exercise_set)
-    response["Content-Disposition"] = f'inline; filename="{filename}"'
-    return response
+    return _pdf_response(request, data, exercise_pdf.exercise_pdf_filename(exercise_set))
 
 
 @login_required

@@ -187,3 +187,14 @@ def color_scheme_choices():
 # code_type "17" TRỐNG: trước đây là chu kỳ tự ping keep-alive (phút). Gỡ ngày
 # 02/10/2026 cùng apps/core/keepalive.py — xem migration core/0004. Đừng tái
 # sử dụng "17" cho thứ khác, giống quy ước với "05".
+
+
+# --- Mục tiêu mỗi ngày ở màn hướng dẫn lần đầu (spec.md T3.2, 03/10/2026) ---
+# Mã chính là số từ mới/ngày (ghi thẳng vào User.daily_review_goal), nên phải
+# là số nguyên nằm trong DAILY_GOAL_MIN..MAX của apps/accounts/forms.py.
+CODE_TYPE_DAILY_GOAL = "19"
+
+
+def daily_goal_choices():
+    """Lựa chọn mục tiêu ở màn onboarding — tên hiển thị lấy từ MasterCode."""
+    return get_choices(CODE_TYPE_DAILY_GOAL)

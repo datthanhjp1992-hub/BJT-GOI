@@ -574,7 +574,78 @@ document.addEventListener("DOMContentLoaded", function () {
   initDropdowns();
   initPreviewTables();
   initAutoSubmit();
+  initLoadingButtons();
 });
+
+// ---------------------------------------------------------------------------
+// 7. Nút submit chạy lâu (spec.md T3.3): <button data-loading-text="Đang tải...">
+//    Bấm là đổi chữ + khoá nút, chặn lần submit thứ hai của cùng form (tạo PDF
+//    SC10, xuất PDF kính ngữ, nhập dữ liệu SC07b, "Học hôm nay"...).
+//
+//    - Khoá ở setTimeout(0): khoá ngay trong sự kiện submit thì trình duyệt
+//      có thể bỏ name/value của nút khỏi dữ liệu gửi đi.
+//    - Form trả về FILE tải xuống (PDF) thì trang không đổi -> tự mở khoá
+//      sau LOADING_RESET_MS. Quay lại bằng nút Back (bfcache) cũng mở khoá.
+//    - Form đã bị JS khác chặn (defaultPrevented, vd màn học gửi bằng fetch)
+//      thì bỏ qua. Tắt JavaScript: nút giữ nguyên, form gửi như thường.
+//    - Link TẢI FILE <a download data-loading-text> (PDF kính ngữ SC17/SC20):
+//      trang không đổi nên cũng đổi chữ + chặn bấm lặp, mở lại sau
+//      LINK_LOADING_RESET_MS (không biết chính xác lúc file tải xong).
+// ---------------------------------------------------------------------------
+var LOADING_RESET_MS = 15000;
+var LINK_LOADING_RESET_MS = 4000;
+
+function resetLoadingButton(button) {
+  if (!button.classList.contains("is-loading")) { return; }
+  button.classList.remove("is-loading");
+  button.disabled = false;
+  button.removeAttribute("aria-busy");
+  if (button.tagName === "A") { button.removeAttribute("aria-disabled"); }
+  if (button.dataset.loadingOriginal !== undefined) {
+    button.textContent = button.dataset.loadingOriginal;
+  }
+  if (button.form) { delete button.form.dataset.submitting; }
+}
+
+function initLoadingButtons() {
+  document.addEventListener("submit", function (event) {
+    var form = event.target;
+    if (event.defaultPrevented || !(form instanceof HTMLFormElement)) { return; }
+    var button = event.submitter;
+    if (!button || !button.hasAttribute("data-loading-text")) {
+      button = form.querySelector("[data-loading-text]");
+    }
+    if (!button) { return; }
+    if (form.dataset.submitting) { event.preventDefault(); return; }
+    form.dataset.submitting = "1";
+    window.setTimeout(function () {
+      button.dataset.loadingOriginal = button.textContent;
+      button.textContent = button.getAttribute("data-loading-text");
+      button.classList.add("is-loading");
+      button.setAttribute("aria-busy", "true");
+      button.disabled = true;
+      window.setTimeout(function () { resetLoadingButton(button); }, LOADING_RESET_MS);
+    }, 0);
+  });
+  document.addEventListener("click", function (event) {
+    var link = event.target.closest && event.target.closest("a[data-loading-text]");
+    if (!link) { return; }
+    if (link.classList.contains("is-loading")) { event.preventDefault(); return; }
+    // Đổi chữ SAU khi trình duyệt đã nhận cú bấm (giống nút submit ở trên).
+    window.setTimeout(function () {
+      link.dataset.loadingOriginal = link.textContent;
+      link.textContent = link.getAttribute("data-loading-text");
+      link.classList.add("is-loading");
+      link.setAttribute("aria-busy", "true");
+      link.setAttribute("aria-disabled", "true");
+      window.setTimeout(function () { resetLoadingButton(link); }, LINK_LOADING_RESET_MS);
+    }, 0);
+  });
+  window.addEventListener("pageshow", function (event) {
+    if (!event.persisted) { return; }
+    document.querySelectorAll("[data-loading-text].is-loading").forEach(resetLoadingButton);
+  });
+}
 
 // ---------------------------------------------------------------------------
 // 4. Nút cần một ô bắt buộc mới bấm được (SC12: "Từ chối" phải có lý do).
