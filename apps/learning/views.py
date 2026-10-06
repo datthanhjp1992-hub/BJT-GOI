@@ -10,10 +10,14 @@ Flow ôn tập (26/09/2026, kiểu Anki — xem apps/learning/srs.py):
 
 Mọi truy vấn thống kê nằm ở `apps.learning.services`; view chỉ lắp context.
 """
+import json
+
 from django.contrib import messages as flash
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.cache import patch_vary_headers
@@ -479,11 +483,38 @@ def flashcard_review(request, vocabulary_id):
 @require_POST
 def undo_view(request):
     """Nút "Hoàn tác" — trả lần chấm gần nhất (của hôm nay) về như cũ."""
+    undone = _apply_undo(request)
+    if undone is None:
+        flash.info(request, message("learning.flashcard.error.nothing_to_undo"))
+        return redirect("learning:dashboard")
+
+    entry, session = undone
+    flow = entry.get("flow", "")
+    flash.info(request, message("learning.flashcard.success.undone", word=entry.get("word", "")))
+
+    if flow == FLOW_STUDY:
+        return redirect("learning:study")
+    topic_slug = entry.get("topic", "")
+    if topic_slug and Topic.objects.filter(slug=topic_slug).exists():
+        if session is not None:
+            _, session_id_key = _flashcard_session_keys(topic_slug)
+            request.session[session_id_key] = session.pk
+        return redirect("learning:flashcard", topic_slug=topic_slug)
+    request.session.pop(FORCE_KEY, None)
+    return redirect("learning:dashboard")
+
+
+def _apply_undo(request):
+    """Trả lần chấm trên cùng của ngăn hoàn tác (của hôm nay) về như cũ.
+
+    Dùng chung cho nút "Hoàn tác" (`undo_view`) và lệnh "undo" của
+    `study_sync_view`. Trả (entry, StudySession | None), hoặc None nếu không
+    còn gì để hoàn tác.
+    """
     stack = list(request.session.get(UNDO_KEY) or [])
     today = request.user.local_today().isoformat()
     if not stack or stack[-1].get("day") != today:
-        flash.info(request, message("learning.flashcard.error.nothing_to_undo"))
-        return redirect("learning:dashboard")
+        return None
 
     entry = stack.pop()
     request.session[UNDO_KEY] = stack
@@ -514,19 +545,9 @@ def undo_view(request):
 
     flow = entry.get("flow", "")
     request.session[FORCE_KEY] = {"vocab": vocab_id, "flow": flow}
-    flash.info(request, message("learning.flashcard.success.undone", word=entry.get("word", "")))
-
     if flow == FLOW_STUDY:
         _restore_study_state(request, entry, session)
-        return redirect("learning:study")
-    topic_slug = entry.get("topic", "")
-    if topic_slug and Topic.objects.filter(slug=topic_slug).exists():
-        if session is not None:
-            _, session_id_key = _flashcard_session_keys(topic_slug)
-            request.session[session_id_key] = session.pk
-        return redirect("learning:flashcard", topic_slug=topic_slug)
-    request.session.pop(FORCE_KEY, None)
-    return redirect("learning:dashboard")
+    return entry, session
 
 
 DISCUSSION_ANCHOR = "study-discussion"
@@ -699,6 +720,10 @@ STUDY_MODE_KEY = "study_mode"
 # Id các từ của phiên đang ở BƯỚC HỌC (quên / chưa qua hết bước) — chúng rời
 # STUDY_QUEUE_KEY nhưng phải quay lại sau vài phút, trước khi phiên kết thúc.
 STUDY_LEARNING_KEY = "study_learning"
+# {"sid": StudySession.pk, "seq": n} — số thứ tự lệnh cuối cùng study_sync_view
+# đã xử lý cho phiên đó. Lệnh gửi lại (mạng chập chờn, sendBeacon lúc đóng tab)
+# có seq <= n thì bỏ qua, không chấm hai lần (spec.md T4.3).
+STUDY_SEQ_KEY = "study_seq"
 
 
 def _clear_study_session(request):
@@ -708,6 +733,7 @@ def _clear_study_session(request):
     request.session.pop(STUDY_TOUCH_SCHEDULE_KEY, None)
     request.session.pop(STUDY_MODE_KEY, None)
     request.session.pop(STUDY_LEARNING_KEY, None)
+    request.session.pop(STUDY_SEQ_KEY, None)
     return _close_study_session(request, STUDY_SESSION_ID_KEY)
 
 
@@ -969,6 +995,7 @@ def study_view(request):
             session_id=request.session.get(STUDY_SESSION_ID_KEY),
         ),
     }
+    context["deck"] = _study_deck(request, word, scope_label)
     return _render_card(request, context)
 
 
@@ -980,6 +1007,236 @@ def study_review_view(request, vocabulary_id):
     quality = QUALITY_MAP.get(request.POST.get("quality"), 3)
     _grade_word(request, vocab, quality)
     return redirect("learning:study")
+
+
+# =============================================================================
+# Học liền mạch (spec.md T4.3, 06/10/2026)
+# -----------------------------------------------------------------------------
+# Trước đây mỗi lần chấm = POST study/review/<id>/ -> 302 -> GET study/, người
+# học chờ ~2,5 s (đo thật trên Render) mới thấy thẻ kế. Giờ study_view nhúng
+# sẵn BỘ THẺ (#study-deck, `_study_deck`) vào trang; static/js/study_deck.js
+# tự chọn thẻ kế theo đúng luật của `_next_queue_word`, hiện ngay, rồi gửi
+# ngầm các lệnh chấm/hoàn tác theo lô tới `study_sync_view`.
+#
+# Server vẫn là nơi giữ dữ liệu: lệnh "grade" gọi đúng `_grade_word`, lệnh
+# "undo" gọi đúng `_apply_undo` — không có logic chấm thứ hai. JS gửi LẦN
+# LƯỢT (một request mỗi lúc) vì session lưu trong DB: hai request ghi session
+# cùng lúc sẽ đè mất hàng đợi của nhau. Tắt JS: form cũ chạy y như trước.
+# =============================================================================
+
+# Số thẻ nhúng sẵn trong trang / tải thêm mỗi lần (study_cards_view).
+DECK_BATCH = 50
+# Chặn trên số lệnh trong một lô gửi lên study_sync_view.
+SYNC_OPS_MAX = 200
+
+
+def _card_previews(request, progress):
+    """Khoảng cách ôn lại dưới 4 nút cho MỘT thẻ — cùng điều kiện hiện với
+    `_card_context` (tuỳ chọn SC08 + không phải lượt "ôn thêm"). None = ẩn."""
+    if not (getattr(request.user, "show_review_interval", False) and _touches_schedule(request)):
+        return None
+    previews = services.grade_previews(progress)
+    return {code: _delay_text(previews[QUALITY_MAP[code]]) for code, *_ in GRADE_BUTTONS}
+
+
+def _study_cards_json(request, vocabulary_ids):
+    """{"<id>": thẻ} cho bộ thẻ nhúng. Mặt sau (chủ đề + ví dụ) render sẵn
+    bằng chính template của trang để JS không phải chứa chuỗi hiển thị nào."""
+    cards = {}
+    for card in services.get_study_cards(request.user, vocabulary_ids):
+        word = card.word
+        cards[str(word.pk)] = {
+            "id": word.pk,
+            "word": word.word,
+            "reading": word.reading,
+            "meaning": word.meaning_vi,
+            "state": card.progress.card_state if card.progress else srs.NEW,
+            "comments": card.comment_count,
+            "extra": render_to_string(
+                "learning/_card_extra.html", {"word": word, "examples": card.examples}
+            ),
+            "previews": _card_previews(request, card.progress),
+        }
+    return cards
+
+
+def _undo_payload(request):
+    entry = _last_undo(request, FLOW_STUDY)
+    return {"vocab": entry["vocab"], "word": entry.get("word", "")} if entry else None
+
+
+def _study_seq(request, session_id):
+    data = request.session.get(STUDY_SEQ_KEY) or {}
+    return data.get("seq", 0) if session_id and data.get("sid") == session_id else 0
+
+
+def _study_deck(request, word, scope_label):
+    """Bộ thẻ nhúng vào trang học (spec.md T4.3) — trạng thái phiên y như
+    request.session đang giữ + dữ liệu của tối đa DECK_BATCH thẻ sắp gặp."""
+    session_id = request.session.get(STUDY_SESSION_ID_KEY)
+    queue = list(request.session.get(STUDY_QUEUE_KEY) or [])
+    learning_ids = request.session.get(STUDY_LEARNING_KEY) or []
+    now = timezone.now()
+    rows = []
+    if learning_ids:
+        rows = UserVocabularyProgress.objects.filter(
+            user=request.user, vocabulary_id__in=learning_ids,
+            card_state__in=srs.IN_SESSION_STATES,
+        ).values_list("vocabulary_id", "due_at")
+    learning = sorted(rows, key=lambda row: (row[1] or now, row[0]))
+    upcoming = list(dict.fromkeys([word.pk, *queue, *(vid for vid, _ in learning)]))
+    return {
+        "session": session_id,
+        "seq": _study_seq(request, session_id),
+        "now": now.isoformat(),
+        "current": word.pk,
+        "total": request.session.get(STUDY_TOTAL_KEY) or 0,
+        "touch": _touches_schedule(request),
+        "queue": queue,
+        "learning": [
+            {"id": vid, "due": due.isoformat() if due else None} for vid, due in learning
+        ],
+        "seen": sorted(_first_grades(request, session_id)),
+        "undo": _undo_payload(request),
+        "cards": _study_cards_json(request, upcoming[:DECK_BATCH]),
+        "qualities": QUALITY_MAP,
+        "urls": {
+            "sync": reverse("learning:study_sync"),
+            "cards": reverse("learning:study_cards"),
+            "discussion": reverse("learning:study_discussion", args=[0]),
+            "review": reverse("learning:study_review", args=[0]),
+            "panel": reverse("learning:study"),
+        },
+        # Mẫu câu có chỗ trống {...} — JS chỉ điền số, không tự ghép chữ.
+        "text": {
+            "progress": message(
+                "learning.flashcard.hint.progress",
+                topic=scope_label, seen="{seen}", total="{total}", done="{done}",
+            ),
+            "undo": message("learning.flashcard.button.undo_word", word="{word}"),
+            "ahead": message("learning.flashcard.hint.learn_ahead", minutes="{minutes}"),
+            "discussion": "💬 " + label("learning.flashcard.section.discussion") + " ({count})",
+            "states": {state: label(f"learning.flashcard.state.{state}") for state in srs.CARD_STATES},
+        },
+    }
+
+
+def _study_card_status(request, vocabulary_ids):
+    """Trạng thái sau khi chấm của các thẻ vừa đụng tới: còn ở bước học không
+    (quay lại trong phiên) và tới hạn lúc nào — đúng nguồn mà
+    `_next_queue_word` dùng để xếp thẻ."""
+    learning = set(request.session.get(STUDY_LEARNING_KEY) or [])
+    rows = {
+        p.vocabulary_id: p
+        for p in UserVocabularyProgress.objects.filter(
+            user=request.user, vocabulary_id__in=vocabulary_ids
+        )
+    }
+    status = {}
+    for vid in vocabulary_ids:
+        progress = rows.get(vid)
+        state = progress.card_state if progress else srs.NEW
+        in_learning = vid in learning and state in srs.IN_SESSION_STATES
+        due = progress.due_at if (in_learning and progress) else None
+        status[str(vid)] = {
+            "state": state,
+            "learning": in_learning,
+            "due": due.isoformat() if due else None,
+            "previews": _card_previews(request, progress),
+        }
+    return status
+
+
+def _parse_sync_payload(request):
+    """(session_id, [(seq, op, vocab_id, quality)]) từ field `payload` (JSON).
+    Gửi dạng form (không phải JSON thô) để sendBeacon mang được csrf token."""
+    payload = json.loads(request.POST.get("payload") or "{}")
+    session_id = int(payload.get("session") or 0)
+    ops = []
+    for raw in list(payload.get("ops") or [])[:SYNC_OPS_MAX]:
+        ops.append((int(raw["seq"]), str(raw["op"]), int(raw["vocab"]), raw.get("quality")))
+    ops.sort(key=lambda op: op[0])
+    return session_id, ops
+
+
+@require_POST
+def study_sync_view(request):
+    """Nhận một lô lệnh chấm/hoàn tác của phiên đang mở, trả JSON.
+
+    * 401 nếu hết phiên đăng nhập (không redirect sang trang login như
+      @login_required — fetch() sẽ đi theo redirect và nhận về HTML).
+    * 409 nếu `session` không phải phiên đang mở (đã bắt đầu phiên khác ở tab
+      khác, hoặc phiên đã kết thúc) — JS tải lại màn học.
+    * Lệnh có seq <= seq đã xử lý thì bỏ qua (gửi lại sau lỗi mạng).
+    * "undo" không khớp mục trên cùng của ngăn hoàn tác -> dừng, `resync`
+      = true: JS bỏ các lệnh còn lại và tải lại màn học theo server.
+    """
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "auth", "login": reverse("accounts:login")}, status=401)
+    try:
+        session_id, ops = _parse_sync_payload(request)
+    except (ValueError, TypeError, KeyError, AttributeError):
+        return JsonResponse({"error": "bad_request"}, status=400)
+    current = request.session.get(STUDY_SESSION_ID_KEY)
+    if not current or session_id != current:
+        return JsonResponse({"error": "session"}, status=409)
+
+    last = _study_seq(request, current)
+    touched, missing, resync = [], [], False
+    for seq, kind, vocab_id, quality in ops:
+        if seq <= last:
+            continue
+        last = seq
+        if kind == "grade":
+            vocab = Vocabulary.objects.filter(pk=vocab_id).first()
+            if vocab is None:
+                missing.append(vocab_id)
+                continue
+            _grade_word(request, vocab, QUALITY_MAP.get(quality, 3))
+        elif kind == "undo":
+            entry = _last_undo(request, FLOW_STUDY)
+            if entry is None or entry["vocab"] != vocab_id:
+                resync = True
+                break
+            _apply_undo(request)
+        else:
+            resync = True
+            break
+        touched.append(vocab_id)
+    request.session[STUDY_SEQ_KEY] = {"sid": current, "seq": last}
+
+    return JsonResponse({
+        "seq": last,
+        "now": timezone.now().isoformat(),
+        "cards": _study_card_status(request, list(dict.fromkeys(touched))),
+        "missing": missing,
+        "undo": _undo_payload(request),
+        "resync": resync,
+    })
+
+
+@login_required
+def study_cards_view(request):
+    """Tải thêm thẻ cho bộ thẻ nhúng: ?ids=1,2,3 (tối đa DECK_BATCH). Id của
+    từ đã bị xoá không có trong kết quả — JS bỏ qua thẻ đó."""
+    ids = []
+    for part in (request.GET.get("ids") or "").split(",")[:DECK_BATCH]:
+        if part.strip().isdigit():
+            ids.append(int(part))
+    return JsonResponse({"cards": _study_cards_json(request, ids)})
+
+
+@login_required
+def study_discussion_view(request, vocabulary_id):
+    """Thân khu thảo luận của một từ — tải khi người học mở khu này ở thẻ đã
+    chuyển bằng JS (bộ thẻ nhúng không mang bình luận)."""
+    word = get_object_or_404(Vocabulary, pk=vocabulary_id)
+    return render(request, "learning/_card_discussion_body.html", {
+        "word": word,
+        "comments": gamification_services.get_vocabulary_comments(word),
+        "topic_slug_value": "",
+        "discussion_next": reverse("learning:study"),
+    })
 
 
 @login_required

@@ -27,6 +27,12 @@ fetch T1.2) — đổi tên ở đây phải đổi bên đó:
   data-undo           nút hoàn tác (phím Z)
   data-examples       khối ví dụ câu (phím E)
   data-shortcut-*     bảng phím tắt (phím ?)
+
+Phiên theo hàng đợi (study_view) còn có `deck` (spec.md T4.3): bộ thẻ nhúng
+#study-deck cho static/js/study_deck.js — chấm xong hiện thẻ kế ngay, không
+chờ server. JS đổi nội dung qua các móc: data-state-tag, data-repeat-tag,
+data-card-extra, data-ahead-note, data-sync-offline, data-undo-form /
+data-undo-text, data-discussion-toggle / data-discussion-body.
 {% endcomment %}
 {% if is_partial %}{% include "partials/messages.html" %}{% endif %}
 
@@ -63,14 +69,18 @@ fetch T1.2) — đổi tên ở đây phải đổi bên đó:
   {% if is_extra_review %}
     <p class="muted study-note">{% message "learning.review.hint.extra_review" %}</p>
   {% endif %}
-  {% if ahead_minutes %}
+  {% if deck %}
+    {% comment %}Phiên có bộ thẻ: khối luôn có mặt để study_deck.js bật/tắt.{% endcomment %}
+    <p class="muted study-note" data-ahead-note{% if not ahead_minutes %} hidden{% endif %}>{% if ahead_minutes %}{% message "learning.flashcard.hint.learn_ahead" minutes=ahead_minutes %}{% endif %}</p>
+    <p class="study-sync-note" data-sync-offline role="status" hidden>{% message "learning.study.sync.offline" %}</p>
+  {% elif ahead_minutes %}
     <p class="muted study-note">{% message "learning.flashcard.hint.learn_ahead" minutes=ahead_minutes %}</p>
   {% endif %}
 
   <div class="study-card">
     <div class="flashcard" data-flashcard tabindex="0" role="button" aria-label="{% label 'learning.flashcard.button.reveal' %}">
       <div class="flashcard-tags">
-        <span class="tag{% if card_state != "review" %} level{% endif %}">{% label card_state_key %}</span>{% if is_repeat %}<span class="tag">↻ {% label "learning.flashcard.state.repeat" %}</span>{% endif %}
+        <span class="tag{% if card_state != "review" %} level{% endif %}" data-state-tag>{% label card_state_key %}</span>{% if deck %}<span class="tag" data-repeat-tag{% if not is_repeat %} hidden{% endif %}>↻ {% label "learning.flashcard.state.repeat" %}</span>{% elif is_repeat %}<span class="tag">↻ {% label "learning.flashcard.state.repeat" %}</span>{% endif %}
       </div>
       <div class="jp">{{ word.word }}</div>
       <div class="reading{% if not show_reading_on_front %} back-only{% endif %}">{{ word.reading }}</div>
@@ -86,25 +96,7 @@ fetch T1.2) — đổi tên ở đây phải đổi bên đó:
     </div>
 
     <div class="after-reveal">
-      {% if word.topics.all %}
-        <p class="muted study-topics">
-          {% for t in word.topics.all %}<span class="tag">{{ t.name_ja|default:t.name }}</span> {% endfor %}
-        </p>
-      {% endif %}
-
-      {% if examples %}
-        <details class="study-examples" data-examples>
-          <summary class="btn btn-outline btn-block">
-            📖 {% label "learning.flashcard.button.view_example" %} <kbd class="kbd">E</kbd>
-          </summary>
-          <div class="card study-examples-body">
-            {% for ex in examples %}
-              <p class="study-example-jp">{{ ex.sentence_jp }}</p>
-              <p class="muted study-example-vi">{{ ex.sentence_vi }}</p>
-            {% endfor %}
-          </div>
-        </details>
-      {% endif %}
+      <div data-card-extra>{% include "learning/_card_extra.html" %}</div>
 
       <p class="muted study-prompt">{% label "learning.flashcard.prompt.recall_level" %}</p>
       {% comment %}Dưới mỗi nút là khoảng cách ôn lại nếu bấm nút đó (tuỳ chọn
@@ -127,10 +119,10 @@ fetch T1.2) — đổi tên ở đây phải đổi bên đó:
   </div>
 
   <div class="study-tools">
-    {% if undo_word %}
-      <form method="post" action="{% url 'learning:undo' %}" data-card-ajax>
+    {% if undo_word or deck %}
+      <form method="post" action="{% url 'learning:undo' %}" data-card-ajax data-undo-form{% if not undo_word %} hidden{% endif %}>
         {% csrf_token %}
-        <button type="submit" class="btn btn-outline btn-sm" data-undo>{% message "learning.flashcard.button.undo_word" word=undo_word %} <kbd class="kbd">Z</kbd></button>
+        <button type="submit" class="btn btn-outline btn-sm" data-undo><span data-undo-text>{% if undo_word %}{% message "learning.flashcard.button.undo_word" word=undo_word %}{% endif %}</span> <kbd class="kbd">Z</kbd></button>
       </form>
     {% endif %}
     <button type="button" class="link-button muted shortcut-open" data-shortcut-open>⌨ {% label "learning.flashcard.link.shortcuts" %} <kbd class="kbd">?</kbd></button>
@@ -153,51 +145,17 @@ fetch T1.2) — đổi tên ở đây phải đổi bên đó:
   màn hình chỉ còn thẻ và 4 nút chấm. Hai form bình luận/xoá vẫn gửi thường
   (không fetch) vì chúng không đổi thẻ đang học.{% endcomment %}
   <details class="study-discussion after-reveal" id="study-discussion">
-    <summary class="study-discussion-toggle">💬 {% label "learning.flashcard.section.discussion" %} ({{ comments|length }})</summary>
-    <div class="study-discussion-body">
-      <div class="toolbar study-discussion-actions">
-        <a class="btn btn-outline btn-sm" href="{% url 'gamification:form' %}?type=meaning&vocabulary={{ word.pk }}">{% label "contribution.form.link.suggest" %}</a>
-        <a class="btn btn-outline btn-sm" href="{% url 'error_reports:create' %}?vocabulary={{ word.pk }}">{% label "error_report.form.link.report" %}</a>
-      </div>
-
-      <h3 class="serif study-discussion-title">{% label "learning.flashcard.section.comments" %}</h3>
-      {% if comments %}
-        <div class="comment-list">
-          {% for c in comments %}
-            <div class="card comment-card">
-              <div class="comment-head">
-                <strong>{{ c.user.first_name|default:c.user.get_username }}</strong>
-                <span class="comment-meta">
-                  <span class="muted">{{ c.created_at|date:"d/m/Y H:i" }}</span>
-                  {% comment %}Nút xoá: người viết hoặc staff (hậu kiểm, vì
-                  bình luận đăng thẳng không qua duyệt).{% endcomment %}
-                  {% if c.user_id == request.user.pk or request.user.is_staff %}
-                    <form method="post" action="{% url 'gamification:comment_delete' c.pk %}">
-                      {% csrf_token %}
-                      <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                      <button type="submit" class="btn btn-outline btn-xs">{% label "common.button.delete" %}</button>
-                    </form>
-                  {% endif %}
-                </span>
-              </div>
-              <p class="comment-text">{{ c.comment_text }}</p>
-            </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p class="muted">{% message "learning.flashcard.hint.no_comments_yet" %}</p>
-      {% endif %}
-
-      <form method="post" action="{% url 'learning:flashcard_comment' word.pk %}" class="card comment-form">
-        {% csrf_token %}
-        <input type="hidden" name="topic_slug" value="{{ topic_slug_value }}">
-        <label for="id_comment_text">{% label "learning.flashcard.field.new_comment" %}</label>
-        <input type="text" id="id_comment_text" name="comment_text" maxlength="1000" required>
-        <button type="submit" class="btn btn-primary btn-sm">{% label "learning.flashcard.button.submit_comment" %}</button>
-        <p class="muted comment-note">{% message "learning.flashcard.hint.comment_note" %}</p>
-      </form>
+    <summary class="study-discussion-toggle" data-discussion-toggle>💬 {% label "learning.flashcard.section.discussion" %} ({{ comments|length }})</summary>
+    <div class="study-discussion-body" data-discussion-body data-loaded="{{ word.pk }}">
+      {% include "learning/_card_discussion_body.html" %}
     </div>
   </details>
+  {% if deck %}
+    {% comment %}spec.md T4.3 — bộ thẻ cho static/js/study_deck.js: chấm xong
+    là hiện thẻ kế ngay, kết quả gửi ngầm (views._study_deck). Không có JS thì
+    khối này vô hại, form ở trên vẫn gửi thường.{% endcomment %}
+    {{ deck|json_script:"study-deck" }}
+  {% endif %}
 </div>
 {% else %}
   {% comment %}Màn tổng kết (T1.7). Đếm theo TỪ (01/10/2026) — xem

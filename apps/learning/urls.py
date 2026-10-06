@@ -20,6 +20,10 @@ urlpatterns = [
     path("study/review/<int:vocabulary_id>/", views.study_review_view, name="study_review"),
     path("study/end/", views.study_end_view, name="study_end"),
     path("study/retry/", views.study_retry_view, name="study_retry"),
+    # spec.md T4.3 — học liền mạch: lô lệnh chấm gửi ngầm, tải thêm thẻ, bình luận.
+    path("study/sync/", views.study_sync_view, name="study_sync"),
+    path("study/cards/", views.study_cards_view, name="study_cards"),
+    path("study/card/<int:vocabulary_id>/discussion/", views.study_discussion_view, name="study_discussion"),
     # SC15 Ôn tập — thống kê từ đã học + các lối vào một lượt ôn.
     path("review/", views.review_view, name="review"),
     path("review/start/", views.review_start_view, name="review_start"),

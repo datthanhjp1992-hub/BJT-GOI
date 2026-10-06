@@ -43,6 +43,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # spec.md T4.3.0 — header Server-Timing (tổng ms, ms chờ DB, số query).
+    # Đứng đầu để đo cả session/auth. Tắt: SERVER_TIMING=false.
+    *(["apps.core.middleware.ServerTimingMiddleware"] if env.bool("SERVER_TIMING", default=True) else []),
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",

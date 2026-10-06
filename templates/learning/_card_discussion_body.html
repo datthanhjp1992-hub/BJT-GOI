@@ -1,0 +1,49 @@
+{% load properties_tags %}
+{% comment %}
+Thân khu "phản hồi về từ này" — tách khỏi _card_panel.html ngày 06/10/2026
+(spec.md T4.3.3). Bộ thẻ nhúng (#study-deck) KHÔNG mang bình luận: khi người
+học mở khu này ở một thẻ đã chuyển bằng JS, study_deck.js tải riêng phần này
+qua views.study_discussion_view.
+`discussion_next`: trang quay về sau khi xoá bình luận (mặc định trang hiện tại).
+{% endcomment %}
+<div class="toolbar study-discussion-actions">
+  <a class="btn btn-outline btn-sm" href="{% url 'gamification:form' %}?type=meaning&vocabulary={{ word.pk }}">{% label "contribution.form.link.suggest" %}</a>
+  <a class="btn btn-outline btn-sm" href="{% url 'error_reports:create' %}?vocabulary={{ word.pk }}">{% label "error_report.form.link.report" %}</a>
+</div>
+
+<h3 class="serif study-discussion-title">{% label "learning.flashcard.section.comments" %}</h3>
+{% if comments %}
+  <div class="comment-list">
+    {% for c in comments %}
+      <div class="card comment-card">
+        <div class="comment-head">
+          <strong>{{ c.user.first_name|default:c.user.get_username }}</strong>
+          <span class="comment-meta">
+            <span class="muted">{{ c.created_at|date:"d/m/Y H:i" }}</span>
+            {% comment %}Nút xoá: người viết hoặc staff (hậu kiểm, vì
+            bình luận đăng thẳng không qua duyệt).{% endcomment %}
+            {% if c.user_id == request.user.pk or request.user.is_staff %}
+              <form method="post" action="{% url 'gamification:comment_delete' c.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ discussion_next|default:request.get_full_path }}">
+                <button type="submit" class="btn btn-outline btn-xs">{% label "common.button.delete" %}</button>
+              </form>
+            {% endif %}
+          </span>
+        </div>
+        <p class="comment-text">{{ c.comment_text }}</p>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="muted">{% message "learning.flashcard.hint.no_comments_yet" %}</p>
+{% endif %}
+
+<form method="post" action="{% url 'learning:flashcard_comment' word.pk %}" class="card comment-form">
+  {% csrf_token %}
+  <input type="hidden" name="topic_slug" value="{{ topic_slug_value }}">
+  <label for="id_comment_text">{% label "learning.flashcard.field.new_comment" %}</label>
+  <input type="text" id="id_comment_text" name="comment_text" maxlength="1000" required>
+  <button type="submit" class="btn btn-primary btn-sm">{% label "learning.flashcard.button.submit_comment" %}</button>
+  <p class="muted comment-note">{% message "learning.flashcard.hint.comment_note" %}</p>
+</form>

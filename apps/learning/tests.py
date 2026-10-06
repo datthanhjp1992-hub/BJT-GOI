@@ -3,12 +3,15 @@ Test cho SC03_TrangChu và các hàm thống kê ở apps.learning.services.
 
 Chạy: python manage.py test apps.learning
 """
+import json
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.management import call_command
+from django.db import connection
 from django.test import TestCase
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 
@@ -2011,3 +2014,189 @@ class NavigationTests(LearningTestCase):
                 response = self.client.get(reverse(name))
                 self.assertTemplateUsed(response, "partials/page_header.html")
                 self.assertContains(response, 'class="eyebrow page-crumbs"')
+
+
+class StudyDeckTests(ReviewTestCase):
+    """spec.md T4.3 — học liền mạch: bộ thẻ nhúng + lô lệnh gửi ngầm."""
+
+    def setUp(self):
+        super().setUp()
+        self._make_topic("Họp hành", "hop-hanh", ["会議", "議事録", "資料"])
+        self.words = {v.word: v for v in Vocabulary.objects.all()}
+        self.client.post(reverse("learning:study_start"), {"topic": "hop-hanh", "limit": "0"})
+        self.sid = self.client.session["study_session_id"]
+
+    def _deck(self, **extra):
+        return self.client.get(reverse("learning:study"), **extra).context["deck"]
+
+    def _sync(self, ops, session=None):
+        payload = {"session": self.sid if session is None else session, "ops": ops}
+        return self.client.post(reverse("learning:study_sync"), {"payload": json.dumps(payload)})
+
+    def _grade(self, seq, vocab_id, code="nho"):
+        return {"seq": seq, "op": "grade", "vocab": vocab_id, "quality": code}
+
+    # --- Bộ thẻ nhúng ---------------------------------------------------------
+
+    def test_study_page_embeds_the_deck(self):
+        response = self.client.get(reverse("learning:study"))
+        deck = response.context["deck"]
+        current = response.context["word"].pk
+        self.assertEqual(deck["current"], current)
+        self.assertEqual(deck["session"], self.sid)
+        self.assertEqual(deck["seq"], 0)
+        self.assertEqual(deck["queue"], self.client.session["study_queue"])
+        self.assertEqual(set(deck["cards"]), {str(v.pk) for v in self.words.values()})
+        card = deck["cards"][str(current)]
+        self.assertEqual(card["word"], response.context["word"].word)
+        self.assertEqual(card["state"], srs.NEW)
+        self.assertIsNone(card["previews"])
+        self.assertIn("{seen}", deck["text"]["progress"])
+        self.assertContains(response, 'id="study-deck"')
+        self.assertContains(response, "js/study_deck.js")
+        self.assertContains(response, "data-card-extra")
+
+    def test_partial_render_also_carries_the_deck(self):
+        response = self.client.get(reverse("learning:study"), **PARTIAL)
+        self.assertContains(response, 'id="study-deck"')
+
+    def test_topic_flashcard_screen_has_no_deck(self):
+        response = self.client.get(reverse("learning:flashcard", args=["hop-hanh"]))
+        self.assertNotContains(response, 'id="study-deck"')
+
+    def test_deck_cards_carry_previews_when_the_option_is_on(self):
+        self.user.show_review_interval = True
+        self.user.save(update_fields=["show_review_interval"])
+        deck = self._deck()
+        previews = deck["cards"][str(deck["current"])]["previews"]
+        self.assertEqual(set(previews), {"quen", "kho", "nho", "de"})
+
+    def test_deck_query_count_does_not_grow_with_the_number_of_cards(self):
+        ids = [v.pk for v in self.words.values()]
+        url = reverse("learning:study_cards")
+        with CaptureQueriesContext(connection) as one:
+            self.client.get(url, {"ids": str(ids[0])})
+        with self.assertNumQueries(len(one.captured_queries)):
+            self.client.get(url, {"ids": ",".join(map(str, ids))})
+
+    # --- Lô lệnh --------------------------------------------------------------
+
+    def test_sync_grade_matches_form_grading(self):
+        vocab = self.words["会議"]
+        response = self._sync([self._grade(1, vocab.pk, "quen")])
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["seq"], 1)
+        status = data["cards"][str(vocab.pk)]
+        self.assertTrue(status["learning"])
+        self.assertIsNotNone(status["due"])
+        self.assertIn(vocab.pk, self.client.session["study_learning"])
+        self.assertNotIn(vocab.pk, self.client.session["study_queue"])
+        self.assertEqual(StudySession.objects.get(pk=self.sid).words_reviewed, 1)
+        self.assertEqual(data["undo"], {"vocab": vocab.pk, "word": "会議"})
+
+    def test_resent_ops_are_not_graded_twice(self):
+        vocab = self.words["会議"]
+        self._sync([self._grade(1, vocab.pk)])
+        response = self._sync([self._grade(1, vocab.pk), self._grade(2, self.words["資料"].pk)])
+        self.assertEqual(response.json()["seq"], 2)
+        self.assertEqual(StudySession.objects.get(pk=self.sid).words_reviewed, 2)
+        self.assertEqual(self._deck()["seq"], 2)
+
+    def test_wrong_session_is_a_conflict(self):
+        response = self._sync([self._grade(1, self.words["会議"].pk)], session=self.sid + 99)
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(StudySession.objects.get(pk=self.sid).words_reviewed, 0)
+
+    def test_logged_out_gets_401_json(self):
+        self.client.logout()
+        response = self._sync([self._grade(1, self.words["会議"].pk)])
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json()["login"], reverse("accounts:login"))
+
+    def test_broken_payload_is_rejected(self):
+        response = self.client.post(reverse("learning:study_sync"), {"payload": "{not json"})
+        self.assertEqual(response.status_code, 400)
+        response = self._sync([{"seq": "x", "op": "grade", "vocab": 1}])
+        self.assertEqual(response.status_code, 400)
+
+    def test_deleted_word_is_reported_missing(self):
+        vocab = self.words["資料"]
+        vocab_id = vocab.pk
+        vocab.delete()
+        data = self._sync([self._grade(1, vocab_id)]).json()
+        self.assertEqual(data["missing"], [vocab_id])
+        self.assertEqual(data["seq"], 1)
+
+    def test_undo_op_restores_the_word(self):
+        vocab = self.words["会議"]
+        self._sync([self._grade(1, vocab.pk, "de")])
+        data = self._sync([{"seq": 2, "op": "undo", "vocab": vocab.pk}]).json()
+        self.assertFalse(data["resync"])
+        self.assertIsNone(data["undo"])
+        self.assertFalse(UserVocabularyProgress.objects.filter(user=self.user, vocabulary=vocab).exists())
+        self.assertEqual(StudySession.objects.get(pk=self.sid).words_reviewed, 0)
+        self.assertEqual(self.client.session["study_queue"][0], vocab.pk)
+        # Thẻ vừa hoàn tác hiện lại ngay — như nút "Hoàn tác" cũ.
+        self.assertEqual(self._deck()["current"], vocab.pk)
+
+    def test_grade_then_undo_then_grade_equals_a_single_grade(self):
+        vocab = self.words["会議"]
+        self._sync([
+            self._grade(1, vocab.pk, "quen"),
+            {"seq": 2, "op": "undo", "vocab": vocab.pk},
+            self._grade(3, vocab.pk, "de"),
+        ])
+        progress = UserVocabularyProgress.objects.get(user=self.user, vocabulary=vocab)
+        self.assertEqual(progress.card_state, srs.REVIEW)
+        self.assertEqual(StudySession.objects.get(pk=self.sid).words_reviewed, 1)
+        self.assertNotIn(vocab.pk, self.client.session["study_learning"])
+
+    def test_undo_that_does_not_match_asks_for_resync(self):
+        self._sync([self._grade(1, self.words["会議"].pk)])
+        data = self._sync([
+            {"seq": 2, "op": "undo", "vocab": self.words["資料"].pk},
+            self._grade(3, self.words["資料"].pk),
+        ]).json()
+        self.assertTrue(data["resync"])
+        self.assertEqual(StudySession.objects.get(pk=self.sid).words_reviewed, 1)
+
+    def test_whole_session_through_sync_ends_on_the_summary(self):
+        deck = self._deck()
+        ops = [self._grade(i + 1, vid, "de") for i, vid in enumerate(deck["queue"])]
+        data = self._sync(ops).json()
+        self.assertTrue(all(not s["learning"] for s in data["cards"].values()))
+        response = self.client.get(reverse("learning:study"), **PARTIAL)
+        self.assertIsNone(response.context["word"])
+        self.assertEqual(response.context["summary"]["words"], 3)
+        self.assertEqual(response.context["summary"]["percent"], 100)
+
+    def test_new_session_resets_the_sequence(self):
+        self._sync([self._grade(1, self.words["会議"].pk)])
+        self.client.post(reverse("learning:study_start"), {"topic": "hop-hanh", "limit": "0"})
+        self.assertEqual(self._deck()["seq"], 0)
+
+    # --- Tải thêm thẻ / thảo luận ---------------------------------------------
+
+    def test_cards_endpoint_skips_deleted_words(self):
+        keep, gone = self.words["会議"], self.words["資料"]
+        gone_id = gone.pk
+        gone.delete()
+        data = self.client.get(
+            reverse("learning:study_cards"), {"ids": f"{keep.pk},{gone_id},abc"}
+        ).json()
+        self.assertEqual(list(data["cards"]), [str(keep.pk)])
+
+    def test_discussion_endpoint_renders_comments(self):
+        vocab = self.words["会議"]
+        Contribution.objects.create(
+            user=self.user, target_vocabulary=vocab,
+            contribution_type_code=CONTRIBUTION_TYPE_COMMENT,
+            status_code=STATUS_APPROVED, comment_text="Hay quá",
+        )
+        response = self.client.get(reverse("learning:study_discussion", args=[vocab.pk]))
+        self.assertContains(response, "Hay quá")
+        self.assertContains(response, 'name="next" value="%s"' % reverse("learning:study"))
+        self.assertNotContains(response, "<html")
+        deck = self._deck()
+        self.assertEqual(deck["cards"][str(vocab.pk)]["comments"], 1)

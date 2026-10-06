@@ -34,7 +34,7 @@ Giữ đúng các quy ước đang có trong dự án:
 | 1 | Màn học flashcard: chấm thẻ không tải lại trang, phím tắt, hiện thẻ 2 bước, chế độ tập trung, mobile | ⭐ Cao nhất | 3–4 ngày |
 | 2 | Hệ thống thiết kế: gom 3 file CSS theme, bỏ inline style, dark mode | ⭐ Cao | 2–3 ngày |
 | 3 | Luồng sử dụng: nút "Học hôm nay", hướng dẫn lần đầu, trạng thái trống/đang tải | ⭐ Cao (cần duyệt nghiệp vụ) | 3–4 ngày |
-| 4 | Hiệu năng & hạ tầng: cold start Render, đo và giảm số query | Trung bình | 1–2 ngày |
+| 4 | Hiệu năng & hạ tầng: cold start Render, đo và giảm số query, **học liền mạch (T4.3)** | ⭐ Cao (T4.3) / Trung bình | 1–2 ngày + T4.3: 4–5 ngày |
 | 5 | Mở rộng: nhắc học (email/PWA), đưa kính ngữ vào SRS | Thấp (làm sau) | Tách spec riêng |
 
 **Thứ tự đề xuất:** Phase 1 → Phase 2 → Phase 3 → Phase 4. Phase 2 có thể làm
@@ -423,6 +423,176 @@ luồng nền đã phải tắt (25/09/2026) vì làm nghẽn server.
    - `get_topic_in_progress` / `get_recent_topics`: `count()` trong vòng lặp.
 3. Mục tiêu: màn học ≤ 12 query/request; trang chủ ≤ 10.
 
+### T4.3 ⭐ Học liền mạch — tải trước bộ thẻ, chấm điểm gửi ngầm
+
+> Dat chốt hướng này ngày 06/10/2026 (phương án C), duyệt spec cùng ngày.
+> **Code xong 06/10/2026 — chờ Dat chạy trên server thật.** Khi code có vài chỗ đổi so với
+> bản duyệt (API gộp thành một endpoint theo lô...), xem "Ghi chú T4.3" dưới checklist.
+
+**Vấn đề:** mỗi lần vuốt/chấm, trình duyệt phải chờ **2 lượt đi-về server** rồi mới
+hiện thẻ kế: `POST study/review/<id>/` (chấm, ghi DB) → 302 → `GET study/` (tìm từ kế,
+dựng HTML). Mỗi lượt khoảng 10–15 query, mà Render (Singapore) gọi Supabase (Tokyo)
+mất ~70ms mỗi query → ước tính 1,5–3 giây/thẻ.
+
+**Số đo mốc (Dat đo 06/10/2026, Chrome DevTools, server thật trên Render):**
+- POST chấm (`study/review/1660/`): chờ server **1,26 s**. Tải về chỉ 1,6 ms (0,4 kB).
+- GET thẻ kế (`study/`): theo biểu đồ thời gian khoảng **~1 s** (ước theo thước đo, chưa có số chính xác).
+- Tổng mỗi lần chấm/vuốt: **khoảng 2,3–2,5 s** người học phải chờ. Gần như toàn bộ là
+  thời gian server xử lý, dung lượng tải không đáng kể (POST 0,4 kB, GET ~2,5 kB).
+- Mục tiêu sau T4.3: thẻ kế hiện < 100 ms. Thời gian POST chạy ngầm không còn ảnh hưởng tới người học.
+
+**Mục tiêu:** chấm/vuốt xong là thẻ kế hiện **ngay** (< 100ms, không chờ mạng).
+Server vẫn là nơi giữ dữ liệu chính (SM-2, lịch, streak, tổng kết); trình duyệt chỉ
+lo hiển thị và gửi kết quả chấm ở phía sau.
+
+**Phạm vi:** phiên theo hàng đợi `study_*` (Học hôm nay ở SC03, SC05, SC15, "Ôn thêm").
+**Chưa** làm: SC04 theo chủ đề (`flashcard_view` tính lại hàng đợi mỗi lần, cần thiết kế
+riêng — T4.3.8), trắc nghiệm (`study_quiz`).
+
+#### Luồng mới
+
+```
+Bắt đầu phiên (POST daily/start, study/start, review/start, study/retry) — như cũ
+ → GET study/   (tải trang đầy đủ, 1 lần)
+     trang nhúng sẵn <script type="application/json" id="study-deck">:
+     danh sách thẻ + trạng thái phiên
+ → trình duyệt hiện thẻ đầu
+Chấm / vuốt
+ → hiện thẻ kế NGAY từ deck trong bộ nhớ
+ → đẩy {seq, vocab, quality} vào hàng chờ gửi
+     hàng chờ gửi LẦN LƯỢT từng cái (1 request đang bay tại một thời điểm):
+     POST study/api/grade/  →  JSON nhỏ: thẻ đã thuộc chưa, khi nào gặp lại
+Hết thẻ
+ → chờ hàng chờ gửi xong → GET study/ (partial, như hiện tại) → màn tổng kết
+```
+
+Gửi **lần lượt**, không gửi song song: session Django lưu trong DB, 2 request ghi
+session cùng lúc sẽ đè mất của nhau (mất từ trong hàng đợi / mục hoàn tác).
+
+#### Dữ liệu deck (nhúng trong trang)
+
+```json
+{
+  "session": 123,                 // StudySession.pk — lệch thì trang đã cũ
+  "seq": 0,                       // số thứ tự lần chấm cuối server đã nhận
+  "total": 30, "scope": "Học hôm nay", "extra_review": false,
+  "queue":    [11, 12, 13],       // thứ tự y như STUDY_QUEUE_KEY
+  "learning": [{"id": 9, "due": "2026-10-06T10:05:00+09:00"}],
+  "seen":     [9],                // đã chấm lần đầu trong phiên (nhãn "Gặp lại", tiến độ)
+  "undo": {"vocab": 9, "word": "見積"},   // mục hoàn tác trên cùng (hoặc null)
+  "cards": {
+    "11": {"state": "new", "previews": {"quen": "1 phút", ...}, "html": "<...mặt thẻ...>"}
+  },
+  "more": "/learning/study/deck/?offset=50"   // còn thẻ chưa tải (null nếu hết)
+}
+```
+
+- `html` là **mặt thẻ** do server render bằng partial mới `learning/_card_face.html`
+  (từ, cách đọc, nghĩa, chủ đề, ví dụ). Template vẫn dùng `{% label %}`, nên JS **không
+  chứa chuỗi hiển thị nào** (nguyên tắc 1). Phần thay đổi theo lần chấm (tag trạng thái,
+  "Gặp lại", thanh tiến độ, nút hoàn tác, "học trước N phút", khoảng cách dưới nút)
+  là khung cố định trong `_card_panel.html`, JS chỉ đổi số và bật/tắt. Nhãn trạng thái
+  để sẵn trong DOM (`data-state-label="new"`...).
+- `previews` chỉ có khi user bật "hiện khoảng cách ôn lại" (SC08). Không bật thì bỏ hẳn.
+- Nhúng tối đa **50 thẻ**. Phiên dài hơn (vd. "Ôn thêm" 200 từ) thì JS tải tiếp
+  `GET study/deck/?offset=` ở phía sau khi còn ≤ 10 thẻ chưa hiện.
+- **Bình luận không nằm trong deck.** Khối thảo luận tải khi mở:
+  `GET study/card/<id>/comments/` → HTML fragment. Gửi bình luận giữ như cũ (tải lại trang).
+
+#### API mới (`apps/learning/views.py` + `urls.py`)
+
+| URL | Vào | Ra |
+|---|---|---|
+| `POST study/sync/` | field `payload` = `{"session", "ops": [{"seq","op":"grade"\|"undo","vocab","quality"}]}` | `{"seq", "now", "cards": {id: {"state","learning","due","previews"}}, "missing", "undo", "resync"}` |
+| `GET study/cards/?ids=1,2,3` | tối đa 50 id | `{"cards": {...}}` (id đã bị xoá thì không có) |
+| `GET study/card/<id>/discussion/` | — | HTML thân khu thảo luận |
+
+*(Bản duyệt ban đầu tách `study/api/grade/` + `undo/` có header + `study/deck/?offset=`;
+khi code đã gộp lại — lý do ở "Ghi chú T4.3".)*
+
+- `grade` gọi lại đúng `_grade_word()` hiện có. Không viết logic chấm thứ hai.
+  View chỉ thêm phần đọc/trả JSON (nguyên tắc 6).
+- **Chống chấm trùng:** server lưu `study_seq` (lần chấm cuối) và kết quả của nó trong
+  session. Request tới với `seq` ≤ `study_seq` thì trả lại kết quả cũ, không chấm lại
+  (gửi lại khi mạng chập chờn hoặc `sendBeacon` lúc đóng tab).
+- `session` khác `STUDY_SESSION_ID_KEY` hiện tại (đã bắt đầu phiên khác ở tab khác)
+  → `409`. JS tải lại trang.
+- Hết phiên đăng nhập → `401` JSON (không redirect sang trang login). JS chuyển sang trang login.
+- Lỗi khác → `4xx/5xx`, JS thử lại (xem dưới).
+- Endpoint cũ (`study/review/<id>/`, `undo/` không header) **giữ nguyên** cho trường hợp
+  tắt JS (nguyên tắc 4).
+
+#### Logic phía trình duyệt (`static/js/study_deck.js`, chỉ nạp ở màn học)
+
+Tách file riêng vì `main.js` đã ~680 dòng. Vẫn là JS thuần, không build step.
+
+1. **Chọn thẻ kế**, cùng luật với `_next_queue_word`: thẻ vừa hoàn tác → đầu `queue`
+   → (hết queue) thẻ trong `learning` có `due` sớm nhất. Chưa tới giờ thì hiện
+   "học trước N phút".
+2. **Sau khi chấm:** bỏ thẻ khỏi `queue`, thêm vào `seen`.
+   - Phiên chính thức: tạm coi thẻ là "đang học", đặt ở cuối `learning`. Khi server trả
+     `in_session=false` thì bỏ ra, `true` thì cập nhật `due`. Thứ tự luôn là
+     "học hết lượt rồi mới ôn lại", nên tới lúc gặp lại thẻ này thì kết quả server đã về.
+   - Phiên ôn thêm: bấm Quên thì đẩy xuống cuối `queue` (giống `_grade_word`).
+   - Ngoại lệ: thẻ kế duy nhất còn lại là thẻ vừa chấm mà server chưa trả lời → hiện
+     trạng thái "Đang tải..." cho tới khi có kết quả. Chỉ xảy ra ở cuối phiên.
+3. **Tiến độ** tính bằng đúng công thức `_progress_numbers` (total, remaining = queue ∪
+   learning, seen).
+4. **Hoàn tác (Z):** đưa thẻ về đầu ngay trên màn hình, rồi xếp lệnh undo vào **cùng
+   hàng chờ** (sau các lần chấm chưa gửi). Server đã có sẵn ngăn xếp hoàn tác.
+5. **Hàng chờ gửi:**
+   - Gửi lần lượt. Lỗi mạng hoặc 5xx thì thử lại sau 1s → 3s → 10s.
+   - Thất bại 3 lần: hiện thanh báo "Mất kết nối — kết quả đang lưu tạm". Người học
+     vẫn học tiếp; hàng chờ lưu vào `localStorage` (khoá theo `session`, bọc try/catch).
+     Có mạng lại hoặc tải lại trang thì gửi tiếp.
+   - Đóng tab hoặc chuyển trang khi còn lệnh chưa gửi: `navigator.sendBeacon` từng lệnh
+     (kèm `csrfmiddlewaretoken`). Nhờ `seq`, gửi trùng cũng không sao.
+6. **Hết thẻ:** đợi hàng chờ trống → `GET study/` với header `X-Card-Partial` (đường cũ)
+   → server render màn tổng kết như hiện tại.
+7. **Phím tắt, vuốt, lật 2 bước, chế độ tập trung:** giữ nguyên. Chỉ đổi chỗ "bấm nút chấm
+   → submit form" thành "bấm nút chấm → `deck.grade()`". Form vẫn ở đó cho trường hợp tắt JS.
+8. **Đường lùi:** không có `#study-deck` (trang cũ đang mở, trình duyệt thiếu `fetch`) thì
+   chạy y như hiện tại (T1.2).
+
+#### Rủi ro đã tính
+
+| Tình huống | Cách xử lý |
+|---|---|
+| Đóng tab ngay sau khi chấm | `sendBeacon` + `localStorage`; nặng nhất là mất 1–2 lần chấm cuối, từ đó vẫn còn trong hàng đợi phía server và sẽ gặp lại |
+| Mở 2 tab cùng một phiên | `seq` chống chấm trùng; tab nào lệch `session` thì nhận 409 và tải lại |
+| Dữ liệu từ bị admin sửa giữa phiên | Thẻ hiện bản cũ trong phiên đó; chấp nhận được |
+| Từ bị xoá giữa phiên | `grade` trả 404 cho từ đó → JS bỏ qua thẻ, không báo lỗi |
+| Trang nặng hơn | 50 thẻ × ~1KB ≈ 50KB HTML, nhẹ hơn một ảnh |
+
+#### Các bước thực hiện
+
+| Bước | Nội dung | File chính |
+|---|---|---|
+| T4.3.0 | **Đo mốc:** thêm header `Server-Timing` (middleware nhỏ: tổng ms + số query) để xem ngay trong tab Network. Ghi số đo trước/sau vào spec | `apps/core/middleware.py`, `config/settings/base.py` |
+| T4.3.1 | Tách `_card_extra.html` (chủ đề + ví dụ) và `_card_discussion_body.html` khỏi `_card_panel.html`. Giao diện không đổi | `templates/learning/` |
+| T4.3.2 | `services.get_study_cards(user, ids)`: lấy thẻ hàng loạt (`prefetch_related` topics/examples, progress bằng 1 query, số bình luận bằng 1 query) | `apps/learning/services.py` |
+| T4.3.3 | `study_view` nhúng `#study-deck`; thêm `study/cards/`, `study/card/<id>/discussion/` | `views.py`, `urls.py`, `_card_panel.html` |
+| T4.3.4 | `POST study/sync/` (lô grade/undo) + `seq` chống trùng + 409/401 | `views.py` |
+| T4.3.5 | `study_deck.js`: chọn thẻ kế, tiến độ, hàng chờ gửi, thử lại, `localStorage`, `sendBeacon`, hoàn tác. Nối phím tắt/vuốt ở `main.js` | `static/js/` |
+| T4.3.6 | Label/message mới ("Mất kết nối...", "Đang lưu..."), CSS thanh báo (3 theme + tối) | `*.properties`, `base.css` |
+| T4.3.7 | Test + cập nhật `flowChart/js/flows.js` | `apps/learning/tests.py` |
+| T4.3.8 | *(Sau khi T4.3.0–7 chạy ổn trên server thật)* Áp cho SC04 theo chủ đề | spec riêng |
+
+**Test (T4.3.7):**
+- `grade` API: chấm đúng như `study_review_view` (cùng tiến độ SM-2, cùng `StudySession`,
+  cùng hàng đợi trong session); gửi lại cùng `seq` không chấm 2 lần; sai `session` → 409;
+  chưa đăng nhập → 401; từ bị xoá → 404.
+- `undo` JSON khớp `undo` thường. Chấm → hoàn tác → chấm lại cho kết quả như chưa từng chấm.
+- Deck: đủ thẻ, đúng thứ tự `queue`, phân trang `offset`, không có bình luận,
+  `assertNumQueries` cố định (không tăng theo số thẻ).
+- Đi trọn một phiên chỉ bằng API → màn tổng kết đúng số liệu như khi đi bằng form.
+- Tắt JS (test client gửi form thường) vẫn chạy y như cũ.
+- Thủ công trên trình duyệt: vuốt liên tục 20 thẻ không chờ; tắt mạng giữa phiên rồi bật
+  lại; đóng tab rồi mở lại; điện thoại 375px; 3 theme.
+
+**Hoàn thành khi:** trên server thật, chấm/vuốt → thẻ kế hiện < 100ms; số liệu SM-2 và
+tổng kết khớp với cách cũ; tắt JS vẫn học được.
+
 ---
 
 ## Phase 5 — Mở rộng (làm sau, tách spec riêng khi bắt đầu)
@@ -468,6 +638,45 @@ luồng nền đã phải tắt (25/09/2026) vì làm nghẽn server.
 - [ ] T4.1 Cron ngoài cho `/healthz/` (⏸ Dat nghiên cứu sau)
 - [x] T4.1b Gỡ keep-alive luồng nền (`keepalive.py`, `SiteSetting`, màn Cài đặt hệ thống)
 - [ ] T4.2 `assertNumQueries` + giảm query
+- [x] T4.3 Học liền mạch (code xong 06/10/2026 — chờ Dat chạy trên server thật)
+  - [x] T4.3.0 Đo mốc (`Server-Timing`)
+  - [x] T4.3.1 Tách `_card_extra.html` + `_card_discussion_body.html`
+  - [x] T4.3.2 `services.get_study_cards`
+  - [x] T4.3.3 Nhúng deck + `study/cards/` + bình luận tải sau
+  - [x] T4.3.4 API `study/sync/` (grade + undo theo lô) + chống chấm trùng
+  - [x] T4.3.5 `study_deck.js` (hàng chờ gửi, thử lại, `sendBeacon`)
+  - [x] T4.3.6 Message + CSS thanh báo
+  - [x] T4.3.7 Test + `flows.js`
+  - [ ] T4.3.8 Áp cho SC04 (spec riêng, làm sau)
+
+### Ghi chú T4.3 (06/10/2026) — để đối chiếu khi review
+- **Khác bản duyệt:**
+  - Gộp chấm + hoàn tác vào MỘT endpoint theo lô `POST study/sync/`. Khi mạng chậm, các lần
+    chấm dồn lại gửi một request (đo thử: 4 lần chấm = 2 request), và hoàn tác luôn đi đúng
+    thứ tự sau các lần chấm trước nó. Form `undo/` + `study/review/<id>/` cũ giữ nguyên cho
+    trường hợp tắt JS.
+  - Tải thêm thẻ bằng `study/cards/?ids=` thay vì `?offset=`: hàng đợi phía server đổi sau
+    mỗi lần chấm nên `offset` không ổn định, JS tự biết cần id nào.
+  - Không có partial `_card_face.html`: mặt trước (từ / cách đọc / nghĩa) là chữ thuần, JS gán
+    `textContent` (thẻ `.flashcard` là flex, bọc thêm khung sẽ đổi bố cục). Chỉ mặt sau
+    (chủ đề + ví dụ) render sẵn bằng `_card_extra.html`.
+  - `sendBeacon` lúc đóng tab chỉ gửi khi KHÔNG có lô nào đang bay: gửi song song sẽ ghi đè
+    session của nhau. Lô đang bay mà không tới được thì localStorage giữ lại, lần mở màn học
+    sau tự gửi nốt rồi tải lại theo server.
+  - Không thêm message "Đang lưu...": lúc phải chờ (thẻ cuối lượt chưa có kết quả, tải thêm
+    thẻ) dùng lại trạng thái bận `.card-panel.is-busy` sẵn có.
+- **Server:** `_apply_undo()` tách từ `undo_view` để `study_sync_view` dùng chung; khoá session
+  mới `study_seq` (dọn trong `_clear_study_session`). Bộ thẻ cũng đi kèm khi render partial,
+  nên "Ôn thêm" từ màn tổng kết (đi qua main.js) tự có bộ thẻ mới.
+- **Số đo trên máy dev (SQLite, Chrome):** chấm → thẻ kế hiện sau **2–5 ms** (lần đầu ~75 ms
+  do trình duyệt vẽ lần đầu). `GET study/` = 14 query. Chưa đo trên Render — Dat đo lại bằng
+  header `Server-Timing` (Network → Timing) để ghi số "sau".
+- **Đã thử trên trình duyệt:** phím tắt Space/1-4/Z; hoàn tác tại chỗ; đi hết phiên tới màn tổng
+  kết (số liệu khớp: 12 từ, 92%, 13 lượt chấm); "Ôn thêm" (bộ thẻ mới, Quên → xuống cuối);
+  giả lập mất mạng (thanh báo sau 3 lần lỗi, có mạng lại tự gửi); tải lại trang khi còn lệnh
+  chưa gửi (gửi nốt rồi hiện tổng kết); mở khu thảo luận ở thẻ đã chuyển; 375px không tràn ngang.
+- **Kiểm thử:** 18 test mới (`StudyDeckTests`). Toàn bộ 548 test trên SQLite tạm: chỉ còn 8 lỗi
+  CÓ SẴN từ trước (SQLite thiếu `SIMILARITY` / `pg_extension`) — cần Dat chạy lại trên DB thật.
 
 ---
 
@@ -507,6 +716,7 @@ luồng nền đã phải tắt (25/09/2026) vì làm nghẽn server.
 | 4 | T3.1 (c) — giữ "Học tiếp chủ đề X" làm link phụ? | ❌ **Bỏ** — không cần thiết |
 | 5 | T4.1 — cron bằng GitHub Actions hay cron-job.org? | ⏸ Dat nghiên cứu sau, giữ ghi chú trong spec |
 | 6 | T4.1 — gỡ `keepalive.py`? | ✅ Gỡ ngay (T4.1b, đã làm) |
+| 7 | Delay khi vuốt thẻ — xử lý thế nào? (06/10/2026) | ✅ Phương án C: tải trước bộ thẻ, chấm gửi ngầm (T4.3) |
 
 ---
 

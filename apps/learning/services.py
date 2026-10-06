@@ -201,6 +201,44 @@ def get_quiz_choices(word, topic, count=QUIZ_CHOICE_COUNT):
     return choices
 
 
+# Số ví dụ câu hiện dưới thẻ (cùng con số với study_view: word.examples.all()[:3]).
+CARD_EXAMPLES_MAX = 3
+
+
+@dataclass
+class StudyCard:
+    """Một thẻ của bộ thẻ nhúng (spec.md T4.3) — đủ dữ liệu để render thẻ."""
+    word: Vocabulary
+    progress: "UserVocabularyProgress | None"
+    examples: list
+    comment_count: int = 0
+
+
+def get_study_cards(user, vocabulary_ids):
+    """Các thẻ của `vocabulary_ids` theo ĐÚNG thứ tự truyền vào, số query cố
+    định (không tăng theo số thẻ): từ + chủ đề + ví dụ, tiến độ của user, số
+    bình luận. Id của từ đã bị xoá thì không có trong kết quả."""
+    from apps.gamification import services as gamification_services
+
+    ids = list(dict.fromkeys(vocabulary_ids))
+    if not ids:
+        return []
+    words = Vocabulary.objects.filter(pk__in=ids).prefetch_related("topics", "examples").in_bulk()
+    progress = {
+        p.vocabulary_id: p
+        for p in UserVocabularyProgress.objects.filter(user=user, vocabulary_id__in=ids)
+    }
+    comments = gamification_services.count_vocabulary_comments(ids)
+    cards = []
+    for vid in ids:
+        word = words.get(vid)
+        if word is None:
+            continue
+        examples = sorted(word.examples.all(), key=lambda ex: ex.pk)[:CARD_EXAMPLES_MAX]
+        cards.append(StudyCard(word, progress.get(vid), examples, comments.get(vid, 0)))
+    return cards
+
+
 def get_or_start_progress(user, vocab):
     """Dòng tiến độ của (user, từ); từ học lần đầu thì tạo mới ở giai đoạn NEW."""
     progress, _ = UserVocabularyProgress.objects.get_or_create(

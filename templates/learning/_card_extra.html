@@ -1,0 +1,29 @@
+{% load properties_tags %}
+{% comment %}
+Phần "mặt sau" riêng của MỘT từ (chủ đề + ví dụ) — tách khỏi _card_panel.html
+ngày 06/10/2026 (spec.md T4.3.1). Dùng ở 2 chỗ:
+  * _card_panel.html — thẻ đang hiện khi server render trang.
+  * views._study_card_payload — render sẵn cho từng thẻ trong bộ thẻ nhúng
+    (#study-deck); static/js/study_deck.js thay vào [data-card-extra] khi
+    chuyển thẻ mà không hỏi lại server.
+Cần: word (topics đã prefetch càng tốt), examples (tối đa 3).
+{% endcomment %}
+{% if word.topics.all %}
+  <p class="muted study-topics">
+    {% for t in word.topics.all %}<span class="tag">{{ t.name_ja|default:t.name }}</span> {% endfor %}
+  </p>
+{% endif %}
+
+{% if examples %}
+  <details class="study-examples" data-examples>
+    <summary class="btn btn-outline btn-block">
+      📖 {% label "learning.flashcard.button.view_example" %} <kbd class="kbd">E</kbd>
+    </summary>
+    <div class="card study-examples-body">
+      {% for ex in examples %}
+        <p class="study-example-jp">{{ ex.sentence_jp }}</p>
+        <p class="muted study-example-vi">{{ ex.sentence_vi }}</p>
+      {% endfor %}
+    </div>
+  </details>
+{% endif %}

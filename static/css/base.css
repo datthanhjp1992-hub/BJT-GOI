@@ -677,6 +677,10 @@ a.pager-btn:hover{border-color:var(--accent);color:var(--accent-text);}
 .study-progress{margin-bottom:10px;}
 .study-note{margin:0 0 8px;font-size:13px;}
 .study-card{margin-top:18px;}
+/* -- Học liền mạch (spec.md T4.3): study_deck.js bật/tắt các khối bằng [hidden];
+   .tag/.study-note tự đặt display nên phải ép lại. -- */
+.study-screen [hidden]{display:none !important;}
+.study-sync-note{margin:0 0 8px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--study-radius);background:var(--accent-soft);color:var(--ink);font-size:13px;}
 /* -- Thẻ hiện 2 bước (T1.4). Chỉ ẩn khi <html> có class "js" (base.html):
       tắt JavaScript thì mặt sau + 4 nút chấm hiện sẵn như trước. -- */
 .flashcard{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;touch-action:pan-y;-webkit-user-select:none;user-select:none;}

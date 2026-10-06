@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load properties_tags %}
+{% load properties_tags static %}
 {% comment %}
 SC04_HocTuVung — port từ htmlTemplate/SC04_HocTuVung_*.html.
 
@@ -21,4 +21,10 @@ server trả về (apps/learning/views._render_card) — không tải lại cả
   <div id="card-panel" class="card-panel" data-card-panel tabindex="-1" aria-live="polite">
     {% include "learning/_card_panel.html" %}
   </div>
+{% endblock %}
+
+{% block extra_js %}
+  {% comment %}spec.md T4.3 — chỉ chạy khi panel có bộ thẻ #study-deck (phiên
+  theo hàng đợi); SC04 theo chủ đề không có nên file này đứng yên.{% endcomment %}
+  <script src="{% static 'js/study_deck.js' %}"></script>
 {% endblock %}

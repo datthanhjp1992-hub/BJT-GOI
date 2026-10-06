@@ -231,6 +231,25 @@ def get_vocabulary_comments(vocabulary):
     )
 
 
+def count_vocabulary_comments(vocabulary_ids):
+    """{vocab_id: số bình luận hiện dưới từ} cho nhiều từ trong 1 query — cùng
+    điều kiện lọc với get_vocabulary_comments (bộ thẻ nhúng, spec.md T4.3)."""
+    from django.db.models import Count
+
+    from apps.gamification.models import Contribution
+
+    rows = (
+        Contribution.objects.filter(
+            target_vocabulary_id__in=vocabulary_ids,
+            contribution_type_code=CONTRIBUTION_TYPE_COMMENT,
+            status_code=STATUS_APPROVED,
+        )
+        .values("target_vocabulary_id")
+        .annotate(n=Count("id"))
+    )
+    return {row["target_vocabulary_id"]: row["n"] for row in rows}
+
+
 def can_delete_comment(user, contribution):
     """Người viết xoá được bình luận của mình; staff xoá được mọi bình luận."""
     if not getattr(user, "is_authenticated", False):
