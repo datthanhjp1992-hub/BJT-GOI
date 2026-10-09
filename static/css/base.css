@@ -765,6 +765,11 @@ html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
 .session-retry-title{margin:0 0 8px;font-weight:600;}
 .session-retry-words{margin:0 0 12px;line-height:2.2;}
 .session-retry form,.session-more{margin:0 0 10px;}
+/* Khối "Vẫn học thêm N từ mới" (spec.md T6.1) — SC04 màn xong + SC05. */
+.over-limit-notice{display:flex;flex-direction:column;gap:8px;text-align:left;}
+.session-done .over-limit-notice{margin:0 0 12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--study-radius);background:var(--accent-soft);}
+.over-limit-notice .muted{font-size:13px;}
+.over-limit-form{margin:4px 0 0;}
 .session-actions{justify-content:center;margin:8px 0 0;}
 .session-undo{margin:14px 0 0;}
 @media (prefers-reduced-motion:reduce){
@@ -798,6 +803,7 @@ html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
    width:{{ percent }}%) vẫn để inline — đó là chỗ đúng của nó.
    ========================================================================== */
 .m-0{margin:0 !important;}
+.mb-0{margin-bottom:0 !important;}
 .p-0{padding:0 !important;}
 .mt-12{margin-top:12px !important;}
 .mt-14{margin-top:14px !important;}

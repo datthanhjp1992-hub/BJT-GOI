@@ -613,8 +613,8 @@ tổng kết khớp với cách cũ; tắt JS vẫn học được.
 
 ## Phase 6 — Kiểm soát khối lượng ôn tập
 
-> Lập 09/10/2026 · Trạng thái: **Bản nháp — chờ Dat duyệt** (Dat đồng ý hướng ngày 09/10/2026,
-> các con số/ngưỡng ở mục "Cần chốt" cuối phase chờ duyệt).
+> Lập 09/10/2026 · Trạng thái: **Đã duyệt (09/10/2026)** — Dat đồng ý toàn bộ đề xuất ở mục
+> "Cần chốt" cuối phase.
 > Làm **trước** T4.2 / T4.3.8 — đây là vấn đề người học đang gặp thật.
 
 ### Bối cảnh — số liệu thật (Dat, 09/10/2026)
@@ -939,11 +939,11 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
 375px cho các bước có giao diện. Nguyên tắc 8 (`flowChart/js/flows.js`): thư mục
 `flowChart/` **không có trong repo** — bỏ qua cho tới khi Dat đưa lại file.
 
-### Cần chốt (đề xuất của Claude — Dat duyệt)
+### Các điểm đã chốt (Dat duyệt 09/10/2026 — đồng ý toàn bộ đề xuất)
 
-| # | Câu hỏi | Đề xuất |
+| # | Câu hỏi | Quyết định |
 |---|---|---|
-| 1 | T6.1 — mỗi lần "Vẫn học thêm" mở bao nhiêu từ? | Một hạn mức (`goal`), bấm lại được |
+| 1 | T6.1 — mỗi lần "Vẫn học thêm" mở bao nhiêu từ? | ✅ Một hạn mức (`goal`), bấm lại được |
 | 2 | T6.2 — dừng phiên thì từ đang học hoãn sang **ngày mai** (không ôn lại trong hôm nay)? | ✅ Có |
 | 3 | T6.2 — từ dở đứng **đầu** "Học hôm nay" (trước từ ôn)? | ✅ Có — từ mới nhất, dễ quên nhất |
 | 4 | T6.2 — từ dở bấm "Nhớ" một lần là tốt nghiệp? | ✅ Có |
@@ -993,14 +993,35 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
   - [x] T4.3.7 Test + `flows.js`
   - [ ] T4.3.8 Áp cho SC04 (spec riêng, làm sau)
 
-### Phase 6 — Khối lượng ôn tập (spec 09/10/2026 — chờ Dat duyệt)
-- [ ] T6.1 Hạn mức từ mới chung cho mọi lối vào + khối "Vẫn học thêm" (F)
+### Phase 6 — Khối lượng ôn tập (duyệt 09/10/2026)
+- [x] T6.1 Hạn mức từ mới chung cho mọi lối vào + khối "Vẫn học thêm" (F) — code xong 09/10/2026, chờ Dat chạy trên server thật
 - [ ] T6.2 Hoãn từ dở bước học sang mai, ưu tiên đầu hàng, "Nhớ" là tốt nghiệp (V3)
 - [ ] T6.3 Vuốt lên = Dễ (V1)
 - [ ] T6.4 Báo kết quả sau mỗi lần chấm (V2)
 - [ ] T6.5 Tự giảm / tạm dừng từ mới khi nợ ôn cao (B)
 - [ ] T6.6 Hướng dẫn cử chỉ lần đầu (V5)
 - [x] ~~V4 Rút bước học từ mới xuống 1 bước~~ — Dat chốt không làm (09/10/2026)
+
+### Ghi chú T6.1 (09/10/2026) — để đối chiếu khi review
+- `services.new_word_allowance()` là nguồn hạn mức duy nhất: `_daily_parts` (SC03),
+  `get_topic_queue` (SC04/SC06), `get_topic_in_progress` và SC05 đều đi qua đây.
+- SC05: `services.plan_study_queue(..., new_limit=)` trả `StudyPlan(queue, held_new)`;
+  `build_study_queue()` giữ nguyên API (SC15 gọi, không giới hạn). `held_new` chỉ đếm từ mới
+  mà KHÔNG có hạn mức thì đã lọt vào lượt học (sau khi cắt `limit`).
+- SC05 tính trước kế hoạch ngay khi lọc (thêm ~3 query: id từ, tiến độ, đếm từ mới hôm nay /
+  ngày mai) → trang hiện đúng "Lượt này học N từ", ẩn nút "Bắt đầu học" khi lượt học rỗng, và
+  hiện khối "Vẫn học thêm" (POST lại bộ lọc + `over_limit=1`).
+- `study_start_view`: lượt học rỗng vì toàn từ mới vượt hạn mức → quay lại SC05 đúng bộ lọc
+  (không tạo `StudySession`); có từ bị giữ → flash "giữ lại N từ mới".
+- `_filter_params` của SC05 chuyển thành `selectors.filter_params()` (dùng chung với đường quay lại).
+- Partial mới `templates/learning/_over_limit_notice.html` (SC04 màn xong + SC05). Bỏ key
+  `learning.flashcard.button.more_new`, rút gọn `learning.flashcard.hint.new_limit_reached`.
+- Test: `NewWordAllowanceTests` (12 test). `test_missing_limit_means_every_word` nâng
+  `daily_review_goal` lên 30 vì 25 từ mới giờ vượt hạn mức mặc định 20 (đúng ý T6.1).
+  Toàn bộ test chạy trên PostgreSQL 16 local; 2 lỗi CÓ SẴN từ trước ở `admin_panel`
+  (`DataIoEngineTests`/`FullVocabularyDatasetTests` đếm số bảng 19 ≠ 31 sau khi thêm app keigo).
+- Đã xem giao diện SC04 (màn xong) + SC05 ở theme A/B/C, 1280px và 375px, sáng + tối (B):
+  không tràn ngang.
 
 ### Ghi chú T4.3 (06/10/2026) — để đối chiếu khi review
 - **Khác bản duyệt:**

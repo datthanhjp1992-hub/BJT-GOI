@@ -57,6 +57,46 @@ def count_due_tomorrow(user):
     ).count()
 
 
+# =============================================================================
+# Hạn mức từ mới mỗi ngày — MỘT nguồn cho mọi lối vào (spec.md T6.1)
+# -----------------------------------------------------------------------------
+# SC03 "Học hôm nay", SC04/SC06 theo chủ đề và SC05 "Bắt đầu học" đều hỏi hàm
+# này, không tự tính `goal - count_new_words_today()` nữa. Số liệu thật
+# 09/10/2026: SC05 không giới hạn nên có ngày vào 143-147 từ mới (hạn mức 20),
+# kéo theo hàng trăm từ cần ôn những ngày sau.
+# =============================================================================
+
+
+@dataclass
+class NewWordAllowance:
+    goal: int            # User.daily_review_goal — hạn mức TỪ MỚI mỗi ngày
+    learned_today: int   # count_new_words_today()
+    left: int            # số từ mới còn được học hôm nay (>= 0)
+    backlog: int = 0     # số từ đang nợ ôn (T6.5)
+    paused: bool = False  # T6.5: hạn mức bị giảm/dừng vì nợ ôn
+
+
+def new_word_allowance(user):
+    goal = user.daily_review_goal
+    learned = count_new_words_today(user)
+    return NewWordAllowance(goal=goal, learned_today=learned, left=max(0, goal - learned))
+
+
+def over_limit_forecast(user, extra, allowance=None):
+    """Số liệu cho khối "Vẫn học thêm N từ mới" (templates/learning/_over_limit_notice.html).
+
+    Từ mới tốt nghiệp bằng "Nhớ" luôn hẹn sau srs.GRADUATE_INTERVAL = 1 ngày,
+    nên học thêm `extra` từ hôm nay ~ ngày mai có thêm `extra` từ cần ôn.
+    """
+    allowance = allowance or new_word_allowance(user)
+    return {
+        "learned": allowance.learned_today,
+        "goal": allowance.goal,
+        "extra": extra,
+        "tomorrow": count_due_tomorrow(user) + extra,
+    }
+
+
 @dataclass
 class TopicQueue:
     """Hàng đợi một phiên SC04 kèm các con số hiển thị trên màn học."""
@@ -117,9 +157,8 @@ def get_topic_queue(user, topic, now=None, unlocked_ids=()):
         key=lambda p: (p.next_review_date or date.min, p.vocabulary_id),
     )
 
-    new_limit = user.daily_review_goal
-    new_today = count_new_words_today(user)
-    new_left = max(0, new_limit - new_today)
+    allowance = new_word_allowance(user)
+    new_limit, new_today, new_left = allowance.goal, allowance.learned_today, allowance.left
     unseen = Vocabulary.objects.filter(topics=topic).exclude(progress__user=user).order_by("word")
     new_words = list(unseen[:new_left]) if new_left else []
     if unlocked_ids:
@@ -415,7 +454,7 @@ def get_topic_in_progress(user):
     unseen = max(0, total - learned)
     # Còn từ chưa học nhưng hôm nay đã hết hạn mức từ mới -> "Học tiếp" sẽ
     # không đưa ra được từ mới nào; trang chủ phải nói rõ và mời "học thêm".
-    limit_reached = bool(unseen) and count_new_words_today(user) >= user.daily_review_goal
+    limit_reached = bool(unseen) and new_word_allowance(user).left == 0
     return {
         "topic": topic,
         "learned": learned,
@@ -550,6 +589,12 @@ _BUCKET_NEW = 1      # chưa học lần nào
 _BUCKET_LATER = 2    # đã học nhưng chưa tới hạn — chỉ học khi hai nhóm trên hết
 
 
+@dataclass
+class StudyPlan:
+    queue: list              # id từ vựng theo thứ tự học
+    held_new: int = 0        # từ mới LẼ RA vào hàng đợi nhưng bị giữ lại vì hạn mức
+
+
 def build_study_queue(user, words, limit=0):
     """Danh sách id từ vựng theo thứ tự học, cắt theo `limit` (0 = không giới hạn).
 
@@ -557,7 +602,41 @@ def build_study_queue(user, words, limit=0):
     Trả về LIST ID chứ không phải object vì hàng đợi được cất trong
     `request.session` (phải JSON-serializable) và từ có thể bị sửa/xoá giữa
     chừng — view nạp lại từng từ khi hiển thị.
+
+    Không giới hạn từ mới — dùng cho SC15 (chỉ có từ đã học). SC05 đi qua
+    `plan_study_queue(new_limit=...)`.
     """
+    return plan_study_queue(user, words, limit=limit).queue
+
+
+def plan_study_queue(user, words, limit=0, new_limit=None):
+    """Như `build_study_queue` nhưng giữ lại từ mới vượt `new_limit` (spec.md T6.1).
+
+    Từ mới vượt hạn mức bị BỎ khỏi hàng đợi (không dời xuống cuối), từ đến hạn
+    và từ đã học giữ nguyên. `held_new` chỉ đếm những từ mới mà không có hạn
+    mức thì đã lọt vào lượt học (sau khi cắt `limit`) — để thông báo đúng con
+    số người học bị "mất".
+    """
+    ordered = _order_study_ids(user, words)
+    cut = (lambda ids: ids[:limit]) if limit else (lambda ids: ids)
+    if new_limit is None:
+        return StudyPlan(cut([vid for _, vid in ordered]))
+
+    capped, taken = [], 0
+    for bucket, vid in ordered:
+        if bucket == _BUCKET_NEW:
+            if taken >= new_limit:
+                continue
+            taken += 1
+        capped.append(vid)
+    new_ids = {vid for bucket, vid in ordered if bucket == _BUCKET_NEW}
+    uncapped_new = sum(1 for vid in cut([vid for _, vid in ordered]) if vid in new_ids)
+    capped = cut(capped)
+    return StudyPlan(capped, uncapped_new - sum(1 for vid in capped if vid in new_ids))
+
+
+def _order_study_ids(user, words):
+    """[(nhóm, id)] theo thứ tự học: đến hạn -> chưa học -> chưa tới hạn."""
     ordered_ids = [word.pk for word in words[:STUDY_SOURCE_CAP]]
     if not ordered_ids:
         return []
@@ -581,11 +660,10 @@ def build_study_queue(user, words, limit=0):
             return (_BUCKET_DUE, due_date.toordinal(), index)
         return (_BUCKET_LATER, due_date.toordinal(), index)
 
-    queue = [
-        vocab_id
-        for _, vocab_id in sorted(enumerate(ordered_ids), key=sort_key)
+    return [
+        (sort_key(item)[0], item[1])
+        for item in sorted(enumerate(ordered_ids), key=sort_key)
     ]
-    return queue[:limit] if limit else queue
 
 
 # =============================================================================
@@ -836,8 +914,7 @@ def _daily_new_ids(user, count):
 
 def _daily_parts(user):
     due = _daily_due_ids(user)[:STUDY_SOURCE_CAP]
-    new_left = max(0, user.daily_review_goal - count_new_words_today(user))
-    return due, _daily_new_ids(user, new_left)
+    return due, _daily_new_ids(user, new_word_allowance(user).left)
 
 
 def build_daily_queue(user):

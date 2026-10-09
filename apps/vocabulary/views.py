@@ -28,12 +28,12 @@ import re
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import QueryDict
 from django.shortcuts import get_object_or_404, render
 
 from apps.core import pagination
 from apps.core.properties import label
-from apps.core.utils import TOPIC_PARAM, topic_filter_bar
+from apps.core.utils import topic_filter_bar
+from apps.learning import services as learning_services
 from apps.learning.models import UserVocabularyProgress
 
 from . import selectors
@@ -55,20 +55,9 @@ STATUS_LEARNING = selectors.STATUS_LEARNING
 STATUS_MASTERED = selectors.STATUS_MASTERED
 
 
-def _filter_params(selected_slugs, statuses, query, session_limit):
-    """Bộ lọc ĐÃ CHUẨN HOÁ dưới dạng QueryDict (không có `page`/`per_page`).
-
-    Dựng lại từ giá trị sạch thay vì chép request.GET: giá trị rác bị loại,
-    slug trên route được đưa vào, nên trang 2 lọc y hệt trang 1.
-    """
-    params = QueryDict(mutable=True)
-    params[selectors.FILTERED_PARAM] = "1"
-    params.setlist(TOPIC_PARAM, list(selected_slugs))
-    params.setlist(selectors.STATUS_PARAM, list(statuses))
-    if query:
-        params[selectors.SEARCH_PARAM] = query
-    params[selectors.LIMIT_PARAM] = str(session_limit)
-    return params
+# Dựng lại từ giá trị sạch thay vì chép request.GET: giá trị rác bị loại, slug
+# trên route được đưa vào, nên trang 2 lọc y hệt trang 1.
+_filter_params = selectors.filter_params
 
 
 def _natural_key(topic):
@@ -197,7 +186,29 @@ def vocabulary_list_view(request, topic_slug=None):
     # Chỉ "mượn" chủ đề cho link học khi đang lọc đúng MỘT chủ đề.
     _attach_study_status(request.user, page.object_list, fallback_topic=only_topic)
 
+    # Hạn mức từ mới (spec.md T6.1): tính TRƯỚC khi bấm "Bắt đầu học" bằng
+    # đúng hàm dựng hàng đợi của learning:study_start, để con số trên trang và
+    # lượt học thật không lệch nhau.
+    allowance = learning_services.new_word_allowance(request.user)
+    plan = learning_services.plan_study_queue(
+        request.user, words, limit=session_limit, new_limit=allowance.left
+    )
+    over_limit = None
+    if plan.held_new:
+        over_limit = learning_services.over_limit_forecast(
+            request.user, min(plan.held_new, allowance.goal), allowance
+        )
+        over_limit["hidden_fields"] = [
+            *((key, value) for key in params for value in params.getlist(key)
+              if key != selectors.FILTERED_PARAM),
+            (selectors.OVER_LIMIT_PARAM, "1"),
+        ]
+
     context.update({
+        "can_start": bool(plan.queue),
+        "start_count": len(plan.queue),
+        "held_new": plan.held_new,
+        "over_limit": over_limit,
         "pager": pager,
         "page_obj": page,
         "paginator": pager["paginator"],

@@ -430,12 +430,18 @@ def flashcard_view(request, topic_slug):
         session = _close_study_session(request, session_id_key)
         request.session.pop(total_key, None)
         undo = _last_undo(request, flow)
+        more_new_batch = min(queue.more_new_count, queue.new_limit or 1)
         return _render_card(request, {
             "topic": topic, "word": None, "scope_label": topic.display_name,
             "summary": _session_summary(request, session),
             "streak_days": services.get_streak_days(request.user),
             "queue": queue,
-            "more_new_batch": min(queue.more_new_count, queue.new_limit or 1),
+            "more_new_batch": more_new_batch,
+            # Khối "Vẫn học thêm" báo trước cái giá: ngày mai thêm ~N từ ôn.
+            "over_limit": (
+                services.over_limit_forecast(request.user, more_new_batch)
+                if queue.more_new else None
+            ),
             "due_tomorrow": services.count_due_tomorrow(request.user),
             "undo_word": undo["word"] if undo else "",
         })
@@ -946,11 +952,35 @@ def study_start_view(request):
     words = vocab_selectors.filter_vocabulary(
         request.user, topics=topics, query=query, statuses=statuses
     )
-    queue = services.build_study_queue(request.user, words, limit=limit)
+    # Hạn mức từ mới chung (spec.md T6.1). "Vẫn học thêm" mở thêm đúng MỘT
+    # hạn mức mỗi lần bấm, không mở "tất cả".
+    allowance = services.new_word_allowance(request.user)
+    over_limit = request.POST.get(vocab_selectors.OVER_LIMIT_PARAM) == "1"
+    plan = services.plan_study_queue(
+        request.user, words, limit=limit,
+        new_limit=allowance.left + (allowance.goal if over_limit else 0),
+    )
+    queue = plan.queue
 
     if not queue:
+        if plan.held_new:
+            # Toàn từ mới mà hôm nay đã hết hạn mức: quay lại đúng bộ lọc, SC05
+            # hiện khối "Vẫn học thêm" để người học tự quyết.
+            flash.warning(request, message(
+                "learning.study.error.new_limit_reached",
+                learned=allowance.learned_today, goal=allowance.goal,
+            ))
+            params = vocab_selectors.filter_params(
+                [t.slug for t in topics], statuses, query, limit
+            )
+            return redirect(f"{reverse('vocabulary:index')}?{params.urlencode()}")
         flash.error(request, message("learning.study.error.empty_queue"))
         return redirect("vocabulary:index")
+    if plan.held_new:
+        flash.info(request, message(
+            "learning.study.hint.new_held",
+            learned=allowance.learned_today, goal=allowance.goal, held=plan.held_new,
+        ))
 
     # Phiên bắt đầu từ SC05 luôn là ôn "chính thức": chấm điểm và đẩy lịch.
     _start_study_session(

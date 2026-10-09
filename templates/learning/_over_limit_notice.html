@@ -1,0 +1,23 @@
+{% load properties_tags %}
+{% comment %}Khối "Vẫn học thêm N từ mới" khi đã đủ hạn mức từ mới hôm nay
+(spec.md T6.1, 09/10/2026) — dùng chung cho SC04 (màn xong của chủ đề) và
+SC05 (trên nút "Bắt đầu học"). App khuyên chứ không cấm: người học vẫn bấm
+được, nhưng thấy trước cái giá — ngày mai có thêm ~N từ cần ôn.
+
+  {% include "learning/_over_limit_notice.html" with notice=over_limit action_url=url hidden_fields=pairs ajax=True %}
+
+  notice         dict từ services.over_limit_forecast(): learned, goal, extra, tomorrow
+  action_url     form POST tới đây (flashcard_more_new / study_start)
+  hidden_fields  [(name, value)] gửi kèm (bộ lọc SC05) — tuỳ chọn
+  ajax           True: form có data-card-ajax (SC04 thay thẻ tại chỗ)
+  primary        True: nút là nút chính của màn{% endcomment %}
+<div class="over-limit-notice" role="note">
+  <p class="m-0">{% message "learning.over_limit.hint.reached" learned=notice.learned goal=notice.goal %}</p>
+  <p class="muted m-0">{% message "learning.over_limit.hint.forecast" count=notice.extra tomorrow=notice.tomorrow %}
+    <a href="{% url 'accounts:settings' %}">{% label "learning.over_limit.link.settings" %}</a></p>
+  <form method="post" action="{{ action_url }}" class="over-limit-form"{% if ajax %} data-card-ajax{% endif %}>
+    {% csrf_token %}
+    {% for name, value in hidden_fields %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
+    <button type="submit" class="btn {% if primary %}btn-primary{% else %}btn-outline{% endif %}" data-loading-text="{% label 'common.loading' %}">{% message "learning.over_limit.button.more" count=notice.extra %}</button>
+  </form>
+</div>

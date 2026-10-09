@@ -201,14 +201,16 @@ data-undo-text, data-discussion-toggle / data-discussion-body.
 
     {% if queue %}
       <p class="muted session-note">{% message "learning.flashcard.hint.new_today" done=queue.new_today limit=queue.new_limit %}</p>
-      {% if queue.more_new %}
-        <p class="muted session-note">{% message "learning.flashcard.hint.new_limit_reached" count=queue.more_new_count limit=queue.new_limit %}
-          <a href="{% url 'accounts:settings' %}">{% label "common.nav.settings" %}</a>.</p>
-        {% comment %}Mở thêm một nhóm từ mới cho riêng chủ đề này, hôm nay.{% endcomment %}
-        <form method="post" action="{% url 'learning:flashcard_more_new' topic.slug %}" class="session-more" data-card-ajax>
-          {% csrf_token %}
-          <button type="submit" class="btn {% if summary.again_words %}btn-outline{% else %}btn-primary{% endif %}">{% message "learning.flashcard.button.more_new" count=more_new_batch %}</button>
-        </form>
+      {% if queue.more_new and over_limit %}
+        {% comment %}Mở thêm một nhóm từ mới cho riêng chủ đề này, hôm nay —
+        kèm báo trước số từ phải ôn ngày mai (spec.md T6.1).{% endcomment %}
+        <p class="muted session-note">{% message "learning.flashcard.hint.new_limit_reached" count=queue.more_new_count %}</p>
+        {% url 'learning:flashcard_more_new' topic.slug as more_new_url %}
+        {% if summary.again_words %}
+          {% include "learning/_over_limit_notice.html" with notice=over_limit action_url=more_new_url ajax=True %}
+        {% else %}
+          {% include "learning/_over_limit_notice.html" with notice=over_limit action_url=more_new_url ajax=True primary=True %}
+        {% endif %}
       {% endif %}
     {% endif %}
     <p class="muted session-note">{% message "learning.flashcard.hint.due_tomorrow" count=due_tomorrow %}</p>

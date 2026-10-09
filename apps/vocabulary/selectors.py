@@ -11,6 +11,7 @@ Hai nơi PHẢI cho ra cùng một tập từ, nếu không người học sẽ 
 from datetime import timedelta
 
 from django.db.models import Exists, F, OuterRef, Q
+from django.http import QueryDict
 
 from apps.core.utils import TOPIC_PARAM
 from apps.learning.models import UserVocabularyProgress
@@ -24,6 +25,9 @@ LIMIT_PARAM = "limit"
 # Cờ đánh dấu "người dùng đã bấm Lọc". Vào trang trần (không có cờ, không có
 # tham số lọc nào) thì view KHÔNG đụng vào DB — xem `is_filter_request()`.
 FILTERED_PARAM = "filtered"
+# "Vẫn học thêm N từ mới" (spec.md T6.1): POST lại bộ lọc kèm cờ này để mở thêm
+# MỘT hạn mức từ mới vượt hạn mức ngày.
+OVER_LIMIT_PARAM = "over_limit"
 
 # --- Trạng thái học ---------------------------------------------------------
 STATUS_NEW = "new"
@@ -67,6 +71,22 @@ def is_filter_request(data, forced=False):
         return True
     keys = (FILTERED_PARAM, TOPIC_PARAM, SEARCH_PARAM, STATUS_PARAM, "page")
     return any(data.get(key) for key in keys)
+
+
+def filter_params(topic_slugs, statuses, query, session_limit):
+    """Bộ lọc SC05 ĐÃ CHUẨN HOÁ dưới dạng QueryDict (không có `page`/`per_page`).
+
+    Dùng chung cho link phân trang của SC05 và đường quay lại SC05 từ
+    `learning.study_start_view` — hai nơi phải ra cùng một URL lọc.
+    """
+    params = QueryDict(mutable=True)
+    params[FILTERED_PARAM] = "1"
+    params.setlist(TOPIC_PARAM, list(topic_slugs))
+    params.setlist(STATUS_PARAM, list(statuses))
+    if query:
+        params[SEARCH_PARAM] = query
+    params[LIMIT_PARAM] = str(session_limit)
+    return params
 
 
 def clean_statuses(values):

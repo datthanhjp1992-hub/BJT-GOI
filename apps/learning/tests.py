@@ -587,7 +587,11 @@ class StudySessionViewTests(LearningTestCase):
         self.assertLessEqual(len(queue), 10)
 
     def test_missing_limit_means_every_word(self):
-        """01/10/2026: SC05 mặc định "Tất cả" — POST thiếu/lạ limit thì học hết."""
+        """01/10/2026: SC05 mặc định "Tất cả" — POST thiếu/lạ limit thì học hết.
+
+        Hạn mức từ mới (T6.1) nâng lên 30 để test chỉ đo `limit`."""
+        self.user.daily_review_goal = 30
+        self.user.save(update_fields=["daily_review_goal"])
         words = [f"語{i:02d}" for i in range(25)]
         self._make_topic("Nhiều từ", "nhieu-tu", words)
         self._start(topic="nhieu-tu")
@@ -2200,3 +2204,139 @@ class StudyDeckTests(ReviewTestCase):
         self.assertNotContains(response, "<html")
         deck = self._deck()
         self.assertEqual(deck["cards"][str(vocab.pk)]["comments"], 1)
+
+
+class NewWordAllowanceTests(LearningTestCase):
+    """spec.md T6.1 — một hạn mức từ mới cho MỌI lối vào."""
+
+    def setUp(self):
+        super().setUp()
+        self.user.daily_review_goal = 3
+        self.user.save(update_fields=["daily_review_goal"])
+        self.topic = self._make_topic(
+            "Nhiều từ", "nhieu-tu", [f"語{i:02d}" for i in range(10)]
+        )
+        self.words = list(self.topic.vocabularies.order_by("word"))
+
+    def _learn(self, *vocabs):
+        for vocab in vocabs:
+            services.review_word(services.get_or_start_progress(self.user, vocab), 5)
+
+    def _start(self, **data):
+        data.setdefault("topic", "nhieu-tu")
+        return self.client.post(reverse("learning:study_start"), data)
+
+    def test_allowance_counts_new_words_learned_today(self):
+        allowance = services.new_word_allowance(self.user)
+        self.assertEqual((allowance.goal, allowance.learned_today, allowance.left), (3, 0, 3))
+        self._learn(*self.words[:2])
+        self.assertEqual(services.new_word_allowance(self.user).left, 1)
+        self._learn(*self.words[2:5])
+        self.assertEqual(services.new_word_allowance(self.user).left, 0)
+
+    def test_undoing_a_first_grade_gives_the_word_back(self):
+        page = reverse("learning:flashcard", args=["nhieu-tu"])
+        word = self.client.get(page).context["word"]
+        self.client.post(
+            reverse("learning:flashcard_review", args=[word.pk]),
+            {"quality": "nho", "topic_slug": "nhieu-tu"},
+        )
+        self.assertEqual(services.new_word_allowance(self.user).left, 2)
+        self.client.post(reverse("learning:undo"))
+        self.assertEqual(services.new_word_allowance(self.user).left, 3)
+
+    def test_plan_keeps_due_words_and_caps_new_ones(self):
+        due = self.words[9]
+        self._progress(due, due_offset=-1)
+        words = vocab_selectors.filter_vocabulary(self.user, topics=[self.topic])
+        plan = services.plan_study_queue(self.user, words, new_limit=2)
+        self.assertEqual(plan.queue, [due.pk, self.words[0].pk, self.words[1].pk])
+        self.assertEqual(plan.held_new, 7)
+        # Không truyền new_limit = hành vi cũ (SC15).
+        self.assertEqual(len(services.build_study_queue(self.user, words)), 10)
+
+    def test_held_new_only_counts_words_the_session_limit_would_have_taken(self):
+        words = vocab_selectors.filter_vocabulary(self.user, topics=[self.topic])
+        plan = services.plan_study_queue(self.user, words, limit=2, new_limit=3)
+        self.assertEqual((len(plan.queue), plan.held_new), (2, 0))
+        plan = services.plan_study_queue(self.user, words, limit=5, new_limit=3)
+        self.assertEqual((len(plan.queue), plan.held_new), (3, 2))
+
+    def test_sc05_start_caps_new_words_and_says_so(self):
+        response = self._start(limit="0")
+        self.assertRedirects(response, reverse("learning:study"), fetch_redirect_response=False)
+        self.assertEqual(self.client.session["study_queue"], [w.pk for w in self.words[:3]])
+        page = self.client.get(reverse("learning:study"))
+        self.assertContains(page, "giữ lại 7 từ mới")
+
+    def test_sc05_start_with_only_new_words_past_the_cap_goes_back_to_the_filter(self):
+        self._learn(*self._make_topic("Khác", "khac", ["他1", "他2", "他3"]).vocabularies.all())
+        sessions = StudySession.objects.count()
+        response = self._start(limit="0", status="new")
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response["Location"].startswith(reverse("vocabulary:index") + "?"))
+        self.assertIn("topic=nhieu-tu", response["Location"])
+        self.assertIn("status=new", response["Location"])
+        self.assertEqual(StudySession.objects.count(), sessions)
+        self.assertFalse(self.client.session.get("study_queue"))
+
+    def test_over_limit_opens_exactly_one_more_allowance(self):
+        self._learn(*self.words[7:])
+        self._start(limit="0", status="new", over_limit="1")
+        self.assertEqual(self.client.session["study_queue"], [w.pk for w in self.words[:3]])
+        self._learn(*self.words[:3])
+        self._start(limit="0", status="new", over_limit="1")
+        self.assertEqual(self.client.session["study_queue"], [w.pk for w in self.words[3:6]])
+
+    def test_sc05_shows_the_over_limit_notice_with_the_same_filter(self):
+        self._learn(*self.words[7:])
+        page = self.client.get(
+            reverse("vocabulary:index"),
+            {"topic": "nhieu-tu", "status": "new", "filtered": "1", "limit": "0"},
+        )
+        self.assertFalse(page.context["can_start"])
+        notice = page.context["over_limit"]
+        self.assertEqual((notice["learned"], notice["goal"], notice["extra"]), (3, 3, 3))
+        self.assertIn(("over_limit", "1"), notice["hidden_fields"])
+        self.assertIn(("topic", "nhieu-tu"), notice["hidden_fields"])
+        self.assertIn(("status", "new"), notice["hidden_fields"])
+        self.assertContains(page, "Vẫn học thêm 3 từ mới")
+
+    def test_sc05_without_held_words_shows_no_notice(self):
+        page = self.client.get(
+            reverse("vocabulary:index"), {"topic": "nhieu-tu", "filtered": "1", "limit": "10"}
+        )
+        self.assertTrue(page.context["can_start"])
+        self.assertEqual(page.context["held_new"], 7)
+        self.assertEqual(page.context["start_count"], 3)
+        self.assertContains(page, "Lượt này học 3 từ")
+        self.user.daily_review_goal = 20
+        self.user.save(update_fields=["daily_review_goal"])
+        page = self.client.get(
+            reverse("vocabulary:index"), {"topic": "nhieu-tu", "filtered": "1", "limit": "0"}
+        )
+        self.assertIsNone(page.context["over_limit"])
+        self.assertNotContains(page, "Vẫn học thêm")
+
+    def test_forecast_adds_the_extra_words_to_tomorrow(self):
+        self._progress(self.words[9], due_offset=1)  # card_state mặc định "review"
+        notice = services.over_limit_forecast(self.user, 3)
+        self.assertEqual(notice["tomorrow"], 4)
+
+    def test_sc04_done_screen_shows_the_forecast(self):
+        self._learn(*self.words[:3])
+        page = self.client.get(reverse("learning:flashcard", args=["nhieu-tu"]))
+        self.assertIsNone(page.context["word"])
+        self.assertEqual(page.context["over_limit"]["extra"], 3)
+        self.assertContains(page, "Vẫn học thêm 3 từ mới")
+        self.assertContains(page, reverse("learning:flashcard_more_new", args=["nhieu-tu"]))
+
+    def test_sc15_review_is_not_capped(self):
+        self._learn(*self.words[:3])
+        for vocab in self.words[3:]:
+            self._progress(vocab, due_offset=0)
+        response = self.client.post(
+            reverse("learning:review_start"), {"scope": "due", "limit": "0"}
+        )
+        self.assertRedirects(response, reverse("learning:study"))
+        self.assertEqual(len(self.client.session["study_queue"]), 7)
