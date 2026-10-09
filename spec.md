@@ -996,7 +996,7 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
 ### Phase 6 — Khối lượng ôn tập (duyệt 09/10/2026)
 - [x] T6.1 Hạn mức từ mới chung cho mọi lối vào + khối "Vẫn học thêm" (F) — code xong 09/10/2026, chờ Dat chạy trên server thật
 - [x] T6.2 Hoãn từ dở bước học sang mai, ưu tiên đầu hàng, "Nhớ" là tốt nghiệp (V3) — code xong 09/10/2026, chờ Dat chạy trên server thật
-- [ ] T6.3 Vuốt lên = Dễ (V1)
+- [x] T6.3 Vuốt lên = Dễ (V1) — code xong 09/10/2026, chờ Dat thử trên điện thoại thật
 - [ ] T6.4 Báo kết quả sau mỗi lần chấm (V2)
 - [ ] T6.5 Tự giảm / tạm dừng từ mới khi nợ ôn cao (B)
 - [ ] T6.6 Hướng dẫn cử chỉ lần đầu (V5)
@@ -1048,6 +1048,22 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
 - **Với 121 từ đang kẹt trên server thật:** không cần chạy script dữ liệu — chúng thoả định nghĩa
   "từ dở" (`next_review_date` 08/10, `due_at` hôm 08/10) nên sau khi deploy tự lên đầu "Học hôm
   nay", tính vào "đến hạn hôm nay" và mỗi từ "Nhớ" một lần là tốt nghiệp.
+
+### Ghi chú T6.3 (09/10/2026) — để đối chiếu khi review
+- `main.js initCardSwipe`: hướng chốt ở ~10px đầu — ngang (trái Quên / phải Nhớ như cũ), **lên**
+  → nút `data-grade-key="4"` (Dễ), xuống → không chấm. Bảng `SWIPE_KEYS`.
+- **Khác bản spec:** `touch-action:none` cho thẻ đã lật áp theo media `(hover:none) and
+  (pointer:coarse)` (mọi thiết bị cảm ứng, kể cả tablet) thay vì `≤ 560px` — tablet cũng cần
+  vuốt lên ăn chắc. Để kéo XUỐNG trên thẻ vẫn cuộn được trang, JS tự `scrollBy` theo ngón tay.
+- Màu viền `swipe-up` dùng token `--accent` / `--accent-soft` (màu nút Dễ) → tự đúng 3 theme + tối.
+  `study_deck.js` dọn thêm class `swipe-up` khi đổi thẻ.
+- Label `learning.flashcard.hint.swipe` = "Vuốt thẻ: ← Quên rồi · → Nhớ · ↑ Dễ"; bảng phím tắt
+  thêm dòng cử chỉ (`learning.flashcard.shortcut.swipe`).
+- Kiểm trên Chromium (Playwright + CDP `Input.dispatchTouchEvent`, 375×812, cảm ứng) ở cả SC04
+  và phiên có bộ thẻ: lên → Dễ (từ mới `review` 4 ngày), phải → Nhớ, trái → Quên; chưa lật thẻ /
+  vuốt ngắn < 80px / vuốt xuống → không chấm; kéo xuống trên thẻ cuộn trang (scrollY 120 → 40).
+  **Chưa thử trên iPhone/Android thật.**
+- Test: `SwipeUpMarkupTests` (2) + 2 rule mới trong `StudyScreenCssTests`.
 
 ### Ghi chú T4.3 (06/10/2026) — để đối chiếu khi review
 - **Khác bản duyệt:**

@@ -712,6 +712,8 @@ html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
 .flashcard.is-swiping{transition:none;}
 .flashcard.swipe-left{border-color:#B23A2A;box-shadow:0 0 0 3px rgba(178,58,42,.22);}
 .flashcard.swipe-right{border-color:#2E7D5B;box-shadow:0 0 0 3px rgba(46,125,91,.22);}
+/* Vuốt lên = Dễ (T6.3): màu của nút Dễ (nút chính, --accent) nên tự theo theme + chế độ tối. */
+.flashcard.swipe-up{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 .swipe-hint{display:none;text-align:center;font-size:12.5px;margin:10px 0 0;}
 /* -- Phím tắt (T1.3) -- */
 .kbd{display:inline-block;min-width:1.6em;padding:0 5px;border:1px solid currentColor;border-bottom-width:2px;border-radius:4px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;font-weight:400;line-height:1.5;text-align:center;opacity:.55;vertical-align:middle;}
@@ -730,6 +732,10 @@ html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
 @media (hover:none) and (pointer:coarse){
   .kbd,.shortcut-open{display:none !important;}
   .swipe-hint{display:block;}
+  /* T6.3: thẻ đã lật nhận cả vuốt LÊN -> trình duyệt không được cuộn khi kéo
+     trên thẻ; main.js tự cuộn khi kéo xuống. Ví dụ / thảo luận nằm ngoài
+     .flashcard nên vẫn cuộn bình thường. */
+  .study-screen.is-revealed .flashcard{touch-action:none;}
 }
 /* -- Khu thảo luận gập lại (T1.5) -- */
 .study-discussion{margin-top:28px;padding-top:12px;border-top:1px solid var(--border);}

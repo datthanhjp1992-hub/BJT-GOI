@@ -1783,6 +1783,8 @@ class StudyScreenCssTests(TestCase):
         ".kbd",
         ".shortcut-dialog",
         ".flashcard.swipe-left",
+        ".flashcard.swipe-up",
+        ".study-screen.is-revealed .flashcard{touch-action:none;}",
         ".session-done",
         "env(safe-area-inset-bottom)",
         "prefers-reduced-motion",
@@ -2533,3 +2535,24 @@ class LeftoverLearningTests(LearningTestCase):
             UserVocabularyProgress.objects.filter(pk=row.pk).exists(),
             "hoàn tác lần chấm đầu của từ mới xoá dòng tiến độ",
         )
+
+
+class SwipeUpMarkupTests(LearningTestCase):
+    """spec.md T6.3 — vuốt lên = Dễ. Cử chỉ chạy ở main.js (kiểm thủ công bằng
+    Chromium + CDP touch); ở đây chỉ chốt phần server dựng ra."""
+
+    def test_study_screen_explains_the_three_swipes(self):
+        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        page = self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+        self.assertContains(page, "Vuốt thẻ: ← Quên rồi · → Nhớ · ↑ Dễ")
+        self.assertContains(page, "vuốt trái Quên rồi · phải Nhớ · lên Dễ")
+        # main.js tìm nút Dễ bằng data-grade-key="4".
+        self.assertContains(page, 'value="de" data-grade-key="4"')
+
+    def test_main_js_maps_swipe_up_to_the_easy_button(self):
+        from pathlib import Path
+
+        from django.conf import settings
+
+        js = (Path(settings.BASE_DIR) / "static/js/main.js").read_text(encoding="utf-8")
+        self.assertIn('var SWIPE_KEYS = { right: "3", left: "1", up: "4" };', js)

@@ -10,7 +10,7 @@
 //       header X-Card-Partial: 1; server trả riêng phần thẻ (views._render_card)
 //       và ta thay bên trong #card-panel. Lỗi mạng -> gửi form kiểu thường.
 //    c) Phím tắt: Space lật · 1-4 chấm · Z hoàn tác · E ví dụ · ? bảng phím tắt.
-//    d) Vuốt trên điện thoại: trái = Quên rồi, phải = Nhớ (khi đã lật thẻ).
+//    d) Vuốt trên điện thoại: trái = Quên rồi, phải = Nhớ, lên = Dễ (khi đã lật thẻ).
 //    e) Chế độ tập trung: nút ☰ mở/ẩn sidebar, nhớ trong localStorage.
 //
 //    Mọi listener gắn ở document / #card-panel (event delegation) vì nội dung
@@ -186,6 +186,13 @@ function initStudyShortcuts() {
   });
 }
 
+// Vuốt thẻ đã lật để chấm (T1.6 + spec.md T6.3): phải = Nhớ (phím 3),
+// trái = Quên rồi (phím 1), LÊN = Dễ (phím 4). Hướng chốt một lần ở ~10px đầu.
+// Trên thiết bị cảm ứng thẻ đã lật có `touch-action:none` (base.css) để trình
+// duyệt không cuộn trang khi kéo trên thẻ — vì vậy kéo XUỐNG tự cuộn trang
+// bằng tay ở đây (iOS Safari không hỗ trợ touch-action:pan-down).
+var SWIPE_KEYS = { right: "3", left: "1", up: "4" };
+
 function initCardSwipe() {
   var card = null;
   var start = null;
@@ -193,7 +200,7 @@ function initCardSwipe() {
   function reset() {
     if (card) {
       card.style.transform = "";
-      card.classList.remove("is-swiping", "swipe-left", "swipe-right");
+      card.classList.remove("is-swiping", "swipe-left", "swipe-right", "swipe-up");
     }
     card = null;
     start = null;
@@ -203,34 +210,50 @@ function initCardSwipe() {
     var target = event.target.closest && event.target.closest("[data-flashcard]");
     if (!target || event.touches.length !== 1 || !isRevealed(studyScreen()) || isPanelBusy()) { return; }
     card = target;
-    start = { x: event.touches[0].clientX, y: event.touches[0].clientY, dx: 0, horizontal: null };
+    var t = event.touches[0];
+    start = { x: t.clientX, y: t.clientY, lastY: t.clientY, dx: 0, dy: 0, dir: null };
   }, { passive: true });
 
   document.addEventListener("touchmove", function (event) {
     if (!card || !start) { return; }
-    var dx = event.touches[0].clientX - start.x;
-    var dy = event.touches[0].clientY - start.y;
-    // Quyết định hướng một lần: vuốt dọc là cuộn trang, không đụng tới thẻ.
-    if (start.horizontal === null && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
-      start.horizontal = Math.abs(dx) > Math.abs(dy);
+    var t = event.touches[0];
+    var dx = t.clientX - start.x;
+    var dy = t.clientY - start.y;
+    if (start.dir === null && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+      start.dir = Math.abs(dx) > Math.abs(dy) ? "h" : (dy < 0 ? "up" : "down");
     }
-    if (!start.horizontal) { return; }
-    start.dx = dx;
+    if (start.dir === "down") {
+      window.scrollBy(0, start.lastY - t.clientY);
+      start.lastY = t.clientY;
+      return;
+    }
+    if (start.dir === null) { return; }
     card.classList.add("is-swiping");
-    card.style.transform = "translateX(" + dx + "px) rotate(" + (dx / 25) + "deg)";
-    card.classList.toggle("swipe-left", dx <= -SWIPE_THRESHOLD);
-    card.classList.toggle("swipe-right", dx >= SWIPE_THRESHOLD);
+    if (start.dir === "h") {
+      start.dx = dx;
+      card.style.transform = "translateX(" + dx + "px) rotate(" + (dx / 25) + "deg)";
+      card.classList.toggle("swipe-left", dx <= -SWIPE_THRESHOLD);
+      card.classList.toggle("swipe-right", dx >= SWIPE_THRESHOLD);
+    } else {
+      start.dy = Math.min(0, dy);   // đã chốt "lên" thì kéo ngược xuống chỉ về 0
+      card.style.transform = "translateY(" + start.dy + "px)";
+      card.classList.toggle("swipe-up", start.dy <= -SWIPE_THRESHOLD);
+    }
   }, { passive: true });
 
   document.addEventListener("touchend", function () {
     if (!card || !start) { return; }
-    var dx = start.dx;
+    var dir = null;
+    if (start.dir === "h" && Math.abs(start.dx) >= SWIPE_THRESHOLD) {
+      dir = start.dx > 0 ? "right" : "left";
+    } else if (start.dir === "up" && start.dy <= -SWIPE_THRESHOLD) {
+      dir = "up";
+    }
     reset();
-    if (Math.abs(dx) < SWIPE_THRESHOLD) { return; }
+    if (!dir) { return; }
     suppressCardClick = true;
     setTimeout(function () { suppressCardClick = false; }, 400);
-    // Phải = "Nhớ" (phím 3), trái = "Quên rồi" (phím 1).
-    var button = document.querySelector('[data-study-card] [data-grade-key="' + (dx > 0 ? "3" : "1") + '"]');
+    var button = document.querySelector('[data-study-card] [data-grade-key="' + SWIPE_KEYS[dir] + '"]');
     if (button) { button.click(); }
   });
   document.addEventListener("touchcancel", reset);
