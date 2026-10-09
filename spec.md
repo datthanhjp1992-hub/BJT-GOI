@@ -36,6 +36,7 @@ Giữ đúng các quy ước đang có trong dự án:
 | 3 | Luồng sử dụng: nút "Học hôm nay", hướng dẫn lần đầu, trạng thái trống/đang tải | ⭐ Cao (cần duyệt nghiệp vụ) | 3–4 ngày |
 | 4 | Hiệu năng & hạ tầng: cold start Render, đo và giảm số query, **học liền mạch (T4.3)** | ⭐ Cao (T4.3) / Trung bình | 1–2 ngày + T4.3: 4–5 ngày |
 | 5 | Mở rộng: nhắc học (email/PWA), đưa kính ngữ vào SRS | Thấp (làm sau) | Tách spec riêng |
+| 6 | Kiểm soát khối lượng ôn tập: hạn mức từ mới cho mọi lối vào, từ dở bước học, vuốt "Dễ", báo kết quả chấm, tự giảm từ mới khi nợ ôn | ⭐ Cao nhất (09/10/2026) | 4–5 ngày |
 
 **Thứ tự đề xuất:** Phase 1 → Phase 2 → Phase 3 → Phase 4. Phase 2 có thể làm
 song song với Phase 1, nhưng nên merge Phase 2 **trước** khi làm các màn mới ở
@@ -610,6 +611,349 @@ tổng kết khớp với cách cũ; tắt JS vẫn học được.
 
 ---
 
+## Phase 6 — Kiểm soát khối lượng ôn tập
+
+> Lập 09/10/2026 · Trạng thái: **Bản nháp — chờ Dat duyệt** (Dat đồng ý hướng ngày 09/10/2026,
+> các con số/ngưỡng ở mục "Cần chốt" cuối phase chờ duyệt).
+> Làm **trước** T4.2 / T4.3.8 — đây là vấn đề người học đang gặp thật.
+
+### Bối cảnh — số liệu thật (Dat, 09/10/2026)
+
+Trang chủ báo **254 từ cần ôn · 20 từ mới · khoảng 92 phút**, người học không còn
+thời gian cho từ mới. Truy vấn trên Supabase cho thấy:
+
+| Nhóm | Số từ | Giải thích |
+|---|---|---|
+| `learning`, ngày ôn 08/10 (đã quá hạn) | 121 | Từ mới học 08/10, mới chấm "Nhớ" **một** lần (còn bước 10 phút) thì phiên dừng |
+| `review`, đến hạn 09/10 | 133 | Từ đã tốt nghiệp, phần lớn là từ học 08/10 được hẹn sau 1 ngày |
+
+| Ngày | Từ mới | So với hạn mức 20 |
+|---|---|---|
+| 08/10 | 143 | ×7 |
+| 06/10 | 147 | ×7 (9 phiên; Lesson18/19/20 học theo một chủ đề: 29 + 50 + 81 lượt chấm) |
+| 01/10 | 100 | ×5 |
+| 30/09 | 50 | ×2,5 |
+
+Tỉ lệ "đúng" của các phiên: 93–100%. Dat học chủ yếu trên điện thoại và **vuốt thẻ để
+sang từ kế** — vuốt phải luôn là "Nhớ", không có cách vuốt ra "Dễ".
+
+**Kết luận:** thuật toán SM-2 (`srs.py`) chạy đúng. Khối lượng phình vì:
+1. Có **lối vào học từ mới không bị giới hạn**: SC05 "Bắt đầu học" (mặc định "Tất cả",
+   `build_study_queue` không cắt từ mới) và nút "Học thêm N từ mới" ở SC04.
+2. **Hạn mức từ mới không phụ thuộc lượng nợ ôn** — nợ 254 từ vẫn mời thêm 20 từ mới.
+3. Từ mới cần **hai** lần "Nhớ" (bước 1 phút → 10 phút) mới tốt nghiệp. Với luật "hết lượt
+   rồi mới ôn lại" (01/10/2026), lượt lặp dồn về cuối phiên; phiên dài bỏ dở là hàng trăm từ
+   kẹt ở `learning`.
+4. Trên điện thoại chỉ có Quên/Nhớ: từ đã biết chắc vẫn đi lịch 1 → 6 → 15 ngày thay vì
+   tốt nghiệp ngay với "Dễ" (4 ngày). Người học cũng không thấy rõ vuốt = chấm điểm.
+
+Mô phỏng bằng chính `srs.schedule()` (học đều mỗi ngày, quên 10%): 20 từ mới/ngày → sau
+30 ngày ~73 từ ôn/ngày, sau 120 ngày ~125. 10 từ mới/ngày → ~35 / ~55. Tức số ôn mỗi
+ngày ổn định ở khoảng **5–8 × số từ mới mỗi ngày** — giữ được hạn mức từ mới là giữ được
+khối lượng ôn.
+
+### Không làm
+- **V4 — rút bước học của từ mới xuống 1 bước:** Dat chốt **không làm** (09/10/2026). T6.2
+  đã xử lý phần "kẹt bước học", còn bước 10 phút vẫn có ích cho việc nhớ trong ngày đầu.
+- Giới hạn cứng số từ ÔN mỗi ngày: để sau, xem lại khi T6.1 + T6.5 chạy ổn một thời gian.
+- Không đổi thuật toán SM-2 cho từ đang ở `review`, không đổi ngưỡng "đã thuộc" (`srs_level >= 5`).
+
+---
+
+### T6.1 ⭐ Một hạn mức từ mới cho MỌI lối vào (mục F)
+
+**Mục tiêu:** mỗi ngày chỉ có tối đa `daily_review_goal` từ mới vào hệ thống ôn, dù học
+từ trang chủ, SC04, SC05 hay SC06. Muốn học vượt thì phải chủ động xác nhận và được báo
+trước cái giá phải trả.
+
+**Hiện trạng:**
+
+| Lối vào | Hàm dựng hàng đợi | Giới hạn từ mới |
+|---|---|---|
+| SC03 "Học hôm nay" | `build_daily_queue` → `_daily_parts` | ✅ `goal − count_new_words_today` |
+| SC04 / SC06 theo chủ đề | `get_topic_queue` | ✅ như trên, **nhưng** nút "Học thêm N từ mới" (`flashcard_more_new_view`) mở thêm không giới hạn số lần |
+| SC05 "Bắt đầu học" | `build_study_queue` | ❌ không giới hạn, mặc định "Tất cả" (`LIBRARY_DEFAULT_SESSION_LIMIT`) |
+| SC15 Ôn tập | `studied_vocabulary` | — chỉ từ đã học, không có từ mới |
+| "Ôn thêm" (màn tổng kết) | `study_retry_view` | — chỉ từ vừa học, không đẩy lịch |
+
+**File:** `apps/learning/services.py`, `apps/learning/views.py`, `apps/vocabulary/views.py`,
+`templates/vocabulary/list.html`, `templates/learning/_card_panel.html`, properties.
+
+**Cách làm:**
+1. **Hàm dùng chung** trong `services.py`:
+   ```python
+   @dataclass
+   class NewWordAllowance:
+       goal: int            # user.daily_review_goal
+       learned_today: int   # count_new_words_today(user)
+       left: int            # số từ mới còn được học hôm nay (>= 0)
+       backlog: int         # số từ đang nợ ôn (T6.5 dùng)
+       paused: bool         # True = T6.5 tạm dừng/giảm từ mới vì nợ ôn
+
+   def new_word_allowance(user) -> NewWordAllowance
+   ```
+   T6.1 chỉ tính `left = max(0, goal − learned_today)`, `paused=False`; T6.5 bổ sung luật nợ ôn
+   **bên trong** hàm này — các lối vào không phải sửa lại.
+2. **Mọi lối vào dùng hàm trên**, không tự tính `goal − count_new_words_today` nữa:
+   - `_daily_parts` (SC03).
+   - `get_topic_queue` (SC04/SC06): `new_left = allowance.left`.
+   - `build_study_queue` (SC05): thêm tham số `new_limit: int | None`. Nhóm `_BUCKET_NEW` chỉ
+     giữ `new_limit` từ đầu (theo thứ tự hiện có), phần còn lại **bỏ khỏi hàng đợi** (không
+     dời xuống cuối). Hàm trả thêm số từ mới bị giữ lại (`held_new`) cho view báo. SC15 gọi
+     với `new_limit=None` (không đổi hành vi).
+3. **SC05 — khi có từ mới bị giữ lại:**
+   - Hàng đợi vẫn chạy với phần đã cắt (từ đến hạn + từ mới trong hạn mức). Nếu hàng đợi
+     rỗng vì toàn bộ là từ mới đã hết hạn mức → không vào màn học, quay lại SC05.
+   - Quay lại / flash: "Hôm nay bạn đã học {learned}/{goal} từ mới — giữ lại {held} từ mới."
+   - SC05 hiện khối cảnh báo (partial dùng chung, xem bước 5) với nút **"Vẫn học thêm {n} từ
+     mới"** — form POST tới `study_start` với **đúng bộ lọc hiện tại** (SC05 lọc bằng GET nên
+     tham số có sẵn trên URL) + field ẩn `over_limit=1`. Khi có `over_limit=1`,
+     `new_limit = allowance.left + goal` (mỗi lần xác nhận mở thêm tối đa **một hạn mức**,
+     không mở "tất cả").
+4. **SC04 — nút "Học thêm N từ mới":** giữ nút, nhưng thay bằng cùng khối cảnh báo ở bước 5
+   (nút bấm vẫn POST `flashcard_more_new`, mỗi lần tối đa `goal` từ như hiện nay).
+5. **Partial mới `templates/learning/_over_limit_notice.html`** (dùng cho SC04 + SC05):
+   > Hôm nay bạn đã học **{learned}/{goal}** từ mới.
+   > Học thêm {n} từ nữa thì **ngày mai có thêm khoảng {n} từ cần ôn** (tổng ~{tomorrow} từ).
+   > [Vẫn học thêm {n} từ mới]
+   - `{tomorrow}` = `count_due_tomorrow(user) + n`. Ước lượng "+n" là chính xác với luật hiện
+     tại: từ mới tốt nghiệp bằng "Nhớ" luôn hẹn sau `GRADUATE_INTERVAL` = 1 ngày.
+   - Nút có `data-loading-text` (T3.3).
+
+*Ghi chú:* field tên `daily_review_goal` nhưng nghĩa thật là hạn mức **từ mới**/ngày (nhãn
+SC08 đã ghi đúng "Số từ mới mỗi ngày"). Không đổi tên field ở phase này.
+
+**Hoàn thành khi:** không có cách nào học quá `goal` từ mới trong ngày mà không bấm qua
+khối cảnh báo; SC15 và "Ôn thêm" không đổi.
+
+**Test:**
+- `new_word_allowance`: chưa học → `left = goal`; học đủ → 0; hoàn tác từ mới → `left` tăng lại.
+- SC05 lọc chủ đề 120 từ chưa học, `goal=20` → hàng đợi 20 từ, `held_new = 100`, flash đúng.
+- SC05 khi đã đủ hạn mức, chỉ toàn từ mới → không tạo `StudySession`, quay lại SC05 có cảnh báo.
+- SC05 `over_limit=1` → thêm đúng `goal` từ mới, không hơn.
+- SC05 lọc có cả từ đến hạn lẫn từ mới → từ đến hạn giữ nguyên toàn bộ.
+- SC04 `get_topic_queue` dùng `allowance.left`; SC15 `review_start` không bị cắt.
+
+---
+
+### T6.2 ⭐ Từ dở bước học khi rời phiên (mục V3)
+
+**Mục tiêu:** dừng phiên giữa chừng không để lại hàng loạt từ "quá hạn"; từ dở dang được hẹn
+lại ngày mai như từ bình thường và được ưu tiên ôn trước.
+
+**Hiện trạng:** `review_word()` đặt `next_review_date = hôm nay` cho từ còn ở bước học
+(`LEARNING`/`RELEARNING`). Rời phiên thì:
+- Ngay **hôm nay** chúng vẫn nằm trong "Học hôm nay" (`_daily_due_ids` lấy mọi từ
+  `IN_SESSION_STATES` không xét ngày) và trong badge/ô "Từ cần ôn hôm nay".
+- **Từ hôm sau** chúng thành "quá hạn" ở SC15, và ở "Học hôm nay" bị xếp **sau toàn bộ**
+  từ ôn — dù đây là những từ mới nhất, dễ quên nhất.
+- Hôm sau bấm "Nhớ" ở bước 0 vẫn phải đi tiếp bước 10 phút, thêm một lượt lặp.
+
+**File:** `apps/learning/srs.py`, `apps/learning/services.py`, `apps/learning/views.py`,
+`static/js/study_deck.js` (chỉ nếu cần đồng bộ thứ tự), properties.
+
+**Cách làm:**
+1. **Hoãn sang mai khi phiên đóng.** Trong `_clear_study_session()` (được gọi khi bấm "Kết
+   thúc", khi bắt đầu phiên khác, khi hết thẻ): các id trong `STUDY_LEARNING_KEY` mà
+   progress vẫn ở `IN_SESSION_STATES` → `services.postpone_learning(user, ids)`:
+   `next_review_date = local_today + 1`, `due_at = None`, **giữ** `card_state`/`learning_step`.
+   Một query `UPDATE`. Gọi `invalidate_due_badge`.
+   - Chỉ áp cho phiên **chính thức** (`touch=True`); phiên ôn thêm không đụng lịch.
+   - SC04 (theo chủ đề) không có danh sách learning trong session: áp cùng hàm cho các từ
+     `IN_SESSION_STATES` thuộc chủ đề, đã chấm trong phiên SC04 đó (lấy từ
+     `_first_grades` của session) khi bấm "Kết thúc" — link "Kết thúc" của SC04 đổi thành
+     form POST giống phiên `study_*`.
+2. **Phiên bỏ ngang không bấm Kết thúc** (đóng tab): không cần job dọn. Từ có
+   `next_review_date = hôm qua` hôm sau tự đến hạn — chỉ cần các luật ở bước 3–4 coi chúng
+   là "đến hạn hôm nay", không phải "quá hạn".
+3. **Định nghĩa "từ dở bước học từ hôm trước"** (gọi tắt *từ dở*): `card_state ∈
+   IN_SESSION_STATES` và `next_review_date < hôm nay`.
+   - `_daily_due_ids`: thứ tự mới = **từ dở** → từ `REVIEW` đến hạn (quá hạn lâu nhất trước) →
+     từ đang học **hôm nay** (đã tới `due_at`). Từ `IN_SESSION_STATES` có `next_review_date
+     > hôm nay` (vừa hoãn) **không** vào hàng đợi hôm nay.
+   - `get_topic_queue`: tương tự — từ dở đứng cùng nhóm "đến hạn ôn", trước từ mới.
+   - Bộ đếm (`count_due_today`, `get_learning_stats`, `get_review_overview`,
+     `get_review_calendar`): từ dở tính vào **"đến hạn hôm nay"**, không vào "quá hạn".
+4. **Chấm từ dở: "Nhớ" là tốt nghiệp luôn.** Đã qua ít nhất một đêm thì bước 10 phút không
+   còn ý nghĩa. `srs.schedule(card, quality, overnight=False)` thêm tham số; khi
+   `overnight=True` và thẻ ở `IN_SESSION_STATES`:
+   - `GOOD` → tốt nghiệp như đã qua bước cuối (LEARNING: `GRADUATE_INTERVAL`; RELEARNING:
+     như hiện tại).
+   - `AGAIN`/`HARD`/`EASY`: giữ nguyên luật hiện có.
+   - `review_word()` truyền `overnight = progress.next_review_date < local_today`.
+     `grade_previews()` cũng truyền cờ này để khoảng cách hiển thị khớp.
+   - `srs.py` vẫn là hàm thuần (không đọc đồng hồ) — cờ do `services` tính.
+
+**Hoàn thành khi:** dừng phiên lúc còn 100 từ đang học → trang chủ không còn tính 100 từ đó
+cho hôm nay; hôm sau chúng đứng đầu "Học hôm nay", mỗi từ "Nhớ" một lần là xong.
+
+**Test:**
+- Phiên `study_*` còn 5 từ trong `STUDY_LEARNING_KEY` → `study_end` → 5 progress có
+  `next_review_date = mai`, `due_at = None`, state không đổi; phiên ôn thêm thì không đổi gì.
+- Hôm nay sau khi hoãn: `build_daily_queue` không chứa 5 từ đó; `count_due_today` giảm 5.
+- Hôm sau (giả lập ngày): 5 từ đứng **đầu** `build_daily_queue`; `get_review_overview` tính
+  chúng vào `due_today`, `overdue = 0`.
+- `srs.schedule(learning step 0, GOOD, overnight=True)` → `REVIEW`, 1 ngày;
+  `overnight=False` → giữ hành vi cũ (step 1, 10 phút). Thêm test cho RELEARNING.
+- Hoàn tác lần chấm của từ dở khôi phục đúng `next_review_date` cũ (snapshot đã có).
+
+---
+
+### T6.3 ⭐ Vuốt lên = "Dễ" (mục V1)
+
+**Mục tiêu:** trên điện thoại chấm được "Dễ" bằng một cử chỉ — từ đã biết chắc tốt nghiệp
+ngay (từ mới: 4 ngày; từ đang ôn: khoảng cách xa nhất).
+
+**File:** `static/js/main.js` (`initCardSwipe`), `static/css/base.css`, `label.properties`,
+`templates/learning/_card_panel.html`.
+
+**Cách làm:**
+- `initCardSwipe` hiện chỉ nhận vuốt ngang, vuốt dọc bỏ qua để cuộn trang. Đổi:
+  - Hướng chốt một lần như cũ. Ngang: giữ nguyên (phải = Nhớ `data-grade-key="3"`, trái =
+    Quên `"1"`).
+  - Dọc **lên** (`dy ≤ −SWIPE_THRESHOLD`, `|dy| > |dx|`) → nút `data-grade-key="4"` (Dễ).
+    Vuốt **xuống**: không làm gì (để dành cho cuộn).
+  - Hiệu ứng: thẻ dịch lên theo tay (`translateY`), class `swipe-up` (viền màu của nút Dễ,
+    token theme như `swipe-left/right`).
+- **Cuộn trang:** khi thẻ đã lật trên màn ≤ 560px, `.is-revealed .flashcard{touch-action:none}`
+  để trình duyệt không cuộn trang khi kéo **trên thẻ** (iOS Safari không hỗ trợ
+  `pan-down`). Ví dụ câu / khu thảo luận nằm ngoài `.flashcard` nên vẫn cuộn được bình
+  thường. Trước khi lật: giữ nguyên (không vuốt được).
+- Áp cho cả hai đường: phiên có bộ thẻ (`study_deck.js` bắt `submit`/`click` như phím 4) và
+  SC04 (fetch T1.2) — vì vuốt chỉ gọi `button.click()`, không phải sửa `study_deck.js`.
+- Cập nhật label `learning.flashcard.hint.swipe` = "← Quên rồi · → Nhớ · ↑ Dễ" và bảng phím
+  tắt (`learning.flashcard.shortcut.*`) có dòng cử chỉ.
+
+**Hoàn thành khi:** trên điện thoại 375px vuốt lên chấm "Dễ"; vuốt dọc ngoài thẻ vẫn cuộn;
+3 theme × sáng/tối có màu viền rõ.
+
+**Test:** JS không có test tự động trong repo — kiểm thủ công (Chrome DevTools giả lập cảm
+ứng + điện thoại thật): lên / trái / phải / xuống / vuốt ngắn dưới ngưỡng / chưa lật thẻ.
+Test Python: label mới tồn tại (`learning.flashcard.hint.swipe` chứa "↑").
+
+---
+
+### T6.4 Báo kết quả sau mỗi lần chấm (mục V2)
+
+**Mục tiêu:** người học luôn biết vuốt/bấm là **đang chấm điểm**, và từ đó sẽ quay lại khi nào.
+
+**File:** `apps/learning/views.py` (`_card_context`, `_study_cards_json`/`_card_previews`),
+`_card_panel.html`, `static/js/main.js`, `static/js/study_deck.js`, `base.css`, properties.
+
+**Cách làm:**
+1. **Server luôn gửi khoảng cách** cho từng nút, kể cả khi user tắt "hiện khoảng cách ôn lại"
+   (SC08 chỉ quyết định **hiện dưới nút** hay không):
+   - `_card_context`: luôn tính `grade_previews` (hàm thuần, không thêm query vì progress đã
+     đọc) → mỗi nút có `data-toast="{text}"`; `<small class="btn-grade-delay">` vẫn chỉ hiện
+     khi bật tuỳ chọn.
+   - Bộ thẻ T4.3: `previews` luôn có trong `cards` (JS đặt lại `data-toast` khi đổi thẻ).
+2. **Nội dung** (dựng sẵn ở server bằng properties, JS không chứa chữ):
+   - Từ quay lại **trong phiên** (đơn vị phút/giờ — luật "hết lượt rồi mới ôn lại" khiến số
+     phút không khớp thực tế): "✓ {Nhớ} · gặp lại trong phiên này" — key
+     `learning.flashcard.toast.in_session`.
+   - Từ tốt nghiệp / đang ôn: "✓ {Dễ} · gặp lại sau {4 ngày}" — key
+     `learning.flashcard.toast.scheduled`.
+   - "Quên rồi": "✗ Quên rồi · gặp lại trong phiên này".
+   - Phiên ôn thêm (không đẩy lịch): "{Nhớ} · lịch ôn không đổi" — key
+     `learning.flashcard.toast.extra`.
+3. **Hiển thị:** một `<div class="grade-toast" role="status" aria-live="polite" hidden>` cố
+   định trong `_card_panel.html` (ngoài khu được thay khi đổi thẻ). Khi nút chấm bị bấm
+   (click, phím 1–4 hay vuốt — đều đi qua `button.click()`), JS lấy `data-toast` của nút →
+   hiện 1,5 giây, mờ dần; chấm tiếp thì thay nội dung ngay. Trên điện thoại đặt ngay trên
+   hàng nút dính đáy; không che thẻ. `prefers-reduced-motion`: không animation.
+4. Tắt JS: không có toast (form submit thường, giữ như cũ).
+
+**Hoàn thành khi:** mỗi lần chấm đều thấy một dòng ngắn đúng nút đã chọn và đúng lịch.
+
+**Test:** `_card_context` có `toast` cho đủ 4 nút ở cả hai trạng thái của tuỳ chọn SC08; từ
+mới: "Nhớ" → in_session, "Dễ" → scheduled 4 ngày; phiên `touch=False` → extra; bộ thẻ JSON
+có `previews` khi tuỳ chọn tắt.
+
+---
+
+### T6.5 Tự giảm từ mới khi nợ ôn cao (mục B)
+
+**Mục tiêu:** khi đang nợ nhiều từ ôn, app tự ngừng mời thêm từ mới (không đào hố sâu hơn),
+và mở lại khi nợ giảm.
+
+**File:** `apps/learning/services.py` (`new_word_allowance` của T6.1), `dashboard.html`,
+`_over_limit_notice.html`, properties.
+
+**Cách làm:**
+1. `backlog` = số từ **đến hạn hôm nay** theo định nghĩa sau T6.2 (REVIEW đến hạn/quá hạn +
+   từ dở; **không** tính từ đang học trong ngày và từ vừa hoãn).
+2. Luật trong `new_word_allowance` (hằng số trong `services.py`, chưa đưa vào SC08):
+   | Nợ ôn | Từ mới hôm nay |
+   |---|---|
+   | `backlog < BACKLOG_SLOW × goal` (3 × 20 = 60) | đủ hạn mức như T6.1 |
+   | `BACKLOG_SLOW × goal ≤ backlog < BACKLOG_STOP × goal` (60–99) | **một nửa** hạn mức (làm tròn lên) |
+   | `backlog ≥ BACKLOG_STOP × goal` (≥ 100) | **0** — tạm dừng từ mới |
+   `left = max(0, mức trên − learned_today)`; `paused = True` khi bị giảm/dừng.
+3. Vì `backlog` tính lại mỗi lần gọi, ôn bớt nợ trong ngày thì từ mới tự mở lại (trang chủ
+   cập nhật số trên nút "Học hôm nay"; badge cache 60 giây như T3.4).
+4. **Trang chủ** khi `paused`: dưới nút "Học hôm nay" một dòng giải thích —
+   "Đang nợ {backlog} từ ôn — tạm dừng từ mới cho tới khi còn dưới {threshold} từ." (hoặc
+   "…giảm còn {n} từ mới hôm nay."). Khối cảnh báo vượt hạn mức (T6.1 bước 5) cũng nêu lý do
+   này. Người học vẫn có thể bấm "Vẫn học thêm" — app khuyên, không cấm.
+5. "Học hôm nay" không đổi thứ tự (ôn trước, từ mới sau): khi `paused` thì phần từ mới đã nhỏ
+   hoặc bằng 0 nên không cần xen kẽ.
+
+**Hoàn thành khi:** với số liệu 09/10/2026 (254 nợ, goal 20) trang chủ hiện 0 từ mới + lý
+do; ôn xuống dưới 100 → 10 từ mới; dưới 60 → 20.
+
+**Test:** ba ngưỡng (59/60/99/100 với goal 20), `learned_today` trừ đúng, `paused` đúng; từ
+đang học trong ngày và từ vừa hoãn không tính vào `backlog`; SC04/SC05 nhận `left` đã giảm.
+
+---
+
+### T6.6 Hướng dẫn cử chỉ lần đầu (mục V5)
+
+**Mục tiêu:** người dùng điện thoại biết ngay vuốt = chấm điểm, có ba hướng.
+
+**File:** `_card_panel.html`, `main.js`, `base.css`, `label.properties`.
+
+**Cách làm:**
+- Lớp phủ nhỏ trên thẻ **sau lần lật đầu tiên** của phiên, chỉ trên thiết bị cảm ứng
+  (`matchMedia("(hover: none)")`): ba mũi tên ← Quên rồi · → Nhớ · ↑ Dễ, chạm để đóng.
+- Chỉ hiện ở **3 phiên đầu**: đếm bằng `localStorage` (`bjt.swipeCoach.count`, bọc try/catch;
+  không đọc được thì hiện mỗi phiên một lần — chấp nhận được). Không cần lưu DB.
+- Dòng gợi ý cố định `swipe-hint` (đã có) giữ lại, nội dung theo T6.3.
+- Chữ lấy từ label (`learning.flashcard.coach.*`), JS chỉ bật/tắt.
+
+**Hoàn thành khi:** lần đầu học trên điện thoại thấy hướng dẫn; từ phiên thứ 4 không thấy nữa.
+
+---
+
+### Thứ tự làm & phụ thuộc
+
+| Bước | Task | Phụ thuộc |
+|---|---|---|
+| 1 | T6.1 hạn mức chung (F) | — |
+| 2 | T6.2 từ dở bước học (V3) | — (định nghĩa "đến hạn" mới dùng ở T6.5) |
+| 3 | T6.3 vuốt lên = Dễ (V1) | — |
+| 4 | T6.4 báo kết quả chấm (V2) | nên sau T6.2 (khoảng cách của từ dở đổi) |
+| 5 | T6.5 tự giảm từ mới (B) | T6.1, T6.2 |
+| 6 | T6.6 hướng dẫn cử chỉ (V5) | T6.3 |
+
+Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 theme × sáng/tối ×
+375px cho các bước có giao diện. Nguyên tắc 8 (`flowChart/js/flows.js`): thư mục
+`flowChart/` **không có trong repo** — bỏ qua cho tới khi Dat đưa lại file.
+
+### Cần chốt (đề xuất của Claude — Dat duyệt)
+
+| # | Câu hỏi | Đề xuất |
+|---|---|---|
+| 1 | T6.1 — mỗi lần "Vẫn học thêm" mở bao nhiêu từ? | Một hạn mức (`goal`), bấm lại được |
+| 2 | T6.2 — dừng phiên thì từ đang học hoãn sang **ngày mai** (không ôn lại trong hôm nay)? | ✅ Có |
+| 3 | T6.2 — từ dở đứng **đầu** "Học hôm nay" (trước từ ôn)? | ✅ Có — từ mới nhất, dễ quên nhất |
+| 4 | T6.2 — từ dở bấm "Nhớ" một lần là tốt nghiệp? | ✅ Có |
+| 5 | T6.3 — khoá cuộn trang khi kéo trên thẻ đã lật (màn ≤ 560px)? | ✅ Có — thẻ vừa một màn hình từ T1.6 |
+| 6 | T6.4 — hiện toast cả trên máy tính? | ✅ Có (gọn, 1,5 giây) |
+| 7 | T6.5 — ngưỡng nợ ôn 3× / 5× hạn mức (60 / 100 với goal 20)? | ✅ Như bảng; sau này có thể đưa vào SC08 |
+| 8 | T6.5 — khi tạm dừng vẫn cho "Vẫn học thêm"? | ✅ Có — khuyên, không cấm |
+
+---
+
 ## Checklist tổng hợp
 
 ### Phase 1 — Màn học (code xong 02/10/2026 — chờ Dat chạy test trên DB thật)
@@ -648,6 +992,15 @@ tổng kết khớp với cách cũ; tắt JS vẫn học được.
   - [x] T4.3.6 Message + CSS thanh báo
   - [x] T4.3.7 Test + `flows.js`
   - [ ] T4.3.8 Áp cho SC04 (spec riêng, làm sau)
+
+### Phase 6 — Khối lượng ôn tập (spec 09/10/2026 — chờ Dat duyệt)
+- [ ] T6.1 Hạn mức từ mới chung cho mọi lối vào + khối "Vẫn học thêm" (F)
+- [ ] T6.2 Hoãn từ dở bước học sang mai, ưu tiên đầu hàng, "Nhớ" là tốt nghiệp (V3)
+- [ ] T6.3 Vuốt lên = Dễ (V1)
+- [ ] T6.4 Báo kết quả sau mỗi lần chấm (V2)
+- [ ] T6.5 Tự giảm / tạm dừng từ mới khi nợ ôn cao (B)
+- [ ] T6.6 Hướng dẫn cử chỉ lần đầu (V5)
+- [x] ~~V4 Rút bước học từ mới xuống 1 bước~~ — Dat chốt không làm (09/10/2026)
 
 ### Ghi chú T4.3 (06/10/2026) — để đối chiếu khi review
 - **Khác bản duyệt:**
@@ -717,6 +1070,7 @@ tổng kết khớp với cách cũ; tắt JS vẫn học được.
 | 5 | T4.1 — cron bằng GitHub Actions hay cron-job.org? | ⏸ Dat nghiên cứu sau, giữ ghi chú trong spec |
 | 6 | T4.1 — gỡ `keepalive.py`? | ✅ Gỡ ngay (T4.1b, đã làm) |
 | 7 | Delay khi vuốt thẻ — xử lý thế nào? (06/10/2026) | ✅ Phương án C: tải trước bộ thẻ, chấm gửi ngầm (T4.3) |
+| 8 | Số từ ôn quá lớn, không còn thời gian học từ mới (09/10/2026) | ✅ Làm Phase 6 theo thứ tự F → V3 → V1 + V2 → B → V5; **không** làm V4 |
 
 ---
 
