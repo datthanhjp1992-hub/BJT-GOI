@@ -995,7 +995,7 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
 
 ### Phase 6 — Khối lượng ôn tập (duyệt 09/10/2026)
 - [x] T6.1 Hạn mức từ mới chung cho mọi lối vào + khối "Vẫn học thêm" (F) — code xong 09/10/2026, chờ Dat chạy trên server thật
-- [ ] T6.2 Hoãn từ dở bước học sang mai, ưu tiên đầu hàng, "Nhớ" là tốt nghiệp (V3)
+- [x] T6.2 Hoãn từ dở bước học sang mai, ưu tiên đầu hàng, "Nhớ" là tốt nghiệp (V3) — code xong 09/10/2026, chờ Dat chạy trên server thật
 - [ ] T6.3 Vuốt lên = Dễ (V1)
 - [ ] T6.4 Báo kết quả sau mỗi lần chấm (V2)
 - [ ] T6.5 Tự giảm / tạm dừng từ mới khi nợ ôn cao (B)
@@ -1022,6 +1022,32 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
   (`DataIoEngineTests`/`FullVocabularyDatasetTests` đếm số bảng 19 ≠ 31 sau khi thêm app keigo).
 - Đã xem giao diện SC04 (màn xong) + SC05 ở theme A/B/C, 1280px và 375px, sáng + tối (B):
   không tràn ngang.
+
+### Ghi chú T6.2 (09/10/2026) — để đối chiếu khi review
+- **Định nghĩa "từ dở" chốt khi code** (chính xác hơn bản spec "next_review_date < hôm nay"):
+  `card_state ∈ {learning, relearning}`, `next_review_date <= hôm nay` và lần chấm cuối KHÔNG
+  phải hôm nay — `due_at` rỗng (vừa hoãn bằng "Kết thúc") hoặc trước nửa đêm hôm nay (bỏ
+  ngang phiên). Lý do: từ hoãn hôm qua có `next_review_date = hôm nay` nên điều kiện "< hôm nay"
+  sẽ bỏ sót. Code: `services._is_leftover_learning()` / `leftover_learning_q()`.
+- `services.postpone_learning(user, ids)`: một UPDATE, chỉ đụng từ learning/relearning đang đến
+  hạn hôm nay; giữ `card_state`/`learning_step`.
+- Gọi ở `_clear_study_session()` (Kết thúc, bắt đầu phiên khác, hết thẻ) — chỉ phiên chính
+  thức. SC04: "Kết thúc phiên" đổi từ link sang form POST `learning:flashcard_end` (route mới),
+  hoãn các từ đã chấm trong phiên (`_first_grades`). Kết thúc có hoãn từ thì flash
+  "Đã hẹn N từ đang học dở sang ngày mai…".
+- Thứ tự: `_daily_due_ids` = từ dở → REVIEW đến hạn → từ đang học hôm nay; `get_topic_queue`
+  đặt từ dở đầu nhóm đến hạn (đếm vào `n_review`, không vào `n_learning`). Từ đã hoãn sang mai
+  không xuất hiện hôm nay ở cả hai.
+- Bộ đếm: `get_review_overview` / `get_review_calendar` tính từ dở vào "hôm nay" (không vào
+  "quá hạn"); `count_due_tomorrow` tính cả từ đang học đã hoãn sang mai.
+- `srs.schedule(..., overnight=False)`: `overnight=True` + "Nhớ" với từ learning/relearning →
+  tốt nghiệp. `review_word()` và `grade_previews()` tự tính cờ (`services._overnight`).
+- Phía JS (`study_deck.js`) không phải sửa: thứ tự hàng đợi do server dựng, kết quả tốt nghiệp
+  sớm đi về qua `study/sync/` như mọi lần chấm.
+- Test: `OvernightScheduleTests` (4) + `LeftoverLearningTests` (12).
+- **Với 121 từ đang kẹt trên server thật:** không cần chạy script dữ liệu — chúng thoả định nghĩa
+  "từ dở" (`next_review_date` 08/10, `due_at` hôm 08/10) nên sau khi deploy tự lên đầu "Học hôm
+  nay", tính vào "đến hạn hôm nay" và mỗi từ "Nhớ" một lần là tốt nghiệp.
 
 ### Ghi chú T4.3 (06/10/2026) — để đối chiếu khi review
 - **Khác bản duyệt:**

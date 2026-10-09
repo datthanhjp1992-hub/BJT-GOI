@@ -469,6 +469,25 @@ def flashcard_view(request, topic_slug):
 
 @login_required
 @require_POST
+def flashcard_end_view(request, topic_slug):
+    """"Kết thúc phiên" của SC04 (spec.md T6.2): từ đã chấm trong phiên mà còn
+    ở bước học được hẹn sang mai, rồi đóng StudySession.
+
+    SC04 không giữ danh sách từ đang học trong session như phiên study_*, nên
+    lấy tập từ đã chấm của phiên (`_first_grades`) — postpone_learning() tự bỏ
+    qua từ đã tốt nghiệp.
+    """
+    total_key, session_id_key = _flashcard_session_keys(topic_slug)
+    session_id = request.session.get(session_id_key)
+    postponed = services.postpone_learning(request.user, list(_first_grades(request, session_id)))
+    _close_study_session(request, session_id_key)
+    request.session.pop(total_key, None)
+    _flash_postponed(request, postponed)
+    return redirect("learning:dashboard")
+
+
+@login_required
+@require_POST
 def flashcard_review(request, vocabulary_id):
     """Endpoint POST của 4 nút Quên/Khó/Nhớ/Dễ trên màn flashcard."""
     vocab = get_object_or_404(Vocabulary, pk=vocabulary_id)
@@ -732,7 +751,19 @@ STUDY_LEARNING_KEY = "study_learning"
 STUDY_SEQ_KEY = "study_seq"
 
 
+def _postpone_study_learning(request):
+    """Từ còn ở bước học của phiên theo hàng đợi -> hẹn sang mai (spec.md T6.2).
+
+    Chỉ phiên chính thức: phiên "ôn thêm" không đụng lịch. Trả về số từ đã hoãn.
+    """
+    ids = request.session.pop(STUDY_LEARNING_KEY, None) or []
+    if not ids or not _touches_schedule(request):
+        return 0
+    return services.postpone_learning(request.user, ids)
+
+
 def _clear_study_session(request):
+    _postpone_study_learning(request)
     request.session.pop(STUDY_QUEUE_KEY, None)
     request.session.pop(STUDY_TOTAL_KEY, None)
     request.session.pop(STUDY_SCOPE_KEY, None)
@@ -1296,9 +1327,17 @@ def study_retry_view(request):
 @login_required
 @require_POST
 def study_end_view(request):
-    """Kết thúc phiên sớm — đóng StudySession và dọn hàng đợi."""
+    """Kết thúc phiên sớm — hoãn từ đang học dở sang mai, đóng StudySession và
+    dọn hàng đợi."""
+    postponed = _postpone_study_learning(request)
     _clear_study_session(request)
+    _flash_postponed(request, postponed)
     return redirect("learning:dashboard")
+
+
+def _flash_postponed(request, count):
+    if count:
+        flash.info(request, message("learning.study.hint.postponed", count=count))
 
 
 # =============================================================================

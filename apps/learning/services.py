@@ -51,10 +51,66 @@ def count_new_words_today(user):
 
 
 def count_due_tomorrow(user):
+    """Từ hẹn ôn ngày mai — kể cả từ đang học bị hoãn sang mai (T6.2)."""
     tomorrow = user.local_today() + timedelta(days=1)
     return UserVocabularyProgress.objects.filter(
-        user=user, card_state=srs.REVIEW, next_review_date=tomorrow
+        user=user, card_state__in=(srs.REVIEW,) + LEFTOVER_STATES, next_review_date=tomorrow
     ).count()
+
+
+# =============================================================================
+# Từ dở bước học (spec.md T6.2, 09/10/2026)
+# -----------------------------------------------------------------------------
+# Từ LEARNING/RELEARNING còn bước 1-10 phút mà người học rời phiên. Số liệu
+# thật: 121 từ kẹt như vậy sau một phiên 143 từ mới, hôm sau thành "quá hạn" và
+# bị xếp SAU toàn bộ từ ôn. Ba luật:
+#   1. Kết thúc phiên -> `postpone_learning()` hẹn chúng sang MAI
+#      (next_review_date = mai, due_at = None), giữ nguyên giai đoạn/bước.
+#   2. "Từ dở" = đang học / học lại, đã tới ngày, và lần chấm cuối KHÔNG phải
+#      hôm nay (due_at rỗng — vừa hoãn — hoặc trước nửa đêm hôm nay — bỏ ngang
+#      phiên). Chúng tính là "đến hạn hôm nay" (không phải quá hạn) và đứng ĐẦU
+#      hàng đợi: từ mới nhất, dễ quên nhất.
+#   3. Chấm từ dở: "Nhớ" tốt nghiệp luôn (`srs.schedule(overnight=True)`).
+# =============================================================================
+
+LEFTOVER_STATES = (srs.LEARNING, srs.RELEARNING)
+
+
+def _is_leftover_learning(progress, day_start):
+    """Từ dở theo luật 2 — KHÔNG xét ngày ôn (nơi gọi tự lọc ngày)."""
+    return progress.card_state in LEFTOVER_STATES and (
+        progress.due_at is None or progress.due_at < day_start
+    )
+
+
+def leftover_learning_q(user):
+    """Điều kiện SQL của "từ dở đến hạn hôm nay" — dùng cho các bộ đếm."""
+    return Q(
+        card_state__in=LEFTOVER_STATES,
+        next_review_date__lte=user.local_today(),
+    ) & (Q(due_at__isnull=True) | Q(due_at__lt=local_day_start(user)))
+
+
+def postpone_learning(user, vocabulary_ids):
+    """Hẹn các từ đang học dở trong `vocabulary_ids` sang ngày mai. Trả về số từ.
+
+    Chỉ đụng từ còn ở LEARNING/RELEARNING và đang đến hạn hôm nay — từ đã tốt
+    nghiệp hay đã hoãn rồi giữ nguyên. Một câu UPDATE (không qua save() nên tự
+    đặt updated_at).
+    """
+    if not vocabulary_ids:
+        return 0
+    count = UserVocabularyProgress.objects.filter(
+        user=user, vocabulary_id__in=list(vocabulary_ids),
+        card_state__in=LEFTOVER_STATES, next_review_date__lte=user.local_today(),
+    ).update(
+        next_review_date=user.local_today() + timedelta(days=1),
+        due_at=None,
+        updated_at=timezone.now(),
+    )
+    if count:
+        invalidate_due_badge(user.pk)
+    return count
 
 
 # =============================================================================
@@ -142,18 +198,29 @@ def get_topic_queue(user, topic, now=None, unlocked_ids=()):
         p.vocabulary_id: p
         for p in UserVocabularyProgress.objects.filter(user=user, vocabulary__topics=topic)
     }
+    day_start = local_day_start(user)
+
+    def due_today(p):
+        return p.next_review_date is None or p.next_review_date <= today
+
+    # T6.2: từ đang học bị hoãn sang mai (next_review_date > hôm nay) không
+    # xuất hiện hôm nay; từ dở từ hôm trước đứng ĐẦU nhóm đến hạn.
     learning = sorted(
-        (p for p in progress.values() if p.card_state in srs.IN_SESSION_STATES),
+        (
+            p for p in progress.values()
+            if p.card_state in srs.IN_SESSION_STATES and due_today(p)
+            and not _is_leftover_learning(p, day_start)
+        ),
         key=lambda p: (p.due_at or now, p.vocabulary_id),
     )
     learn_due = [p for p in learning if (p.due_at or now) <= now]
     learn_ahead = [p for p in learning if (p.due_at or now) > now]
-    review_due = sorted(
-        (
-            p for p in progress.values()
-            if p.card_state == srs.REVIEW
-            and (p.next_review_date is None or p.next_review_date <= today)
-        ),
+    leftover = sorted(
+        (p for p in progress.values() if due_today(p) and _is_leftover_learning(p, day_start)),
+        key=lambda p: (p.next_review_date or date.min, p.vocabulary_id),
+    )
+    review_due = leftover + sorted(
+        (p for p in progress.values() if p.card_state == srs.REVIEW and due_today(p)),
         key=lambda p: (p.next_review_date or date.min, p.vocabulary_id),
     )
 
@@ -286,6 +353,13 @@ def get_or_start_progress(user, vocab):
     return progress
 
 
+def _overnight(progress):
+    """Từ dở từ hôm trước? -> "Nhớ" tốt nghiệp luôn (T6.2 luật 3)."""
+    if progress is None or progress.card_state not in LEFTOVER_STATES:
+        return False
+    return _is_leftover_learning(progress, local_day_start(progress.user))
+
+
 def _card_of(progress):
     if progress is None:
         return srs.Card()
@@ -306,7 +380,7 @@ def review_word(progress, quality: int, now=None):
     SC03/SC15. Từ tốt nghiệp sang REVIEW thì `due_at` rỗng, lịch theo ngày.
     """
     now = now or timezone.now()
-    result = srs.schedule(_card_of(progress), quality)
+    result = srs.schedule(_card_of(progress), quality, overnight=_overnight(progress))
     card = result.card
 
     progress.card_state = card.state
@@ -337,8 +411,11 @@ def review_word(progress, quality: int, now=None):
 
 def grade_previews(progress):
     """{quality: (đơn vị, số)} — khoảng cách ôn lại nếu bấm từng nút."""
-    card = _card_of(progress)
-    return {q: srs.delay_parts(srs.schedule(card, q).delay) for q in srs.GRADES}
+    card, overnight = _card_of(progress), _overnight(progress)
+    return {
+        q: srs.delay_parts(srs.schedule(card, q, overnight=overnight).delay)
+        for q in srs.GRADES
+    }
 
 
 # Các cột được chụp lại trước mỗi lần chấm để HOÀN TÁC được.
@@ -712,13 +789,16 @@ def get_review_overview(user):
 
     today = user.local_today()
     upcoming_until = today + timedelta(days=vocab_selectors.UPCOMING_DAYS)
+    # Từ dở bước học (T6.2) bỏ ngang từ hôm trước tính là "đến hạn hôm nay",
+    # không phải "quá hạn".
+    leftover = leftover_learning_q(user)
     rows = UserVocabularyProgress.objects.filter(user=user).aggregate(
         studied=Count("pk"),
         mastered=Count("pk", filter=Q(is_mastered=True)),
-        overdue=Count("pk", filter=Q(next_review_date__lt=today)),
+        overdue=Count("pk", filter=Q(next_review_date__lt=today) & ~leftover),
         due_today=Count(
             "pk",
-            filter=Q(next_review_date=today) | Q(next_review_date__isnull=True),
+            filter=Q(next_review_date=today) | Q(next_review_date__isnull=True) | leftover,
         ),
         upcoming=Count(
             "pk",
@@ -779,14 +859,16 @@ def get_review_calendar(user, days=7):
         .values_list("next_review_date")
         .annotate(n=Count("pk"))
     )
-    overdue = UserVocabularyProgress.objects.filter(
-        user=user, next_review_date__lt=today
-    ).count()
-    # Từ có tiến độ nhưng chưa xếp lịch được coi là đến hạn hôm nay ở khắp
-    # nơi (build_study_queue, progress_filter_for_scope) — ở đây cũng vậy.
-    unscheduled = UserVocabularyProgress.objects.filter(
-        user=user, next_review_date__isnull=True
-    ).count()
+    # Từ có tiến độ nhưng chưa xếp lịch, và từ dở bước học bỏ ngang từ hôm
+    # trước (T6.2), được coi là đến hạn hôm nay ở khắp nơi — ở đây cũng vậy.
+    leftover = leftover_learning_q(user)
+    past = UserVocabularyProgress.objects.filter(user=user).aggregate(
+        overdue=Count("pk", filter=Q(next_review_date__lt=today) & ~leftover),
+        unscheduled=Count(
+            "pk", filter=Q(next_review_date__isnull=True) | (Q(next_review_date__lt=today) & leftover)
+        ),
+    )
+    overdue, unscheduled = past["overdue"], past["unscheduled"]
 
     buckets = [{"date": None, "is_overdue": True, "is_today": False, "count": overdue}]
     for offset in range(days):
@@ -865,22 +947,25 @@ DAILY_NEW_TOPIC_LOOKAHEAD = 10
 
 
 def _daily_due_ids(user):
-    """Id từ cần ôn hôm nay ở mọi chủ đề: đến hạn trước, đang học sau."""
+    """Id từ cần ôn hôm nay ở mọi chủ đề: từ dở (T6.2) -> đến hạn -> đang học."""
     today = user.local_today()
+    day_start = local_day_start(user)
+    # Chưa xếp lịch (next_review_date rỗng) = đến hạn ngay, như build_study_queue.
+    # Từ đang học bị hoãn sang mai (next_review_date > hôm nay) không vào.
     rows = UserVocabularyProgress.objects.filter(user=user).filter(
-        Q(card_state=srs.REVIEW, next_review_date__lte=today)
-        | Q(card_state=srs.REVIEW, next_review_date__isnull=True)
-        | Q(card_state__in=srs.IN_SESSION_STATES)
+        Q(next_review_date__lte=today) | Q(next_review_date__isnull=True),
+        card_state__in=(srs.REVIEW,) + srs.IN_SESSION_STATES,
     ).values_list("vocabulary_id", "card_state", "next_review_date", "due_at")
 
-    review, learning = [], []
+    leftover, review, learning = [], [], []
     for vocab_id, state, review_date, due_at in rows:
         if state == srs.REVIEW:
-            # Chưa xếp lịch = đến hạn ngay, như build_study_queue.
             review.append(((review_date or date.min), vocab_id))
+        elif state in LEFTOVER_STATES and (due_at is None or due_at < day_start):
+            leftover.append(((review_date or date.min), vocab_id))
         else:
             learning.append(((due_at or timezone.now()), vocab_id))
-    return [vid for _, vid in sorted(review)] + [vid for _, vid in sorted(learning)]
+    return [vid for _, vid in sorted(leftover) + sorted(review)] + [vid for _, vid in sorted(learning)]
 
 
 def _daily_new_ids(user, count):
