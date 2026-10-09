@@ -299,14 +299,53 @@ GRADE_BUTTONS = (
 )
 
 
+# Đơn vị khoảng cách của từ còn quay lại NGAY TRONG PHIÊN (bước học tính bằng
+# phút). Từ tốt nghiệp / đang ôn luôn tính bằng ngày trở lên.
+IN_SESSION_DELAY_UNITS = ("minutes", "hours")
+
+
+def _grade_toasts(progress, touch=True, previews=None):
+    """{mã nút: câu báo sau khi chấm} — spec.md T6.4.
+
+    Dựng sẵn ở server (properties) để JS không chứa chữ: main.js chỉ hiện
+    `data-toast` của nút vừa bấm. Từ quay lại trong phiên KHÔNG ghi số phút —
+    với "hết lượt rồi mới ôn lại" con số đó không khớp lúc từ quay lại thật.
+    """
+    toasts = {}
+    if not touch:
+        for code, label_key, *_ in GRADE_BUTTONS:
+            toasts[code] = message("learning.flashcard.toast.extra", grade=label(label_key))
+        return toasts
+    previews = previews or services.grade_previews(progress)
+    for code, label_key, *_ in GRADE_BUTTONS:
+        parts = previews[QUALITY_MAP[code]]
+        grade = label(label_key)
+        if code == "quen":
+            toasts[code] = message("learning.flashcard.toast.forgot", grade=grade)
+        elif parts[0] in IN_SESSION_DELAY_UNITS:
+            toasts[code] = message("learning.flashcard.toast.in_session", grade=grade)
+        else:
+            toasts[code] = message(
+                "learning.flashcard.toast.scheduled", grade=grade, delay=_delay_text(parts)
+            )
+    return toasts
+
+
 def _card_context(request, word, *, flow, show_preview=True, session_id=None):
-    """Phần context mô tả THẺ đang hiện: giai đoạn, 4 nút kèm khoảng cách, hoàn tác."""
+    """Phần context mô tả THẺ đang hiện: giai đoạn, 4 nút kèm khoảng cách, hoàn tác.
+
+    `show_preview=False` cũng có nghĩa lượt "ôn thêm" (không đụng lịch).
+    """
     progress = UserVocabularyProgress.objects.filter(user=request.user, vocabulary=word).first()
     state = progress.card_state if progress else srs.NEW
-    # Khoảng cách ôn lại dưới nút là tuỳ chọn ở SC08 (mặc định ẩn) — với
-    # "hết lượt rồi mới ôn lại", "1 phút / 6 phút" không còn khớp lúc từ quay lại.
-    show_preview = show_preview and getattr(request.user, "show_review_interval", False)
-    previews = services.grade_previews(progress) if show_preview else {}
+    touch = show_preview
+    # Khoảng cách luôn tính (hàm thuần, không query) để dựng câu báo T6.4;
+    # HIỆN dưới nút thì vẫn là tuỳ chọn ở SC08 (mặc định ẩn) — với "hết lượt
+    # rồi mới ôn lại", "1 phút / 6 phút" không còn khớp lúc từ quay lại.
+    all_previews = services.grade_previews(progress)
+    toasts = _grade_toasts(progress, touch, all_previews)
+    show_preview = touch and getattr(request.user, "show_review_interval", False)
+    previews = all_previews if show_preview else {}
     buttons = [
         {
             "code": code,
@@ -316,6 +355,7 @@ def _card_context(request, word, *, flow, show_preview=True, session_id=None):
             "css": css,
             "primary": primary,
             "delay": _delay_text(previews[QUALITY_MAP[code]]) if previews else "",
+            "toast": toasts[code],
         }
         for index, (code, label_key, css, primary) in enumerate(GRADE_BUTTONS, start=1)
     ]
@@ -1117,6 +1157,7 @@ def _study_cards_json(request, vocabulary_ids):
                 "learning/_card_extra.html", {"word": word, "examples": card.examples}
             ),
             "previews": _card_previews(request, card.progress),
+            "toasts": _grade_toasts(card.progress, _touches_schedule(request)),
         }
     return cards
 
@@ -1204,6 +1245,7 @@ def _study_card_status(request, vocabulary_ids):
             "learning": in_learning,
             "due": due.isoformat() if due else None,
             "previews": _card_previews(request, progress),
+            "toasts": _grade_toasts(progress, _touches_schedule(request)),
         }
     return status
 

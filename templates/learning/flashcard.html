@@ -21,6 +21,10 @@ server trả về (apps/learning/views._render_card) — không tải lại cả
   <div id="card-panel" class="card-panel" data-card-panel tabindex="-1" aria-live="polite">
     {% include "learning/_card_panel.html" %}
   </div>
+  {% comment %}Câu báo sau mỗi lần chấm (spec.md T6.4) — NGOÀI #card-panel để
+  không bị thay mất khi main.js / study_deck.js đổi thẻ. Nội dung lấy từ
+  data-toast của nút vừa bấm.{% endcomment %}
+  <div class="grade-toast" data-grade-toast role="status" aria-live="polite" hidden></div>
 {% endblock %}
 
 {% block extra_js %}

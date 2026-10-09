@@ -1266,7 +1266,8 @@ class FlashcardFlowTests(LearningTestCase):
     def test_buttons_hide_the_interval_by_default(self):
         response = self.client.get(self.page)
         self.assertEqual([b["delay"] for b in response.context["grade_buttons"]], ["", "", "", ""])
-        self.assertNotContains(response, "4 ngày")
+        # Không HIỆN dưới nút. ("4 ngày" vẫn có trong data-toast — câu báo T6.4.)
+        self.assertNotContains(response, "btn-grade-delay")
 
     def test_buttons_show_how_long_until_the_next_review(self):
         self.user.show_review_interval = True
@@ -2556,3 +2557,73 @@ class SwipeUpMarkupTests(LearningTestCase):
 
         js = (Path(settings.BASE_DIR) / "static/js/main.js").read_text(encoding="utf-8")
         self.assertIn('var SWIPE_KEYS = { right: "3", left: "1", up: "4" };', js)
+
+
+class GradeToastTests(LearningTestCase):
+    """spec.md T6.4 — câu báo sau mỗi lần chấm (server dựng sẵn data-toast)."""
+
+    def setUp(self):
+        super().setUp()
+        self.topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
+        self.words = {v.word: v for v in self.topic.vocabularies.all()}
+
+    def _buttons(self, page):
+        return {b["code"]: b for b in page.context["grade_buttons"]}
+
+    def test_new_word_toasts_say_when_it_comes_back(self):
+        page = self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+        toasts = {code: b["toast"] for code, b in self._buttons(page).items()}
+        self.assertEqual(toasts["quen"], "✗ Quên rồi · gặp lại trong phiên này")
+        self.assertEqual(toasts["kho"], "✓ Khó · gặp lại trong phiên này")
+        self.assertEqual(toasts["nho"], "✓ Nhớ · gặp lại trong phiên này")
+        self.assertEqual(toasts["de"], "✓ Dễ · gặp lại sau 4 ngày")
+        self.assertContains(page, 'data-toast="✓ Dễ · gặp lại sau 4 ngày"')
+        self.assertContains(page, "data-grade-toast")
+
+    def test_toasts_do_not_depend_on_the_interval_setting(self):
+        self.assertFalse(self.user.show_review_interval)
+        page = self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+        buttons = self._buttons(page)
+        self.assertEqual(buttons["de"]["delay"], "")          # không hiện dưới nút
+        self.assertIn("4 ngày", buttons["de"]["toast"])       # nhưng câu báo vẫn có
+
+    def test_review_word_toasts_show_days(self):
+        progress = self._progress(self.words["予約"], due_offset=0)
+        progress.interval_days, progress.srs_level = 6, 2
+        progress.save()
+        self._progress(self.words["注文"], due_offset=5)
+        page = self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+        self.assertEqual(page.context["word"], self.words["予約"])
+        toasts = {code: b["toast"] for code, b in self._buttons(page).items()}
+        self.assertEqual(toasts["quen"], "✗ Quên rồi · gặp lại trong phiên này")
+        self.assertEqual(toasts["nho"], "✓ Nhớ · gặp lại sau 15 ngày")
+
+    def test_deck_cards_always_carry_toasts(self):
+        self.client.post(reverse("learning:study_start"), {"topic": "nha-hang", "limit": "0"})
+        page = self.client.get(reverse("learning:study"))
+        deck = page.context["deck"]
+        card = deck["cards"][str(deck["current"])]
+        self.assertIsNone(card["previews"])                   # tuỳ chọn SC08 đang tắt
+        self.assertEqual(card["toasts"]["de"], "✓ Dễ · gặp lại sau 4 ngày")
+
+    def test_sync_returns_fresh_toasts_for_the_graded_card(self):
+        self.client.post(reverse("learning:study_start"), {"topic": "nha-hang", "limit": "0"})
+        deck = self.client.get(reverse("learning:study")).context["deck"]
+        vocab = deck["current"]
+        payload = {"session": deck["session"], "ops": [
+            {"seq": 1, "op": "grade", "vocab": vocab, "quality": "nho"},
+        ]}
+        data = self.client.post(
+            reverse("learning:study_sync"), {"payload": json.dumps(payload)}
+        ).json()
+        # Sau "Nhớ" lần đầu từ ở bước 10 phút -> "Nhớ" lần nữa là tốt nghiệp 1 ngày.
+        self.assertEqual(data["cards"][str(vocab)]["toasts"]["nho"], "✓ Nhớ · gặp lại sau 1 ngày")
+
+    def test_extra_review_toasts_say_the_schedule_is_unchanged(self):
+        self._progress(self.words["注文"], due_offset=3)
+        self.client.post(reverse("learning:study_retry"), {"vocab": [self.words["注文"].pk]})
+        page = self.client.get(reverse("learning:study"))
+        toasts = {code: b["toast"] for code, b in self._buttons(page).items()}
+        self.assertEqual(toasts["nho"], "Nhớ · lượt ôn thêm, lịch ôn không đổi")
+        card = page.context["deck"]["cards"][str(self.words["注文"].pk)]
+        self.assertEqual(card["toasts"]["quen"], "Quên rồi · lượt ôn thêm, lịch ôn không đổi")

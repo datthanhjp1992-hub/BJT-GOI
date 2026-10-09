@@ -778,9 +778,13 @@ html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
 .over-limit-form{margin:4px 0 0;}
 .session-actions{justify-content:center;margin:8px 0 0;}
 .session-undo{margin:14px 0 0;}
+/* -- Câu báo sau mỗi lần chấm (spec.md T6.4): viên thuốc nổi ở đáy, màu đảo
+      (chữ màu nền trên nền màu chữ) nên đọc rõ ở mọi theme + chế độ tối. -- */
+.grade-toast{position:fixed;left:50%;bottom:24px;z-index:30;max-width:calc(100% - 32px);padding:9px 18px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:14px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 6px 18px rgba(0,0,0,.18);pointer-events:none;opacity:0;transform:translate(-50%,8px);transition:opacity .15s ease,transform .15s ease;}
+.grade-toast.is-shown{opacity:1;transform:translate(-50%,0);}
 @media (prefers-reduced-motion:reduce){
   .session-done-mark{animation:none;}
-  .flashcard,.card-panel.is-busy{transition:none;}
+  .flashcard,.card-panel.is-busy,.grade-toast{transition:none;}
 }
 /* -- Điện thoại (T1.6): nút "Hiện đáp án" và 4 nút chấm GHIM ở đáy màn hình
       để bấm bằng ngón cái; chừa chỗ dưới cùng cho thanh ghim không che nội dung. -- */
@@ -793,6 +797,7 @@ html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
   .reveal-btn{margin-top:0;}
   .grade-row{gap:6px;}
   .btn-grade{min-height:54px;padding:10px 4px;font-size:14px;}
+  .grade-toast{bottom:calc(86px + env(safe-area-inset-bottom));}   /* ngay trên hàng nút ghim đáy */
   .session-done{padding:32px 18px;}
   .session-stats{gap:8px;}
   .session-stats .stat{padding:12px 6px;}

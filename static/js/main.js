@@ -12,6 +12,7 @@
 //    c) Phím tắt: Space lật · 1-4 chấm · Z hoàn tác · E ví dụ · ? bảng phím tắt.
 //    d) Vuốt trên điện thoại: trái = Quên rồi, phải = Nhớ, lên = Dễ (khi đã lật thẻ).
 //    e) Chế độ tập trung: nút ☰ mở/ẩn sidebar, nhớ trong localStorage.
+//    f) Câu báo sau mỗi lần chấm (T6.4) — từ data-toast của nút vừa bấm.
 //
 //    Mọi listener gắn ở document / #card-panel (event delegation) vì nội dung
 //    thẻ bị thay mới sau mỗi lần chấm. Tắt JS: form gửi thường, mọi thứ hiện
@@ -296,11 +297,43 @@ function openDiscussionFromHash() {
   discussion.scrollIntoView({ block: "start" });
 }
 
+// Câu báo sau mỗi lần chấm (spec.md T6.4): "✓ Nhớ · gặp lại sau 1 ngày".
+// Bắt `click` ở pha CAPTURE — trước khi study_deck.js (chặn submit) hay
+// fetch của initCardPanel đổi sang thẻ kế — nên đọc đúng `data-toast` của thẻ
+// vừa chấm. Phím 1-4 và vuốt đều đi qua button.click() nên cũng có câu báo.
+// Chữ do server dựng (views._grade_toasts); tắt JS thì không có câu báo.
+var TOAST_MS = 1600;
+var toastTimer = null;
+
+function showGradeToast(text) {
+  var toast = document.querySelector("[data-grade-toast]");
+  if (!toast || !text) { return; }
+  toast.textContent = text;
+  toast.hidden = false;
+  toast.classList.remove("is-shown");
+  void toast.offsetWidth;   // chấm liên tiếp: chạy lại hiệu ứng hiện
+  toast.classList.add("is-shown");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () {
+    toast.classList.remove("is-shown");
+    toastTimer = setTimeout(function () { toast.hidden = true; }, 200);
+  }, TOAST_MS);
+}
+
+function initGradeToast() {
+  document.addEventListener("click", function (event) {
+    var button = event.target.closest && event.target.closest("[data-study-card] [data-grade-key]");
+    if (!button || button.disabled || isPanelBusy()) { return; }
+    showGradeToast(button.getAttribute("data-toast"));
+  }, true);
+}
+
 function initStudyScreen() {
   openDiscussionFromHash();
   initCardPanel();
   initStudyShortcuts();
   initCardSwipe();
+  initGradeToast();
   initSidebarToggle();
 }
 

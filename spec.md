@@ -997,7 +997,7 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
 - [x] T6.1 Hạn mức từ mới chung cho mọi lối vào + khối "Vẫn học thêm" (F) — code xong 09/10/2026, chờ Dat chạy trên server thật
 - [x] T6.2 Hoãn từ dở bước học sang mai, ưu tiên đầu hàng, "Nhớ" là tốt nghiệp (V3) — code xong 09/10/2026, chờ Dat chạy trên server thật
 - [x] T6.3 Vuốt lên = Dễ (V1) — code xong 09/10/2026, chờ Dat thử trên điện thoại thật
-- [ ] T6.4 Báo kết quả sau mỗi lần chấm (V2)
+- [x] T6.4 Báo kết quả sau mỗi lần chấm (V2) — code xong 09/10/2026, chờ Dat thử trên server thật
 - [ ] T6.5 Tự giảm / tạm dừng từ mới khi nợ ôn cao (B)
 - [ ] T6.6 Hướng dẫn cử chỉ lần đầu (V5)
 - [x] ~~V4 Rút bước học từ mới xuống 1 bước~~ — Dat chốt không làm (09/10/2026)
@@ -1064,6 +1064,27 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
   vuốt ngắn < 80px / vuốt xuống → không chấm; kéo xuống trên thẻ cuộn trang (scrollY 120 → 40).
   **Chưa thử trên iPhone/Android thật.**
 - Test: `SwipeUpMarkupTests` (2) + 2 rule mới trong `StudyScreenCssTests`.
+
+### Ghi chú T6.4 (09/10/2026) — để đối chiếu khi review
+- `views._grade_toasts(progress, touch, previews)` dựng câu báo cho 4 nút từ
+  `services.grade_previews()` (hàm thuần, không thêm query) — luôn tính, không phụ thuộc tuỳ
+  chọn SC08 "hiện khoảng cách" (tuỳ chọn đó chỉ quyết định hiện số dưới nút như cũ).
+- Nội dung (`message.properties`, `learning.flashcard.toast.*`): Quên → "✗ Quên rồi · gặp lại
+  trong phiên này"; khoảng cách tính bằng phút/giờ → "✓ {nút} · gặp lại trong phiên này"; tính
+  bằng ngày/tháng → "✓ {nút} · gặp lại sau {N ngày}"; phiên ôn thêm → "{nút} · lượt ôn thêm,
+  lịch ôn không đổi".
+- SC04: mỗi nút có `data-toast`. Phiên có bộ thẻ: mỗi thẻ trong `#study-deck` và mỗi kết quả của
+  `study/sync/` có `toasts`; `study_deck.js` gắn lại `data-toast` khi vẽ thẻ.
+- `main.js initGradeToast`: bắt `click` ở pha capture (trước khi thẻ bị đổi) trên
+  `[data-study-card] [data-grade-key]` — nút, phím 1–4 và vuốt đều đi qua `button.click()`.
+  Phần tử `.grade-toast` nằm trong `flashcard.html`, NGOÀI `#card-panel` (không bị thay khi đổi
+  thẻ). Hiện 1,6 giây; màu đảo `--ink`/`--bg` nên đọc rõ mọi theme + tối; ≤560px nằm ngay trên
+  hàng nút ghim đáy; `prefers-reduced-motion` tắt hiệu ứng.
+- Đổi test cũ `test_buttons_hide_the_interval_by_default`: "4 ngày" giờ có trong `data-toast`
+  nên kiểm "không có `.btn-grade-delay`" thay cho "không có chữ 4 ngày".
+- Kiểm trên Chromium (375px cảm ứng + 1280px, theme C tối) ở SC04 và phiên có bộ thẻ: bấm Dễ,
+  phím 3, vuốt trái đều ra đúng câu; tự ẩn sau ~1,6 giây.
+- Test: `GradeToastTests` (6).
 
 ### Ghi chú T4.3 (06/10/2026) — để đối chiếu khi review
 - **Khác bản duyệt:**
