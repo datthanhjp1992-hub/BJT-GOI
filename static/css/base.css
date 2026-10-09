@@ -776,6 +776,9 @@ html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
 .session-done .over-limit-notice{margin:0 0 12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--study-radius);background:var(--accent-soft);}
 .over-limit-notice .muted{font-size:13px;}
 .over-limit-form{margin:4px 0 0;}
+/* Lý do giảm/dừng từ mới khi nợ ôn cao (T6.5) — trang chủ + khối "Vẫn học thêm". */
+.backlog-hint{margin:6px 0 0;font-size:13.5px;}
+.over-limit-notice .backlog-hint{margin:0;color:var(--ink);font-size:inherit;}
 .session-actions{justify-content:center;margin:8px 0 0;}
 .session-undo{margin:14px 0 0;}
 /* -- Câu báo sau mỗi lần chấm (spec.md T6.4): viên thuốc nổi ở đáy, màu đảo

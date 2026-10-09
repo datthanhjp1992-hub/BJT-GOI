@@ -2627,3 +2627,120 @@ class GradeToastTests(LearningTestCase):
         self.assertEqual(toasts["nho"], "Nhớ · lượt ôn thêm, lịch ôn không đổi")
         card = page.context["deck"]["cards"][str(self.words["注文"].pk)]
         self.assertEqual(card["toasts"]["quen"], "Quên rồi · lượt ôn thêm, lịch ôn không đổi")
+
+
+class BacklogAllowanceTests(LearningTestCase):
+    """spec.md T6.5 — nợ ôn cao thì giảm / dừng từ mới. goal = 4 nên ngưỡng
+    "chậm" = 12 (3 x 4), ngưỡng "dừng" = 20 (5 x 4)."""
+
+    def setUp(self):
+        super().setUp()
+        self.user.daily_review_goal = 4
+        self.user.save(update_fields=["daily_review_goal"])
+        self.today = self.user.local_today()
+        self.old = self._make_topic("Cũ", "cu", [f"旧{i:02d}" for i in range(30)])
+        self.new = self._make_topic("Mới", "moi", [f"新{i:02d}" for i in range(10)])
+        self.old_words = list(self.old.vocabularies.order_by("word"))
+
+    def _due(self, count, **extra):
+        """`count` từ ôn đến hạn hôm nay, học từ hôm trước (không tính là từ mới hôm nay)."""
+        rows = [
+            UserVocabularyProgress(
+                user=self.user, vocabulary=vocab, card_state=srs.REVIEW,
+                next_review_date=self.today, **extra,
+            )
+            for vocab in self.old_words[:count]
+        ]
+        UserVocabularyProgress.objects.bulk_create(rows)
+        UserVocabularyProgress.objects.filter(user=self.user).update(
+            created_at=timezone.now() - timedelta(days=3)
+        )
+
+    def _allowance(self):
+        return services.new_word_allowance(self.user)
+
+    def test_thresholds(self):
+        for backlog, cap, paused, threshold in (
+            (11, 4, False, 0), (12, 2, True, 12), (19, 2, True, 12), (20, 0, True, 20),
+        ):
+            UserVocabularyProgress.objects.filter(user=self.user).delete()
+            self._due(backlog)
+            a = self._allowance()
+            self.assertEqual(
+                (a.backlog, a.cap, a.left, a.paused, a.threshold),
+                (backlog, cap, cap, paused, threshold), backlog,
+            )
+
+    def test_words_learned_today_still_count_against_the_reduced_cap(self):
+        self._due(12)
+        services.review_word(services.get_or_start_progress(self.user, self.new.vocabularies.first()), 5)
+        a = self._allowance()
+        self.assertEqual((a.cap, a.learned_today, a.left), (2, 1, 1))
+
+    def test_backlog_ignores_today_learning_and_postponed_words(self):
+        self._due(11)
+        extra = self.old_words[11:14]
+        UserVocabularyProgress.objects.create(   # đang học trong ngày
+            user=self.user, vocabulary=extra[0], card_state=srs.LEARNING,
+            next_review_date=self.today, due_at=timezone.now(),
+        )
+        UserVocabularyProgress.objects.create(   # đã hoãn sang mai
+            user=self.user, vocabulary=extra[1], card_state=srs.LEARNING,
+            next_review_date=self.today + timedelta(days=1), due_at=None,
+        )
+        self.assertEqual(self._allowance().backlog, 11)
+        UserVocabularyProgress.objects.create(   # từ dở từ hôm trước -> là nợ
+            user=self.user, vocabulary=extra[2], card_state=srs.LEARNING,
+            next_review_date=self.today - timedelta(days=1), due_at=None,
+        )
+        self.assertEqual(self._allowance().backlog, 12)
+
+    def test_reviewing_the_backlog_reopens_new_words(self):
+        self._due(20)
+        self.assertEqual(self._allowance().cap, 0)
+        for row in UserVocabularyProgress.objects.filter(user=self.user)[:9]:
+            services.review_word(row, srs.GOOD)
+        self.assertEqual(self._allowance().cap, 4)   # còn 11 < 12
+
+    def test_dashboard_explains_the_pause(self):
+        self._due(20)
+        page = self.client.get(reverse("learning:dashboard"))
+        daily = page.context["daily"]
+        self.assertEqual((daily["due"], daily["new"], daily["paused"]), (20, 0, True))
+        self.assertContains(page, "Đang nợ 20 từ cần ôn — tạm dừng từ mới cho tới khi còn dưới 20 từ.")
+
+    def test_dashboard_explains_the_slowdown(self):
+        self._due(12)
+        page = self.client.get(reverse("learning:dashboard"))
+        self.assertEqual(page.context["daily"]["new"], 2)
+        self.assertContains(
+            page, "Đang nợ 12 từ cần ôn — hôm nay chỉ 2 từ mới; ôn xuống dưới 12 từ thì lại đủ 4 từ."
+        )
+
+    def test_dashboard_says_nothing_without_backlog(self):
+        page = self.client.get(reverse("learning:dashboard"))
+        self.assertFalse(page.context["daily"]["paused"])
+        self.assertNotContains(page, "Đang nợ")
+
+    def test_sc04_holds_new_words_and_explains_why(self):
+        self._due(20)
+        queue = services.get_topic_queue(self.user, self.new)
+        self.assertEqual(queue.n_new, 0)
+        self.assertTrue(queue.more_new)
+        page = self.client.get(reverse("learning:flashcard", args=["moi"]))
+        self.assertIsNone(page.context["word"])
+        self.assertTrue(page.context["over_limit"]["paused"])
+        self.assertContains(page, "tạm dừng từ mới")
+        self.assertContains(page, "Vẫn học thêm 4 từ mới")
+
+    def test_sc05_still_allows_learning_on_purpose(self):
+        self._due(20)
+        page = self.client.get(
+            reverse("vocabulary:index"), {"topic": "moi", "filtered": "1", "limit": "0"}
+        )
+        self.assertFalse(page.context["can_start"])
+        self.assertContains(page, "tạm dừng từ mới")
+        self.client.post(
+            reverse("learning:study_start"), {"topic": "moi", "limit": "0", "over_limit": "1"}
+        )
+        self.assertEqual(len(self.client.session["study_queue"]), 4)

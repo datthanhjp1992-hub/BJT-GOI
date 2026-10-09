@@ -1,0 +1,5 @@
+{% load properties_tags %}
+{% comment %}Vì sao hôm nay ít / không có từ mới (spec.md T6.5). `info` có
+backlog, cap, goal, threshold — services.get_daily_overview() hoặc
+services.over_limit_forecast().{% endcomment %}
+<p class="muted backlog-hint">{% if info.cap %}{% message "learning.backlog.hint.slowed" backlog=info.backlog cap=info.cap threshold=info.threshold goal=info.goal %}{% else %}{% message "learning.backlog.hint.stopped" backlog=info.backlog threshold=info.threshold %}{% endif %}</p>

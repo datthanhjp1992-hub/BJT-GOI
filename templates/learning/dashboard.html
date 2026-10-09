@@ -31,6 +31,7 @@ vào SC05.{% endcomment %}
       <div class="eyebrow">{% label "learning.daily.eyebrow" %}</div>
       {% if daily.total %}
         <h2 class="serif m-0">{% message "learning.daily.hint.summary" due=daily.due new=daily.new minutes=daily.minutes %}</h2>
+        {% if daily.paused %}{% include "learning/_backlog_hint.html" with info=daily %}{% endif %}
       {% else %}
         <h2 class="serif m-0 mb-6">{% label "learning.daily.title.done" %}</h2>
         <p class="muted m-0">

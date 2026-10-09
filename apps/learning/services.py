@@ -123,19 +123,52 @@ def postpone_learning(user, vocabulary_ids):
 # =============================================================================
 
 
+# T6.5 — nợ ôn càng nhiều thì càng ít từ mới (Dat duyệt 09/10/2026). Ngưỡng
+# tính theo BỘI của hạn mức để người đặt 5 từ/ngày và người đặt 30 từ/ngày
+# đều hợp lý: goal 20 -> từ 60 nợ chỉ còn 10 từ mới, từ 100 nợ dừng hẳn.
+# Chưa đưa vào SC08 (để sau nếu cần).
+BACKLOG_SLOW = 3   # nợ >= 3 x goal -> nửa hạn mức (làm tròn lên)
+BACKLOG_STOP = 5   # nợ >= 5 x goal -> 0 từ mới
+
+
 @dataclass
 class NewWordAllowance:
     goal: int            # User.daily_review_goal — hạn mức TỪ MỚI mỗi ngày
     learned_today: int   # count_new_words_today()
     left: int            # số từ mới còn được học hôm nay (>= 0)
-    backlog: int = 0     # số từ đang nợ ôn (T6.5)
-    paused: bool = False  # T6.5: hạn mức bị giảm/dừng vì nợ ôn
+    backlog: int = 0     # số từ đang nợ ôn (T6.5) — xem count_backlog()
+    paused: bool = False  # T6.5: hạn mức hôm nay bị giảm/dừng vì nợ ôn
+    cap: int = 0         # hạn mức THẬT hôm nay sau luật nợ ôn (<= goal)
+    threshold: int = 0   # paused: ôn xuống DƯỚI số này thì hạn mức tăng lại
+
+
+def count_backlog(user):
+    """Số từ đang nợ ôn: từ ôn đến hạn / quá hạn + từ dở bước học (T6.2).
+
+    KHÔNG tính từ đang học trong ngày (chưa xong bước 1-10 phút) và từ đã hoãn
+    sang mai — chúng không phải "nợ" của hôm nay.
+    """
+    today = user.local_today()
+    return UserVocabularyProgress.objects.filter(user=user).filter(
+        Q(card_state=srs.REVIEW, next_review_date__lte=today)
+        | Q(card_state=srs.REVIEW, next_review_date__isnull=True)
+        | leftover_learning_q(user)
+    ).count()
 
 
 def new_word_allowance(user):
     goal = user.daily_review_goal
     learned = count_new_words_today(user)
-    return NewWordAllowance(goal=goal, learned_today=learned, left=max(0, goal - learned))
+    backlog = count_backlog(user)
+    cap, threshold = goal, 0
+    if goal and backlog >= BACKLOG_STOP * goal:
+        cap, threshold = 0, BACKLOG_STOP * goal
+    elif goal and backlog >= BACKLOG_SLOW * goal:
+        cap, threshold = -(-goal // 2), BACKLOG_SLOW * goal
+    return NewWordAllowance(
+        goal=goal, learned_today=learned, left=max(0, cap - learned),
+        backlog=backlog, paused=cap < goal, cap=cap, threshold=threshold,
+    )
 
 
 def over_limit_forecast(user, extra, allowance=None):
@@ -150,6 +183,11 @@ def over_limit_forecast(user, extra, allowance=None):
         "goal": allowance.goal,
         "extra": extra,
         "tomorrow": count_due_tomorrow(user) + extra,
+        # T6.5: hạn mức bị giảm/dừng vì nợ ôn -> khối cảnh báo nói rõ lý do.
+        "paused": allowance.paused,
+        "backlog": allowance.backlog,
+        "cap": allowance.cap,
+        "threshold": allowance.threshold,
     }
 
 
@@ -999,12 +1037,13 @@ def _daily_new_ids(user, count):
 
 def _daily_parts(user):
     due = _daily_due_ids(user)[:STUDY_SOURCE_CAP]
-    return due, _daily_new_ids(user, new_word_allowance(user).left)
+    allowance = new_word_allowance(user)
+    return due, _daily_new_ids(user, allowance.left), allowance
 
 
 def build_daily_queue(user):
     """Hàng đợi "Học hôm nay" (list id, cất được vào request.session)."""
-    due, new = _daily_parts(user)
+    due, new, _allowance = _daily_parts(user)
     return due + new
 
 
@@ -1014,7 +1053,7 @@ def get_daily_overview(user):
     `due_tomorrow` chỉ tính khi hôm nay đã xong (total == 0) — đó là lúc trang
     chủ cần nói "mai có N từ"; còn việc thì khỏi tốn thêm query.
     """
-    due, new = _daily_parts(user)
+    due, new, allowance = _daily_parts(user)
     total = len(due) + len(new)
     return {
         "due": len(due),
@@ -1023,6 +1062,12 @@ def get_daily_overview(user):
         # Làm tròn LÊN như get_review_overview(): 3 từ vẫn là "khoảng 1 phút".
         "minutes": -(-total * SECONDS_PER_WORD // 60),
         "due_tomorrow": count_due_tomorrow(user) if total == 0 else 0,
+        # T6.5: trang chủ giải thích vì sao ít / không có từ mới.
+        "paused": allowance.paused,
+        "backlog": allowance.backlog,
+        "cap": allowance.cap,
+        "goal": allowance.goal,
+        "threshold": allowance.threshold,
     }
 
 

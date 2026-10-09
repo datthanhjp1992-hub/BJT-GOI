@@ -12,7 +12,12 @@ SC05 (trên nút "Bắt đầu học"). App khuyên chứ không cấm: người
   ajax           True: form có data-card-ajax (SC04 thay thẻ tại chỗ)
   primary        True: nút là nút chính của màn{% endcomment %}
 <div class="over-limit-notice" role="note">
-  <p class="m-0">{% message "learning.over_limit.hint.reached" learned=notice.learned goal=notice.goal %}</p>
+  {% if notice.paused %}
+    {% comment %}T6.5: hạn mức bị giảm/dừng vì nợ ôn — nói lý do thay cho "đã học X/Y".{% endcomment %}
+    {% include "learning/_backlog_hint.html" with info=notice %}
+  {% else %}
+    <p class="m-0">{% message "learning.over_limit.hint.reached" learned=notice.learned goal=notice.goal %}</p>
+  {% endif %}
   <p class="muted m-0">{% message "learning.over_limit.hint.forecast" count=notice.extra tomorrow=notice.tomorrow %}
     <a href="{% url 'accounts:settings' %}">{% label "learning.over_limit.link.settings" %}</a></p>
   <form method="post" action="{{ action_url }}" class="over-limit-form"{% if ajax %} data-card-ajax{% endif %}>

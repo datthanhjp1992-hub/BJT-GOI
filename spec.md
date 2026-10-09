@@ -998,7 +998,7 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
 - [x] T6.2 Hoãn từ dở bước học sang mai, ưu tiên đầu hàng, "Nhớ" là tốt nghiệp (V3) — code xong 09/10/2026, chờ Dat chạy trên server thật
 - [x] T6.3 Vuốt lên = Dễ (V1) — code xong 09/10/2026, chờ Dat thử trên điện thoại thật
 - [x] T6.4 Báo kết quả sau mỗi lần chấm (V2) — code xong 09/10/2026, chờ Dat thử trên server thật
-- [ ] T6.5 Tự giảm / tạm dừng từ mới khi nợ ôn cao (B)
+- [x] T6.5 Tự giảm / tạm dừng từ mới khi nợ ôn cao (B) — code xong 09/10/2026, chờ Dat chạy trên server thật
 - [ ] T6.6 Hướng dẫn cử chỉ lần đầu (V5)
 - [x] ~~V4 Rút bước học từ mới xuống 1 bước~~ — Dat chốt không làm (09/10/2026)
 
@@ -1085,6 +1085,22 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
 - Kiểm trên Chromium (375px cảm ứng + 1280px, theme C tối) ở SC04 và phiên có bộ thẻ: bấm Dễ,
   phím 3, vuốt trái đều ra đúng câu; tự ẩn sau ~1,6 giây.
 - Test: `GradeToastTests` (6).
+
+### Ghi chú T6.5 (09/10/2026) — để đối chiếu khi review
+- Luật nằm TRONG `services.new_word_allowance()` nên mọi lối vào của T6.1 (SC03, SC04/SC06, SC05)
+  tự áp dụng. Hằng số `BACKLOG_SLOW = 3`, `BACKLOG_STOP = 5` (bội của `daily_review_goal`).
+  `NewWordAllowance` có thêm `cap` (hạn mức thật hôm nay) và `threshold` (ôn xuống dưới số này
+  thì hạn mức tăng lại).
+- `services.count_backlog()` = REVIEW đến hạn/quá hạn/chưa xếp lịch + từ dở bước học (định nghĩa
+  T6.2). Không tính từ đang học trong ngày và từ đã hoãn sang mai. Thêm 1 query COUNT mỗi lần
+  tính hạn mức.
+- Trang chủ: `get_daily_overview()` trả thêm `paused/backlog/cap/goal/threshold`; dưới dòng
+  "N từ cần ôn · M từ mới" hiện partial mới `learning/_backlog_hint.html` ("Đang nợ … — tạm dừng
+  từ mới cho tới khi còn dưới …" / "… hôm nay chỉ N từ mới; ôn xuống dưới … thì lại đủ …").
+- Khối "Vẫn học thêm" (SC04 màn xong, SC05) khi bị giảm/dừng thì dòng đầu nêu lý do nợ ôn thay
+  cho "đã học X/Y". Nút "Vẫn học thêm" vẫn mở thêm một hạn mức — khuyên, không cấm (quyết định 8).
+- Với số liệu 09/10/2026 (254 nợ, goal 20): ≥ 100 → 0 từ mới; từ 60–99 → 10; dưới 60 → 20.
+- Test: `BacklogAllowanceTests` (9). Đã xem trang chủ + SC05 ở 375px (theme A): không tràn ngang.
 
 ### Ghi chú T4.3 (06/10/2026) — để đối chiếu khi review
 - **Khác bản duyệt:**
