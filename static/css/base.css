@@ -712,6 +712,8 @@ html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
 .flashcard.is-swiping{transition:none;}
 .flashcard.swipe-left{border-color:#B23A2A;box-shadow:0 0 0 3px rgba(178,58,42,.22);}
 .flashcard.swipe-right{border-color:#2E7D5B;box-shadow:0 0 0 3px rgba(46,125,91,.22);}
+/* Vuốt lên = Dễ (T6.3): màu của nút Dễ (nút chính, --accent) nên tự theo theme + chế độ tối. */
+.flashcard.swipe-up{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 .swipe-hint{display:none;text-align:center;font-size:12.5px;margin:10px 0 0;}
 /* -- Phím tắt (T1.3) -- */
 .kbd{display:inline-block;min-width:1.6em;padding:0 5px;border:1px solid currentColor;border-bottom-width:2px;border-radius:4px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;font-weight:400;line-height:1.5;text-align:center;opacity:.55;vertical-align:middle;}
@@ -730,6 +732,10 @@ html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
 @media (hover:none) and (pointer:coarse){
   .kbd,.shortcut-open{display:none !important;}
   .swipe-hint{display:block;}
+  /* T6.3: thẻ đã lật nhận cả vuốt LÊN -> trình duyệt không được cuộn khi kéo
+     trên thẻ; main.js tự cuộn khi kéo xuống. Ví dụ / thảo luận nằm ngoài
+     .flashcard nên vẫn cuộn bình thường. */
+  .study-screen.is-revealed .flashcard{touch-action:none;}
 }
 /* -- Khu thảo luận gập lại (T1.5) -- */
 .study-discussion{margin-top:28px;padding-top:12px;border-top:1px solid var(--border);}
@@ -765,11 +771,37 @@ html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
 .session-retry-title{margin:0 0 8px;font-weight:600;}
 .session-retry-words{margin:0 0 12px;line-height:2.2;}
 .session-retry form,.session-more{margin:0 0 10px;}
+/* Khối "Vẫn học thêm N từ mới" (spec.md T6.1) — SC04 màn xong + SC05. */
+.over-limit-notice{display:flex;flex-direction:column;gap:8px;text-align:left;}
+.session-done .over-limit-notice{margin:0 0 12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--study-radius);background:var(--accent-soft);}
+.over-limit-notice .muted{font-size:13px;}
+.over-limit-form{margin:4px 0 0;}
+/* Lý do giảm/dừng từ mới khi nợ ôn cao (T6.5) — trang chủ + khối "Vẫn học thêm". */
+.backlog-hint{margin:6px 0 0;font-size:13.5px;}
+.over-limit-notice .backlog-hint{margin:0;color:var(--ink);font-size:inherit;}
 .session-actions{justify-content:center;margin:8px 0 0;}
 .session-undo{margin:14px 0 0;}
+/* -- Câu báo sau mỗi lần chấm (spec.md T6.4): viên thuốc nổi ở đáy, màu đảo
+      (chữ màu nền trên nền màu chữ) nên đọc rõ ở mọi theme + chế độ tối. -- */
+.grade-toast{position:fixed;left:50%;bottom:24px;z-index:30;max-width:calc(100% - 32px);padding:9px 18px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:14px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 6px 18px rgba(0,0,0,.18);pointer-events:none;opacity:0;transform:translate(-50%,8px);transition:opacity .15s ease,transform .15s ease;}
+.grade-toast.is-shown{opacity:1;transform:translate(-50%,0);}
+/* -- Hướng dẫn cử chỉ lần đầu (spec.md T6.6): lớp phủ mờ + hộp 3 hướng,
+      ↑ ở trên, ← → ở hàng dưới (đúng hướng tay vuốt). Chạm để đóng. -- */
+.swipe-coach{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.55);}
+.swipe-coach[hidden]{display:none;}
+.swipe-coach-box{width:100%;max-width:340px;padding:22px 20px 18px;border:1px solid var(--border);border-radius:var(--study-radius);background:var(--surface);color:var(--ink);text-align:center;box-shadow:0 12px 32px rgba(0,0,0,.25);}
+.swipe-coach-title{margin:0 0 16px;font-weight:700;font-size:17px;}
+.swipe-coach-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.swipe-coach-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:var(--study-radius);font-weight:600;font-size:14px;}
+.swipe-coach-item.is-up{grid-column:1 / -1;justify-self:center;min-width:50%;}   /* màu = nút Dễ (.btn-primary của theme) */
+.swipe-coach-item.is-left{background:var(--grade-forgot-bg);color:var(--grade-forgot-fg);}
+.swipe-coach-item.is-right{background:var(--grade-good-bg);color:var(--grade-good-fg);}
+.swipe-coach-arrow{font-size:24px;line-height:1;}
+.swipe-coach-note{margin:14px 0 0;font-size:13.5px;color:var(--ink-soft);}
+.swipe-coach-dismiss{margin:10px 0 0;font-size:13px;color:var(--ink-soft);}
 @media (prefers-reduced-motion:reduce){
   .session-done-mark{animation:none;}
-  .flashcard,.card-panel.is-busy{transition:none;}
+  .flashcard,.card-panel.is-busy,.grade-toast{transition:none;}
 }
 /* -- Điện thoại (T1.6): nút "Hiện đáp án" và 4 nút chấm GHIM ở đáy màn hình
       để bấm bằng ngón cái; chừa chỗ dưới cùng cho thanh ghim không che nội dung. -- */
@@ -782,6 +814,7 @@ html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
   .reveal-btn{margin-top:0;}
   .grade-row{gap:6px;}
   .btn-grade{min-height:54px;padding:10px 4px;font-size:14px;}
+  .grade-toast{bottom:calc(86px + env(safe-area-inset-bottom));}   /* ngay trên hàng nút ghim đáy */
   .session-done{padding:32px 18px;}
   .session-stats{gap:8px;}
   .session-stats .stat{padding:12px 6px;}
@@ -798,6 +831,7 @@ html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
    width:{{ percent }}%) vẫn để inline — đó là chỗ đúng của nó.
    ========================================================================== */
 .m-0{margin:0 !important;}
+.mb-0{margin-bottom:0 !important;}
 .p-0{padding:0 !important;}
 .mt-12{margin-top:12px !important;}
 .mt-14{margin-top:14px !important;}

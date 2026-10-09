@@ -299,14 +299,53 @@ GRADE_BUTTONS = (
 )
 
 
+# Đơn vị khoảng cách của từ còn quay lại NGAY TRONG PHIÊN (bước học tính bằng
+# phút). Từ tốt nghiệp / đang ôn luôn tính bằng ngày trở lên.
+IN_SESSION_DELAY_UNITS = ("minutes", "hours")
+
+
+def _grade_toasts(progress, touch=True, previews=None):
+    """{mã nút: câu báo sau khi chấm} — spec.md T6.4.
+
+    Dựng sẵn ở server (properties) để JS không chứa chữ: main.js chỉ hiện
+    `data-toast` của nút vừa bấm. Từ quay lại trong phiên KHÔNG ghi số phút —
+    với "hết lượt rồi mới ôn lại" con số đó không khớp lúc từ quay lại thật.
+    """
+    toasts = {}
+    if not touch:
+        for code, label_key, *_ in GRADE_BUTTONS:
+            toasts[code] = message("learning.flashcard.toast.extra", grade=label(label_key))
+        return toasts
+    previews = previews or services.grade_previews(progress)
+    for code, label_key, *_ in GRADE_BUTTONS:
+        parts = previews[QUALITY_MAP[code]]
+        grade = label(label_key)
+        if code == "quen":
+            toasts[code] = message("learning.flashcard.toast.forgot", grade=grade)
+        elif parts[0] in IN_SESSION_DELAY_UNITS:
+            toasts[code] = message("learning.flashcard.toast.in_session", grade=grade)
+        else:
+            toasts[code] = message(
+                "learning.flashcard.toast.scheduled", grade=grade, delay=_delay_text(parts)
+            )
+    return toasts
+
+
 def _card_context(request, word, *, flow, show_preview=True, session_id=None):
-    """Phần context mô tả THẺ đang hiện: giai đoạn, 4 nút kèm khoảng cách, hoàn tác."""
+    """Phần context mô tả THẺ đang hiện: giai đoạn, 4 nút kèm khoảng cách, hoàn tác.
+
+    `show_preview=False` cũng có nghĩa lượt "ôn thêm" (không đụng lịch).
+    """
     progress = UserVocabularyProgress.objects.filter(user=request.user, vocabulary=word).first()
     state = progress.card_state if progress else srs.NEW
-    # Khoảng cách ôn lại dưới nút là tuỳ chọn ở SC08 (mặc định ẩn) — với
-    # "hết lượt rồi mới ôn lại", "1 phút / 6 phút" không còn khớp lúc từ quay lại.
-    show_preview = show_preview and getattr(request.user, "show_review_interval", False)
-    previews = services.grade_previews(progress) if show_preview else {}
+    touch = show_preview
+    # Khoảng cách luôn tính (hàm thuần, không query) để dựng câu báo T6.4;
+    # HIỆN dưới nút thì vẫn là tuỳ chọn ở SC08 (mặc định ẩn) — với "hết lượt
+    # rồi mới ôn lại", "1 phút / 6 phút" không còn khớp lúc từ quay lại.
+    all_previews = services.grade_previews(progress)
+    toasts = _grade_toasts(progress, touch, all_previews)
+    show_preview = touch and getattr(request.user, "show_review_interval", False)
+    previews = all_previews if show_preview else {}
     buttons = [
         {
             "code": code,
@@ -316,6 +355,7 @@ def _card_context(request, word, *, flow, show_preview=True, session_id=None):
             "css": css,
             "primary": primary,
             "delay": _delay_text(previews[QUALITY_MAP[code]]) if previews else "",
+            "toast": toasts[code],
         }
         for index, (code, label_key, css, primary) in enumerate(GRADE_BUTTONS, start=1)
     ]
@@ -430,12 +470,18 @@ def flashcard_view(request, topic_slug):
         session = _close_study_session(request, session_id_key)
         request.session.pop(total_key, None)
         undo = _last_undo(request, flow)
+        more_new_batch = min(queue.more_new_count, queue.new_limit or 1)
         return _render_card(request, {
             "topic": topic, "word": None, "scope_label": topic.display_name,
             "summary": _session_summary(request, session),
             "streak_days": services.get_streak_days(request.user),
             "queue": queue,
-            "more_new_batch": min(queue.more_new_count, queue.new_limit or 1),
+            "more_new_batch": more_new_batch,
+            # Khối "Vẫn học thêm" báo trước cái giá: ngày mai thêm ~N từ ôn.
+            "over_limit": (
+                services.over_limit_forecast(request.user, more_new_batch)
+                if queue.more_new else None
+            ),
             "due_tomorrow": services.count_due_tomorrow(request.user),
             "undo_word": undo["word"] if undo else "",
         })
@@ -459,6 +505,25 @@ def flashcard_view(request, topic_slug):
         **_card_context(request, word, flow=flow, session_id=session.pk),
     }
     return _render_card(request, context)
+
+
+@login_required
+@require_POST
+def flashcard_end_view(request, topic_slug):
+    """"Kết thúc phiên" của SC04 (spec.md T6.2): từ đã chấm trong phiên mà còn
+    ở bước học được hẹn sang mai, rồi đóng StudySession.
+
+    SC04 không giữ danh sách từ đang học trong session như phiên study_*, nên
+    lấy tập từ đã chấm của phiên (`_first_grades`) — postpone_learning() tự bỏ
+    qua từ đã tốt nghiệp.
+    """
+    total_key, session_id_key = _flashcard_session_keys(topic_slug)
+    session_id = request.session.get(session_id_key)
+    postponed = services.postpone_learning(request.user, list(_first_grades(request, session_id)))
+    _close_study_session(request, session_id_key)
+    request.session.pop(total_key, None)
+    _flash_postponed(request, postponed)
+    return redirect("learning:dashboard")
 
 
 @login_required
@@ -726,7 +791,19 @@ STUDY_LEARNING_KEY = "study_learning"
 STUDY_SEQ_KEY = "study_seq"
 
 
+def _postpone_study_learning(request):
+    """Từ còn ở bước học của phiên theo hàng đợi -> hẹn sang mai (spec.md T6.2).
+
+    Chỉ phiên chính thức: phiên "ôn thêm" không đụng lịch. Trả về số từ đã hoãn.
+    """
+    ids = request.session.pop(STUDY_LEARNING_KEY, None) or []
+    if not ids or not _touches_schedule(request):
+        return 0
+    return services.postpone_learning(request.user, ids)
+
+
 def _clear_study_session(request):
+    _postpone_study_learning(request)
     request.session.pop(STUDY_QUEUE_KEY, None)
     request.session.pop(STUDY_TOTAL_KEY, None)
     request.session.pop(STUDY_SCOPE_KEY, None)
@@ -946,11 +1023,35 @@ def study_start_view(request):
     words = vocab_selectors.filter_vocabulary(
         request.user, topics=topics, query=query, statuses=statuses
     )
-    queue = services.build_study_queue(request.user, words, limit=limit)
+    # Hạn mức từ mới chung (spec.md T6.1). "Vẫn học thêm" mở thêm đúng MỘT
+    # hạn mức mỗi lần bấm, không mở "tất cả".
+    allowance = services.new_word_allowance(request.user)
+    over_limit = request.POST.get(vocab_selectors.OVER_LIMIT_PARAM) == "1"
+    plan = services.plan_study_queue(
+        request.user, words, limit=limit,
+        new_limit=allowance.left + (allowance.goal if over_limit else 0),
+    )
+    queue = plan.queue
 
     if not queue:
+        if plan.held_new:
+            # Toàn từ mới mà hôm nay đã hết hạn mức: quay lại đúng bộ lọc, SC05
+            # hiện khối "Vẫn học thêm" để người học tự quyết.
+            flash.warning(request, message(
+                "learning.study.error.new_limit_reached",
+                learned=allowance.learned_today, goal=allowance.goal,
+            ))
+            params = vocab_selectors.filter_params(
+                [t.slug for t in topics], statuses, query, limit
+            )
+            return redirect(f"{reverse('vocabulary:index')}?{params.urlencode()}")
         flash.error(request, message("learning.study.error.empty_queue"))
         return redirect("vocabulary:index")
+    if plan.held_new:
+        flash.info(request, message(
+            "learning.study.hint.new_held",
+            learned=allowance.learned_today, goal=allowance.goal, held=plan.held_new,
+        ))
 
     # Phiên bắt đầu từ SC05 luôn là ôn "chính thức": chấm điểm và đẩy lịch.
     _start_study_session(
@@ -1056,6 +1157,7 @@ def _study_cards_json(request, vocabulary_ids):
                 "learning/_card_extra.html", {"word": word, "examples": card.examples}
             ),
             "previews": _card_previews(request, card.progress),
+            "toasts": _grade_toasts(card.progress, _touches_schedule(request)),
         }
     return cards
 
@@ -1143,6 +1245,7 @@ def _study_card_status(request, vocabulary_ids):
             "learning": in_learning,
             "due": due.isoformat() if due else None,
             "previews": _card_previews(request, progress),
+            "toasts": _grade_toasts(progress, _touches_schedule(request)),
         }
     return status
 
@@ -1266,9 +1369,17 @@ def study_retry_view(request):
 @login_required
 @require_POST
 def study_end_view(request):
-    """Kết thúc phiên sớm — đóng StudySession và dọn hàng đợi."""
+    """Kết thúc phiên sớm — hoãn từ đang học dở sang mai, đóng StudySession và
+    dọn hàng đợi."""
+    postponed = _postpone_study_learning(request)
     _clear_study_session(request)
+    _flash_postponed(request, postponed)
     return redirect("learning:dashboard")
+
+
+def _flash_postponed(request, count):
+    if count:
+        flash.info(request, message("learning.study.hint.postponed", count=count))
 
 
 # =============================================================================

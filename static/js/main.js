@@ -10,8 +10,10 @@
 //       header X-Card-Partial: 1; server trả riêng phần thẻ (views._render_card)
 //       và ta thay bên trong #card-panel. Lỗi mạng -> gửi form kiểu thường.
 //    c) Phím tắt: Space lật · 1-4 chấm · Z hoàn tác · E ví dụ · ? bảng phím tắt.
-//    d) Vuốt trên điện thoại: trái = Quên rồi, phải = Nhớ (khi đã lật thẻ).
+//    d) Vuốt trên điện thoại: trái = Quên rồi, phải = Nhớ, lên = Dễ (khi đã lật thẻ).
 //    e) Chế độ tập trung: nút ☰ mở/ẩn sidebar, nhớ trong localStorage.
+//    f) Câu báo sau mỗi lần chấm (T6.4) — từ data-toast của nút vừa bấm.
+//    g) Hướng dẫn cử chỉ ← → ↑ ở 3 lần mở màn học đầu trên điện thoại (T6.6).
 //
 //    Mọi listener gắn ở document / #card-panel (event delegation) vì nội dung
 //    thẻ bị thay mới sau mỗi lần chấm. Tắt JS: form gửi thường, mọi thứ hiện
@@ -36,7 +38,51 @@ function revealCard() {
   screen.classList.add("is-revealed");
   var card = screen.querySelector("[data-flashcard]");
   if (card) { card.classList.add("is-flipped"); }
+  maybeShowSwipeCoach();
   return true;
+}
+
+// Hướng dẫn cử chỉ lần đầu (spec.md T6.6): sau lần LẬT THẺ đầu tiên của mỗi
+// lần mở màn học, chỉ trên thiết bị cảm ứng, chỉ ở 3 lần mở đầu (đếm bằng
+// localStorage). Không đọc được localStorage (riêng tư / bị chặn) thì coi như
+// lần đầu — hiện mỗi lần mở màn học một lần, chấp nhận được. Không lưu DB.
+var COACH_STORAGE_KEY = "bjt.swipeCoach.count";
+var COACH_TIMES = 3;
+var coachShown = false;
+
+function isTouchDevice() {
+  return !!(window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches);
+}
+
+function coachCount() {
+  try { return parseInt(window.localStorage.getItem(COACH_STORAGE_KEY) || "0", 10) || 0; }
+  catch (e) { return 0; }
+}
+
+function maybeShowSwipeCoach() {
+  var coach = document.querySelector("[data-swipe-coach]");
+  if (coachShown || !coach || !isTouchDevice()) { return; }
+  coachShown = true;   // mỗi lần mở trang chỉ một lần
+  var count = coachCount();
+  if (count >= COACH_TIMES) { return; }
+  try { window.localStorage.setItem(COACH_STORAGE_KEY, String(count + 1)); } catch (e) { /* bỏ qua */ }
+  coach.hidden = false;
+}
+
+function hideSwipeCoach() {
+  var coach = document.querySelector("[data-swipe-coach]");
+  if (coach && !coach.hidden) { coach.hidden = true; return true; }
+  return false;
+}
+
+function initSwipeCoach() {
+  var coach = document.querySelector("[data-swipe-coach]");
+  if (!coach) { return; }
+  // Chạm bất kỳ đâu trên lớp phủ là đóng; Esc cũng đóng (bàn phím rời).
+  coach.addEventListener("click", hideSwipeCoach);
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") { hideSwipeCoach(); }
+  });
 }
 
 function toggleShortcutDialog() {
@@ -186,6 +232,13 @@ function initStudyShortcuts() {
   });
 }
 
+// Vuốt thẻ đã lật để chấm (T1.6 + spec.md T6.3): phải = Nhớ (phím 3),
+// trái = Quên rồi (phím 1), LÊN = Dễ (phím 4). Hướng chốt một lần ở ~10px đầu.
+// Trên thiết bị cảm ứng thẻ đã lật có `touch-action:none` (base.css) để trình
+// duyệt không cuộn trang khi kéo trên thẻ — vì vậy kéo XUỐNG tự cuộn trang
+// bằng tay ở đây (iOS Safari không hỗ trợ touch-action:pan-down).
+var SWIPE_KEYS = { right: "3", left: "1", up: "4" };
+
 function initCardSwipe() {
   var card = null;
   var start = null;
@@ -193,7 +246,7 @@ function initCardSwipe() {
   function reset() {
     if (card) {
       card.style.transform = "";
-      card.classList.remove("is-swiping", "swipe-left", "swipe-right");
+      card.classList.remove("is-swiping", "swipe-left", "swipe-right", "swipe-up");
     }
     card = null;
     start = null;
@@ -203,34 +256,50 @@ function initCardSwipe() {
     var target = event.target.closest && event.target.closest("[data-flashcard]");
     if (!target || event.touches.length !== 1 || !isRevealed(studyScreen()) || isPanelBusy()) { return; }
     card = target;
-    start = { x: event.touches[0].clientX, y: event.touches[0].clientY, dx: 0, horizontal: null };
+    var t = event.touches[0];
+    start = { x: t.clientX, y: t.clientY, lastY: t.clientY, dx: 0, dy: 0, dir: null };
   }, { passive: true });
 
   document.addEventListener("touchmove", function (event) {
     if (!card || !start) { return; }
-    var dx = event.touches[0].clientX - start.x;
-    var dy = event.touches[0].clientY - start.y;
-    // Quyết định hướng một lần: vuốt dọc là cuộn trang, không đụng tới thẻ.
-    if (start.horizontal === null && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
-      start.horizontal = Math.abs(dx) > Math.abs(dy);
+    var t = event.touches[0];
+    var dx = t.clientX - start.x;
+    var dy = t.clientY - start.y;
+    if (start.dir === null && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+      start.dir = Math.abs(dx) > Math.abs(dy) ? "h" : (dy < 0 ? "up" : "down");
     }
-    if (!start.horizontal) { return; }
-    start.dx = dx;
+    if (start.dir === "down") {
+      window.scrollBy(0, start.lastY - t.clientY);
+      start.lastY = t.clientY;
+      return;
+    }
+    if (start.dir === null) { return; }
     card.classList.add("is-swiping");
-    card.style.transform = "translateX(" + dx + "px) rotate(" + (dx / 25) + "deg)";
-    card.classList.toggle("swipe-left", dx <= -SWIPE_THRESHOLD);
-    card.classList.toggle("swipe-right", dx >= SWIPE_THRESHOLD);
+    if (start.dir === "h") {
+      start.dx = dx;
+      card.style.transform = "translateX(" + dx + "px) rotate(" + (dx / 25) + "deg)";
+      card.classList.toggle("swipe-left", dx <= -SWIPE_THRESHOLD);
+      card.classList.toggle("swipe-right", dx >= SWIPE_THRESHOLD);
+    } else {
+      start.dy = Math.min(0, dy);   // đã chốt "lên" thì kéo ngược xuống chỉ về 0
+      card.style.transform = "translateY(" + start.dy + "px)";
+      card.classList.toggle("swipe-up", start.dy <= -SWIPE_THRESHOLD);
+    }
   }, { passive: true });
 
   document.addEventListener("touchend", function () {
     if (!card || !start) { return; }
-    var dx = start.dx;
+    var dir = null;
+    if (start.dir === "h" && Math.abs(start.dx) >= SWIPE_THRESHOLD) {
+      dir = start.dx > 0 ? "right" : "left";
+    } else if (start.dir === "up" && start.dy <= -SWIPE_THRESHOLD) {
+      dir = "up";
+    }
     reset();
-    if (Math.abs(dx) < SWIPE_THRESHOLD) { return; }
+    if (!dir) { return; }
     suppressCardClick = true;
     setTimeout(function () { suppressCardClick = false; }, 400);
-    // Phải = "Nhớ" (phím 3), trái = "Quên rồi" (phím 1).
-    var button = document.querySelector('[data-study-card] [data-grade-key="' + (dx > 0 ? "3" : "1") + '"]');
+    var button = document.querySelector('[data-study-card] [data-grade-key="' + SWIPE_KEYS[dir] + '"]');
     if (button) { button.click(); }
   });
   document.addEventListener("touchcancel", reset);
@@ -273,11 +342,44 @@ function openDiscussionFromHash() {
   discussion.scrollIntoView({ block: "start" });
 }
 
+// Câu báo sau mỗi lần chấm (spec.md T6.4): "✓ Nhớ · gặp lại sau 1 ngày".
+// Bắt `click` ở pha CAPTURE — trước khi study_deck.js (chặn submit) hay
+// fetch của initCardPanel đổi sang thẻ kế — nên đọc đúng `data-toast` của thẻ
+// vừa chấm. Phím 1-4 và vuốt đều đi qua button.click() nên cũng có câu báo.
+// Chữ do server dựng (views._grade_toasts); tắt JS thì không có câu báo.
+var TOAST_MS = 1600;
+var toastTimer = null;
+
+function showGradeToast(text) {
+  var toast = document.querySelector("[data-grade-toast]");
+  if (!toast || !text) { return; }
+  toast.textContent = text;
+  toast.hidden = false;
+  toast.classList.remove("is-shown");
+  void toast.offsetWidth;   // chấm liên tiếp: chạy lại hiệu ứng hiện
+  toast.classList.add("is-shown");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () {
+    toast.classList.remove("is-shown");
+    toastTimer = setTimeout(function () { toast.hidden = true; }, 200);
+  }, TOAST_MS);
+}
+
+function initGradeToast() {
+  document.addEventListener("click", function (event) {
+    var button = event.target.closest && event.target.closest("[data-study-card] [data-grade-key]");
+    if (!button || button.disabled || isPanelBusy()) { return; }
+    showGradeToast(button.getAttribute("data-toast"));
+  }, true);
+}
+
 function initStudyScreen() {
   openDiscussionFromHash();
   initCardPanel();
   initStudyShortcuts();
   initCardSwipe();
+  initGradeToast();
+  initSwipeCoach();
   initSidebarToggle();
 }
 

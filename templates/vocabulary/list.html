@@ -196,6 +196,7 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
     StudySession và chốt hàng đợi vào session — thao tác có tác dụng phụ thì
     không được nằm sau một cái link. Bộ lọc đi kèm dưới dạng input ẩn để
     learning:study_start dựng lại đúng tập từ đang hiện trong bảng.{% endcomment %}
+    {% if can_start %}
     <form method="post" action="{% url 'learning:study_start' %}" class="card" style="margin-top:20px;">
       {% csrf_token %}
       {% for t in selected_topics %}<input type="hidden" name="topic" value="{{ t.slug }}">{% endfor %}
@@ -204,7 +205,9 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
       <input type="hidden" name="limit" value="{{ session_limit }}">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;">
         <p class="muted" style="margin:0;font-size:14px;">
-          {% if session_limit %}
+          {% if held_new %}
+            {% message "vocabulary.list.hint.start_study_capped" count=start_count %}
+          {% elif session_limit %}
             {% message "vocabulary.list.hint.start_study" count=total_count limit=session_limit %}
           {% else %}
             {% message "vocabulary.list.hint.start_study_all" count=total_count %}
@@ -212,7 +215,21 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
         </p>
         <button type="submit" class="btn btn-primary">{% label "vocabulary.list.button.start_study" %}</button>
       </div>
+      {% if held_new %}<p class="muted text-xs mt-12 mb-0">{% message "vocabulary.list.hint.new_held" count=held_new %}</p>{% endif %}
     </form>
+    {% endif %}
+    {% comment %}Đã hết hạn mức từ mới hôm nay (spec.md T6.1): khuyên chứ không
+    cấm — POST lại đúng bộ lọc kèm over_limit=1 để mở thêm MỘT hạn mức.{% endcomment %}
+    {% if over_limit %}
+      {% url 'learning:study_start' as study_start_url %}
+      <div class="card{% if can_start %} mt-14{% else %} mt-18{% endif %}">
+        {% if can_start %}
+          {% include "learning/_over_limit_notice.html" with notice=over_limit action_url=study_start_url hidden_fields=over_limit.hidden_fields %}
+        {% else %}
+          {% include "learning/_over_limit_notice.html" with notice=over_limit action_url=study_start_url hidden_fields=over_limit.hidden_fields primary=True %}
+        {% endif %}
+      </div>
+    {% endif %}
   {% else %}
     {% url 'vocabulary:index' as reset_url %}
     {% include "partials/empty_state.html" with icon="🔍" title_key="vocabulary.empty.no_match" text_key="vocabulary.list.empty" action_url=reset_url action_key="vocabulary.list.button.reset" %}

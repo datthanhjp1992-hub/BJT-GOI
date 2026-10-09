@@ -76,8 +76,14 @@ def _sm2_ease(ease, quality):
     return max(MIN_EASE, round(ease, 2))
 
 
-def schedule(card, quality):
-    """Trạng thái mới của từ sau một lần chấm + độ trễ tới lần đến hạn kế tiếp."""
+def schedule(card, quality, overnight=False):
+    """Trạng thái mới của từ sau một lần chấm + độ trễ tới lần đến hạn kế tiếp.
+
+    `overnight=True`: từ đang học / học lại bị bỏ dở từ HÔM TRƯỚC (spec.md
+    T6.2). Đã qua ít nhất một đêm thì bước 10 phút không còn ý nghĩa — "Nhớ"
+    tốt nghiệp luôn. Cờ do `services` tính (hàm này không đọc đồng hồ); từ
+    NEW và từ REVIEW bỏ qua cờ.
+    """
     if quality not in GRADES:
         raise ValueError(f"quality phải là một trong {GRADES}")
 
@@ -88,6 +94,7 @@ def schedule(card, quality):
         learn_state = RELEARNING if state == RELEARNING else LEARNING
         steps = RELEARN_STEPS if learn_state == RELEARNING else LEARN_STEPS
         step = 0 if state == NEW else min(max(card.step, 0), len(steps) - 1)
+        overnight = overnight and state != NEW
 
         if quality == AGAIN:
             return Result(replace(card, state=learn_state, step=0),
@@ -95,7 +102,7 @@ def schedule(card, quality):
         if quality == HARD:
             return Result(replace(card, state=learn_state, step=step),
                           timedelta(minutes=_hard_delay(steps, step)))
-        if quality == GOOD and step + 1 < len(steps):
+        if quality == GOOD and step + 1 < len(steps) and not overnight:
             return Result(replace(card, state=learn_state, step=step + 1),
                           timedelta(minutes=steps[step + 1]))
 

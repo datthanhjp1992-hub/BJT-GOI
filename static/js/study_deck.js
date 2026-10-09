@@ -187,7 +187,7 @@
 
     root.classList.remove("is-revealed");
     var flash = root.querySelector("[data-flashcard]");
-    flash.classList.remove("is-flipped", "is-swiping", "swipe-left", "swipe-right");
+    flash.classList.remove("is-flipped", "is-swiping", "swipe-left", "swipe-right", "swipe-up");
     flash.style.transform = "";
     flash.querySelector(".jp").textContent = card.word;
     flash.querySelector(".reading").textContent = card.reading;
@@ -206,6 +206,8 @@
     form.querySelectorAll("[data-grade-key]").forEach(function (button) {
       var delay = button.querySelector(".btn-grade-delay");
       if (delay && card.previews) { delay.textContent = card.previews[button.value] || ""; }
+      // Câu báo sau khi chấm (T6.4) của ĐÚNG thẻ đang hiện — main.js đọc lúc bấm.
+      if (card.toasts) { button.setAttribute("data-toast", card.toasts[button.value] || ""); }
     });
 
     var aheadNote = root.querySelector("[data-ahead-note]");
@@ -420,6 +422,7 @@
       if (card) {
         card.state = status.state;
         if (status.previews) { card.previews = status.previews; }
+        if (status.toasts) { card.toasts = status.toasts; }
       }
       if (status.learning) {
         deck.learning[id] = status.due ? parseTime(status.due) : 0;

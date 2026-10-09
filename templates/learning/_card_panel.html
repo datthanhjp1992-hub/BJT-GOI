@@ -24,6 +24,7 @@ fetch T1.2) — đổi tên ở đây phải đổi bên đó:
   data-reveal         nút "Hiện đáp án"
   data-card-ajax      form gửi bằng fetch, thay phần thẻ tại chỗ
   data-grade-key="N"  nút chấm ứng với phím số N
+  data-toast          câu báo hiện sau khi bấm nút đó (T6.4, main.js)
   data-undo           nút hoàn tác (phím Z)
   data-examples       khối ví dụ câu (phím E)
   data-shortcut-*     bảng phím tắt (phím ?)
@@ -42,16 +43,12 @@ data-undo-text, data-discussion-toggle / data-discussion-body.
     <p class="muted study-head-text">
       {% message "learning.flashcard.hint.progress" topic=scope_label seen=seen total=total done=done %}
     </p>
-    {% if is_study_session %}
-      {% comment %}Phiên theo bộ lọc phải đóng StudySession và dọn hàng đợi
-      trong request.session, nên "kết thúc" là POST chứ không phải link.{% endcomment %}
-      <form method="post" action="{% url 'learning:study_end' %}" class="study-head-end">
-        {% csrf_token %}
-        <button type="submit" class="link-button muted">{% label "learning.flashcard.link.end_session" %}</button>
-      </form>
-    {% else %}
-      <a href="{% url 'learning:dashboard' %}" class="muted study-head-end">{% label "learning.flashcard.link.end_session" %}</a>
-    {% endif %}
+    {% comment %}"Kết thúc" đóng StudySession và hẹn từ đang học dở sang mai
+    (spec.md T6.2) — có tác dụng phụ nên là POST chứ không phải link.{% endcomment %}
+    <form method="post" action="{% if is_study_session %}{% url 'learning:study_end' %}{% else %}{% url 'learning:flashcard_end' topic.slug %}{% endif %}" class="study-head-end">
+      {% csrf_token %}
+      <button type="submit" class="link-button muted">{% label "learning.flashcard.link.end_session" %}</button>
+    </form>
   </div>
   {% comment %}Thanh tiến độ HAI LỚP (01/10/2026): lớp nhạt = đã xem (gặp ít
   nhất một lần), lớp đậm = đã thuộc (rời phiên).{% endcomment %}
@@ -106,7 +103,7 @@ data-undo-text, data-discussion-toggle / data-discussion-body.
         <input type="hidden" name="topic_slug" value="{{ topic_slug_value }}">
         <div class="grade-row">
           {% for b in grade_buttons %}
-            <button class="btn btn-grade{% if b.css %} {{ b.css }}{% endif %}{% if b.primary %} btn-primary{% endif %}" type="submit" name="quality" value="{{ b.code }}" data-grade-key="{{ b.key }}">
+            <button class="btn btn-grade{% if b.css %} {{ b.css }}{% endif %}{% if b.primary %} btn-primary{% endif %}" type="submit" name="quality" value="{{ b.code }}" data-grade-key="{{ b.key }}" data-toast="{{ b.toast }}">
               <span class="btn-grade-label">{% label b.label_key %}</span>
               {% if b.delay %}<small class="btn-grade-delay">{{ b.delay }}</small>{% endif %}
               <kbd class="kbd">{{ b.key }}</kbd>
@@ -136,6 +133,7 @@ data-undo-text, data-discussion-toggle / data-discussion-body.
       <dt><kbd class="kbd">Z</kbd></dt><dd>{% label "learning.flashcard.shortcut.undo" %}</dd>
       <dt><kbd class="kbd">E</kbd></dt><dd>{% label "learning.flashcard.shortcut.examples" %}</dd>
       <dt><kbd class="kbd">?</kbd></dt><dd>{% label "learning.flashcard.shortcut.help" %}</dd>
+      <dt aria-hidden="true">← → ↑</dt><dd>{% label "learning.flashcard.shortcut.swipe" %}</dd>
     </dl>
     <form method="dialog"><button class="btn btn-outline btn-sm">{% label "common.button.close" %}</button></form>
   </dialog>
@@ -201,14 +199,16 @@ data-undo-text, data-discussion-toggle / data-discussion-body.
 
     {% if queue %}
       <p class="muted session-note">{% message "learning.flashcard.hint.new_today" done=queue.new_today limit=queue.new_limit %}</p>
-      {% if queue.more_new %}
-        <p class="muted session-note">{% message "learning.flashcard.hint.new_limit_reached" count=queue.more_new_count limit=queue.new_limit %}
-          <a href="{% url 'accounts:settings' %}">{% label "common.nav.settings" %}</a>.</p>
-        {% comment %}Mở thêm một nhóm từ mới cho riêng chủ đề này, hôm nay.{% endcomment %}
-        <form method="post" action="{% url 'learning:flashcard_more_new' topic.slug %}" class="session-more" data-card-ajax>
-          {% csrf_token %}
-          <button type="submit" class="btn {% if summary.again_words %}btn-outline{% else %}btn-primary{% endif %}">{% message "learning.flashcard.button.more_new" count=more_new_batch %}</button>
-        </form>
+      {% if queue.more_new and over_limit %}
+        {% comment %}Mở thêm một nhóm từ mới cho riêng chủ đề này, hôm nay —
+        kèm báo trước số từ phải ôn ngày mai (spec.md T6.1).{% endcomment %}
+        <p class="muted session-note">{% message "learning.flashcard.hint.new_limit_reached" count=queue.more_new_count %}</p>
+        {% url 'learning:flashcard_more_new' topic.slug as more_new_url %}
+        {% if summary.again_words %}
+          {% include "learning/_over_limit_notice.html" with notice=over_limit action_url=more_new_url ajax=True %}
+        {% else %}
+          {% include "learning/_over_limit_notice.html" with notice=over_limit action_url=more_new_url ajax=True primary=True %}
+        {% endif %}
       {% endif %}
     {% endif %}
     <p class="muted session-note">{% message "learning.flashcard.hint.due_tomorrow" count=due_tomorrow %}</p>

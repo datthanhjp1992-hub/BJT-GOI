@@ -10,6 +10,7 @@ urlpatterns = [
     path("daily/start/", views.daily_start_view, name="daily_start"),
     path("flashcard/<slug:topic_slug>/", views.flashcard_view, name="flashcard"),
     path("flashcard/<slug:topic_slug>/more-new/", views.flashcard_more_new_view, name="flashcard_more_new"),
+    path("flashcard/<slug:topic_slug>/end/", views.flashcard_end_view, name="flashcard_end"),
     path("flashcard/review/<int:vocabulary_id>/", views.flashcard_review, name="flashcard_review"),
     path("flashcard/comment/<int:vocabulary_id>/", views.flashcard_comment, name="flashcard_comment"),
     # Hoàn tác lần chấm gần nhất (SC04 và phiên theo hàng đợi dùng chung).
