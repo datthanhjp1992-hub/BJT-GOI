@@ -25,6 +25,21 @@ server trả về (apps/learning/views._render_card) — không tải lại cả
   không bị thay mất khi main.js / study_deck.js đổi thẻ. Nội dung lấy từ
   data-toast của nút vừa bấm.{% endcomment %}
   <div class="grade-toast" data-grade-toast role="status" aria-live="polite" hidden></div>
+  {% comment %}Hướng dẫn cử chỉ lần đầu (spec.md T6.6) — main.js hiện sau lần lật
+  thẻ đầu tiên, chỉ trên thiết bị cảm ứng, 3 lần mở màn học đầu. Chạm để đóng.
+  Nằm ngoài #card-panel để không bị thay khi đổi thẻ.{% endcomment %}
+  <div class="swipe-coach" data-swipe-coach role="dialog" aria-labelledby="swipe-coach-title" hidden>
+    <div class="swipe-coach-box">
+      <p class="swipe-coach-title" id="swipe-coach-title">{% label "learning.flashcard.coach.title" %}</p>
+      <div class="swipe-coach-grid">
+        <div class="swipe-coach-item is-up btn-primary"><span class="swipe-coach-arrow" aria-hidden="true">↑</span>{% label "learning.flashcard.button.easy" %}</div>
+        <div class="swipe-coach-item is-left"><span class="swipe-coach-arrow" aria-hidden="true">←</span>{% label "learning.flashcard.button.forgot" %}</div>
+        <div class="swipe-coach-item is-right"><span class="swipe-coach-arrow" aria-hidden="true">→</span>{% label "learning.flashcard.button.good" %}</div>
+      </div>
+      <p class="swipe-coach-note">{% label "learning.flashcard.coach.note" %}</p>
+      <p class="swipe-coach-dismiss">{% label "learning.flashcard.coach.dismiss" %}</p>
+    </div>
+  </div>
 {% endblock %}
 
 {% block extra_js %}

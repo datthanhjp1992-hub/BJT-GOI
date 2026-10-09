@@ -999,7 +999,7 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
 - [x] T6.3 Vuốt lên = Dễ (V1) — code xong 09/10/2026, chờ Dat thử trên điện thoại thật
 - [x] T6.4 Báo kết quả sau mỗi lần chấm (V2) — code xong 09/10/2026, chờ Dat thử trên server thật
 - [x] T6.5 Tự giảm / tạm dừng từ mới khi nợ ôn cao (B) — code xong 09/10/2026, chờ Dat chạy trên server thật
-- [ ] T6.6 Hướng dẫn cử chỉ lần đầu (V5)
+- [x] T6.6 Hướng dẫn cử chỉ lần đầu (V5) — code xong 09/10/2026, chờ Dat thử trên điện thoại thật
 - [x] ~~V4 Rút bước học từ mới xuống 1 bước~~ — Dat chốt không làm (09/10/2026)
 
 ### Ghi chú T6.1 (09/10/2026) — để đối chiếu khi review
@@ -1101,6 +1101,20 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
   cho "đã học X/Y". Nút "Vẫn học thêm" vẫn mở thêm một hạn mức — khuyên, không cấm (quyết định 8).
 - Với số liệu 09/10/2026 (254 nợ, goal 20): ≥ 100 → 0 từ mới; từ 60–99 → 10; dưới 60 → 20.
 - Test: `BacklogAllowanceTests` (9). Đã xem trang chủ + SC05 ở 375px (theme A): không tràn ngang.
+
+### Ghi chú T6.6 (09/10/2026) — để đối chiếu khi review
+- Lớp phủ `[data-swipe-coach]` trong `flashcard.html`, NGOÀI `#card-panel` (fragment khi đổi thẻ
+  không có nó). Hộp 3 ô: ↑ Dễ ở trên, ← Quên rồi / → Nhớ ở dưới; màu lấy đúng màu 3 nút chấm của
+  theme (ô ↑ dùng `.btn-primary`, hai ô dưới dùng token `--grade-*`) + dòng "Mỗi lần vuốt là
+  một lần chấm — không phải chuyển trang." (đúng chỗ Dat từng hiểu nhầm). Chữ từ label
+  `learning.flashcard.coach.*` + nhãn nút sẵn có.
+- `main.js`: `revealCard()` gọi `maybeShowSwipeCoach()` — chỉ khi `(hover: none) and (pointer:
+  coarse)`, mỗi lần mở trang tối đa một lần, đếm `localStorage["bjt.swipeCoach.count"]` tới 3
+  (try/catch; không đọc được thì hiện mỗi lần mở trang). Chạm lớp phủ hoặc Esc để đóng. Khi lớp
+  phủ đang mở, vuốt không chấm (ngón tay chạm lớp phủ, không chạm thẻ).
+- Kiểm trên Chromium (375px cảm ứng, theme B): lần mở 1–3 hiện sau khi lật, chạm thì đóng, vuốt
+  khi đang mở không chấm; lần 4 không hiện; máy tính (1280px, không cảm ứng) không bao giờ hiện.
+- Test: `SwipeCoachTests` (3).
 
 ### Ghi chú T4.3 (06/10/2026) — để đối chiếu khi review
 - **Khác bản duyệt:**

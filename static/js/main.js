@@ -13,6 +13,7 @@
 //    d) Vuốt trên điện thoại: trái = Quên rồi, phải = Nhớ, lên = Dễ (khi đã lật thẻ).
 //    e) Chế độ tập trung: nút ☰ mở/ẩn sidebar, nhớ trong localStorage.
 //    f) Câu báo sau mỗi lần chấm (T6.4) — từ data-toast của nút vừa bấm.
+//    g) Hướng dẫn cử chỉ ← → ↑ ở 3 lần mở màn học đầu trên điện thoại (T6.6).
 //
 //    Mọi listener gắn ở document / #card-panel (event delegation) vì nội dung
 //    thẻ bị thay mới sau mỗi lần chấm. Tắt JS: form gửi thường, mọi thứ hiện
@@ -37,7 +38,51 @@ function revealCard() {
   screen.classList.add("is-revealed");
   var card = screen.querySelector("[data-flashcard]");
   if (card) { card.classList.add("is-flipped"); }
+  maybeShowSwipeCoach();
   return true;
+}
+
+// Hướng dẫn cử chỉ lần đầu (spec.md T6.6): sau lần LẬT THẺ đầu tiên của mỗi
+// lần mở màn học, chỉ trên thiết bị cảm ứng, chỉ ở 3 lần mở đầu (đếm bằng
+// localStorage). Không đọc được localStorage (riêng tư / bị chặn) thì coi như
+// lần đầu — hiện mỗi lần mở màn học một lần, chấp nhận được. Không lưu DB.
+var COACH_STORAGE_KEY = "bjt.swipeCoach.count";
+var COACH_TIMES = 3;
+var coachShown = false;
+
+function isTouchDevice() {
+  return !!(window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches);
+}
+
+function coachCount() {
+  try { return parseInt(window.localStorage.getItem(COACH_STORAGE_KEY) || "0", 10) || 0; }
+  catch (e) { return 0; }
+}
+
+function maybeShowSwipeCoach() {
+  var coach = document.querySelector("[data-swipe-coach]");
+  if (coachShown || !coach || !isTouchDevice()) { return; }
+  coachShown = true;   // mỗi lần mở trang chỉ một lần
+  var count = coachCount();
+  if (count >= COACH_TIMES) { return; }
+  try { window.localStorage.setItem(COACH_STORAGE_KEY, String(count + 1)); } catch (e) { /* bỏ qua */ }
+  coach.hidden = false;
+}
+
+function hideSwipeCoach() {
+  var coach = document.querySelector("[data-swipe-coach]");
+  if (coach && !coach.hidden) { coach.hidden = true; return true; }
+  return false;
+}
+
+function initSwipeCoach() {
+  var coach = document.querySelector("[data-swipe-coach]");
+  if (!coach) { return; }
+  // Chạm bất kỳ đâu trên lớp phủ là đóng; Esc cũng đóng (bàn phím rời).
+  coach.addEventListener("click", hideSwipeCoach);
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") { hideSwipeCoach(); }
+  });
 }
 
 function toggleShortcutDialog() {
@@ -334,6 +379,7 @@ function initStudyScreen() {
   initStudyShortcuts();
   initCardSwipe();
   initGradeToast();
+  initSwipeCoach();
   initSidebarToggle();
 }
 

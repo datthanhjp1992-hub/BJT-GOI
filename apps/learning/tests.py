@@ -2744,3 +2744,38 @@ class BacklogAllowanceTests(LearningTestCase):
             reverse("learning:study_start"), {"topic": "moi", "limit": "0", "over_limit": "1"}
         )
         self.assertEqual(len(self.client.session["study_queue"]), 4)
+
+
+class SwipeCoachTests(LearningTestCase):
+    """spec.md T6.6 — hướng dẫn cử chỉ lần đầu. Hành vi (chỉ cảm ứng, sau lần
+    lật đầu, 3 lần mở đầu, chạm để đóng) chạy ở main.js — kiểm thủ công bằng
+    Chromium; ở đây chốt phần server dựng ra."""
+
+    def setUp(self):
+        super().setUp()
+        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+
+    def test_study_page_has_a_hidden_coach_outside_the_card_panel(self):
+        page = self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
+        html = page.content.decode()
+        self.assertIn('data-swipe-coach role="dialog" aria-labelledby="swipe-coach-title" hidden', html)
+        # Ngoài #card-panel: thay thẻ bằng fetch không được xoá mất lớp phủ.
+        self.assertGreater(html.index("data-swipe-coach"), html.index("data-grade-toast"))
+        self.assertContains(page, "Vuốt thẻ để chấm điểm")
+        self.assertContains(page, "Mỗi lần vuốt là một lần chấm — không phải chuyển trang.")
+
+    def test_partial_response_does_not_repeat_the_coach(self):
+        page = self.client.get(
+            reverse("learning:flashcard", args=["nha-hang"]), HTTP_X_CARD_PARTIAL="1"
+        )
+        self.assertNotContains(page, "data-swipe-coach")
+
+    def test_main_js_limits_the_coach_to_three_visits(self):
+        from pathlib import Path
+
+        from django.conf import settings
+
+        js = (Path(settings.BASE_DIR) / "static/js/main.js").read_text(encoding="utf-8")
+        self.assertIn('var COACH_STORAGE_KEY = "bjt.swipeCoach.count";', js)
+        self.assertIn("var COACH_TIMES = 3;", js)
+        self.assertIn('"(hover: none) and (pointer: coarse)"', js)
