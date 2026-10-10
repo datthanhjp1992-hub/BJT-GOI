@@ -42,6 +42,8 @@ class UserVocabularyProgress(AuditableModel):
 
     correct_count = models.PositiveIntegerField(default=0)
     wrong_count = models.PositiveIntegerField(default=0)
+    # "Đã thuộc" = đang ôn và hẹn từ 21 ngày trở lên (srs.is_mastered, từ
+    # 10/10/2026). Lưu thành cột để đếm/lọc nhanh; review_word() cập nhật.
     is_mastered = models.BooleanField(default=False)
 
     class Meta:

@@ -44,6 +44,19 @@ LAPSE_EASE_PENALTY = 0.2
 MIN_EASE = 1.3
 DEFAULT_EASE = 2.5
 
+# "Đã thuộc" (10/10/2026, Dat duyệt): từ đang ôn được hẹn từ 21 ngày trở lên —
+# như thẻ "mature" của Anki. Trước đây đếm 5 lần ôn thành công liên tiếp, nên
+# từ hay bấm "Dễ" (khoảng cách giãn nhanh, ít lần ôn) lại thành "đã thuộc"
+# MUỘN hơn từ bấm "Nhớ" (ngày 134 so với ngày 60). Tính theo khoảng cách thì
+# luôn bấm Nhớ -> đã thuộc ở lần ôn ngày 22, luôn bấm Dễ -> ngày 12.
+MASTERED_INTERVAL = 21    # ngày
+FRESH_INTERVAL = 7        # ngày — dưới mốc này là "mới nhớ" (bảng độ nhớ SC15)
+
+
+def is_mastered(card):
+    """Từ "đã thuộc"? Quên một lần -> RELEARNING, interval 1 ngày -> hết thuộc."""
+    return card.state == REVIEW and card.interval_days >= MASTERED_INTERVAL
+
 
 @dataclass
 class Card:

@@ -656,7 +656,8 @@ khối lượng ôn.
 - **V4 — rút bước học của từ mới xuống 1 bước:** Dat chốt **không làm** (09/10/2026). T6.2
   đã xử lý phần "kẹt bước học", còn bước 10 phút vẫn có ích cho việc nhớ trong ngày đầu.
 - Giới hạn cứng số từ ÔN mỗi ngày: để sau, xem lại khi T6.1 + T6.5 chạy ổn một thời gian.
-- Không đổi thuật toán SM-2 cho từ đang ở `review`, không đổi ngưỡng "đã thuộc" (`srs_level >= 5`).
+- Không đổi thuật toán SM-2 cho từ đang ở `review`. (Ngưỡng "đã thuộc" ban đầu không đổi; sau đó Dat
+  duyệt đổi sang tính theo khoảng cách ôn — xem "Ghi chú: đã thuộc theo khoảng cách" ngày 10/10/2026.)
 
 ---
 
@@ -1115,6 +1116,22 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
 - Kiểm trên Chromium (375px cảm ứng, theme B): lần mở 1–3 hiện sau khi lật, chạm thì đóng, vuốt
   khi đang mở không chấm; lần 4 không hiện; máy tính (1280px, không cảm ứng) không bao giờ hiện.
 - Test: `SwipeCoachTests` (3).
+
+### Ghi chú: "đã thuộc" theo khoảng cách ôn (10/10/2026, Dat duyệt)
+- **Vấn đề:** luật cũ `srs_level >= 5` đếm số lần ôn thành công. Bấm "Dễ" làm khoảng cách giãn
+  nhanh nên ít lần ôn hơn → từ biết rõ lại thành "đã thuộc" MUỘN hơn (luôn Dễ: ngày 134; luôn
+  Nhớ: ngày 60).
+- **Luật mới:** `srs.is_mastered(card)` = đang ôn (`review`) và `interval_days >= 21`
+  (`srs.MASTERED_INTERVAL`, như thẻ "mature" của Anki). Luôn Nhớ → đã thuộc ở lần ôn ngày 22 (hẹn
+  38 ngày); luôn Dễ → ngày 12 (hẹn 27 ngày). Quên → relearning → hết "đã thuộc".
+- `review_word()` ghi `is_mastered = srs.is_mastered(card)`. Mọi nơi khác (trang chủ, hồ sơ, SC05
+  lọc "Đã thuộc", SC15 thẻ "Đã thuộc", danh hiệu học tập) vẫn đọc cột `is_mastered` — không đổi.
+- Bảng "Theo độ nhớ" (SC15) chia lại theo khoảng cách: mới nhớ (chưa tốt nghiệp hoặc < 7 ngày) /
+  đang nhớ (7–20 ngày) / đã thuộc (≥ 21 ngày). Nhãn `learning.review.band.*` đổi theo.
+- Migration dữ liệu `learning/0003_mastered_by_interval` tính lại `is_mastered` cho mọi dòng
+  (có hàm quay ngược về luật cũ). **Số "Từ đã thuộc" và danh hiệu học tập của người dùng có thể
+  thay đổi sau khi deploy** — tăng hoặc giảm tuỳ dữ liệu.
+- Test: `MasteredByIntervalTests` (5) + viết lại `test_memory_bands_split_by_review_interval`.
 
 ### Ghi chú T4.3 (06/10/2026) — để đối chiếu khi review
 - **Khác bản duyệt:**
