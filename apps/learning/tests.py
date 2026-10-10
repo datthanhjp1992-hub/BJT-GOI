@@ -2841,3 +2841,40 @@ class MasteredByIntervalTests(LearningTestCase):
         migration.by_interval(django_apps, None)
         old_rule.refresh_from_db()
         self.assertTrue(old_rule.is_mastered)
+
+
+class SwipeCoachNeverAgainTests(LearningTestCase):
+    """Ô "Không hiện lại" trên bảng hướng dẫn vuốt (10/10/2026, Dat)."""
+
+    def setUp(self):
+        super().setUp()
+        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self.page = reverse("learning:flashcard", args=["nha-hang"])
+
+    def test_coach_has_the_never_again_checkbox(self):
+        page = self.client.get(self.page)
+        self.assertContains(page, "Không hiện lại hướng dẫn này")
+        self.assertContains(page, 'action="%s"' % reverse("learning:swipe_coach_off"))
+
+    def test_turning_it_off_hides_the_coach_for_good(self):
+        url = reverse("learning:swipe_coach_off")
+        self.assertEqual(self.client.get(url).status_code, 405)
+        self.assertEqual(self.client.post(url).status_code, 204)
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.show_swipe_coach)
+        self.assertNotContains(self.client.get(self.page), "data-swipe-coach")
+
+    def test_requires_login(self):
+        self.client.logout()
+        self.client.post(reverse("learning:swipe_coach_off"))
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.show_swipe_coach)
+
+    def test_settings_can_turn_it_back_on(self):
+        from apps.accounts.forms import SettingsForm
+
+        self.user.show_swipe_coach = False
+        self.user.save(update_fields=["show_swipe_coach"])
+        page = self.client.get(reverse("accounts:settings"))
+        self.assertContains(page, "Hiện bảng hướng dẫn vuốt thẻ trên điện thoại")
+        self.assertIn("show_swipe_coach", SettingsForm.Meta.fields)

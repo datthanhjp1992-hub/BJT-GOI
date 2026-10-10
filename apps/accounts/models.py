@@ -60,6 +60,10 @@ class User(AuditableModel, AbstractUser):
     # chữ, lật mới thấy nghĩa. Mặc định HIỆN cách đọc ở mặt trước vì người mới
     # chưa đọc được kanji; người đã quen tắt ở SC08 để tự luyện cả cách đọc.
     show_reading_on_front = models.BooleanField(default=True)
+    # Bảng hướng dẫn vuốt thẻ trên điện thoại (spec.md T6.6). Người học tích
+    # "Không hiện lại" ngay trên bảng -> False; bật lại được ở SC08. Lưu ở DB
+    # (không chỉ localStorage) vì trình duyệt chặn lưu trữ thì bảng hiện mãi.
+    show_swipe_coach = models.BooleanField(default=True)
 
     total_points = models.PositiveIntegerField(
         default=0,

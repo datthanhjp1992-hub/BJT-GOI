@@ -72,15 +72,34 @@ function maybeShowSwipeCoach() {
 
 function hideSwipeCoach() {
   var coach = document.querySelector("[data-swipe-coach]");
-  if (coach && !coach.hidden) { coach.hidden = true; return true; }
-  return false;
+  if (!coach || coach.hidden) { return false; }
+  coach.hidden = true;
+  // Tích "Không hiện lại": tắt hẳn cho tài khoản (server, bật lại ở SC08) và
+  // ghi luôn bộ đếm của trình duyệt cho đủ — tải lại trang trước khi request
+  // xong cũng không hiện nữa.
+  var never = coach.querySelector("[data-swipe-coach-never]");
+  var form = coach.querySelector("[data-swipe-coach-form]");
+  if (never && never.checked && form) {
+    try { window.localStorage.setItem(COACH_STORAGE_KEY, String(COACH_TIMES)); } catch (e) { /* bỏ qua */ }
+    if (window.fetch && window.FormData) {
+      fetch(form.action, { method: "POST", body: new FormData(form), credentials: "same-origin" })
+        .catch(function () { /* mất mạng: lần sau bảng hiện lại, tích lại là được */ });
+    }
+    coach.parentNode.removeChild(coach);
+  }
+  return true;
 }
 
 function initSwipeCoach() {
   var coach = document.querySelector("[data-swipe-coach]");
   if (!coach) { return; }
-  // Chạm bất kỳ đâu trên lớp phủ là đóng; Esc cũng đóng (bàn phím rời).
-  coach.addEventListener("click", hideSwipeCoach);
+  // Đóng bằng nút "Đã hiểu", chạm ra ngoài hộp, hoặc Esc. Chạm trong hộp (ô
+  // "Không hiện lại") thì KHÔNG đóng.
+  coach.addEventListener("click", function (event) {
+    if (event.target === coach || event.target.closest("[data-swipe-coach-close]")) {
+      hideSwipeCoach();
+    }
+  });
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") { hideSwipeCoach(); }
   });

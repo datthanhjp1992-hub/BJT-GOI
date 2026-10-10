@@ -260,6 +260,7 @@ class SettingsForm(forms.ModelForm):
             "weekly_email_summary_enabled",
             "show_review_interval",
             "show_reading_on_front",
+            "show_swipe_coach",
         ]
         widgets = {"ui_theme": forms.RadioSelect, "color_scheme": forms.RadioSelect}
 
@@ -283,6 +284,9 @@ class SettingsForm(forms.ModelForm):
         )
         self.fields["show_reading_on_front"].label = label(
             "accounts.settings.field.show_reading_on_front"
+        )
+        self.fields["show_swipe_coach"].label = label(
+            "accounts.settings.field.show_swipe_coach"
         )
 
         # Danh sách múi giờ dựng lúc chạy chứ không phải lúc import: giá trị

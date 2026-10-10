@@ -1116,6 +1116,13 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
 - Kiểm trên Chromium (375px cảm ứng, theme B): lần mở 1–3 hiện sau khi lật, chạm thì đóng, vuốt
   khi đang mở không chấm; lần 4 không hiện; máy tính (1280px, không cảm ứng) không bao giờ hiện.
 - Test: `SwipeCoachTests` (3).
+- **Bổ sung 10/10/2026 (Dat: bảng hiện ở mọi phiên, phiền):** thêm ô "Không hiện lại hướng dẫn
+  này" + nút "Đã hiểu, bắt đầu học". Tích rồi đóng → `POST learning:swipe_coach_off` (fetch, 204)
+  đặt `User.show_swipe_coach = False` (cột mới, migration `accounts/0006`), bảng không còn được
+  render. Bật lại ở SC08 ("Hiện bảng hướng dẫn vuốt thẻ trên điện thoại"). Lưu ở DB vì nếu
+  trình duyệt chặn localStorage thì luật "3 lần" không giữ được và bảng hiện mãi — nhiều khả năng
+  là trường hợp Dat gặp. Chạm vào trong hộp không còn đóng bảng (để tích được ô); đóng bằng nút,
+  chạm ra ngoài hộp hoặc Esc. Test: `SwipeCoachNeverAgainTests` (4).
 
 ### Ghi chú: "đã thuộc" theo khoảng cách ôn (10/10/2026, Dat duyệt)
 - **Vấn đề:** luật cũ `srs_level >= 5` đếm số lần ôn thành công. Bấm "Dễ" làm khoảng cách giãn
