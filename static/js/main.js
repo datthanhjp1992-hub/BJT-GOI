@@ -13,6 +13,7 @@
 //    d) Vuốt trên điện thoại: trái = Quên rồi, phải = Nhớ, lên = Dễ (khi đã lật thẻ).
 //    e) Chế độ tập trung: nút ☰ mở/ẩn sidebar, nhớ trong localStorage.
 //    f) Câu báo sau mỗi lần chấm (T6.4) — từ data-toast của nút vừa bấm.
+//       ĐANG TẠM TẮT (10/10/2026) — xem initStudyScreen().
 //    g) Hướng dẫn cử chỉ ← → ↑ ở 3 lần mở màn học đầu trên điện thoại (T6.6).
 //
 //    Mọi listener gắn ở document / #card-panel (event delegation) vì nội dung
@@ -378,7 +379,10 @@ function initStudyScreen() {
   initCardPanel();
   initStudyShortcuts();
   initCardSwipe();
-  initGradeToast();
+  // TẠM TẮT (10/10/2026, Dat): câu báo sau mỗi lần chấm làm chậm nhịp vuốt trên
+  // điện thoại. Server vẫn dựng data-toast (views._grade_toasts) — bật lại chỉ
+  // cần bỏ comment dòng dưới.
+  // initGradeToast();
   initSwipeCoach();
   initSidebarToggle();
 }

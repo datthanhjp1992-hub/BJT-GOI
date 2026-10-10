@@ -997,7 +997,7 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
 - [x] T6.1 Hạn mức từ mới chung cho mọi lối vào + khối "Vẫn học thêm" (F) — code xong 09/10/2026, chờ Dat chạy trên server thật
 - [x] T6.2 Hoãn từ dở bước học sang mai, ưu tiên đầu hàng, "Nhớ" là tốt nghiệp (V3) — code xong 09/10/2026, chờ Dat chạy trên server thật
 - [x] T6.3 Vuốt lên = Dễ (V1) — code xong 09/10/2026, chờ Dat thử trên điện thoại thật
-- [x] T6.4 Báo kết quả sau mỗi lần chấm (V2) — code xong 09/10/2026, chờ Dat thử trên server thật
+- [x] T6.4 Báo kết quả sau mỗi lần chấm (V2) — code xong 09/10/2026. **Tạm tắt 10/10/2026** (Dat: làm chậm nhịp vuốt trên điện thoại) — comment `initGradeToast()` trong `main.js`, server vẫn dựng `data-toast`
 - [x] T6.5 Tự giảm / tạm dừng từ mới khi nợ ôn cao (B) — code xong 09/10/2026, chờ Dat chạy trên server thật
 - [x] T6.6 Hướng dẫn cử chỉ lần đầu (V5) — code xong 09/10/2026, chờ Dat thử trên điện thoại thật
 - [x] ~~V4 Rút bước học từ mới xuống 1 bước~~ — Dat chốt không làm (09/10/2026)
