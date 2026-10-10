@@ -845,16 +845,21 @@ class ReviewStatsServiceTests(ReviewTestCase):
         # Không được chia cho 0 khi chưa có từ nào đến hạn.
         self.assertEqual(overview["overdue_percent"], 0)
 
-    def test_memory_bands_split_by_srs_level(self):
-        self._learned(self.words["会議"], srs_level=0)
-        self._learned(self.words["議事録"], srs_level=3)
-        self._learned(self.words["稟議"], srs_level=5)
-        self._learned(self.words["決裁"], srs_level=9)
+    def test_memory_bands_split_by_review_interval(self):
+        """10/10/2026: chia theo khoảng cách ôn (< 7 / 7–20 / >= 21 ngày), không theo số lần."""
+        for word, interval in (("会議", 6), ("議事録", 7), ("稟議", 20), ("決裁", 21)):
+            row = self._learned(self.words[word], srs_level=9)
+            row.interval_days = interval
+            row.save()
+        # Đang học lại (quên) -> "mới nhớ" dù khoảng cách cũ còn lớn.
+        UserVocabularyProgress.objects.filter(vocabulary=self.words["決裁"]).update(
+            card_state=srs.RELEARNING
+        )
 
         bands = {row["key"]: row for row in services.get_memory_distribution(self.user)}
-        self.assertEqual(bands["fresh"]["count"], 1)
-        self.assertEqual(bands["learning"]["count"], 1)
-        self.assertEqual(bands["mastered"]["count"], 2)
+        self.assertEqual(bands["fresh"]["count"], 2)
+        self.assertEqual(bands["learning"]["count"], 2)
+        self.assertEqual(bands["mastered"]["count"], 0)
         self.assertEqual(sum(row["count"] for row in bands.values()), 4)
 
     def test_calendar_puts_overdue_first_and_unscheduled_words_on_today(self):
@@ -2779,3 +2784,97 @@ class SwipeCoachTests(LearningTestCase):
         self.assertIn('var COACH_STORAGE_KEY = "bjt.swipeCoach.count";', js)
         self.assertIn("var COACH_TIMES = 3;", js)
         self.assertIn('"(hover: none) and (pointer: coarse)"', js)
+
+
+class MasteredByIntervalTests(LearningTestCase):
+    """10/10/2026 — "đã thuộc" = đang ôn và hẹn từ 21 ngày trở lên."""
+
+    def setUp(self):
+        super().setUp()
+        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self.vocab = topic.vocabularies.get()
+
+    def _walk(self, quality, steps):
+        progress = services.get_or_start_progress(self.user, self.vocab)
+        seen = []
+        for _ in range(steps):
+            services.review_word(progress, quality)
+            progress.refresh_from_db()
+            seen.append((progress.interval_days, progress.is_mastered))
+        return progress, seen
+
+    def test_always_good_masters_at_the_review_scheduling_38_days(self):
+        # Học: Nhớ, Nhớ (1 ngày) -> ôn 6 -> 15 -> 38 ngày (đã thuộc).
+        _, seen = self._walk(srs.GOOD, 5)
+        self.assertEqual(seen[1:], [(1, False), (6, False), (15, False), (38, True)])
+
+    def test_always_easy_masters_sooner_than_good(self):
+        _, seen = self._walk(srs.EASY, 3)
+        self.assertEqual(seen, [(4, False), (8, False), (27, True)])
+
+    def test_forgetting_drops_the_mastered_flag(self):
+        progress, _ = self._walk(srs.GOOD, 5)
+        self.assertTrue(progress.is_mastered)
+        services.review_word(progress, srs.AGAIN)
+        progress.refresh_from_db()
+        self.assertFalse(progress.is_mastered)
+
+    def test_srs_helper(self):
+        self.assertTrue(srs.is_mastered(srs.Card(state=srs.REVIEW, interval_days=21)))
+        self.assertFalse(srs.is_mastered(srs.Card(state=srs.REVIEW, interval_days=20)))
+        self.assertFalse(srs.is_mastered(srs.Card(state=srs.RELEARNING, interval_days=40)))
+
+    def test_data_migration_recomputes_existing_rows(self):
+        import importlib
+
+        from django.apps import apps as django_apps
+
+        migration = importlib.import_module("apps.learning.migrations.0003_mastered_by_interval")
+        old_rule = UserVocabularyProgress.objects.create(   # 5 lần nhưng mới hẹn 15 ngày
+            user=self.user, vocabulary=self.vocab, card_state=srs.REVIEW,
+            srs_level=5, interval_days=15, is_mastered=True,
+        )
+        migration.by_interval(django_apps, None)
+        old_rule.refresh_from_db()
+        self.assertFalse(old_rule.is_mastered)
+        UserVocabularyProgress.objects.filter(pk=old_rule.pk).update(interval_days=38)
+        migration.by_interval(django_apps, None)
+        old_rule.refresh_from_db()
+        self.assertTrue(old_rule.is_mastered)
+
+
+class SwipeCoachNeverAgainTests(LearningTestCase):
+    """Ô "Không hiện lại" trên bảng hướng dẫn vuốt (10/10/2026, Dat)."""
+
+    def setUp(self):
+        super().setUp()
+        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
+        self.page = reverse("learning:flashcard", args=["nha-hang"])
+
+    def test_coach_has_the_never_again_checkbox(self):
+        page = self.client.get(self.page)
+        self.assertContains(page, "Không hiện lại hướng dẫn này")
+        self.assertContains(page, 'action="%s"' % reverse("learning:swipe_coach_off"))
+
+    def test_turning_it_off_hides_the_coach_for_good(self):
+        url = reverse("learning:swipe_coach_off")
+        self.assertEqual(self.client.get(url).status_code, 405)
+        self.assertEqual(self.client.post(url).status_code, 204)
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.show_swipe_coach)
+        self.assertNotContains(self.client.get(self.page), "data-swipe-coach")
+
+    def test_requires_login(self):
+        self.client.logout()
+        self.client.post(reverse("learning:swipe_coach_off"))
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.show_swipe_coach)
+
+    def test_settings_can_turn_it_back_on(self):
+        from apps.accounts.forms import SettingsForm
+
+        self.user.show_swipe_coach = False
+        self.user.save(update_fields=["show_swipe_coach"])
+        page = self.client.get(reverse("accounts:settings"))
+        self.assertContains(page, "Hiện bảng hướng dẫn vuốt thẻ trên điện thoại")
+        self.assertIn("show_swipe_coach", SettingsForm.Meta.fields)

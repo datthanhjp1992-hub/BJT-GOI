@@ -15,7 +15,7 @@ import json
 from django.contrib import messages as flash
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -524,6 +524,17 @@ def flashcard_end_view(request, topic_slug):
     request.session.pop(total_key, None)
     _flash_postponed(request, postponed)
     return redirect("learning:dashboard")
+
+
+@login_required
+@require_POST
+def swipe_coach_off_view(request):
+    """Ô "Không hiện lại" trên bảng hướng dẫn vuốt thẻ — tắt hẳn cho tài khoản
+    (bật lại ở SC08). main.js gửi bằng fetch nên chỉ cần 204."""
+    if request.user.show_swipe_coach:
+        request.user.show_swipe_coach = False
+        request.user.save(update_fields=["show_swipe_coach", "updated_at"])
+    return HttpResponse(status=204)
 
 
 @login_required

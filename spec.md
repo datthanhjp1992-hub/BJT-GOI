@@ -656,7 +656,8 @@ khối lượng ôn.
 - **V4 — rút bước học của từ mới xuống 1 bước:** Dat chốt **không làm** (09/10/2026). T6.2
   đã xử lý phần "kẹt bước học", còn bước 10 phút vẫn có ích cho việc nhớ trong ngày đầu.
 - Giới hạn cứng số từ ÔN mỗi ngày: để sau, xem lại khi T6.1 + T6.5 chạy ổn một thời gian.
-- Không đổi thuật toán SM-2 cho từ đang ở `review`, không đổi ngưỡng "đã thuộc" (`srs_level >= 5`).
+- Không đổi thuật toán SM-2 cho từ đang ở `review`. (Ngưỡng "đã thuộc" ban đầu không đổi; sau đó Dat
+  duyệt đổi sang tính theo khoảng cách ôn — xem "Ghi chú: đã thuộc theo khoảng cách" ngày 10/10/2026.)
 
 ---
 
@@ -997,7 +998,7 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
 - [x] T6.1 Hạn mức từ mới chung cho mọi lối vào + khối "Vẫn học thêm" (F) — code xong 09/10/2026, chờ Dat chạy trên server thật
 - [x] T6.2 Hoãn từ dở bước học sang mai, ưu tiên đầu hàng, "Nhớ" là tốt nghiệp (V3) — code xong 09/10/2026, chờ Dat chạy trên server thật
 - [x] T6.3 Vuốt lên = Dễ (V1) — code xong 09/10/2026, chờ Dat thử trên điện thoại thật
-- [x] T6.4 Báo kết quả sau mỗi lần chấm (V2) — code xong 09/10/2026, chờ Dat thử trên server thật
+- [x] T6.4 Báo kết quả sau mỗi lần chấm (V2) — code xong 09/10/2026. **Tạm tắt 10/10/2026** (Dat: làm chậm nhịp vuốt trên điện thoại) — comment `initGradeToast()` trong `main.js`, server vẫn dựng `data-toast`
 - [x] T6.5 Tự giảm / tạm dừng từ mới khi nợ ôn cao (B) — code xong 09/10/2026, chờ Dat chạy trên server thật
 - [x] T6.6 Hướng dẫn cử chỉ lần đầu (V5) — code xong 09/10/2026, chờ Dat thử trên điện thoại thật
 - [x] ~~V4 Rút bước học từ mới xuống 1 bước~~ — Dat chốt không làm (09/10/2026)
@@ -1115,6 +1116,29 @@ Mỗi bước: test xanh (`python manage.py test` trên PostgreSQL), kiểm 3 th
 - Kiểm trên Chromium (375px cảm ứng, theme B): lần mở 1–3 hiện sau khi lật, chạm thì đóng, vuốt
   khi đang mở không chấm; lần 4 không hiện; máy tính (1280px, không cảm ứng) không bao giờ hiện.
 - Test: `SwipeCoachTests` (3).
+- **Bổ sung 10/10/2026 (Dat: bảng hiện ở mọi phiên, phiền):** thêm ô "Không hiện lại hướng dẫn
+  này" + nút "Đã hiểu, bắt đầu học". Tích rồi đóng → `POST learning:swipe_coach_off` (fetch, 204)
+  đặt `User.show_swipe_coach = False` (cột mới, migration `accounts/0006`), bảng không còn được
+  render. Bật lại ở SC08 ("Hiện bảng hướng dẫn vuốt thẻ trên điện thoại"). Lưu ở DB vì nếu
+  trình duyệt chặn localStorage thì luật "3 lần" không giữ được và bảng hiện mãi — nhiều khả năng
+  là trường hợp Dat gặp. Chạm vào trong hộp không còn đóng bảng (để tích được ô); đóng bằng nút,
+  chạm ra ngoài hộp hoặc Esc. Test: `SwipeCoachNeverAgainTests` (4).
+
+### Ghi chú: "đã thuộc" theo khoảng cách ôn (10/10/2026, Dat duyệt)
+- **Vấn đề:** luật cũ `srs_level >= 5` đếm số lần ôn thành công. Bấm "Dễ" làm khoảng cách giãn
+  nhanh nên ít lần ôn hơn → từ biết rõ lại thành "đã thuộc" MUỘN hơn (luôn Dễ: ngày 134; luôn
+  Nhớ: ngày 60).
+- **Luật mới:** `srs.is_mastered(card)` = đang ôn (`review`) và `interval_days >= 21`
+  (`srs.MASTERED_INTERVAL`, như thẻ "mature" của Anki). Luôn Nhớ → đã thuộc ở lần ôn ngày 22 (hẹn
+  38 ngày); luôn Dễ → ngày 12 (hẹn 27 ngày). Quên → relearning → hết "đã thuộc".
+- `review_word()` ghi `is_mastered = srs.is_mastered(card)`. Mọi nơi khác (trang chủ, hồ sơ, SC05
+  lọc "Đã thuộc", SC15 thẻ "Đã thuộc", danh hiệu học tập) vẫn đọc cột `is_mastered` — không đổi.
+- Bảng "Theo độ nhớ" (SC15) chia lại theo khoảng cách: mới nhớ (chưa tốt nghiệp hoặc < 7 ngày) /
+  đang nhớ (7–20 ngày) / đã thuộc (≥ 21 ngày). Nhãn `learning.review.band.*` đổi theo.
+- Migration dữ liệu `learning/0003_mastered_by_interval` tính lại `is_mastered` cho mọi dòng
+  (có hàm quay ngược về luật cũ). **Số "Từ đã thuộc" và danh hiệu học tập của người dùng có thể
+  thay đổi sau khi deploy** — tăng hoặc giảm tuỳ dữ liệu.
+- Test: `MasteredByIntervalTests` (5) + viết lại `test_memory_bands_split_by_review_interval`.
 
 ### Ghi chú T4.3 (06/10/2026) — để đối chiếu khi review
 - **Khác bản duyệt:**

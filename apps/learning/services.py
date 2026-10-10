@@ -441,7 +441,7 @@ def review_word(progress, quality: int, now=None):
     else:
         progress.due_at = None
         progress.next_review_date = today + timedelta(days=card.interval_days)
-    progress.is_mastered = progress.srs_level >= 5
+    progress.is_mastered = srs.is_mastered(card)
     progress.save()
     invalidate_due_badge(progress.user_id)
     return result
@@ -795,12 +795,18 @@ def _order_study_ids(user, words):
 # chính xác hơn.
 SECONDS_PER_WORD = 20
 
-# Ba mốc độ nhớ, cắt theo srs_level. 5 trùng ngưỡng `is_mastered` mà
-# `review_word()` đang dùng — đừng đổi rời hai chỗ.
+# Ba mốc độ nhớ, cắt theo KHOẢNG CÁCH ÔN (10/10/2026) — cùng thước đo với
+# `is_mastered` (srs.is_mastered / srs.MASTERED_INTERVAL), ba nhóm phủ kín mọi
+# dòng tiến độ: chưa tốt nghiệp hoặc hẹn < 7 ngày -> mới nhớ; 7-20 ngày -> đang
+# nhớ; từ 21 ngày -> đã thuộc (đúng cột is_mastered).
+_REVIEWING = Q(card_state=srs.REVIEW)
 MEMORY_BANDS = (
-    ("fresh", "learning.review.band.fresh", 0, 1),
-    ("learning", "learning.review.band.learning", 2, 4),
-    ("mastered", "learning.review.band.mastered", 5, None),
+    ("fresh", "learning.review.band.fresh",
+     ~(_REVIEWING & Q(interval_days__gte=srs.FRESH_INTERVAL))),
+    ("learning", "learning.review.band.learning",
+     _REVIEWING & Q(interval_days__gte=srs.FRESH_INTERVAL, interval_days__lt=srs.MASTERED_INTERVAL)),
+    ("mastered", "learning.review.band.mastered",
+     _REVIEWING & Q(interval_days__gte=srs.MASTERED_INTERVAL)),
 )
 
 
@@ -861,12 +867,9 @@ def get_review_overview(user):
 
 def get_memory_distribution(user):
     """Ba nhóm độ nhớ, kèm % để vẽ thanh tiến độ."""
-    aggregates = {}
-    for key, _label_key, low, high in MEMORY_BANDS:
-        condition = Q(srs_level__gte=low)
-        if high is not None:
-            condition &= Q(srs_level__lte=high)
-        aggregates[key] = Count("pk", filter=condition)
+    aggregates = {
+        key: Count("pk", filter=condition) for key, _label_key, condition in MEMORY_BANDS
+    }
     rows = UserVocabularyProgress.objects.filter(user=user).aggregate(**aggregates)
 
     total = sum(rows.values())
@@ -877,7 +880,7 @@ def get_memory_distribution(user):
             "count": rows[key],
             "percent": round(rows[key] * 100 / total) if total else 0,
         }
-        for key, label_key, _low, _high in MEMORY_BANDS
+        for key, label_key, _condition in MEMORY_BANDS
     ]
 
 
