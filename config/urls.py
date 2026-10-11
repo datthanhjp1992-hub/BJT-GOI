@@ -12,6 +12,7 @@ urlpatterns = [
     path("accounts/", include("apps.accounts.urls")),
     path("vocabulary/", include("apps.vocabulary.urls")),
     path("keigo/", include("apps.keigo.urls")),
+    path("kiem-tra/", include("apps.exam.urls")),
     path("learning/", include("apps.learning.urls")),
     path("practice-sheets/", include("apps.practice_sheets.urls")),
     path("error-reports/", include("apps.error_reports.urls")),

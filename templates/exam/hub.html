@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}S1 Tổng quan Kiểm tra — mockup htmlTemplate/SC23_KiemTra_A.html màn S1 (Dat duyệt 11/10/2026).
+View: exam.views.hub_view, số liệu ở exam.selectors.hub().
+Mốc 1: chỉ thẻ "Kiểm tra từ vựng" bấm được; Luyện dạng đề / Thi thử / Sổ câu sai hiện
+"Sắp có" (Sổ câu sai đã đếm số câu thật — câu sai được ghi sổ từ mốc 1).{% endcomment %}
+
+{% block title %}{% label "exam.hub.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+{% label "exam.hub.eyebrow" as eyebrow %}{% label "exam.hub.title" as title %}{% label "exam.hub.intro" as sub %}
+{% include "partials/page_header.html" with eyebrow=eyebrow title=title subtitle=sub %}
+
+{% if resume %}
+  <div class="card bt-resume">
+    <div>
+      <div class="eyebrow">{% label "exam.hub.resume.eyebrow" %}</div>
+      <div class="bt-resume-title">{{ resume.kind_name }}
+        <span class="muted">· {% message "exam.hub.resume.progress" answered=resume.answered total=resume.total %}
+        · {% label "exam.hub.resume.started" %} {{ resume.started_at|date:"d/m H:i" }}</span></div>
+    </div>
+    <div class="bt-resume-act">
+      <a class="btn btn-primary" href="{% url 'exam:play' resume.pk %}">{% label "exam.hub.resume.button" %}</a>
+    </div>
+  </div>
+{% endif %}
+
+<div class="ex-modes mb-28">
+  <a class="card ex-mode" href="{% url 'exam:vocab' %}">
+    <span class="ex-mode-mark serif" aria-hidden="true">語</span>
+    <h3 class="serif m-0">{% label "exam.hub.card.vocab.title" %}</h3>
+    <p class="muted m-0">{% label "exam.hub.card.vocab.desc" %}</p>
+    <span class="ex-mode-meta">{% label "exam.hub.card.vocab.meta" %}</span>
+  </a>
+  <div class="card ex-mode is-soon">
+    <span class="ex-mode-mark serif" aria-hidden="true">型</span>
+    <h3 class="serif m-0">{% label "exam.hub.card.drill.title" %}</h3>
+    <p class="muted m-0">{% label "exam.hub.card.drill.desc" %}</p>
+    <span class="ex-mode-meta"><span class="tag">{% label "exam.hub.card.soon" %}</span></span>
+  </div>
+  <div class="card ex-mode is-soon">
+    <span class="ex-mode-mark serif" aria-hidden="true">試</span>
+    <h3 class="serif m-0">{% label "exam.hub.card.mock.title" %}</h3>
+    <p class="muted m-0">{% label "exam.hub.card.mock.desc" %}</p>
+    <span class="ex-mode-meta"><span class="tag">{% label "exam.hub.card.soon" %}</span></span>
+  </div>
+  <div class="card ex-mode is-soon">
+    <span class="ex-mode-mark serif" aria-hidden="true">誤</span>
+    <h3 class="serif m-0">{% label "exam.hub.card.wrongbook.title" %}</h3>
+    <p class="muted m-0">{% label "exam.hub.card.wrongbook.desc" %}</p>
+    <span class="ex-mode-meta">{% if wrongbook_count %}<b>{% message "exam.hub.card.wrongbook.count" count=wrongbook_count %}</b> · {% endif %}<span class="tag">{% label "exam.hub.card.soon" %}</span></span>
+  </div>
+</div>
+
+<div class="ex-cols">
+  <section class="card">
+    <h2 class="serif ex-h2">{% label "exam.hub.recent.title" %}</h2>
+    {% if recent %}
+      <div class="ex-table-wrap">
+        <table class="ex-table">
+          <thead><tr>
+            <th>{% label "exam.hub.recent.col.date" %}</th><th>{% label "exam.hub.recent.col.kind" %}</th>
+            <th>{% label "exam.hub.recent.col.score" %}</th><th>{% label "exam.hub.recent.col.time" %}</th><th></th>
+          </tr></thead>
+          <tbody>
+          {% for a in recent %}
+            <tr>
+              <td>{{ a.finished_at|date:"d/m" }}</td>
+              <td>{{ a.kind_name }}</td>
+              <td><span class="ex-pct t-{{ a.level }}">{{ a.percent }}%</span> <span class="muted">{{ a.score }}/{{ a.total }}</span></td>
+              <td class="muted">{{ a.duration_text }}</td>
+              <td class="text-right"><a class="action-link" href="{% url 'exam:result' a.pk %}">{% label "exam.hub.recent.view" %}</a></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      {% url 'exam:vocab' as vocab_url %}
+      {% include "partials/empty_state.html" with compact=True text_key="exam.hub.recent.empty" action_url=vocab_url action_key="exam.hub.card.vocab.start" %}
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2 class="serif ex-h2">{% label "exam.hub.weak.title" %}</h2>
+    <p class="muted text-sm ex-hint">{% label "exam.hub.weak.hint" %}</p>
+    {% for s in weak_spots %}
+      <div class="ex-weak">
+        <div class="ex-weak-head"><span>{{ s.name }}</span><b>{{ s.percent }}%</b></div>
+        <div class="bar"><i class="s-{{ s.level }}" style="width:{{ s.percent }}%"></i></div>
+      </div>
+    {% empty %}
+      <p class="muted text-sm">{% message "exam.hub.weak.empty" %}</p>
+    {% endfor %}
+    {% if weak_spots %}
+      {% with first=weak_spots.0 %}
+        <a class="btn btn-outline btn-sm" href="{% url 'exam:vocab' %}?dang={{ first.code }}">{% message "exam.hub.weak.practice" name=first.name %}</a>
+      {% endwith %}
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

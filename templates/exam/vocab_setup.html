@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}S2 Tạo bài kiểm tra từ vựng — mockup htmlTemplate/SC23_KiemTra_A.html màn S2.
+View: exam.views.vocab_setup_view, form exam.forms.VocabSetupForm.
+Câu hỏi sinh mới mỗi lần (exam.services.vocab_quiz). Đang có bài dở thì hiện khối
+"Làm tiếp / Bỏ bài này" — bắt đầu bài mới khi còn bài dở chỉ đưa về bài dở (spec T7.4).{% endcomment %}
+
+{% block title %}{% label "exam.vocab.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+<nav class="kl-crumb">
+  <a href="{% url 'exam:hub' %}" class="action-link">{% label "exam.hub.title" %}</a>
+  <span>&rsaquo;</span><span>{% label "exam.vocab.title" %}</span>
+</nav>
+{% label "exam.vocab.title" as title %}{% label "exam.vocab.intro" as sub %}
+{% include "partials/page_header.html" with title=title subtitle=sub %}
+
+{% if resume %}
+  <div class="card bt-resume">
+    <div>
+      <div class="eyebrow">{% label "exam.hub.resume.eyebrow" %}</div>
+      <div class="bt-resume-title">{% label "exam.hub.card.vocab.title" %}
+        <span class="muted">· {% label "exam.hub.resume.started" %} {{ resume.started_at|date:"d/m H:i" }}</span></div>
+    </div>
+    <div class="bt-resume-act">
+      <a class="btn btn-primary" href="{% url 'exam:play' resume.pk %}">{% label "exam.hub.resume.button" %}</a>
+      <form method="post" action="{% url 'exam:abandon' resume.pk %}">
+        {% csrf_token %}
+        <button class="bt-linkbtn" type="submit">{% label "exam.vocab.resume.abandon" %}</button>
+      </form>
+    </div>
+  </div>
+{% endif %}
+
+<form method="post" class="ex-cols ex-setup">
+  {% csrf_token %}
+  <div class="card">
+    {% for error in form.non_field_errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+    <h3 class="serif ex-step">{% label "exam.vocab.step.scope" %}</h3>
+    <div class="ex-scopes">
+      <div class="ex-scope"><label class="ex-scope-head">
+        <input type="radio" name="scope" value="{{ scope_due }}"{% if form.scope.value == scope_due %} checked{% endif %}>
+        <span><b>{% label "exam.vocab.scope.due" %}</b>
+          <span class="muted text-sm">{% message "exam.vocab.scope.due_hint" count=counts.due %}</span></span>
+      </label></div>
+      <div class="ex-scope">
+        <label class="ex-scope-head">
+          <input type="radio" name="scope" value="{{ scope_topics }}"{% if form.scope.value == scope_topics %} checked{% endif %}>
+          <span><b>{% label "exam.vocab.scope.topics" %}</b>
+            <span class="muted text-sm">{% label "exam.vocab.scope.topics_hint" %}</span></span>
+        </label>
+        {% if topics %}
+          <div class="checkbox-grid ex-topics">
+            {% for t in topics %}
+              <label class="checkbox-row">
+                <input type="checkbox" name="topics" value="{{ t.pk }}"{% if t.pk|stringformat:"s" in selected_topics %} checked{% endif %}>
+                <span>{{ t.display_name }} <span class="muted">· {{ t.learned }}</span></span>
+              </label>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="muted text-sm ex-topics">{% message "exam.vocab.scope.no_topics" %}</p>
+        {% endif %}
+        {% for error in form.topics.errors %}<p class="error ex-topics">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="ex-scope"><label class="ex-scope-head">
+        <input type="radio" name="scope" value="{{ scope_mastered }}"{% if form.scope.value == scope_mastered %} checked{% endif %}>
+        <span><b>{% label "exam.vocab.scope.mastered" %}</b>
+          <span class="muted text-sm">{% message "exam.vocab.scope.mastered_hint" count=counts.mastered %}</span></span>
+      </label></div>
+    </div>
+
+    <h3 class="serif ex-step">{% label "exam.vocab.step.types" %}</h3>
+    <div class="ex-chips">
+      <label class="ex-chip"><input type="checkbox" name="types" value="meaning"{% if "meaning" in selected_types %} checked{% endif %}>
+        <span>{% label "exam.vocab.type.meaning" %}<small>{% label "exam.vocab.type.meaning_hint" %}</small></span></label>
+      <label class="ex-chip"><input type="checkbox" name="types" value="word"{% if "word" in selected_types %} checked{% endif %}>
+        <span>{% label "exam.vocab.type.word" %}<small>{% label "exam.vocab.type.word_hint" %}</small></span></label>
+      <label class="ex-chip"><input type="checkbox" name="types" value="reading"{% if "reading" in selected_types %} checked{% endif %}>
+        <span>{% label "exam.vocab.type.reading" %}<small>{% label "exam.vocab.type.reading_hint" %}</small></span></label>
+      <label class="ex-chip"><input type="checkbox" name="types" value="cloze"{% if "cloze" in selected_types %} checked{% endif %}>
+        <span>{% label "exam.vocab.type.cloze" %}<small>{% label "exam.vocab.type.cloze_hint" %}</small></span></label>
+    </div>
+    {% for error in form.types.errors %}<p class="error">{{ error }}</p>{% endfor %}
+
+    <h3 class="serif ex-step">{% label "exam.vocab.step.count" %}</h3>
+    <div class="ex-seg" role="radiogroup">
+      {% for value, name in form.fields.count.choices %}
+        <label><input type="radio" name="count" value="{{ value }}"{% if form.count.value|stringformat:"s" == value|stringformat:"s" %} checked{% endif %}><span>{{ name }}</span></label>
+      {% endfor %}
+    </div>
+
+    <h3 class="serif ex-step">{% label "exam.vocab.step.after" %}</h3>
+    <label class="checkbox-row ex-srs">
+      <input type="checkbox" name="srs_link"{% if form.srs_link.value %} checked{% endif %}>
+      <span><b>{% label "exam.vocab.srs.label" %}</b><br>
+        <span class="muted text-sm">{% label "exam.vocab.srs.hint" %}</span></span>
+    </label>
+
+    <div class="mt-18"><button class="btn btn-primary" type="submit">{% label "exam.vocab.start" %} →</button></div>
+  </div>
+
+  <aside>
+    <div class="card mb-18">
+      <h3 class="serif ex-step">{% label "exam.vocab.preview.title" %}</h3>
+      <dl class="ex-preview">
+        <dt>{% label "exam.vocab.type.meaning" %}</dt><dd class="jp">{% label "exam.vocab.preview.meaning" %}</dd>
+        <dt>{% label "exam.vocab.type.word" %}</dt><dd>{% label "exam.vocab.preview.word" %}</dd>
+        <dt>{% label "exam.vocab.type.reading" %}</dt><dd class="jp">{% label "exam.vocab.preview.reading" %}</dd>
+        <dt>{% label "exam.vocab.type.cloze" %}</dt><dd class="jp">{% label "exam.vocab.preview.cloze" %}</dd>
+      </dl>
+    </div>
+    <p class="muted text-sm">{% label "exam.vocab.preview.distractors" %}</p>
+    <p class="muted text-sm lb-kbd">{% label "exam.play.keyboard_hint" %}</p>
+  </aside>
+</form>
+{% endblock %}

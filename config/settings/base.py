@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "apps.error_reports",
     # Kinh ngu (SC16-SC22) - noi dung tach han khoi vocabulary.
     "apps.keigo",
+    # Khu Kiem tra (docs/SPEC_KIEM_TRA.md) - bai tu vung, luyen dang de, thi thu.
+    "apps.exam",
     # Khu vuc quan tri SC07 - khong co model, chi doc du lieu app khac.
     "apps.admin_panel",
 ]

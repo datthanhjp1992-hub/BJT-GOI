@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}Kết quả bài kiểm tra từ vựng (mốc 1). Màn kết quả thi thử đầy đủ (S7) làm ở mốc 2 —
+khung giống nhau: vòng % tổng, bảng theo dạng câu, xem lại từng câu.
+View: exam.views.result_view. Không quy đổi thang BJT (◆3).{% endcomment %}
+
+{% block title %}{% label "exam.result.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+<nav class="kl-crumb">
+  <a href="{% url 'exam:hub' %}" class="action-link">{% label "exam.hub.title" %}</a>
+  <span>&rsaquo;</span><span>{% label "exam.result.title" %}</span>
+</nav>
+{% label "exam.result.title" as title %}{% message "exam.result.subtitle" when=attempt.finished_at|date:"H:i d/m/Y" duration=attempt.duration_text as sub %}
+{% include "partials/page_header.html" with title=title subtitle=sub %}
+
+<div class="ex-cols mb-22">
+  <section class="card ex-score">
+    <div class="ex-ring" style="--p:{{ attempt.percent }}">
+      <div><b class="serif">{{ attempt.percent }}%</b><span class="muted text-sm">{{ attempt.score }} / {{ attempt.total }}</span></div>
+    </div>
+    <div class="flex-1">
+      {% for g in breakdown %}
+        <div class="ex-weak">
+          <div class="ex-weak-head"><span>{{ g.name }}</span><span><b>{{ g.correct }}</b>/{{ g.total }}</span></div>
+          <div class="bar"><i class="s-{{ g.level }}" style="width:{{ g.percent }}%"></i></div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  <section class="card">
+    {% if relearn_count %}
+      <p class="m-0">{% message "exam.result.relearn" count=relearn_count %}</p>
+    {% elif wrong %}
+      <p class="m-0">{% message "exam.result.wrongbook" count=wrong|length %}</p>
+    {% else %}
+      <p class="m-0">{% message "exam.result.perfect" %}</p>
+    {% endif %}
+    <div class="lb-actions mt-18">
+      <a class="btn btn-primary" href="{% url 'exam:vocab' %}">{% label "exam.result.again" %}</a>
+      <a class="action-link" href="{% url 'exam:hub' %}">{% label "exam.result.back" %}</a>
+    </div>
+  </section>
+</div>
+
+<section class="card">
+  <h2 class="serif ex-h2">{% label "exam.result.review" %}</h2>
+  <ol class="ex-review">
+    {% for r in rows %}
+      <li class="ex-review-item{% if not r.is_correct %} is-ng{% endif %}">
+        <span class="ex-mark {% if r.is_correct %}is-ok{% else %}is-ng{% endif %}" aria-hidden="true">{% if r.is_correct %}○{% else %}×{% endif %}</span>
+        <div class="flex-1">
+          <div class="muted text-xs">{{ r.order }} · {{ r.type_name }}</div>
+          <div class="jp ex-review-q">{{ r.payload.prompt }}</div>
+          {% if not r.is_correct %}
+            <div class="text-sm">{% label "exam.result.your_answer" %} <span class="tag ex-tag-ng">{{ r.selected_text }}</span>
+              {% label "exam.result.correct_answer" %} <span class="tag ex-tag-ok">{{ r.correct_text }}</span></div>
+          {% endif %}
+          <div class="muted text-sm"><span class="jp">{{ r.payload.word }}（{{ r.payload.reading }}）</span>: {{ r.payload.meaning }}</div>
+        </div>
+      </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endblock %}

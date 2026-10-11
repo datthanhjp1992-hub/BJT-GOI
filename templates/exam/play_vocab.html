@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static properties_tags %}
+{% comment %}S3 Làm bài kiểm tra từ vựng — mockup htmlTemplate/SC23_KiemTra_A.html màn S3.
+View: exam.views.play_view (Post/Redirect/Get, giống SC21 kính ngữ — dùng chung class .lb-*).
+  - Mỗi lần MỘT câu, chấm ngay. Câu sinh sẵn lúc bắt đầu (ExamAnswer.payload).
+  - static/js/exam_play.js: bấm phương án là gửi luôn, phím 1-4 / Enter, gửi bằng fetch
+    và thay khối #exam-play (không tải lại trang). Tắt JS: chọn rồi bấm "Kiểm tra".
+  - srs_effect: "relearn" = đã đưa từ về học lại, "reviewed" = đã tính một lượt ôn (◆1).{% endcomment %}
+
+{% block title %}{% label "exam.hub.card.vocab.title" %} · {{ answer.order }}/{{ total }} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+<div class="lb-wrap ex-play" id="exam-play">
+  <div class="ex-play-head">
+    <a class="action-link" href="{% url 'exam:hub' %}">✕ {% label "exam.play.pause" %}</a>
+    <div class="bar flex-1"><i class="s-mid" style="width:{{ progress_percent }}%"></i></div>
+    <span class="muted text-sm">{{ answer.order }} / {{ total }}</span>
+  </div>
+
+  <div class="card lb-card">
+    <div class="lb-qhead ex-qhead">
+      <span class="tag">{{ type_name }}</span>
+      <span class="muted text-sm">{% message "exam.play.correct_so_far" correct=correct_count answered=answered_count %}</span>
+    </div>
+
+    <p class="lb-ask">{% if answer.question_type_code == "meaning" %}{% label "exam.play.prompt.meaning" %}{% elif answer.question_type_code == "word" %}{% label "exam.play.prompt.word" %}{% elif answer.question_type_code == "reading" %}{% label "exam.play.prompt.reading" %}{% else %}{% label "exam.play.prompt.cloze" %}{% endif %}</p>
+    {% if answer.question_type_code == "word" %}
+      <div class="ex-prompt is-vi">{{ answer.payload.prompt }}</div>
+    {% elif answer.question_type_code == "cloze" %}
+      <div class="ex-prompt is-sentence jp">{{ answer.payload.prompt }}</div>
+      {% if answer.is_answered and answer.payload.sentence_vi %}<p class="muted text-sm ex-center">{{ answer.payload.sentence_vi }}</p>{% endif %}
+    {% else %}
+      <div class="ex-prompt jp">{{ answer.payload.prompt }}</div>
+    {% endif %}
+
+    {% if answer.is_answered %}
+      {# ---------- ĐÃ CHẤM ---------- #}
+      <div class="lb-opts">
+        {% for o in options %}
+          <div class="lb-opt{% if o.state %} is-{{ o.state }}{% endif %}">
+            <span class="n">{{ o.position }}</span><span class="t{% if answer.question_type_code != 'meaning' %} jp{% endif %}">{{ o.text }}</span>
+            {% if o.state == "ok" %}<span class="mk">○</span>{% elif o.state == "ng" %}<span class="mk">×</span>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if answer.is_correct %}
+        <div class="lb-fb is-ok" role="status"><b>○ {% label "exam.play.correct" %}</b></div>
+      {% else %}
+        <div class="lb-fb is-ng" role="status"><b>× {% label "exam.play.wrong" %}</b>
+          {% label "exam.play.answer_is" %} <b class="jp">{{ correct_text }}</b></div>
+      {% endif %}
+
+      <div class="lb-explain">
+        <div class="eyebrow">{% label "exam.play.explanation" %}</div>
+        <span class="jp"><b>{{ answer.payload.word }}</b>（{{ answer.payload.reading }}）</span>: {{ answer.payload.meaning }}
+        {% if distractors %}
+          <ul class="ex-glosses">
+            {% for d in distractors %}<li class="jp">{{ d.gloss }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      {% if srs_effect == "relearn" %}
+        <p class="ex-note"><span class="tag">{% label "exam.play.srs.relearn" %}</span></p>
+      {% elif srs_effect == "reviewed" %}
+        <p class="ex-note"><span class="tag">{% label "exam.play.srs.reviewed" %}</span></p>
+      {% endif %}
+
+      <div class="lb-actions">
+        {% if is_last %}
+          <form method="post" action="{% url 'exam:finish' attempt.pk %}">
+            {% csrf_token %}
+            <button class="btn btn-primary" type="submit" data-enter>{% label "exam.play.finish" %} →</button>
+          </form>
+        {% else %}
+          <a class="btn btn-primary" href="{% url 'exam:play' attempt.pk %}" data-enter data-exam-swap>{% label "exam.play.next" %} →</a>
+        {% endif %}
+        {% if answer.vocabulary_id %}
+          <a class="action-link text-sm" href="{% url 'error_reports:create' %}?vocabulary={{ answer.vocabulary_id }}">{% label "error_report.form.link.report" %}</a>
+        {% endif %}
+      </div>
+
+    {% else %}
+      {# ---------- CHƯA TRẢ LỜI ---------- #}
+      <form method="post" action="{% url 'exam:play' attempt.pk %}" id="exam-form" data-exam-form>
+        {% csrf_token %}
+        <input type="hidden" name="order" value="{{ answer.order }}">
+        <input type="hidden" name="t" value="0" data-exam-timer>
+        <div class="lb-opts" role="radiogroup">
+          {% for o in options %}
+            <label class="lb-opt">
+              <input type="radio" name="option" value="{{ o.position }}" required>
+              <span class="n">{{ o.position }}</span><span class="t{% if answer.question_type_code != 'meaning' %} jp{% endif %}">{{ o.text }}</span>
+            </label>
+          {% endfor %}
+        </div>
+        <div class="lb-actions">
+          <button class="btn btn-primary" type="submit" data-exam-check>{% label "exam.play.check" %}</button>
+          <span class="muted lb-kbd">{% label "exam.play.keyboard_hint" %}</span>
+        </div>
+      </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/exam_play.js' %}" defer></script>{% endblock %}

@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC23 Kiểm tra | 毎日BJT</title>
+<!--
+  SC23_KiemTra — PROTOTYPE LUỒNG KIỂM TRA (mockup 11/10/2026, chờ Dat duyệt)
+  Một file, 8 màn — chuyển màn bằng thanh MOCKUP màu tối trên cùng (chỉ có trong mockup).
+  Theme A — duyệt xong mới làm B/C.
+
+    S1 Tổng quan Kiểm tra       S5 Thi thử — phần Nghe (chế độ Thi)
+    S2 Tạo bài từ vựng          S6 Thi thử — phần Đọc
+    S3 Làm bài từ vựng          S7 Kết quả thi thử
+    S4 Chọn đề / luyện dạng đề  S8 Sổ câu sai
+
+  Dữ liệu: câu thi lấy NGUYÊN từ bjt.db (mock_exam_question #31, #41, #22, #1, #13);
+  từ vựng lấy từ topic nghiệp vụ trên Supabase. Điểm số, lịch sử, tiến độ là giả.
+
+  Các điểm cần Dat chốt (đánh dấu ◆ trên giao diện):
+    ◆1 Câu sai ở bài từ vựng có tự đưa từ về "học lại" trong SRS không (S2, S3).
+    ◆2 Chế độ Thi chặt như thật: audio phát 1 lần, phần Nghe không quay lại (S4, S5).
+    ◆3 Không quy đổi thang 0–800, chỉ hiện % theo phần (S7).
+    ◆4 Câu ra khỏi Sổ câu sai khi đúng 2 lần liên tiếp (S8).
+-->
+<style>
+:root{
+  --bg:#FAF6EE;--surface:#FFFFFF;--ink:#24211D;--ink-soft:#6b6455;
+  --accent:#B5432E;--accent-dark:#8f3323;--accent-soft:#f0d9cf;
+  --gold:#B8912B;--teal:#3F6B63;--teal-soft:#dde9e5;--border:#DCD3C0;
+  --wash:#fbf8f2;--bad:#B5432E;--bad-soft:#f6e1da;--good:#3F6B63;--good-soft:#dde9e5;
+  --serif:Georgia,"Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55}
+h1,h2,h3,.serif{font-family:var(--serif);font-weight:normal}
+h1{font-size:28px;margin:0 0 6px}h2{font-size:20px;margin:0 0 14px}h3{font-size:17px;margin:0 0 10px}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+.muted{color:var(--ink-soft)}.small{font-size:13px}
+.eyebrow{color:var(--accent);font-size:13px;letter-spacing:.02em;margin-bottom:6px}
+
+/* ---- mockup bar (chỉ có trong mockup) ---- */
+.mockbar{position:sticky;top:0;z-index:50;background:#2b2722;color:#e9e3d6;font-size:12.5px;
+  display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 14px}
+.mockbar b{color:#fff;margin-right:6px}
+.mockbar button{background:#423c34;border:0;color:#e9e3d6;padding:5px 10px;border-radius:3px;cursor:pointer}
+.mockbar button.on{background:var(--accent);color:#fff}
+.decide{display:inline-block;background:#fff3c9;color:#6d5410;border:1px dashed #c9a43a;
+  border-radius:3px;padding:1px 7px;font-size:12px;margin-left:6px;vertical-align:middle}
+
+/* ---- app shell (giống base.html) ---- */
+.site-topbar{display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 24px;
+  border-bottom:1px solid var(--border);background:var(--surface)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:21px}
+.brand .mark{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;
+  align-items:center;justify-content:center;font-size:14px}
+.site-topbar-user{font-size:14px;color:var(--ink-soft)}
+.body{display:flex;min-height:calc(100vh - 64px - 38px)}
+.site-sidebar{width:232px;flex:none;border-right:1px solid var(--border);background:var(--surface);padding:10px 12px}
+.sidenav-link{display:block;padding:9px 14px;border-radius:3px;color:var(--ink-soft);font-size:14.5px;margin-bottom:2px;cursor:pointer}
+.sidenav-link.active,.sidenav-link:hover{background:var(--accent-soft);color:var(--accent-dark)}
+.sidenav-link.active{font-weight:600}
+.sidenav-sub{padding:0 0 6px 14px}
+.sidenav-sub a{display:flex;justify-content:space-between;padding:7px 14px;border-radius:3px;font-size:13.5px;color:var(--ink-soft);cursor:pointer}
+.sidenav-sub a.active,.sidenav-sub a:hover{background:var(--accent-soft);color:var(--accent-dark)}
+.sidenav-sub a.active{font-weight:600}
+.badge{background:var(--accent);color:#fff;border-radius:10px;font-size:11px;padding:0 7px;line-height:18px;height:18px}
+.new{font-size:10px;color:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:0 5px;margin-left:4px}
+main{flex:1;min-width:0;padding:34px 36px 70px}
+.page{max-width:1040px;margin:0 auto}
+
+/* ---- components ---- */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:24px}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.g-main{grid-template-columns:1fr 300px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:3px;font-size:15px;
+  cursor:pointer;border:1px solid transparent;background:none}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-dark)}
+.btn-outline{border-color:var(--ink)}.btn-ghost{color:var(--ink-soft);padding-left:4px;padding-right:4px}
+.btn-sm{padding:7px 14px;font-size:13.5px}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.tag{display:inline-block;padding:3px 11px;border-radius:20px;font-size:12.5px;border:1px solid var(--border);color:var(--ink-soft)}
+.tag.acc{background:var(--accent-soft);border-color:transparent;color:var(--accent-dark)}
+.tag.good{background:var(--good-soft);border-color:transparent;color:var(--good)}
+.tag.bad{background:var(--bad-soft);border-color:transparent;color:var(--bad)}
+.progressbar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progressbar span{display:block;height:100%;background:var(--accent)}
+.progressbar.teal span{background:var(--teal)}
+.kbd{display:inline-block;min-width:22px;text-align:center;border:1px solid var(--border);border-bottom-width:2px;
+  border-radius:3px;font-size:12px;padding:0 5px;background:var(--wash);color:var(--ink-soft)}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+.table-wrap{overflow-x:auto}
+.table-wrap table{min-width:560px}
+th{text-align:left;color:var(--ink-soft);font-weight:500;padding:9px 10px;border-bottom:1px solid var(--border);font-size:13px}
+td{padding:12px 10px;border-bottom:1px solid var(--border)}
+.stat .num{font-family:var(--serif);font-size:30px;color:var(--accent-dark);line-height:1.1}
+.stat .label{font-size:13px;color:var(--ink-soft);margin-top:4px}
+
+/* hub */
+.resume{display:flex;align-items:center;justify-content:space-between;gap:16px;border-left:4px solid var(--accent)}
+.mode-card{display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:border-color .15s}
+.mode-card:hover{border-color:var(--accent)}
+.mode-card .kanji{width:46px;height:46px;border:1.5px solid var(--accent);border-radius:50%;color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:22px}
+.mode-card .meta{font-size:13px;color:var(--ink-soft);margin-top:auto}
+
+/* form */
+.opt-row{display:flex;flex-wrap:wrap;gap:8px}
+.choice-chip{border:1px solid var(--border);border-radius:3px;padding:10px 14px;cursor:pointer;background:#fff;font-size:14px}
+.choice-chip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-dark)}
+.choice-chip small{display:block;color:var(--ink-soft);font-size:12px}
+.radio-list label{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--border);
+  border-radius:3px;margin-bottom:8px;cursor:pointer;background:#fff}
+.radio-list label.on{border-color:var(--accent);background:#fdf5f1}
+.radio-list input{margin-top:4px;accent-color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:3px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:8px 18px;cursor:pointer;font-size:14px}
+.seg button+button{border-left:1px solid var(--border)}
+.seg button.on{background:var(--accent);color:#fff}
+.switch{display:flex;gap:12px;align-items:flex-start}
+.switch .tog{width:38px;height:22px;border-radius:11px;background:var(--teal);position:relative;flex:none;margin-top:2px}
+.switch .tog::after{content:"";position:absolute;right:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff}
+
+/* play */
+.play-head{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.play-head .progressbar{flex:1}
+.qcard{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:34px 34px 28px}
+.qprompt{font-size:14px;color:var(--ink-soft);margin-bottom:12px}
+.qword{font-family:var(--serif);font-size:48px;text-align:center;margin:10px 0 26px}
+.qword.vi{font-family:var(--sans);font-size:26px}
+.qsentence{font-size:21px;line-height:1.9;text-align:center;margin:8px 0 24px;font-family:var(--serif)}
+.qsentence .blank{display:inline-block;min-width:64px;border-bottom:2px solid var(--accent);text-align:center;color:var(--accent)}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.options.one{grid-template-columns:1fr}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid var(--border);border-radius:4px;
+  padding:14px 16px;background:#fff;cursor:pointer;font-size:16px;transition:border-color .12s,background .12s}
+.opt:hover{border-color:var(--accent)}
+.opt .n{flex:none;width:26px;height:26px;border-radius:50%;border:1px solid var(--border);display:flex;
+  align-items:center;justify-content:center;font-size:13px;color:var(--ink-soft)}
+.opt.picked{border-color:var(--accent);background:#fdf5f1}
+.opt.picked .n{background:var(--accent);border-color:var(--accent);color:#fff}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.right .n{background:var(--good);border-color:var(--good);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .n{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt.dim{opacity:.5}
+.opt.jp{font-family:var(--serif);font-size:17px}
+.feedback{margin-top:18px;border-radius:4px;padding:16px 18px;display:none}
+.feedback.show{display:block}
+.feedback.ok{background:var(--good-soft)}.feedback.ng{background:var(--bad-soft)}
+.feedback .title{font-weight:600;margin-bottom:4px}
+.play-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px;flex-wrap:wrap}
+
+/* exam */
+.exam-bar{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--border);
+  border-radius:4px;padding:12px 18px;margin-bottom:18px;flex-wrap:wrap}
+.exam-bar .parts{display:flex;gap:4px;flex-wrap:wrap}
+.exam-bar .parts span{font-size:13px;padding:5px 12px;border-radius:3px;color:var(--ink-soft);background:var(--wash)}
+.exam-bar .parts span.on{background:var(--accent-soft);color:var(--accent-dark);font-weight:600}
+.exam-bar .parts span.done{color:var(--teal)}
+.timer{font-family:var(--serif);font-size:24px;margin-left:auto;font-variant-numeric:tabular-nums}
+.timer small{font-family:var(--sans);font-size:12px;color:var(--ink-soft);display:block;text-align:right;line-height:1}
+.audio{display:flex;align-items:center;gap:14px;border:1px solid var(--border);border-radius:4px;padding:14px 16px;background:var(--wash);margin-bottom:20px}
+.audio .play{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:0;cursor:pointer;font-size:16px;flex:none}
+.audio .play[disabled]{background:var(--border);cursor:not-allowed}
+.audio .progressbar{flex:1}
+.scene{border-left:3px solid var(--gold);background:#fffdf7;padding:12px 16px;margin-bottom:18px;font-family:var(--serif);font-size:16px;line-height:1.8}
+.navgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.navgrid span{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px solid var(--border);
+  border-radius:3px;background:#fff;color:var(--ink-soft);position:relative}
+.navgrid span.ans{background:var(--accent-soft);border-color:transparent;color:var(--accent-dark)}
+.navgrid span.cur{border:2px solid var(--accent);color:var(--accent);font-weight:700}
+.navgrid span.flag::after{content:"";position:absolute;top:2px;right:2px;width:6px;height:6px;background:var(--gold);border-radius:50%}
+.navgrid span.lock{background:#f1ede4;color:#b3aa98}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink-soft);margin-top:12px}
+.legend i{display:inline-block;width:11px;height:11px;border:1px solid var(--border);border-radius:2px;vertical-align:-1px;margin-right:4px}
+.split{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;align-items:start}
+.doc{background:#fffdf7;border:1px solid var(--border);border-radius:4px;padding:22px 24px;position:sticky;top:56px;
+  font-family:var(--serif);font-size:16px;line-height:2;white-space:pre-line}
+.doc .doc-type{font-family:var(--sans);font-size:12px;color:var(--ink-soft);margin-bottom:8px;white-space:normal}
+
+/* result */
+.big-score{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+.ring{width:132px;height:132px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+  background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--border) 0)}
+.ring div{width:108px;height:108px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring b{font-family:var(--serif);font-size:32px;font-weight:normal;color:var(--accent-dark);line-height:1}
+.partbars>div{display:grid;grid-template-columns:150px 1fr 70px;gap:12px;align-items:center;margin-bottom:12px;font-size:14px}
+.delta.up{color:var(--teal)}.delta.down{color:var(--bad)}
+.review-item{border:1px solid var(--border);border-radius:4px;background:#fff;margin-bottom:10px}
+.review-item summary{list-style:none;display:flex;gap:12px;align-items:center;padding:13px 16px;cursor:pointer}
+.review-item summary::-webkit-details-marker{display:none}
+.review-item .mark{width:24px;height:24px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.review-item .mark.ok{background:var(--good)}.review-item .mark.ng{background:var(--bad)}
+.review-item .body2{padding:2px 18px 18px 52px;font-size:14.5px}
+.review-item .q{font-family:var(--serif);font-size:16px}
+.transcript{background:var(--wash);border-radius:3px;padding:10px 14px;font-family:var(--serif);white-space:pre-line;margin:8px 0}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:14px}
+.tabs span{padding:8px 14px;font-size:14px;color:var(--ink-soft);border-bottom:2px solid transparent;cursor:pointer}
+.tabs span.on{color:var(--accent);border-color:var(--accent)}
+.note-box{border:1px dashed var(--border);border-radius:4px;padding:12px 14px;font-size:13px;color:var(--ink-soft);background:var(--wash)}
+
+.screen{display:none}.screen.on{display:block}
+.focus .site-sidebar{display:none}
+
+@media (max-width:900px){
+  .site-sidebar{display:none}
+  main{padding:22px 16px 60px}
+  .g4{grid-template-columns:1fr 1fr}.g2,.g-main,.split{grid-template-columns:1fr}
+  .options{grid-template-columns:1fr}
+  .qcard{padding:24px 18px}.qword{font-size:40px}
+  .doc{position:static}
+  .partbars>div{grid-template-columns:110px 1fr 56px}
+  .resume{flex-direction:column;align-items:flex-start}
+  .site-topbar{padding:0 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="mockbar">
+  <b>MOCKUP SC23</b>
+  <button data-go="s1" class="on">S1 Tổng quan</button>
+  <button data-go="s2">S2 Tạo bài từ vựng</button>
+  <button data-go="s3">S3 Làm bài từ vựng</button>
+  <button data-go="s4">S4 Chọn đề</button>
+  <button data-go="s5">S5 Thi — Nghe</button>
+  <button data-go="s6">S6 Thi — Đọc</button>
+  <button data-go="s7">S7 Kết quả</button>
+  <button data-go="s8">S8 Sổ câu sai</button>
+</div>
+
+<header class="site-topbar">
+  <div class="brand"><span class="mark">毎</span>毎日BJT</div>
+  <div class="site-topbar-user">Dat · Cài đặt · Đăng xuất</div>
+</header>
+
+<div class="body" id="shell">
+  <aside class="site-sidebar">
+    <a class="sidenav-link">Trang chủ</a>
+    <a class="sidenav-link">Từ vựng</a>
+    <a class="sidenav-link">Ôn tập</a>
+    <a class="sidenav-link active" data-go="s1">Kiểm tra <span class="new">MỚI</span></a>
+    <div class="sidenav-sub">
+      <a data-go="s1" data-nav="s1">Tổng quan</a>
+      <a data-go="s2" data-nav="s2 s3">Từ vựng</a>
+      <a data-go="s4" data-nav="s4 s5 s6 s7">Thi thử &amp; dạng đề</a>
+      <a data-go="s8" data-nav="s8">Sổ câu sai <span class="badge">23</span></a>
+    </div>
+    <a class="sidenav-link">Luyện viết PDF</a>
+    <a class="sidenav-link">Kính ngữ</a>
+    <a class="sidenav-link">Góp ý</a>
+  </aside>
+
+  <main><div class="page">
+
+<!-- ================= S1 TỔNG QUAN ================= -->
+<section class="screen on" id="s1">
+  <div class="eyebrow">試験・テスト</div>
+  <h1>Kiểm tra</h1>
+  <p class="muted" style="margin:0 0 22px">Kiểm tra từ đã học, luyện từng dạng đề BJT, thi thử và ôn lại câu đã sai.</p>
+
+  <div class="card resume" style="margin-bottom:22px">
+    <div>
+      <div class="eyebrow" style="margin:0">Đang làm dở</div>
+      <div style="font-size:17px">Thi thử · Bộ đề 1 — Phần 2 Nghe + Đọc, câu 38/100</div>
+      <div class="muted small">Chế độ Thi · còn 41:20 cho phần này · tự lưu lúc 21:14 hôm qua</div>
+    </div>
+    <button class="btn btn-primary" data-go="s6">Làm tiếp →</button>
+  </div>
+
+  <div class="grid g4" style="margin-bottom:22px">
+    <div class="card mode-card" data-go="s2">
+      <div class="kanji">語</div><h3 style="margin:0">Kiểm tra từ vựng</h3>
+      <div class="muted small">Chọn nghĩa, chọn cách đọc, điền vào câu — sinh từ các từ bạn đã học.</div>
+      <div class="meta">10–30 câu · khoảng 5 phút</div>
+    </div>
+    <div class="card mode-card" data-go="s4">
+      <div class="kanji">型</div><h3 style="margin:0">Luyện theo dạng đề</h3>
+      <div class="muted small">Chọn 1 trong 8 dạng câu BJT, làm 10 câu, xem giải thích ngay.</div>
+      <div class="meta">8 dạng · 500 câu</div>
+    </div>
+    <div class="card mode-card" data-go="s4">
+      <div class="kanji">試</div><h3 style="margin:0">Thi thử BJT</h3>
+      <div class="muted small">Đủ 3 phần Nghe · Nghe + Đọc · Đọc, bấm giờ như thi thật.</div>
+      <div class="meta">5 bộ đề · 100 câu/bộ</div>
+    </div>
+    <div class="card mode-card" data-go="s8">
+      <div class="kanji">誤</div><h3 style="margin:0">Sổ câu sai</h3>
+      <div class="muted small">Những câu bạn từng sai, tự gom từ mọi bài. Ôn tới khi đúng hẳn.</div>
+      <div class="meta"><b style="color:var(--accent)">23 câu</b> đang chờ ôn</div>
+    </div>
+  </div>
+
+  <div class="grid g-main">
+    <div class="card">
+      <h2>Kết quả gần đây</h2>
+      <table>
+        <tr><th>Ngày</th><th>Bài</th><th>Đúng</th><th>Thời gian</th><th></th></tr>
+        <tr><td>10/10</td><td>Thi thử · Bộ đề 2 <span class="tag">Thi</span></td><td><b>71%</b> <span class="delta up small">▲6</span></td><td>1:38:20</td><td><a class="small" style="color:var(--accent)" data-go="s7">Xem</a></td></tr>
+        <tr><td>09/10</td><td>Từ vựng · Kế toán và tài chính</td><td><b>85%</b></td><td>4:12</td><td><a class="small" style="color:var(--accent)">Xem</a></td></tr>
+        <tr><td>08/10</td><td>Dạng đề · Kính ngữ ứng dụng</td><td><b>50%</b></td><td>9:40</td><td><a class="small" style="color:var(--accent)">Xem</a></td></tr>
+        <tr><td>07/10</td><td>Từ vựng · Từ đến hạn hôm nay</td><td><b>78%</b></td><td>6:05</td><td><a class="small" style="color:var(--accent)">Xem</a></td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>Điểm yếu cần luyện</h2>
+      <div class="small muted" style="margin-bottom:12px">Tính trên 30 ngày gần nhất</div>
+      <div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>Kính ngữ ứng dụng</span><b>54%</b></div><div class="progressbar"><span style="width:54%"></span></div></div>
+      <div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>Nghe hiểu toàn diện</span><b>61%</b></div><div class="progressbar"><span style="width:61%"></span></div></div>
+      <div style="margin-bottom:18px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>Cách đọc kanji</span><b>66%</b></div><div class="progressbar"><span style="width:66%"></span></div></div>
+      <button class="btn btn-outline btn-sm" data-go="s4">Luyện 10 câu Kính ngữ ứng dụng</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S2 TẠO BÀI TỪ VỰNG ================= -->
+<section class="screen" id="s2">
+  <a class="small muted" data-go="s1">← Kiểm tra</a>
+  <h1 style="margin-top:8px">Kiểm tra từ vựng</h1>
+  <p class="muted" style="margin:0 0 22px">Câu hỏi sinh mới mỗi lần làm. Đáp án nhiễu lấy từ <b>cùng chủ đề</b> hoặc từ có <b>cách đọc / mặt chữ gần giống</b> — đúng kiểu bẫy của BJT.</p>
+
+  <div class="grid g-main">
+    <div class="card">
+      <h3>1. Phạm vi</h3>
+      <div class="radio-list" id="scope">
+        <label class="on"><input type="radio" name="sc" checked><div><b>Từ đến hạn ôn hôm nay</b><div class="small muted">32 từ — làm bài thay cho lượt ôn flashcard</div></div></label>
+        <label><input type="radio" name="sc"><div><b>Theo chủ đề / bài</b><div class="small muted" style="margin-bottom:8px">Chỉ lấy từ bạn đã học trong chủ đề đã chọn</div>
+          <div class="opt-row"><span class="tag acc">Kế toán và tài chính ×</span><span class="tag acc">Lesson12 ×</span><span class="tag">+ Thêm</span></div></div></label>
+        <label><input type="radio" name="sc"><div><b>Từ đã thuộc — kiểm tra lại</b><div class="small muted">412 từ đang hẹn ôn ≥ 21 ngày. Phát hiện từ "tưởng thuộc mà quên"</div></div></label>
+      </div>
+
+      <h3 style="margin-top:22px">2. Dạng câu hỏi</h3>
+      <div class="opt-row" id="types">
+        <span class="choice-chip on">日 → Việt<small>Chọn nghĩa</small></span>
+        <span class="choice-chip on">Việt → 日<small>Chọn từ</small></span>
+        <span class="choice-chip on">Cách đọc<small>決裁 → けっさい</small></span>
+        <span class="choice-chip">Điền vào câu<small>Chỉ từ có câu ví dụ (184 từ)</small></span>
+      </div>
+
+      <h3 style="margin-top:22px">3. Số câu</h3>
+      <div class="seg" id="count"><button>10</button><button class="on">20</button><button>30</button></div>
+
+      <h3 style="margin-top:22px">4. Sau khi làm</h3>
+      <div class="switch">
+        <span class="tog"></span>
+        <div>Câu sai → đưa từ về <b>học lại</b> trong lịch ôn <span class="decide">◆1 cần chốt</span>
+          <div class="small muted">Tắt thì bài kiểm tra không ảnh hưởng lịch ôn. Bật thì tính vào hạn mức ôn hôm nay (Phase 6).</div></div>
+      </div>
+
+      <div style="margin-top:26px"><button class="btn btn-primary" data-go="s3">Bắt đầu 20 câu →</button></div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:18px">
+        <h3>Xem trước các dạng</h3>
+        <div class="small muted">日 → Việt</div><div class="serif" style="font-size:20px;margin-bottom:10px">稟議書 <span class="small muted">→ 4 nghĩa</span></div>
+        <div class="small muted">Việt → 日</div><div style="margin-bottom:10px">"Xoay vòng vốn" <span class="small muted">→ 4 từ</span></div>
+        <div class="small muted">Cách đọc</div><div class="serif" style="font-size:20px;margin-bottom:10px">決裁 <span class="small muted">→ 4 cách đọc</span></div>
+        <div class="small muted">Điền vào câu</div><div class="serif">資料に（　）を通す</div>
+      </div>
+      <div class="note-box">Phím tắt khi làm bài: <span class="kbd">1</span>–<span class="kbd">4</span> chọn đáp án, <span class="kbd">Enter</span> sang câu tiếp — giống màn học flashcard.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S3 LÀM BÀI TỪ VỰNG ================= -->
+<section class="screen" id="s3">
+  <div class="play-head">
+    <a class="small muted" data-go="s2">✕ Dừng</a>
+    <div class="progressbar"><span id="vq-bar" style="width:5%"></span></div>
+    <span class="small muted" id="vq-count">1 / 20</span>
+  </div>
+  <div style="max-width:720px;margin:0 auto">
+    <div class="qcard">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="tag acc" id="vq-type">Cách đọc</span>
+        <span class="small muted" id="vq-topic">Quản trị và tổ chức doanh nghiệp</span>
+      </div>
+      <div id="vq-body"></div>
+      <div class="options" id="vq-opts"></div>
+      <div class="feedback" id="vq-fb"></div>
+    </div>
+    <div class="play-foot">
+      <span class="small muted"><span class="kbd">1</span>–<span class="kbd">4</span> chọn · <span class="kbd">Enter</span> tiếp</span>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost btn-sm">⚑ Báo lỗi câu này</button>
+        <button class="btn btn-primary" id="vq-next" disabled>Câu tiếp →</button>
+      </div>
+    </div>
+    <div class="card" id="vq-done" style="display:none;margin-top:18px;text-align:center">
+      <div class="eyebrow">Hết bài (bản mockup chỉ có 4 câu)</div>
+      <div class="serif" style="font-size:44px;color:var(--accent-dark)" id="vq-score">3 / 4</div>
+      <p class="muted">Câu sai đã được thêm vào <b>Sổ câu sai</b> và đưa về <b>học lại</b>.</p>
+      <button class="btn btn-outline btn-sm" data-go="s8">Mở Sổ câu sai</button>
+      <button class="btn btn-primary btn-sm" onclick="vqStart()">Làm lại</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S4 CHỌN ĐỀ ================= -->
+<section class="screen" id="s4">
+  <a class="small muted" data-go="s1">← Kiểm tra</a>
+  <h1 style="margin-top:8px">Thi thử &amp; luyện dạng đề</h1>
+  <p class="muted" style="margin:0 0 22px">Cấu trúc theo đề BJT: <b>第1部 Nghe</b> · <b>第2部 Nghe + Đọc</b> · <b>第3部 Đọc</b>.</p>
+
+  <div class="card" style="margin-bottom:18px">
+    <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+      <h3 style="margin:0">Chế độ</h3>
+      <div class="seg" id="mode"><button class="on">Thi</button><button>Luyện</button></div>
+      <span class="decide">◆2 cần chốt</span>
+    </div>
+    <div class="grid g2" style="margin-top:14px;font-size:14px">
+      <div><b>Thi</b> — bấm giờ từng phần · audio phát <b>1 lần</b> · phần Nghe không quay lại câu trước · nộp bài mới thấy đáp án.</div>
+      <div class="muted"><b>Luyện</b> — không bấm giờ · nghe lại thoải mái · trả lời xong thấy ngay đáp án, giải thích và lời thoại.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h2>Bộ đề thi thử</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Bộ đề</th><th>Nghe</th><th>Nghe + Đọc</th><th>Đọc</th><th>Lần gần nhất</th><th></th></tr>
+      <tr><td><b>Bộ đề 1</b></td><td>35</td><td>30</td><td>35</td><td><span class="tag acc">Đang làm · câu 38</span></td><td><button class="btn btn-primary btn-sm" data-go="s6">Làm tiếp</button></td></tr>
+      <tr><td><b>Bộ đề 2</b></td><td>35</td><td>30</td><td>35</td><td>71% · 10/10</td><td><button class="btn btn-outline btn-sm" data-go="s5">Làm lại</button></td></tr>
+      <tr><td><b>Bộ đề 3</b></td><td>35</td><td>30</td><td>35</td><td class="muted">Chưa làm</td><td><button class="btn btn-outline btn-sm" data-go="s5">Bắt đầu</button></td></tr>
+      <tr><td><b>Bộ đề 4</b></td><td>35</td><td>30</td><td>35</td><td class="muted">Chưa làm</td><td><button class="btn btn-outline btn-sm" data-go="s5">Bắt đầu</button></td></tr>
+      <tr><td><b>Bộ đề 5</b></td><td>35</td><td>30</td><td>35</td><td class="muted">Chưa làm</td><td><button class="btn btn-outline btn-sm" data-go="s5">Bắt đầu</button></td></tr>
+    </table></div>
+    <div class="small muted" style="margin-top:10px">Mỗi bộ ~100 câu. Có thể làm từng phần riêng rồi quay lại sau — tiến độ tự lưu sau mỗi câu.</div>
+  </div>
+
+  <div class="card">
+    <h2>Luyện theo dạng đề <span class="small muted" style="font-family:var(--sans)">— 10 câu/lượt, lấy ngẫu nhiên từ cả 5 bộ</span></h2>
+    <div class="grid g4">
+      <div class="card mode-card" style="padding:16px"><span class="tag">第1部</span><b>Nắm bắt ngữ cảnh</b><div class="progressbar teal"><span style="width:80%"></span></div><div class="meta">50 câu · đúng 80%</div></div>
+      <div class="card mode-card" style="padding:16px;border-color:var(--accent)"><span class="tag">第1部</span><b>Kính ngữ ứng dụng (nghe)</b><div class="progressbar"><span style="width:54%"></span></div><div class="meta">50 câu · đúng 54% · <b style="color:var(--accent)">yếu nhất</b></div></div>
+      <div class="card mode-card" style="padding:16px"><span class="tag">第1部</span><b>Nghe hiểu toàn diện</b><div class="progressbar teal"><span style="width:61%"></span></div><div class="meta">75 câu · đúng 61%</div></div>
+      <div class="card mode-card" style="padding:16px"><span class="tag">第2部</span><b>Tình huống hội thoại</b><div class="progressbar teal"><span style="width:72%"></span></div><div class="meta">75 câu · đúng 72%</div></div>
+      <div class="card mode-card" style="padding:16px"><span class="tag">第2部</span><b>Đọc tài liệu</b><div class="progressbar teal"><span style="width:76%"></span></div><div class="meta">75 câu · đúng 76%</div></div>
+      <div class="card mode-card" style="padding:16px"><span class="tag">第3部</span><b>Ngữ pháp – Từ vựng</b><div class="progressbar teal"><span style="width:68%"></span></div><div class="meta">75 câu · đúng 68%</div></div>
+      <div class="card mode-card" style="padding:16px"><span class="tag">第3部</span><b>Kính ngữ ứng dụng (đọc)</b><div class="progressbar teal"><span style="width:63%"></span></div><div class="meta">50 câu · đúng 63%</div></div>
+      <div class="card mode-card" style="padding:16px"><span class="tag">第3部</span><b>Đọc hiểu văn bản</b><div class="progressbar teal"><span style="width:70%"></span></div><div class="meta">50 câu · 5 loại văn bản</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S5 THI — NGHE ================= -->
+<section class="screen" id="s5">
+  <div class="exam-bar">
+    <b>Bộ đề 3</b>
+    <div class="parts"><span class="on">第1部 Nghe · 3/35</span><span>第2部 Nghe + Đọc</span><span>第3部 Đọc</span></div>
+    <div class="timer" id="timer5">44:12<small>còn lại phần 1</small></div>
+    <button class="btn btn-outline btn-sm">Nộp phần này</button>
+  </div>
+
+  <div class="grid g-main">
+    <div>
+      <div class="qcard" style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <span class="tag acc">Kính ngữ ứng dụng</span>
+          <span class="small muted">Câu 3 · Nghe đoạn hội thoại rồi chọn câu trả lời</span>
+        </div>
+        <div class="audio">
+          <button class="play" id="play5" onclick="playOnce()">▶</button>
+          <div style="flex:1"><div class="progressbar"><span id="aud5" style="width:0%"></span></div>
+            <div class="small muted" style="margin-top:6px" id="aud5txt">0:00 / 0:18 · Chỉ phát được <b>1 lần</b> <span class="decide">◆2</span></div></div>
+        </div>
+        <div class="scene">取引先の担当者が、あなたの会社に到着しました。受付で最初にかける言葉として、最も適切なものはどれか。</div>
+        <div class="qprompt">上の場面で、受付担当者が言う言葉として最も適切なものはどれか。</div>
+        <div class="options one" data-exam>
+          <button class="opt jp"><span class="n">1</span>いらっしゃいませ。お待ちしておりました。</button>
+          <button class="opt jp"><span class="n">2</span>どなたですか。</button>
+          <button class="opt jp"><span class="n">3</span>何の用ですか。</button>
+          <button class="opt jp"><span class="n">4</span>ちょっと待ってください。</button>
+        </div>
+      </div>
+      <div class="play-foot">
+        <button class="btn btn-ghost btn-sm" disabled title="Chế độ Thi: phần Nghe không quay lại">← Câu trước</button>
+        <div style="display:flex;gap:10px"><button class="btn btn-outline btn-sm" onclick="this.classList.toggle('on');this.textContent=this.classList.contains('on')?'⚑ Đã cắm cờ':'⚑ Cắm cờ'">⚑ Cắm cờ</button>
+        <button class="btn btn-primary">Câu tiếp →</button></div>
+      </div>
+      <div class="note-box" style="margin-top:14px">Lời thoại và giải thích <b>ẩn</b> trong chế độ Thi — xem ở màn kết quả. Chế độ Luyện thì hiện ngay sau khi chọn.</div>
+    </div>
+    <div class="card" style="align-self:start">
+      <h3>Phần 1 · 35 câu</h3>
+      <div class="navgrid" id="nav5"></div>
+      <div class="legend"><span><i style="background:var(--accent-soft);border:0"></i>Đã trả lời</span><span><i style="border:2px solid var(--accent)"></i>Đang làm</span><span><i style="background:var(--gold);border-radius:50%"></i>Cắm cờ</span><span><i style="background:#f1ede4"></i>Đã qua, khoá</span></div>
+      <div class="small muted" style="margin-top:12px">Phần Nghe: câu đã qua bị khoá như thi thật. Phần Đọc: nhảy câu tự do.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S6 THI — ĐỌC ================= -->
+<section class="screen" id="s6">
+  <div class="exam-bar">
+    <b>Bộ đề 1</b>
+    <div class="parts"><span class="done">✓ 第1部 Nghe</span><span class="done">✓ 第2部 Nghe + Đọc</span><span class="on">第3部 Đọc · 22/35</span></div>
+    <div class="timer">27:45<small>còn lại phần 3</small></div>
+    <button class="btn btn-primary btn-sm" data-go="s7">Nộp bài</button>
+  </div>
+  <div class="split">
+    <div class="doc"><div class="doc-type"><span class="tag">社内文書 · Văn bản nội bộ</span></div>社員各位
+来月より、社内の会議室予約はすべて新しい予約システムを使用することになりました。従来の予約表への記入は廃止します。予約システムの使い方については、来週水曜日に説明会を開催しますので、各部署から1名以上の参加をお願いいたします。</div>
+    <div>
+      <div class="qcard" style="padding:26px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span class="tag acc">Đọc hiểu văn bản</span><span class="small muted">Câu 22</span></div>
+        <div class="qsentence" style="text-align:left;font-size:18px">この文書の内容と合っているものはどれか。</div>
+        <div class="options one" data-exam>
+          <button class="opt jp picked"><span class="n">1</span>来月から新しい予約システムに変わる。</button>
+          <button class="opt jp"><span class="n">2</span>説明会には全員が参加しなければならない。</button>
+          <button class="opt jp"><span class="n">3</span>会議室の予約表は今後も使用できる。</button>
+          <button class="opt jp"><span class="n">4</span>予約システムの説明会は来月開催される。</button>
+        </div>
+      </div>
+      <div class="play-foot">
+        <button class="btn btn-ghost btn-sm">← Câu trước</button>
+        <button class="btn btn-outline btn-sm">⚑ Cắm cờ</button>
+        <button class="btn btn-primary">Câu tiếp →</button>
+      </div>
+      <div class="card" style="margin-top:14px;padding:16px">
+        <div class="small muted" style="margin-bottom:8px">Phần 3 · 35 câu</div>
+        <div class="navgrid" id="nav6"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S7 KẾT QUẢ ================= -->
+<section class="screen" id="s7">
+  <a class="small muted" data-go="s4">← Thi thử</a>
+  <h1 style="margin-top:8px">Kết quả · Bộ đề 2</h1>
+  <p class="muted" style="margin:0 0 20px">Chế độ Thi · nộp lúc 10:42, 10/10/2026 · làm trong 1:38:20</p>
+
+  <div class="grid g-main" style="margin-bottom:18px">
+    <div class="card">
+      <div class="big-score">
+        <div class="ring" style="--p:71"><div><b>71%</b><span class="small muted">71 / 100</span></div></div>
+        <div class="partbars" style="flex:1;min-width:260px">
+          <div><span>第1部 Nghe</span><div class="progressbar"><span style="width:74%"></span></div><span><b>26</b>/35</span></div>
+          <div><span>第2部 Nghe + Đọc</span><div class="progressbar"><span style="width:70%"></span></div><span><b>21</b>/30</span></div>
+          <div><span>第3部 Đọc</span><div class="progressbar"><span style="width:69%"></span></div><span><b>24</b>/35</span></div>
+          <div class="small muted" style="display:block">So với lần trước (Bộ đề 1): <span class="delta up">▲ 6 điểm %</span></div>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:18px">Không quy đổi ra thang điểm BJT 0–800 — thang thật tính bằng mô hình thống kê của kỳ thi, mô phỏng sẽ sai lệch. <span class="decide">◆3 cần chốt</span></div>
+    </div>
+    <div class="card">
+      <h3>Nên luyện tiếp</h3>
+      <p class="small muted" style="margin-top:0">Dạng đúng thấp nhất trong bài này</p>
+      <div style="font-size:15px;margin-bottom:6px"><b>Kính ngữ ứng dụng (nghe)</b> — 5/10</div>
+      <div class="progressbar" style="margin-bottom:14px"><span style="width:50%"></span></div>
+      <button class="btn btn-primary btn-sm" data-go="s4" style="margin-bottom:10px">Luyện 10 câu dạng này</button><br>
+      <button class="btn btn-outline btn-sm">Thêm 12 từ trong câu sai vào ôn tập</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h2>Theo dạng câu</h2>
+    <table>
+      <tr><th>Phần</th><th>Dạng</th><th>Đúng</th><th>Tỷ lệ</th><th>Thời gian TB/câu</th></tr>
+      <tr><td>第1部</td><td>Nắm bắt ngữ cảnh</td><td>9/10</td><td>90%</td><td>0:31</td></tr>
+      <tr><td>第1部</td><td>Kính ngữ ứng dụng</td><td>5/10</td><td><b style="color:var(--bad)">50%</b></td><td>0:28</td></tr>
+      <tr><td>第1部</td><td>Nghe hiểu toàn diện</td><td>12/15</td><td>80%</td><td>0:52</td></tr>
+      <tr><td>第2部</td><td>Tình huống hội thoại</td><td>10/15</td><td>67%</td><td>0:47</td></tr>
+      <tr><td>第2部</td><td>Đọc tài liệu</td><td>11/15</td><td>73%</td><td>1:05</td></tr>
+      <tr><td>第3部</td><td>Ngữ pháp – Từ vựng</td><td>11/15</td><td>73%</td><td>0:38</td></tr>
+      <tr><td>第3部</td><td>Kính ngữ ứng dụng</td><td>6/10</td><td>60%</td><td>0:44</td></tr>
+      <tr><td>第3部</td><td>Đọc hiểu văn bản</td><td>7/10</td><td>70%</td><td>1:58</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Xem lại bài</h2>
+    <div class="tabs"><span>Tất cả 100</span><span class="on">Sai 29</span><span>Cắm cờ 4</span></div>
+
+    <details class="review-item" open>
+      <summary><span class="mark ng">×</span><span class="q">Câu 1 · この件について、部長のご意見を（　）いただけますでしょうか。</span></summary>
+      <div class="body2">
+        <div>Bạn chọn: <span class="tag bad">1 伺って</span> &nbsp; Đáp án: <span class="tag good">3 伺わせて</span></div>
+        <p style="margin:10px 0 8px">「伺わせていただく」là khiêm nhường ngữ kép chuẩn dùng khi xin phép được hỏi ý kiến cấp trên/đối tác.</p>
+        <div class="opt-row"><span class="tag">Từ trong câu: 伺う</span><button class="btn btn-ghost btn-sm">+ Thêm vào ôn tập</button><button class="btn btn-ghost btn-sm">⚑ Báo lỗi câu này</button></div>
+      </div>
+    </details>
+
+    <details class="review-item">
+      <summary><span class="mark ng">×</span><span class="q">Câu 3 (Nghe) · 受付担当者が言う言葉として最も適切なものはどれか。</span></summary>
+      <div class="body2">
+        <div>Bạn chọn: <span class="tag bad">4 ちょっと待ってください。</span> &nbsp; Đáp án: <span class="tag good">1 いらっしゃいませ。お待ちしておりました。</span></div>
+        <div class="audio" style="margin:10px 0"><button class="play">▶</button><div style="flex:1" class="small muted">Nghe lại audio (sau khi nộp bài được nghe không giới hạn)</div></div>
+        <p style="margin:0 0 8px">'いらっしゃいませ。お待ちしておりました' là câu chào tiếp tân chuẩn, lịch sự khi khách đã được hẹn trước đến công ty.</p>
+      </div>
+    </details>
+
+    <details class="review-item">
+      <summary><span class="mark ng">×</span><span class="q">Câu 8 (Nghe) · この会話が行われている場所として最も適切なものはどれか。</span></summary>
+      <div class="body2">
+        <div>Bạn chọn: <span class="tag bad">2 会議室の中</span> &nbsp; Đáp án: <span class="tag good">1 総務部の受付付近</span></div>
+        <div class="small muted" style="margin-top:10px">Lời thoại</div>
+        <div class="transcript">A：すみません、会議室の鍵をお借りしたいんですが。
+B：総務部の受付でお渡ししていますよ。</div>
+        <p style="margin:0">B nói 'ở quầy tiếp tân phòng Tổng vụ có phát chìa khóa', cho thấy hội thoại diễn ra gần khu vực tiếp tân phòng Tổng vụ.</p>
+      </div>
+    </details>
+    <div class="small muted" style="text-align:center;margin-top:10px">… 26 câu sai khác</div>
+  </div>
+</section>
+
+<!-- ================= S8 SỔ CÂU SAI ================= -->
+<section class="screen" id="s8">
+  <a class="small muted" data-go="s1">← Kiểm tra</a>
+  <h1 style="margin-top:8px">Sổ câu sai</h1>
+  <p class="muted" style="margin:0 0 20px">Câu sai ở mọi bài được gom về đây. Câu ra khỏi sổ khi bạn trả lời <b>đúng 2 lần liên tiếp</b>, mỗi lần cách nhau ít nhất 1 ngày. <span class="decide">◆4 cần chốt</span></p>
+
+  <div class="grid g4" style="margin-bottom:18px">
+    <div class="card stat"><div class="num">23</div><div class="label">Đang chờ ôn</div></div>
+    <div class="card stat"><div class="num">8</div><div class="label">Đã đúng 1 lần</div></div>
+    <div class="card stat"><div class="num">41</div><div class="label">Đã ra khỏi sổ</div></div>
+    <div class="card" style="display:flex;align-items:center;justify-content:center"><button class="btn btn-primary">Ôn 10 câu →</button></div>
+  </div>
+
+  <div class="card">
+    <div class="tabs"><span class="on">Tất cả 23</span><span>Từ vựng 9</span><span>Kính ngữ 7</span><span>Nghe 4</span><span>Đọc 3</span></div>
+    <table>
+      <tr><th>Câu</th><th>Nguồn</th><th>Sai lần</th><th>Trạng thái</th></tr>
+      <tr><td class="serif">決裁 — cách đọc</td><td class="small">Từ vựng · 09/10</td><td>2</td><td><span class="tag bad">Chờ ôn</span></td></tr>
+      <tr><td class="serif">部長のご意見を（　）いただけますでしょうか。</td><td class="small">Thi thử Bộ đề 2 · câu 1</td><td>1</td><td><span class="tag acc">Đúng 1/2</span></td></tr>
+      <tr><td class="serif">受付担当者が言う言葉…</td><td class="small">Thi thử Bộ đề 2 · câu 3</td><td>1</td><td><span class="tag bad">Chờ ôn</span></td></tr>
+      <tr><td class="serif">資金繰り — chọn nghĩa</td><td class="small">Từ vựng · 07/10</td><td>3</td><td><span class="tag bad">Chờ ôn</span></td></tr>
+      <tr><td class="serif">明日、御社に（　）よろしいでしょうか。</td><td class="small">Dạng đề · Kính ngữ · 08/10</td><td>1</td><td><span class="tag acc">Đúng 1/2</span></td></tr>
+    </table>
+  </div>
+</section>
+
+  </div></main>
+</div>
+
+<script>
+/* ---- chỉ có trong mockup ---- */
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+  document.querySelectorAll('.mockbar button').forEach(b=>b.classList.toggle('on',b.dataset.go===id));
+  document.querySelectorAll('.sidenav-sub a').forEach(a=>a.classList.toggle('active',(a.dataset.nav||'').split(' ').includes(id)));
+  document.getElementById('shell').classList.toggle('focus',['s3','s5','s6'].includes(id));  // chế độ tập trung khi làm bài
+  if(id==='s3')vqStart();
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-go]');if(t){e.preventDefault();go(t.dataset.go);}});
+
+// chip / radio / segmented giả lập
+document.querySelectorAll('#types .choice-chip').forEach(c=>c.onclick=()=>c.classList.toggle('on'));
+document.querySelectorAll('.seg').forEach(s=>s.querySelectorAll('button').forEach(b=>b.onclick=()=>{s.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');}));
+document.querySelectorAll('#scope label').forEach(l=>l.onclick=()=>{document.querySelectorAll('#scope label').forEach(x=>x.classList.remove('on'));l.classList.add('on');});
+document.querySelectorAll('[data-exam]').forEach(g=>g.querySelectorAll('.opt').forEach(o=>o.onclick=()=>{g.querySelectorAll('.opt').forEach(x=>x.classList.remove('picked'));o.classList.add('picked');}));
+
+// lưới số câu
+function grid(el,n,cur,lockBefore){
+  const flags=[5,12];let h='';
+  for(let i=1;i<=n;i++){let c=[];if(i<cur)c.push(lockBefore?'lock':'ans');if(i===cur)c.push('cur');if(flags.includes(i))c.push('flag');
+    if(!lockBefore&&i>cur&&[24,25,27,30].includes(i))c.push('ans');h+=`<span class="${c.join(' ')}">${i}</span>`;}
+  document.getElementById(el).innerHTML=h;
+}
+grid('nav5',35,3,true);grid('nav6',35,22,false);
+
+// audio chỉ phát 1 lần
+function playOnce(){
+  const b=document.getElementById('play5'),bar=document.getElementById('aud5'),txt=document.getElementById('aud5txt');
+  b.disabled=true;let p=0;const t=setInterval(()=>{p+=5;bar.style.width=p+'%';const s=Math.round(p*.18);
+    txt.innerHTML=`0:${String(s).padStart(2,'0')} / 0:18 · Đang phát…`;if(p>=100){clearInterval(t);txt.innerHTML='Đã phát xong · không phát lại được trong chế độ Thi';}},120);
+}
+// đồng hồ
+let sec=44*60+12;setInterval(()=>{if(document.getElementById('s5').classList.contains('on')&&sec>0){sec--;
+  document.getElementById('timer5').firstChild.nodeValue=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;}},1000);
+
+// ---- bài từ vựng: 4 câu mẫu, 4 dạng ----
+const VQ=[
+  {type:'Cách đọc',topic:'Quản trị và tổ chức doanh nghiệp',prompt:'Chọn cách đọc đúng',word:'決裁',jp:true,
+   opts:['けっさい','けつさい','けっせい','けっざい'],ok:0,
+   ex:'<b>決裁</b> (けっさい): phê duyệt. Dễ nhầm với <b>決済</b> (けっさい): thanh toán — cùng cách đọc, khác chữ và nghĩa.'},
+  {type:'日 → Việt',topic:'Email và văn bản',prompt:'Chọn nghĩa đúng',word:'稟議書',jp:false,
+   opts:['Văn bản trình xin phê duyệt','Bản tường trình sự việc','Bản kiểm điểm','Giấy uỷ quyền'],ok:0,
+   ex:'Ba đáp án nhiễu là nghĩa của 顛末書, 始末書, 委任状 — cùng chủ đề văn bản công ty.'},
+  {type:'Việt → 日',topic:'Kế toán và tài chính',prompt:'Chọn từ tiếng Nhật đúng nghĩa',word:'Xoay vòng vốn, quản lý dòng tiền',vi:true,jp:true,
+   opts:['資金繰り','資本金','決算書','売掛金'],ok:0,
+   ex:'<b>資金繰り</b> (しきんぐり). 資本金 = vốn điều lệ, 決算書 = báo cáo quyết toán, 売掛金 = khoản phải thu.'},
+  {type:'Điền vào câu',topic:'Thành ngữ – cách nói nơi công sở',prompt:'Chọn từ điền vào chỗ trống',
+   sentence:'来週の会議までに、資料に<span class="blank">（　）</span>を通しておいてください。',jp:true,
+   opts:['目','手','口','話'],ok:0,
+   ex:'<b>目を通す</b> (めをとおす): đọc lướt qua, xem qua tài liệu. 手を通す = xỏ tay (mặc áo), 話を通す = báo trước cho người liên quan.'}
+];
+let vi=0,answered=false,score=0;
+function vqStart(){vi=0;score=0;document.getElementById('vq-done').style.display='none';document.querySelector('#s3 .qcard').style.display='';document.querySelector('#s3 .play-foot').style.display='';vqRender();}
+function vqRender(){
+  const q=VQ[vi];answered=false;
+  document.getElementById('vq-type').textContent=q.type;document.getElementById('vq-topic').textContent=q.topic;
+  document.getElementById('vq-count').textContent=`${vi+1} / 20`;document.getElementById('vq-bar').style.width=((vi+1)/20*100)+'%';
+  document.getElementById('vq-body').innerHTML=`<div class="qprompt" style="margin-top:18px">${q.prompt}</div>`+
+    (q.sentence?`<div class="qsentence">${q.sentence}</div>`:`<div class="qword${q.vi?' vi':''}">${q.word}</div>`);
+  document.getElementById('vq-opts').innerHTML=q.opts.map((o,i)=>`<button class="opt${q.jp?' jp':''}" data-i="${i}"><span class="n">${i+1}</span>${o}</button>`).join('');
+  document.querySelectorAll('#vq-opts .opt').forEach(b=>b.onclick=()=>vqAnswer(+b.dataset.i));
+  const fb=document.getElementById('vq-fb');fb.className='feedback';fb.innerHTML='';
+  document.getElementById('vq-next').disabled=true;
+}
+function vqAnswer(i){
+  if(answered)return;answered=true;const q=VQ[vi],ok=i===q.ok;if(ok)score++;
+  document.querySelectorAll('#vq-opts .opt').forEach((b,j)=>b.classList.add(j===q.ok?'right':j===i?'wrong':'dim'));
+  const fb=document.getElementById('vq-fb');fb.className='feedback show '+(ok?'ok':'ng');
+  fb.innerHTML=`<div class="title">${ok?'○ Đúng':'× Chưa đúng'}</div>${q.ex}`+
+    (ok?'':`<div style="margin-top:8px"><span class="tag bad">Đã đưa về học lại · thêm vào Sổ câu sai</span> <span class="decide">◆1</span></div>`);
+  document.getElementById('vq-next').disabled=false;
+}
+function vqNext(){
+  if(!answered)return;
+  if(vi<VQ.length-1){vi++;vqRender();return;}
+  document.querySelector('#s3 .qcard').style.display='none';document.querySelector('#s3 .play-foot').style.display='none';
+  document.getElementById('vq-score').textContent=`${score} / ${VQ.length}`;document.getElementById('vq-done').style.display='';
+}
+document.getElementById('vq-next').onclick=vqNext;
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('s3').classList.contains('on'))return;
+  if(['1','2','3','4'].includes(e.key))vqAnswer(+e.key-1);
+  if(e.key==='Enter')vqNext();
+});
+</script>
+</body></html>

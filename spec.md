@@ -37,6 +37,7 @@ Giữ đúng các quy ước đang có trong dự án:
 | 4 | Hiệu năng & hạ tầng: cold start Render, đo và giảm số query, **học liền mạch (T4.3)** | ⭐ Cao (T4.3) / Trung bình | 1–2 ngày + T4.3: 4–5 ngày |
 | 5 | Mở rộng: nhắc học (email/PWA), đưa kính ngữ vào SRS | Thấp (làm sau) | Tách spec riêng |
 | 6 | Kiểm soát khối lượng ôn tập: hạn mức từ mới cho mọi lối vào, từ dở bước học, vuốt "Dễ", báo kết quả chấm, tự giảm từ mới khi nợ ôn | ⭐ Cao nhất (09/10/2026) | 4–5 ngày |
+| 7 | Kiểm tra: kiểm tra từ vựng, luyện dạng đề, thi thử BJT, sổ câu sai — **spec riêng `docs/SPEC_KIEM_TRA.md`**, UI `htmlTemplate/SC23_KiemTra_A.html` (duyệt 11/10/2026) | ⭐ Cao | ~15 ngày (3 mốc) |
 
 **Thứ tự đề xuất:** Phase 1 → Phase 2 → Phase 3 → Phase 4. Phase 2 có thể làm
 song song với Phase 1, nhưng nên merge Phase 2 **trước** khi làm các màn mới ở
