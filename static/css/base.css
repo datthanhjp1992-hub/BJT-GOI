@@ -1098,6 +1098,11 @@ a.ex-mode:hover{border-color:var(--accent);}
 .ex-legend i.is-cur{border:2px solid var(--accent);}
 .ex-legend i.is-flag{background:var(--bt-mid);border-radius:50%;border:0;}
 .ex-legend i.is-lock{background:var(--bt-line);}
+/* S8 Sổ câu sai */
+.ex-wb-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;}
+.ex-wb-actions{display:flex;flex-direction:column;justify-content:center;gap:8px;}
+.ex-wb-actions form{margin:0;}
+.ex-wb-actions .btn[disabled]{opacity:.45;cursor:not-allowed;}
 /* S7 */
 .ex-note-box{border:1px dashed var(--border);border-radius:var(--bt-r);padding:10px 14px;margin:16px 0 0;background:var(--bt-soft);}
 .ex-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:12px;flex-wrap:wrap;}
@@ -1114,6 +1119,7 @@ a.ex-mode:hover{border-color:var(--accent);}
   .ex-modes{grid-template-columns:repeat(2,minmax(0,1fr));}
   .ex-cols{grid-template-columns:minmax(0,1fr);}
   .ex-drills{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .ex-wb-stats{grid-template-columns:repeat(2,minmax(0,1fr));}
   .ex-exam-grid,.ex-exam-grid.has-doc{grid-template-columns:minmax(0,1fr);}
   .ex-doc,.ex-nav{position:static;max-height:none;}
   .ex-mode-help{grid-template-columns:1fr;}

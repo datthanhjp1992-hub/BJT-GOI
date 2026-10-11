@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}S8 Sổ câu sai — mockup htmlTemplate/SC23_KiemTra_A.html màn S8 (T7.8).
+View: exam.views.wrongbook_view, số liệu exam.selectors.wrongbook_overview / wrongbook_rows.
+  - Câu sai ở mọi bài tự vào sổ; ra khỏi sổ khi đúng 2 lần liên tiếp, khác ngày (◆4).
+  - Ôn theo từng loại (từ vựng / đề thi) — mỗi lượt tối đa 10 mục, mục đã đúng HÔM NAY
+    không được chọn (lần đúng thứ hai phải ở ngày khác).{% endcomment %}
+
+{% block title %}{% label "exam.wrongbook.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+<nav class="kl-crumb">
+  <a href="{% url 'exam:hub' %}" class="action-link">{% label "exam.hub.title" %}</a>
+  <span>&rsaquo;</span><span>{% label "exam.wrongbook.title" %}</span>
+</nav>
+{% label "exam.wrongbook.title" as title %}{% label "exam.wrongbook.intro" as sub %}
+{% include "partials/page_header.html" with title=title subtitle=sub %}
+
+{% if resume %}
+  <div class="card bt-resume">
+    <div>
+      <div class="eyebrow">{% label "exam.hub.resume.eyebrow" %}</div>
+      <div class="bt-resume-title">{% label "exam.wrongbook.title" %}
+        <span class="muted">· {% label "exam.hub.resume.started" %} {{ resume.started_at|date:"d/m H:i" }}</span></div>
+    </div>
+    <div class="bt-resume-act">
+      <a class="btn btn-primary" href="{% url 'exam:play' resume.pk %}">{% label "exam.hub.resume.button" %}</a>
+      <form method="post" action="{% url 'exam:abandon' resume.pk %}">
+        {% csrf_token %}<button class="bt-linkbtn" type="submit">{% label "exam.vocab.resume.abandon" %}</button>
+      </form>
+    </div>
+  </div>
+{% endif %}
+
+<div class="ex-wb-stats mb-22">
+  <div class="card stat"><div class="num">{{ overview.open }}</div><div class="label">{% label "exam.wrongbook.stat.open" %}</div></div>
+  <div class="card stat"><div class="num">{{ overview.half }}</div><div class="label">{% label "exam.wrongbook.stat.half" %}</div></div>
+  <div class="card stat"><div class="num">{{ overview.cleared }}</div><div class="label">{% label "exam.wrongbook.stat.cleared" %}</div></div>
+  <div class="card ex-wb-actions">
+    <form method="post" action="{% url 'exam:start_wrongbook' target_vocab %}">
+      {% csrf_token %}
+      <button class="btn btn-primary btn-sm btn-block" type="submit"{% if not overview.due_vocab %} disabled{% endif %}>
+        {% message "exam.wrongbook.start.vocab" count=overview.due_vocab %}</button>
+    </form>
+    <form method="post" action="{% url 'exam:start_wrongbook' target_exam %}">
+      {% csrf_token %}
+      <button class="btn btn-outline btn-sm btn-block" type="submit"{% if not overview.due_exam %} disabled{% endif %}>
+        {% message "exam.wrongbook.start.exam" count=overview.due_exam %}</button>
+    </form>
+  </div>
+</div>
+
+<section class="card">
+  <nav class="ex-tabs">
+    {% for code, n in tabs %}
+      <a href="?xem={{ code }}" class="{% if tab == code %}is-active{% endif %}">{% if code == "tu-vung" %}{% label "exam.wrongbook.tab.vocab" %}{% elif code == "de-thi" %}{% label "exam.wrongbook.tab.exam" %}{% elif code == "da-ra" %}{% label "exam.wrongbook.tab.cleared" %}{% else %}{% label "exam.wrongbook.tab.all" %}{% endif %} <span class="muted">{{ n }}</span></a>
+    {% endfor %}
+  </nav>
+  {% if rows %}
+    <div class="ex-table-wrap">
+      <table class="ex-table">
+        <thead><tr>
+          <th>{% label "exam.wrongbook.col.item" %}</th><th>{% label "exam.wrongbook.col.type" %}</th>
+          <th>{% label "exam.wrongbook.col.wrong" %}</th><th>{% label "exam.wrongbook.col.status" %}</th>
+        </tr></thead>
+        <tbody>
+        {% for e in rows %}
+          <tr>
+            <td class="jp">
+              {% if e.vocabulary %}<b>{{ e.vocabulary.word }}</b> <span class="muted text-sm">（{{ e.vocabulary.reading }}）{{ e.vocabulary.meaning_vi|truncatechars:40 }}</span>
+              {% else %}{{ e.question.stem_jp|truncatechars:50 }} <span class="muted text-sm">· {{ e.question.exam_set.title }} · {% label "exam.play.question" %} {{ e.question.number }}</span>{% endif %}
+            </td>
+            <td class="text-sm">{{ e.type_name }}</td>
+            <td>{{ e.wrong_count }}</td>
+            <td>
+              {% if e.cleared_at %}<span class="tag ex-tag-ok">{% label "exam.wrongbook.status.cleared" %} {{ e.cleared_at|date:"d/m" }}</span>
+              {% elif e.correct_today %}<span class="tag ex-tag-mid">{% label "exam.wrongbook.status.today" %}</span>
+              {% elif e.correct_streak %}<span class="tag ex-tag-mid">{% label "exam.wrongbook.status.half" %}</span>
+              {% else %}<span class="tag ex-tag-ng">{% label "exam.wrongbook.status.open" %}</span>{% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    {% include "partials/empty_state.html" with compact=True icon="誤" text_key="exam.wrongbook.empty" %}
+  {% endif %}
+  <p class="muted text-sm mb-0 mt-12">{% label "exam.wrongbook.rule" %}</p>
+</section>
+{% endblock %}

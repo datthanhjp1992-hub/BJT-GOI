@@ -20,6 +20,7 @@ class mới.{% endcomment %}
     {% csrf_token %}
     {# Từ vựng đi kèm dạng hidden: link "🚩 Báo lỗi" ở SC05 đã mang sẵn id, người dùng không phải chọn lại. #}
     {% if vocabulary %}<input type="hidden" name="vocabulary" value="{{ vocabulary.pk }}">{% endif %}
+    {% if exam_question %}<input type="hidden" name="exam_question" value="{{ exam_question.pk }}">{% endif %}
 
     <div class="card">
       {% if vocabulary %}
@@ -30,6 +31,13 @@ class mới.{% endcomment %}
             {% if vocabulary.reading %}<span class="muted" style="font-size:14px;">（{{ vocabulary.reading }}）</span>{% endif %}
           </p>
           <p class="muted" style="margin:4px 0 0;font-size:13px;">{{ vocabulary.meaning_vi }}</p>
+        </div>
+        <div class="divider"></div>
+      {% elif exam_question %}
+        <div class="field">
+          <label>{% label "error_report.form.field.target_question" %}</label>
+          <p class="muted text-sm m-0">{{ exam_question.exam_set.title }} · {% label "exam.play.question" %} {{ exam_question.number }}</p>
+          <p class="serif m-0">{{ exam_question.stem_jp }}</p>
         </div>
         <div class="divider"></div>
       {% else %}

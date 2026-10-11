@@ -95,6 +95,7 @@ View: exam.views._render_exam. Một template cho thi thử (Thi / Luyện) và 
             {% else %}
               <a class="btn btn-primary" href="{% url 'exam:play' attempt.pk %}" data-enter>{% label "exam.play.next" %} →</a>
             {% endif %}
+            <a class="action-link text-sm" href="{% url 'error_reports:create' %}?exam_question={{ question.pk }}">{% label "error_report.form.link.report" %}</a>
           </div>
 
         {% elif locked %}

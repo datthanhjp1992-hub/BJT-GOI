@@ -22,6 +22,7 @@ from apps.core.constants import (
     EXAM_KIND_DRILL,
     EXAM_KIND_MOCK,
     EXAM_KIND_VOCAB,
+    EXAM_KIND_WRONGBOOK,
     EXAM_MODE_EXAM,
     EXAM_MODE_PRACTICE,
     VOCAB_QUESTION_TYPES,
@@ -35,7 +36,7 @@ from .audio import exam_audio_url
 from .constants import SCOPE_DUE, SCOPE_MASTERED, SCOPE_TOPICS
 from .forms import VocabSetupForm
 from .models import ExamAttempt, ExamSet
-from .services import attempts, timing
+from .services import attempts, timing, wrongbook
 
 FEEDBACK_PARAM = "da"      # ?da=<order>  -> phản hồi câu vừa trả lời (chế độ Luyện)
 QUESTION_PARAM = "cau"     # ?cau=<order> -> mở một câu (phần Đọc / chế độ Luyện)
@@ -69,6 +70,8 @@ def _play_url(attempt, **params):
 
 
 def _sub_of(attempt):
+    if attempt.kind_code == EXAM_KIND_WRONGBOOK:
+        return "wrongbook"
     return "vocab" if attempt.kind_code == EXAM_KIND_VOCAB else "exam"
 
 
@@ -191,7 +194,7 @@ def _render_vocab(request, attempt, feedback=None, srs_effect=None):
 
     answered = [a for a in answers if a.is_answered]
     context = _context(
-        "vocab",
+        _sub_of(attempt),
         attempt=attempt,
         answer=current,
         type_name=get_code_name(CODE_TYPE_VOCAB_QUESTION, current.question_type_code),
@@ -273,7 +276,7 @@ def _render_exam(request, attempt):
     answered = [a for a in answers if a.is_answered]
     parts = attempts.parts_of(attempt) if attempt.kind_code == EXAM_KIND_MOCK else []
     context = _context(
-        "exam",
+        _sub_of(attempt),
         attempt=selectors.decorate(attempt),
         answer=current,
         question=q,
@@ -349,7 +352,7 @@ def play_view(request, attempt_id):
     attempt = _own_attempt(request, attempt_id)
     if attempt.is_finished:
         return redirect("exam:result", attempt_id=attempt.pk)
-    if attempt.kind_code == EXAM_KIND_VOCAB:
+    if attempts.is_vocab_attempt(attempt):
         return _play_vocab(request, attempt)
     return _play_exam(request, attempt)
 
@@ -382,7 +385,7 @@ def abandon_view(request, attempt_id):
     kind = attempt.kind_code
     if attempts.abandon(attempt):
         flash.info(request, message("exam.play.info.abandoned"))
-    return redirect("exam:vocab" if kind == EXAM_KIND_VOCAB else "exam:exams")
+    return redirect({EXAM_KIND_VOCAB: "exam:vocab", EXAM_KIND_WRONGBOOK: "exam:wrongbook"}.get(kind, "exam:exams"))
 
 
 # =============================================================================
@@ -394,16 +397,20 @@ def result_view(request, attempt_id):
     attempt = _own_attempt(request, attempt_id)
     if not attempt.is_finished:
         return redirect(_play_url(attempt))
-    if attempt.kind_code == EXAM_KIND_VOCAB:
+    is_wrongbook = attempt.kind_code == EXAM_KIND_WRONGBOOK
+    cleared = selectors.wrongbook_cleared_in(attempt) if is_wrongbook else 0
+    if attempts.is_vocab_attempt(attempt):
         rows = selectors.answer_rows(attempt)
         wrong = [r for r in rows if not r.is_correct]
         return render(request, "exam/result_vocab.html", _context(
-            "vocab",
+            _sub_of(attempt),
             attempt=selectors.decorate(attempt),
             rows=rows,
             wrong=wrong,
             breakdown=selectors.type_breakdown(rows),
             relearn_count=len(wrong) if attempt.scope.get("srs_link") else 0,
+            is_wrongbook=is_wrongbook,
+            cleared=cleared,
         ))
 
     rows = selectors.exam_review_rows(attempt)
@@ -418,7 +425,9 @@ def result_view(request, attempt_id):
     decorated = selectors.decorate(attempt)
     scored = [s for s in sections if s["total"]]
     return render(request, "exam/result_exam.html", _context(
-        "exam",
+        _sub_of(attempt),
+        is_wrongbook=is_wrongbook,
+        cleared=cleared,
         attempt=decorated,
         parts=parts,
         sections=sections,
@@ -449,3 +458,37 @@ def add_words_view(request, attempt_id):
         learning.invalidate_due_badge(request.user.pk)
         flash.success(request, message("exam.result.words_added", count=len(picked)))
     return redirect(reverse("exam:result", args=[attempt.pk]) + "#tu-moi")
+
+
+# =============================================================================
+# S8 — Sổ câu sai
+# =============================================================================
+
+@login_required
+def wrongbook_view(request):
+    tab = request.GET.get(REVIEW_PARAM)
+    if tab not in selectors.WRONGBOOK_TABS:
+        tab = selectors.WRONGBOOK_TABS[0]
+    overview = selectors.wrongbook_overview(request.user)
+    return render(request, "exam/wrongbook.html", _context(
+        "wrongbook",
+        tab=tab,
+        tabs=[(code, overview["counts"][code]) for code in selectors.WRONGBOOK_TABS],
+        rows=selectors.wrongbook_rows(request.user, tab),
+        overview=overview,
+        target_vocab=wrongbook.TARGET_VOCAB,
+        target_exam=wrongbook.TARGET_EXAM,
+        resume=attempts.open_attempt(request.user, EXAM_KIND_WRONGBOOK),
+    ))
+
+
+@login_required
+@require_POST
+def start_wrongbook_view(request, target):
+    result = attempts.start_wrongbook_attempt(request.user, target)
+    if result.attempt is None:
+        flash.info(request, message("exam.wrongbook.info.nothing_due"))
+        return redirect("exam:wrongbook")
+    if result.resumed:
+        flash.info(request, message("exam.wrongbook.info.resumed"))
+    return redirect("exam:play", attempt_id=result.attempt.pk)

@@ -2,8 +2,7 @@
 {% load properties_tags %}
 {% comment %}S1 Tổng quan Kiểm tra — mockup htmlTemplate/SC23_KiemTra_A.html màn S1 (Dat duyệt 11/10/2026).
 View: exam.views.hub_view, số liệu ở exam.selectors.hub().
-Mốc 2: Kiểm tra từ vựng, Luyện dạng đề, Thi thử bấm được; Sổ câu sai hiện "Sắp có" (mốc 3)
-nhưng đã đếm số câu thật — câu sai được ghi sổ từ mốc 1.{% endcomment %}
+Mốc 3: cả 4 thẻ bấm được (Sổ câu sai -> S8).{% endcomment %}
 
 {% block title %}{% label "exam.hub.title" %} | {% label "common.brand.name" %}{% endblock %}
 
@@ -44,12 +43,12 @@ nhưng đã đếm số câu thật — câu sai được ghi sổ từ mốc 1.
     <p class="muted m-0">{% label "exam.hub.card.mock.desc" %}</p>
     <span class="ex-mode-meta">{% label "exam.hub.card.mock.meta" %}</span>
   </a>
-  <div class="card ex-mode is-soon">
+  <a class="card ex-mode" href="{% url 'exam:wrongbook' %}">
     <span class="ex-mode-mark serif" aria-hidden="true">誤</span>
     <h3 class="serif m-0">{% label "exam.hub.card.wrongbook.title" %}</h3>
     <p class="muted m-0">{% label "exam.hub.card.wrongbook.desc" %}</p>
-    <span class="ex-mode-meta">{% if wrongbook_count %}<b>{% message "exam.hub.card.wrongbook.count" count=wrongbook_count %}</b> · {% endif %}<span class="tag">{% label "exam.hub.card.soon" %}</span></span>
-  </div>
+    <span class="ex-mode-meta">{% if wrongbook_count %}<b>{% message "exam.hub.card.wrongbook.count" count=wrongbook_count %}</b>{% else %}{% label "exam.hub.card.wrongbook.empty" %}{% endif %}</span>
+  </a>
 </div>
 
 <div class="ex-cols">

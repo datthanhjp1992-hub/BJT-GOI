@@ -4,10 +4,11 @@ Vòng đời một lượt kiểm tra — docs/SPEC_KIEM_TRA.md T7.4, T7.6.
     start_*_attempt  ->  answer (từng câu)  ->  finish
     (quay lại giữa chừng: open_attempt / current_answer)
 
-Ba loại lượt dùng chung bộ máy:
-  - vocab : bài từ vựng, câu sinh sẵn (mốc 1)
-  - drill : luyện 10 câu một dạng đề — luôn chế độ Luyện
-  - mock  : thi thử trọn bộ đề — chế độ Luyện hoặc Thi (◆2)
+Bốn loại lượt dùng chung bộ máy:
+  - vocab     : bài từ vựng, câu sinh sẵn (mốc 1)
+  - drill     : luyện 10 câu một dạng đề — luôn chế độ Luyện
+  - mock      : thi thử trọn bộ đề — chế độ Luyện hoặc Thi (◆2)
+  - wrongbook : ôn 10 mục Sổ câu sai, mỗi lượt một loại (scope["target"]: từ vựng / đề thi)
 
 Chế độ Thi của thi thử (is_timed): làm lần lượt từng phần, mỗi phần bấm giờ; phần Nghe
 đi một chiều (trả lời / bỏ qua -> sang câu sau, câu đã qua khoá — vị trí ở scope["cursor"]);
@@ -29,6 +30,8 @@ from apps.core.constants import (
     EXAM_KIND_DRILL,
     EXAM_KIND_MOCK,
     EXAM_KIND_VOCAB,
+    EXAM_KIND_WRONGBOOK,
+    VOCAB_Q_MEANING,
     EXAM_MODE_EXAM,
     EXAM_MODE_PRACTICE,
 )
@@ -42,7 +45,7 @@ from ..constants import (
     SCOPE_TOPICS,
     VOCAB_MIN_WORDS,
 )
-from ..models import ExamAnswer, ExamAttempt, ExamQuestion
+from ..models import ExamAnswer, ExamAttempt, ExamQuestion, WrongBookEntry
 from . import hooks, timing, vocab_quiz, wrongbook
 
 
@@ -115,6 +118,53 @@ def start_vocab_attempt(user, *, scope, topic_ids=(), types=(), count=20, srs_li
             ExamAnswer(attempt=attempt, order=order, vocabulary=vocab,
                        question_type_code=qtype, payload=payload).save()
     return StartResult(attempt=attempt)
+
+
+def is_vocab_attempt(attempt):
+    """Lượt có câu từ vựng (payload) thay vì câu đề thi — quyết định màn làm bài / kết quả."""
+    if attempt.kind_code == EXAM_KIND_VOCAB:
+        return True
+    return attempt.kind_code == EXAM_KIND_WRONGBOOK and attempt.scope.get("target") == wrongbook.TARGET_VOCAB
+
+
+def start_wrongbook_attempt(user, target, rng=None):
+    """Ôn tối đa 10 mục Sổ câu sai một loại. Câu từ vựng sinh lại theo đúng dạng đã sai
+    (không hỏi được dạng đó nữa thì chuyển sang chọn nghĩa)."""
+    if target not in wrongbook.TARGETS:
+        return StartResult(not_enough=0)
+    existing = ExamAttempt.objects.filter(user=user, kind_code=EXAM_KIND_WRONGBOOK, finished_at__isnull=True,
+                                          scope__target=target).first()
+    if existing is not None:
+        return StartResult(attempt=existing, resumed=True)
+    entries = list(wrongbook.due_entries(user, target).select_related("vocabulary", "question")[:DRILL_SIZE])
+    if not entries:
+        return StartResult(not_enough=0)
+    rng = rng or random.Random()
+    rows = []
+    for entry in entries:
+        if entry.vocabulary_id:
+            qtype = entry.question_type_code
+            if not vocab_quiz.can_ask(entry.vocabulary, qtype):
+                qtype = VOCAB_Q_MEANING
+            payload = vocab_quiz.build_question(entry.vocabulary, qtype, rng)
+            rows.append({"vocabulary": entry.vocabulary, "question_type_code": qtype,
+                         "payload": {**payload, "wrongbook_entry": entry.pk}})
+        else:
+            rows.append({"question": entry.question, "payload": {"wrongbook_entry": entry.pk}})
+    with transaction.atomic():
+        attempt = ExamAttempt(user=user, kind_code=EXAM_KIND_WRONGBOOK, mode_code=EXAM_MODE_PRACTICE,
+                              scope={"target": target}, total=len(rows), started_at=timezone.now())
+        attempt.save()
+        for order, row in enumerate(rows, start=1):
+            ExamAnswer(attempt=attempt, order=order, **row).save()
+    return StartResult(attempt=attempt)
+
+
+def _wrongbook_entry(attempt, ans):
+    entry_id = (ans.payload or {}).get("wrongbook_entry")
+    if not entry_id:
+        return None
+    return WrongBookEntry.objects.select_related("user").filter(pk=entry_id, user=attempt.user).first()
 
 
 # =============================================================================
@@ -312,6 +362,13 @@ def answer(attempt, order, selected, time_ms=0):
         if ans.question.part == timing.LISTENING_PART:
             _advance_listening(attempt, part_answers(attempt, timing.LISTENING_PART), order)
         return AnswerResult(answer=ans, first_time=first)
+
+    if attempt.kind_code == EXAM_KIND_WRONGBOOK:
+        # Ôn sổ: cập nhật ĐÚNG mục đã sinh ra câu này (◆4), không đụng lịch ôn SRS.
+        entry = _wrongbook_entry(attempt, ans)
+        if entry is not None:
+            (wrongbook.mark_right if ans.is_correct else wrongbook.mark_wrong)(entry)
+        return AnswerResult(answer=ans, first_time=True)
 
     effect = hooks.on_vocab_answer(attempt, ans)
     if not ans.is_correct:

@@ -29,7 +29,9 @@ View: exam.views.result_view. Không quy đổi thang BJT (◆3).{% endcomment %
     </div>
   </section>
   <section class="card">
-    {% if relearn_count %}
+    {% if is_wrongbook %}
+      <p class="m-0">{% message "exam.wrongbook.result" cleared=cleared wrong=wrong|length %}</p>
+    {% elif relearn_count %}
       <p class="m-0">{% message "exam.result.relearn" count=relearn_count %}</p>
     {% elif wrong %}
       <p class="m-0">{% message "exam.result.wrongbook" count=wrong|length %}</p>
@@ -37,7 +39,8 @@ View: exam.views.result_view. Không quy đổi thang BJT (◆3).{% endcomment %
       <p class="m-0">{% message "exam.result.perfect" %}</p>
     {% endif %}
     <div class="lb-actions mt-18">
-      <a class="btn btn-primary" href="{% url 'exam:vocab' %}">{% label "exam.result.again" %}</a>
+      {% if is_wrongbook %}<a class="btn btn-primary" href="{% url 'exam:wrongbook' %}">{% label "exam.wrongbook.back" %}</a>
+      {% else %}<a class="btn btn-primary" href="{% url 'exam:vocab' %}">{% label "exam.result.again" %}</a>{% endif %}
       <a class="action-link" href="{% url 'exam:hub' %}">{% label "exam.result.back" %}</a>
     </div>
   </section>

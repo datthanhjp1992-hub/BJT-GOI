@@ -14,7 +14,7 @@ kiểu "keigo": streak, biểu đồ lịch sử và danh hiệu "Kiểm tra" (�
 """
 from django.db.models import Q
 
-from apps.core.constants import EXAM_KIND_VOCAB, SESSION_TYPE_QUIZ
+from apps.core.constants import EXAM_KIND_VOCAB, EXAM_KIND_WRONGBOOK, SESSION_TYPE_QUIZ
 from apps.learning import services as learning
 from apps.learning import srs
 from apps.learning.models import StudySession, UserVocabularyProgress
@@ -57,7 +57,10 @@ def on_vocab_answer(attempt, answer):
 
 
 def on_finish(attempt):
-    """Ghi StudySession kiểu quiz cho lượt vừa nộp (bỏ qua lượt ôn sổ câu sai)."""
+    """Ghi StudySession kiểu quiz cho lượt vừa nộp (bỏ qua lượt ôn sổ câu sai — spec T7.9:
+    ôn lại câu đã sai không tính vào danh hiệu "Kiểm tra")."""
+    if attempt.kind_code == EXAM_KIND_WRONGBOOK:
+        return
     StudySession.objects.create(
         user=attempt.user,
         session_type=SESSION_TYPE_QUIZ,

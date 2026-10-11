@@ -591,7 +591,7 @@ def error_report_list_view(request):
         status_key = ERROR_REPORT_DEFAULT_FILTER
     status_code = ERROR_REPORT_FILTERS[status_key]
 
-    reports = ErrorReport.objects.select_related("user", "vocabulary", "handled_by")
+    reports = ErrorReport.objects.select_related("user", "vocabulary", "exam_question__exam_set", "handled_by")
     if status_code:
         reports = reports.filter(status_code=status_code)
 
@@ -606,7 +606,7 @@ def error_report_list_view(request):
             # Bấm từ trang khác / bản ghi vừa đổi trạng thái nên rơi khỏi bộ lọc
             # hiện tại — vẫn mở chi tiết thay vì im lặng bỏ qua.
             selected = (
-                ErrorReport.objects.select_related("user", "vocabulary", "handled_by")
+                ErrorReport.objects.select_related("user", "vocabulary", "exam_question__exam_set", "handled_by")
                 .filter(pk=selected_pk)
                 .first()
             )

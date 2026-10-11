@@ -16,8 +16,10 @@ from apps.core.constants import (
     EXAM_KIND_DRILL,
     EXAM_KIND_MOCK,
     EXAM_KIND_VOCAB,
+    EXAM_KIND_WRONGBOOK,
 )
 from apps.core.mastercode import get_code_name
+from apps.core.properties import label
 from apps.learning.models import UserVocabularyProgress
 from apps.vocabulary.models import Topic, Vocabulary
 
@@ -32,7 +34,7 @@ from .constants import (
     WEAK_SPOT_MIN_ANSWERS,
 )
 from .audio import exam_audio_url
-from .models import ExamAnswer, ExamAttempt, ExamQuestion, ExamSet
+from .models import ExamAnswer, ExamAttempt, ExamQuestion, ExamSet, WrongBookEntry
 from .services import attempts, vocab_quiz, wrongbook
 
 # Thứ tự hiển thị 8 dạng đề (MasterCode 20).
@@ -50,6 +52,10 @@ def decorate(attempt):
         attempt.title = f"{attempt.kind_name} · {attempt.exam_set.title}"
     elif attempt.kind_code == EXAM_KIND_DRILL:
         attempt.title = f"{attempt.kind_name} · {section_name(attempt.section_code)}"
+    elif attempt.kind_code == EXAM_KIND_WRONGBOOK:
+        target = label("exam.wrongbook.target.vocab" if attempt.scope.get("target") == wrongbook.TARGET_VOCAB
+                       else "exam.wrongbook.target.exam")
+        attempt.title = f"{attempt.kind_name} · {target}"
     attempt.duration_text = ""
     if attempt.finished_at:
         attempt.duration_text = format_duration((attempt.finished_at - attempt.started_at).total_seconds())
@@ -324,3 +330,52 @@ def words_in_wrong(attempt, limit=30):
     # Từ dài trước: 決算報告 đứng trước 決算 / 報告.
     found.sort(key=lambda v: (-len(v.word), v.word))
     return found[:limit]
+
+
+# =============================================================================
+# S8 — Sổ câu sai
+# =============================================================================
+
+WRONGBOOK_TABS = ("tat-ca", "tu-vung", "de-thi", "da-ra")
+WRONGBOOK_ROW_LIMIT = 200
+
+
+def wrongbook_overview(user):
+    open_qs = wrongbook.open_entries(user)
+    return {
+        "open": open_qs.count(),
+        "half": open_qs.filter(correct_streak__gte=1).count(),
+        "cleared": WrongBookEntry.objects.filter(user=user, cleared_at__isnull=False).count(),
+        "due_vocab": wrongbook.due_entries(user, wrongbook.TARGET_VOCAB).count(),
+        "due_exam": wrongbook.due_entries(user, wrongbook.TARGET_EXAM).count(),
+        "counts": {
+            "tat-ca": open_qs.count(),
+            "tu-vung": open_qs.filter(vocabulary__isnull=False).count(),
+            "de-thi": open_qs.filter(question__isnull=False).count(),
+            "da-ra": WrongBookEntry.objects.filter(user=user, cleared_at__isnull=False).count(),
+        },
+    }
+
+
+def wrongbook_rows(user, tab):
+    if tab == "da-ra":
+        qs = WrongBookEntry.objects.filter(user=user, cleared_at__isnull=False).order_by("-cleared_at")
+    else:
+        qs = wrongbook.open_entries(user).order_by("last_wrong_at")
+        if tab == "tu-vung":
+            qs = qs.filter(vocabulary__isnull=False)
+        elif tab == "de-thi":
+            qs = qs.filter(question__isnull=False)
+    today = user.local_today()
+    rows = list(qs.select_related("vocabulary", "question__exam_set")[:WRONGBOOK_ROW_LIMIT])
+    for e in rows:
+        e.type_name = (get_code_name(CODE_TYPE_VOCAB_QUESTION, e.question_type_code) if e.vocabulary_id
+                       else section_name(e.question.section_code))
+        e.correct_today = e.last_correct_on == today
+    return rows
+
+
+def wrongbook_cleared_in(attempt):
+    """Số mục ra khỏi sổ nhờ lượt ôn này (để màn kết quả nói rõ)."""
+    ids = [a.payload.get("wrongbook_entry") for a in attempt.answers.all() if a.payload.get("wrongbook_entry")]
+    return WrongBookEntry.objects.filter(pk__in=ids, cleared_at__gte=attempt.started_at).count()

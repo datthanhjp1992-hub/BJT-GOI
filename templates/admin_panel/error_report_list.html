@@ -51,7 +51,7 @@ thái lọc nằm trên URL để admin bookmark/chia sẻ được.{% endcommen
               <tr{% if selected and report.pk == selected.pk %} style="background:var(--accent-soft);"{% endif %}>
                 <td><a class="action-link" href="?status={{ status_key }}&selected={{ report.pk }}"><span class="tag">{{ report.error_type_name }}</span></a></td>
                 <td>{{ report.user.first_name|default:report.user.get_username }}</td>
-                <td class="serif">{% if report.vocabulary %}{{ report.vocabulary.word }}{% else %}<span class="muted">—</span>{% endif %}</td>
+                <td class="serif">{% if report.vocabulary %}{{ report.vocabulary.word }}{% elif report.exam_question %}{{ report.exam_question.exam_set.title }} · {% label "exam.play.question" %} {{ report.exam_question.number }}{% else %}<span class="muted">—</span>{% endif %}</td>
                 <td class="muted">{{ report.created_at|date:"d/m" }}</td>
               </tr>
             {% endfor %}
@@ -91,6 +91,18 @@ thái lọc nằm trên URL để admin bookmark/chia sẻ được.{% endcommen
                 <p style="margin:8px 0 0;">
                   <a class="action-link is-primary" href="{% url 'admin:vocabulary_vocabulary_change' selected.vocabulary.pk %}">
                     {% label "error_report.admin.link.edit_word" %} →
+                  </a>
+                </p>
+              </div>
+            {% endif %}
+            {% if selected.exam_question %}
+              <div class="field">
+                <label>{% label "error_report.form.field.target_question" %}</label>
+                <p class="muted text-sm m-0">{{ selected.exam_question.exam_set.title }} · {% label "exam.play.question" %} {{ selected.exam_question.number }} · {{ selected.exam_question.source_ref }}</p>
+                <p class="serif m-0">{{ selected.exam_question.stem_jp }}</p>
+                <p class="mt-12 mb-0">
+                  <a class="action-link is-primary" href="{% url 'admin:exam_examquestion_change' selected.exam_question.pk %}">
+                    {% label "error_report.admin.link.edit_question" %} →
                   </a>
                 </p>
               </div>

@@ -31,7 +31,7 @@ so sánh chuỗi mã "001" và cũng không in thẳng tiếng Việt.{% endcomm
         {% for report in page_obj.object_list %}
           <tr>
             <td><span class="tag">{{ report.error_type_name }}</span></td>
-            <td class="serif">{% if report.vocabulary %}{{ report.vocabulary.word }}{% else %}<span class="muted">—</span>{% endif %}</td>
+            <td class="serif">{% if report.vocabulary %}{{ report.vocabulary.word }}{% elif report.exam_question %}{{ report.exam_question.exam_set.title }} · {% label "exam.play.question" %} {{ report.exam_question.number }}{% else %}<span class="muted">—</span>{% endif %}</td>
             <td>{{ report.description|truncatechars:80 }}</td>
             <td>
               {% if report.is_fixed %}
