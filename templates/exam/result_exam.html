@@ -43,7 +43,10 @@ View: exam.views.result_view (nhánh đề thi). Dùng cho thi thử (Thi / Luy�
   </section>
 
   <section class="card">
-    {% if weakest and weakest.percent < 100 %}
+    {% if is_wrongbook %}
+      <p>{% message "exam.wrongbook.result" cleared=cleared wrong=tabs.0.1 %}</p>
+      <a class="btn btn-primary btn-sm" href="{% url 'exam:wrongbook' %}">{% label "exam.wrongbook.back" %}</a>
+    {% elif weakest and weakest.percent < 100 %}
       <h3 class="serif ex-step">{% label "exam.result.next.title" %}</h3>
       <p class="muted text-sm ex-hint">{% label "exam.result.next.hint" %}</p>
       <div class="ex-weak-head"><b>{{ weakest.name }}</b><span>{{ weakest.correct }}/{{ weakest.total }}</span></div>
@@ -135,6 +138,7 @@ View: exam.views.result_view (nhánh đề thi). Dùng cho thi thử (Thi / Luy�
           {% endif %}
         </div>
         {% if r.question.explanation_vi %}<p class="ex-explain-text">{{ r.question.explanation_vi|linebreaksbr }}</p>{% endif %}
+        <p class="mt-12 mb-0"><a class="action-link text-sm" href="{% url 'error_reports:create' %}?exam_question={{ r.question.pk }}">{% label "error_report.form.link.report" %}</a></p>
       </div>
     </details>
   {% empty %}

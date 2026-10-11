@@ -533,9 +533,24 @@ Mỗi mốc: Dat chạy thử trên DB thật → duyệt → merge.
 - **Lỗi tìm ra khi chạy thật, đã sửa:** danh sách bộ đề sai thứ tự — truy vấn có GROUP BY bỏ qua
   `Meta.ordering` (Django >= 3.1) -> `order_by("number")` tường minh.
 
-### Mốc 3 — Hoàn tất
-- [ ] T7.8 Sổ câu sai
-- [ ] T7.9b Danh hiệu + dạng yếu
-- [ ] T7.11 Báo lỗi câu thi
-- [ ] T7.10 Theme B/C, mobile, flows.js, db-schema
-- [ ] Quyết định số phận SC06 quiz cũ
+### Mốc 3 — Hoàn tất (code + test xong 11/10/2026)
+- [x] T7.8 Sổ câu sai: S8 (thống kê, tab Tất cả / Từ vựng / Đề thi / Đã ra khỏi sổ), lượt ôn
+      `wrongbook` theo từng loại, badge sidebar
+- [x] T7.9b Danh hiệu (qua StudySession quiz từ mốc 1; lượt ôn sổ không tính) + dạng yếu đề thi (mốc 2)
+- [x] T7.11 Báo lỗi câu thi: `ErrorReport.exam_question` (SET_NULL), link ở S5/S6 (chế độ Luyện) và S7,
+      hiện ở "Báo lỗi của tôi" và màn quản trị báo lỗi
+- [x] T7.10 Theme B/C + 375px (6 màn × 3 theme không tràn ngang, test token theme xanh),
+      `flowChart/js/flows.js` (nhóm "Kiểm tra" 3 flow + bản đồ màn hình), `docs/db-schema.html` (apps.exam)
+- [ ] Migration `error_reports.0002_exam_question` lên Supabase (khi deploy hoặc `deploy_supabase.py --apply`)
+- [ ] Quyết định số phận SC06 quiz cũ (Dat dùng thử khu Kiểm tra trước)
+
+#### Ghi chú khi code mốc 3 (11/10/2026) — để đối chiếu khi review
+- **Mỗi lượt ôn sổ một loại** (từ vựng HOẶC đề thi) -> dùng lại màn làm bài S3 / S5-S6 nguyên vẹn,
+  không phải màn trộn hai kiểu câu.
+- **Câu trong lượt ôn mang id mục sổ** (`payload["wrongbook_entry"]`): câu từ vựng phải đổi dạng
+  (vd từ toàn kana không hỏi cách đọc được) vẫn cập nhật đúng mục cũ, không sinh mục mới.
+- **Không chọn mục đã đúng hôm nay** — lần đúng thứ hai phải khác ngày (◆4) nên ôn lại trong ngày
+  không có tác dụng.
+- **Lượt ôn sổ không ghi StudySession** — không tính danh hiệu "Kiểm tra" (ôn lại câu đã sai).
+- **db-schema.html** vốn đã cũ (chưa có keigo, error_reports) — chỉ thêm phần apps.exam + cột mới
+  của error_reports, chưa viết lại toàn trang.

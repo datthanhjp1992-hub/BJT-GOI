@@ -3,7 +3,8 @@ View phía NGƯỜI HỌC của tính năng báo cáo lỗi (SC14):
 
     /error-reports/          -> "Báo lỗi của tôi": lịch sử + phản hồi của admin
     /error-reports/new/      -> form gửi báo lỗi (kèm ?vocabulary=<id> nếu báo
-                                lỗi một từ cụ thể)
+                                lỗi một từ cụ thể, ?exam_question=<id> nếu báo
+                                lỗi một câu đề thi — docs/SPEC_KIEM_TRA.md T7.11)
 
 Phía ADMIN nằm ở apps/admin_panel/views.py — đúng quy ước của dự án: mọi màn
 trong khu quản trị dùng chung sidebar + decorator staff_required ở đó, app này
@@ -15,6 +16,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.core.properties import message
+from apps.exam.models import ExamQuestion
 from apps.vocabulary.models import Vocabulary
 
 from .forms import ErrorReportForm
@@ -22,6 +24,7 @@ from .models import ErrorReport
 
 PAGE_SIZE = 20
 VOCABULARY_PARAM = "vocabulary"
+EXAM_QUESTION_PARAM = "exam_question"
 
 
 def _referer_path(request):
@@ -47,6 +50,10 @@ def report_create_view(request):
         # Id rác trên query string thì lờ đi (người dùng sửa URL bằng tay không
         # đáng nhận trang lỗi) — form vẫn gửi được dưới dạng báo lỗi chung.
         vocabulary = Vocabulary.objects.filter(pk=vocabulary_id).first()
+    exam_question = None
+    question_id = request.POST.get(EXAM_QUESTION_PARAM) or request.GET.get(EXAM_QUESTION_PARAM)
+    if question_id and str(question_id).isdigit():
+        exam_question = ExamQuestion.objects.select_related("exam_set").filter(pk=question_id).first()
 
     if request.method == "POST":
         form = ErrorReportForm(request.POST)
@@ -54,6 +61,7 @@ def report_create_view(request):
             report = form.save(commit=False)
             report.user = request.user
             report.vocabulary = vocabulary
+            report.exam_question = exam_question
             report.page_path = _referer_path(request)
             report.save()
             flash.success(request, message("error_report.create.success"))
@@ -64,7 +72,8 @@ def report_create_view(request):
     context = {
         "form": form,
         "vocabulary": vocabulary,
-        "active_nav": "vocabulary",
+        "exam_question": exam_question,
+        "active_nav": "exam" if exam_question else "vocabulary",
     }
     return render(request, "error_reports/form.html", context)
 
@@ -74,7 +83,7 @@ def my_reports_view(request):
     """Lịch sử báo lỗi của chính người đang đăng nhập + phản hồi admin."""
     reports = (
         ErrorReport.objects.filter(user=request.user)
-        .select_related("vocabulary", "handled_by")
+        .select_related("vocabulary", "exam_question__exam_set", "handled_by")
     )
     page = Paginator(reports, PAGE_SIZE).get_page(request.GET.get("page"))
     context = {

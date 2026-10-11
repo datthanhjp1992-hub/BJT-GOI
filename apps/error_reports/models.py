@@ -51,6 +51,13 @@ class ErrorReport(AuditableModel):
         on_delete=models.SET_NULL,
     )
 
+    # Câu đề thi bị báo lỗi (docs/SPEC_KIEM_TRA.md T7.11). SET_NULL cùng lý do
+    # với `vocabulary`: tắt / xoá câu lỗi thì lịch sử báo lỗi vẫn còn để đối chiếu.
+    exam_question = models.ForeignKey(
+        "exam.ExamQuestion", null=True, blank=True, related_name="error_reports",
+        on_delete=models.SET_NULL,
+    )
+
     description = models.TextField(help_text="Người dùng mô tả lỗi gặp phải.")
     suggested_fix = models.CharField(
         max_length=255, blank=True, help_text="Đề xuất sửa (tuỳ chọn)."

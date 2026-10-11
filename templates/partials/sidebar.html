@@ -59,7 +59,8 @@ falsy, khong loi).
       <span>{% label "common.nav.review" %}</span>
       {% if due_badge %}<span class="nav-badge" title="{% message 'learning.dashboard.hint.review_due' count=due_badge %}">{{ due_badge }}</span>{% endif %}
     </a>
-    {% comment %}Khu Kiểm tra (docs/SPEC_KIEM_TRA.md T7.9). "Sổ câu sai" thêm ở mốc 3.{% endcomment %}
+    {% comment %}Khu Kiểm tra (docs/SPEC_KIEM_TRA.md T7.9). Badge Sổ câu sai = số mục còn trong sổ
+    (context processor apps.exam.context_processors.exam_badges, đọc lười).{% endcomment %}
     <details class="sidenav-group"{% if active_nav == "exam" %} open{% endif %}>
       <summary class="sidenav-link{% if active_nav == "exam" %} active{% endif %}">
         <span>{% label "common.nav.quiz" %}</span>
@@ -71,6 +72,9 @@ falsy, khong loi).
            href="{% url 'exam:vocab' %}">{% label "exam.nav.vocab" %}</a>
         <a class="sidenav-sublink{% if active_nav == "exam" and active_sub == "exam" %} active{% endif %}"
            href="{% url 'exam:exams' %}">{% label "exam.nav.exams" %}</a>
+        <a class="sidenav-sublink{% if active_nav == "exam" and active_sub == "wrongbook" %} active{% endif %}"
+           href="{% url 'exam:wrongbook' %}">{% label "exam.nav.wrongbook" %}
+          {% if wrongbook_badge %}<span class="tag">{{ wrongbook_badge }}</span>{% endif %}</a>
       </div>
     </details>
     <a class="sidenav-link{% if active_nav == "practice_sheet" %} active{% endif %}"

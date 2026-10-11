@@ -873,6 +873,81 @@ footer{border-top:1px solid var(--line); padding-top:20px; font-size:12.5px; col
       </table>
     </article>
   </div>
+
+  <h3 class="appgrp">apps.exam <span class="badge b-new">mới · 11/10/2026</span></h3>
+  <p class="sub">Khu Kiểm tra — <code>docs/SPEC_KIEM_TRA.md</code>. Sáu bảng, đều kế thừa
+  <code>AuditableModel</code>; lựa chọn đi qua MasterCode 20 (dạng đề) · 21 (loại bài) · 22 (chế độ) ·
+  23 (dạng câu từ vựng). Nạp đề bằng <code>scripts/import_exam.py</code>, audio ở Supabase Storage.</p>
+  <div class="grid">
+    <article class="spec">
+      <header><h4>ExamSet</h4><span class="tbl">exam_examset</span><span class="badge b-new">mới</span></header>
+      <p>Một bộ đề thi thử (5 bộ × 100 câu từ <code>bjt.db</code>).</p>
+      <table class="cols">
+        <tr><th>Cột</th><th>Kiểu</th><th>Ghi chú</th></tr>
+        <tr><td>number</td><td>smallint</td><td><span class="pill p-uq">UNIQUE</span></td></tr>
+        <tr><td>title / slug</td><td>varchar</td><td>slug UNIQUE (bo-de-1…)</td></tr>
+        <tr><td>is_active</td><td>boolean</td><td></td></tr>
+      </table>
+    </article>
+    <article class="spec">
+      <header><h4>ExamQuestion</h4><span class="tbl">exam_examquestion</span><span class="badge b-new">mới</span></header>
+      <p><code>passage_jp</code> là lời thoại (câu nghe — ẩn tới khi xem đáp án) hoặc văn bản đề bài
+      (場面設定, tài liệu, email). Import idempotent theo <code>source_ref</code>.</p>
+      <table class="cols">
+        <tr><th>Cột</th><th>Kiểu</th><th>Ghi chú</th></tr>
+        <tr><td>exam_set_id<span class="pill p-fk">FK</span></td><td>bigint</td><td>→ ExamSet, CASCADE</td></tr>
+        <tr><td>part · section_code · number</td><td>smallint · varchar(10)</td><td>MasterCode 20 · <span class="pill p-uq">UNIQUE</span> (exam_set, number)</td></tr>
+        <tr><td>passage_type · passage_jp · stem_jp</td><td>varchar · text</td><td></td></tr>
+        <tr><td>audio_path · audio_version</td><td>varchar(120) · integer</td><td>mock/q031….mp3 · tăng khi ghi đè → URL ?v=</td></tr>
+        <tr><td>explanation_vi · level · source_ref · is_active</td><td></td><td>source_ref UNIQUE</td></tr>
+      </table>
+    </article>
+    <article class="spec">
+      <header><h4>ExamOption</h4><span class="tbl">exam_examoption</span><span class="badge b-new">mới</span></header>
+      <p>4 phương án / câu, đúng một <code>is_correct</code> (kiểm ở <code>clean()</code> và <code>check_exam_data</code>).</p>
+      <table class="cols">
+        <tr><th>Cột</th><th>Kiểu</th><th>Ghi chú</th></tr>
+        <tr><td>question_id<span class="pill p-fk">FK</span></td><td>bigint</td><td>→ ExamQuestion, CASCADE</td></tr>
+        <tr><td>position · text_jp · is_correct</td><td>smallint · varchar(300) · boolean</td><td><span class="pill p-uq">UNIQUE</span> (question, position)</td></tr>
+      </table>
+    </article>
+    <article class="spec">
+      <header><h4>ExamAttempt</h4><span class="tbl">exam_examattempt</span><span class="badge b-new">mới</span></header>
+      <p>Một lượt làm bài: từ vựng / dạng đề / thi thử / ôn sổ. <code>finished_at</code> rỗng = đang dở.
+      Hạn giờ không lưu cứng: bắt đầu phần + <code>PART_MINUTES</code>.</p>
+      <table class="cols">
+        <tr><th>Cột</th><th>Kiểu</th><th>Ghi chú</th></tr>
+        <tr><td>user_id<span class="pill p-fk">FK</span></td><td>bigint</td><td>→ User, CASCADE</td></tr>
+        <tr><td>kind_code · mode_code</td><td>varchar(10)</td><td>MasterCode 21 · 22</td></tr>
+        <tr><td>exam_set_id<span class="pill p-fk">FK</span> · section_code</td><td>bigint · varchar</td><td>→ ExamSet, SET NULL</td></tr>
+        <tr><td>scope · part_started_at · part_submitted_at</td><td>jsonb</td><td>phạm vi bài từ vựng, cursor phần Nghe, mốc giờ từng phần</td></tr>
+        <tr><td>total · score · current_part · started_at · finished_at</td><td></td><td>Index (user, -started_at), (user, finished_at)</td></tr>
+      </table>
+    </article>
+    <article class="spec">
+      <header><h4>ExamAnswer</h4><span class="tbl">exam_examanswer</span><span class="badge b-new">mới</span></header>
+      <p>Tạo đủ dòng lúc bắt đầu lượt; câu từ vựng chụp sẵn trong <code>payload</code> để F5 / xem lại thấy đúng câu.</p>
+      <table class="cols">
+        <tr><th>Cột</th><th>Kiểu</th><th>Ghi chú</th></tr>
+        <tr><td>attempt_id<span class="pill p-fk">FK</span> · order</td><td>bigint · smallint</td><td><span class="pill p-uq">UNIQUE</span> (attempt, order)</td></tr>
+        <tr><td>question_id<span class="pill p-fk">FK</span> · vocabulary_id<span class="pill p-fk">FK</span></td><td>bigint</td><td>SET NULL — một trong hai</td></tr>
+        <tr><td>question_type_code · payload</td><td>varchar · jsonb</td><td>MasterCode 23 · prompt/options/correct</td></tr>
+        <tr><td>selected · is_correct · flagged · answered_at · time_ms</td><td></td><td>selected rỗng = chưa làm</td></tr>
+      </table>
+    </article>
+    <article class="spec">
+      <header><h4>WrongBookEntry</h4><span class="tbl">exam_wrongbookentry</span><span class="badge b-new">mới</span></header>
+      <p>Sổ câu sai. Ra khỏi sổ khi đúng 2 lần liên tiếp, khác ngày.</p>
+      <table class="cols">
+        <tr><th>Cột</th><th>Kiểu</th><th>Ghi chú</th></tr>
+        <tr><td>user_id<span class="pill p-fk">FK</span></td><td>bigint</td><td>→ User, CASCADE</td></tr>
+        <tr><td>question_id<span class="pill p-fk">FK</span> · vocabulary_id<span class="pill p-fk">FK</span> · question_type_code</td><td></td><td>CHECK đúng một đích · UNIQUE từng loại đích</td></tr>
+        <tr><td>wrong_count · correct_streak · last_correct_on · last_wrong_at · cleared_at</td><td></td><td>Index (user, cleared_at)</td></tr>
+      </table>
+    </article>
+  </div>
+  <p class="sub">Thêm cột <code>error_reports_errorreport.exam_question_id</code> → ExamQuestion, SET NULL
+  (báo lỗi câu đề thi, T7.11).</p>
 </section>
 
 <section id="auditable">

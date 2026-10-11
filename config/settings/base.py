@@ -78,6 +78,8 @@ TEMPLATES = [
                 "apps.accounts.context_processors.ui_theme",
                 # Badge số từ đến hạn cạnh mục "Ôn tập" ở sidebar (spec.md T3.4)
                 "apps.learning.context_processors.learning_badges",
+                # Badge số câu trong Sổ câu sai (docs/SPEC_KIEM_TRA.md T7.8)
+                "apps.exam.context_processors.exam_badges",
             ],
         },
     },
