@@ -1,0 +1,1144 @@
+﻿source_ref,exam_set,number,part,section_code,passage_type,passage_jp,stem_jp,option_1,option_2,option_3,option_4,correct,explanation_vi,level,audio_path,source_note
+bjt.db:mock_exam_question:31,1,1,1,p1s1,会話,"A：すみません、会議室の鍵をお借りしたいんですが。
+B：総務部の受付でお渡ししていますよ。",この会話が行われている場所として最も適切なものはどれか。,総務部の受付付近,会議室の中,社外の取引先,エレベーターの中,1,"B nói 'ở quầy tiếp tân phòng Tổng vụ có phát chìa khóa', cho thấy hội thoại diễn ra gần khu vực tiếp tân phòng Tổng vụ.",N3,mock/q031_part1_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:32,1,2,1,p1s1,電話,"A：もしもし、山田商事の鈴木でございます。田中部長はいらっしゃいますでしょうか。
+B：申し訳ございません、田中はただいま外出しております。",この会話の関係として最も適切なものはどれか。,社内の同僚同士,上司と部下,家族同士の電話,取引先からの電話と、それを受けた社員,4,"Người gọi tự xưng công ty khác (Yamada Shoji) và hỏi Trưởng phòng Tanaka, còn người nghe dùng khiêm nhường ngữ khi nói về Tanaka — đây là cuộc gọi từ đối tác đến nhân viên công ty.",N3,mock/q032_part1_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:33,1,3,1,p1s1,アナウンス,本日はご来場いただき、誠にありがとうございます。展示会は午後5時に終了いたします。お忘れ物のないよう、お気をつけください。,このアナウンスが流れている場所として最も適切なものはどれか。,レストラン,学校の教室,病院,展示会場,4,"Nội dung thông báo cảm ơn khách đến tham dự và báo giờ kết thúc triển lãm, cho thấy đây là thông báo tại hội chợ/triển lãm.",N3,mock/q033_part1_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:34,1,4,1,p1s1,会話,"A：新しいプロジェクトのメンバー、もう決まりましたか。
+B：ええ、来週の会議で発表される予定です。",AとBの関係として最も適切なものはどれか。,取引先の担当者と顧客,同じ会社の同僚,面接官と応募者,教師と学生,2,"Nội dung nói về việc nội bộ (thành viên dự án mới, cuộc họp tuần sau) cho thấy đây là hai đồng nghiệp cùng công ty.",N3,mock/q034_part1_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:35,1,5,1,p1s1,会話,"A：恐れ入りますが、こちらにお名前とご用件をご記入ください。
+B：はい、10時に営業部の佐藤さんとお約束しています。",この会話が行われている場所として最も適切なものはどれか。,空港の搭乗口,レストランの入り口,銀行の窓口,会社の受付,4,"Yêu cầu điền tên và mục đích đến, cùng việc hẹn gặp người ở phòng Kinh doanh cho thấy đây là quầy tiếp tân của công ty.",N3,mock/q035_part1_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:36,1,6,1,p1s1,会話,"A：申し訳ございません、ただいま満室でございまして。
+B：そうですか。では来週の同じ日で空いている部屋はありますか。",この会話が行われている場面として最も適切なものはどれか。,レストランの注文,ホテルの予約,会議室の掃除,飛行機のチェックイン,2,'Hiện đã hết phòng' và hỏi phòng trống ngày khác trong tuần sau cho thấy đây là tình huống đặt phòng khách sạn.,N3,mock/q036_part1_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:37,1,7,1,p1s1,会話,"A：この機械の使い方がよくわからないんですが、教えていただけますか。
+B：いいですよ。まずここのボタンを押してください。",Bの役割として最も適切なものはどれか。,新入社員に使い方を教える先輩社員,機械を売る営業マン,取引先の社長,お客様相談窓口の担当者,1,"B trả lời nhẹ nhàng và hướng dẫn cách thao tác từng bước, phù hợp với vai trò tiền bối hướng dẫn cách sử dụng máy cho nhân viên mới.",N3,mock/q037_part1_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:38,1,8,1,p1s1,放送,ただいまより、3階の第2会議室にて、新製品説明会を開始いたします。ご出席の方は、お早めにお集まりください。,この放送が伝えている内容として最も適切なものはどれか。,避難訓練の開始,来客の呼び出し,社員食堂の営業時間変更,新製品説明会の開始案内,4,"Nội dung thông báo bắt đầu buổi thuyết minh sản phẩm mới tại phòng họp số 2 tầng 3, mời người tham dự tập trung sớm.",N3,mock/q038_part1_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:39,1,9,1,p1s1,会話,"A：本日はお忙しい中、面接のお時間をいただき、ありがとうございます。
+B：こちらこそ、よろしくお願いします。それでは、自己紹介からお願いできますか。",この会話が行われている場面として最も適切なものはどれか。,就職の面接,取引先との商談,友人同士の食事,病院の診察,1,Câu 'cảm ơn đã dành thời gian phỏng vấn' và yêu cầu 'tự giới thiệu bản thân' là dấu hiệu rõ ràng của buổi phỏng vấn xin việc.,N3,mock/q039_part1_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:40,1,10,1,p1s1,会話,"A：課長、先ほどお願いした資料なんですが、いつ頃までにいただけますでしょうか。
+B：ああ、あれね。明日の午前中には渡せると思うよ。",AとBの関係として最も適切なものはどれか。,家族,取引先の担当者同士,部下と課長,友人同士,3,"A dùng kính ngữ gọi B là '課長' (trưởng phòng) và hỏi lịch giao tài liệu một cách lịch sự, còn B trả lời thân mật hơn — đúng quan hệ cấp dưới và trưởng phòng.",N3,mock/q040_part1_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:41,1,11,1,p1s2,場面設定,取引先の担当者が、あなたの会社に到着しました。受付で最初にかける言葉として、最も適切なものはどれか。,上の場面で、受付担当者が言う言葉として最も適切なものはどれか。,いらっしゃいませ。お待ちしておりました。,どなたですか。,何の用ですか。,ちょっと待ってください。,1,"'いらっしゃいませ。お待ちしておりました' là câu chào tiếp tân chuẩn, lịch sự khi khách đã được hẹn trước đến công ty.",N3,mock/q041_part1_sec2.mp3,Q6_ref
+bjt.db:mock_exam_question:42,1,12,1,p1s2,場面設定,上司に、自分が作成した資料を確認してもらいたい。最も適切な依頼の仕方はどれか。,この場面で最も適切な言い方はどれか。,この資料、見て。,資料、確認しといて。,資料を見ろ。,お手すきの際に、この資料をご確認いただけますでしょうか。,4,"Khi nhờ cấp trên xác nhận tài liệu, nên dùng cách nói gián tiếp, lịch sự như 'お手すきの際に〜いただけますでしょうか' thay vì ra lệnh trực tiếp.",N2,mock/q042_part1_sec2.mp3,Q6_ref
+bjt.db:mock_exam_question:43,1,13,1,p1s2,場面設定,電話で、担当者が席を外していることを取引先に伝えたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,担当の者は、ただいま席を外しております。,担当者はいません。,担当者はどこかに行きました。,担当の方はいらっしゃいません。,1,"Khi nói với người ngoài công ty về đồng nghiệp mình, phải dùng khiêm nhường ngữ「席を外しております」, không dùng tôn kính ngữ「いらっしゃいません」cho người trong công ty mình.",N2,mock/q043_part1_sec2.mp3,Q6_ref
+bjt.db:mock_exam_question:44,1,14,1,p1s2,場面設定,会議で、他の人の意見に賛成する気持ちを伝えたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,それでいいと思う。,賛成、賛成。,うん、それでいいよ。,おっしゃるとおりだと思います。,4,"Trong họp trang trọng, nên dùng「おっしゃるとおりだと思います」(dùng tôn kính ngữ「おっしゃる」cho lời nói của người khác) thay vì cách nói thân mật.",N2,mock/q044_part1_sec2.mp3,Q6_ref
+bjt.db:mock_exam_question:45,1,15,1,p1s2,場面設定,取引先を訪問し、応接室に通された。相手が来るまでの間、どのように待つべきか。,この場面での行動として最も適切なものはどれか。,上座に座り、スマートフォンを操作しながら待つ。,勝手に上座に座って書類を広げる。,部屋の中を歩き回って待つ。,下座に座り、静かに待つ。,4,"Khách đến thăm nên ngồi ở vị trí khiêm tốn (hạ tọa/下座) và chờ yên lặng, tránh dùng điện thoại hay đi lại trong phòng khi chưa có sự cho phép.",N2,mock/q045_part1_sec2.mp3,Q6_ref
+bjt.db:mock_exam_question:46,1,16,1,p1s2,場面設定,取引先から依頼された仕事を、期限までに終えられそうにない。早めに伝えたい場合、最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,無理です、できません。,申し訳ございません、期限までに完了することが難しい状況でございます。,ちょっと厳しいかもしれません。,間に合わないと思います。,2,"Khi báo trước khả năng trễ hạn, nên xin lỗi trước và dùng cách nói trang trọng, gián tiếp「〜ことが難しい状況でございます」thay vì nói thẳng「無理です」.",N2,mock/q046_part1_sec2.mp3,Q6_ref
+bjt.db:mock_exam_question:47,1,17,1,p1s2,場面設定,同僚が体調を崩して早退することになった。声をかけるとき、最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,大丈夫？頑張って。,お大事にしてください。あとはこちらでやっておきますので。,早退なんてずるいですね。,そうですか、じゃあまた明日。,2,"Câu 'お大事にしてください。あとはこちらでやっておきますので' vừa thể hiện sự quan tâm vừa trấn an đồng nghiệp về công việc, phù hợp văn hóa công sở Nhật.",N3,mock/q047_part1_sec2.mp3,Q6_ref
+bjt.db:mock_exam_question:48,1,18,1,p1s2,場面設定,取引先の担当者から、名前を聞き間違えられた。訂正したいとき、最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,違います。,名前が違いますよ。,恐れ入ります、私、〇〇と申します。,それ、私じゃないです。,3,"Khi cần đính chính tên nhẹ nhàng, nên dùng「恐れ入ります」mở đầu rồi tự xưng danh lại bằng khiêm nhường ngữ「〜と申します」, tránh phủ định thẳng「違います」.",N2,mock/q048_part1_sec2.mp3,Q6_ref
+bjt.db:mock_exam_question:49,1,19,1,p1s2,場面設定,上司から褒められた。謙虚に返答したいとき、最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,いえ、まだまだです。皆様のおかげです。,はい、私も自信あります。,そうですね、よくできました。,当然です。,1,"Khi được khen, người Nhật thường đáp lại khiêm tốn, quy công cho tập thể「皆様のおかげです」thay vì tự nhận công lao.",N3,mock/q049_part1_sec2.mp3,Q6_ref
+bjt.db:mock_exam_question:50,1,20,1,p1s2,場面設定,来客にお茶を出す際、最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,お茶です。どうぞ。,お茶、飲んでください。,失礼いたします。どうぞお召し上がりください。,はい、お茶。,3,"Khi mời trà khách, nên nói「失礼いたします」trước khi vào phòng/đặt trà, rồi mời bằng tôn kính ngữ「お召し上がりください」.",N3,mock/q050_part1_sec2.mp3,Q6_ref
+bjt.db:mock_exam_question:51,1,21,1,p1s3,会話,"A：来月の展示会の件なんですが、ブースの位置は決まりましたか。
+B：はい、会場の入り口近くの、A-3という場所になりました。
+A：入り口近くだと、人目にはつきやすいですね。
+B：ええ、その分、しっかり準備を進めないといけませんね。",この会話の内容と合っているものはどれか。,ブースの位置はまだ決まっていない。,展示会は中止になった。,ブースは会場の入り口近くにある。,ブースの位置は入り口から遠い場所である。,3,"B nói vị trí gian hàng là A-3, gần lối vào hội trường — đã quyết định và ở gần cửa vào.",N2,mock/q051_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:52,1,22,1,p1s3,会話,"A：先ほどお送りした見積書、ご確認いただけましたか。
+B：拝見しました。ただ、納期の部分が少し早いように思うのですが。
+A：申し訳ございません、もう一度社内で調整して、明日中にご連絡いたします。
+B：よろしくお願いします。",Aが次にすることとして最も適切なものはどれか。,社内で納期を調整し、明日中に連絡する。,見積書をすぐに取り消す。,Bに謝罪だけして終わる。,値段を上げる。,1,"A xin lỗi và hứa sẽ điều chỉnh nội bộ về thời hạn giao hàng, rồi liên hệ lại trong ngày mai — đây là hành động tiếp theo của A.",N2,mock/q052_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:53,1,23,1,p1s3,会話,"A：田中さん、今度の出張、一緒に行くメンバーは誰でしたっけ。
+B：私と鈴木さん、それから部長です。
+A：あ、部長もいらっしゃるんですね。それなら、ホテルの部屋も確認しておかないと。
+B：そうですね、部長は個室希望とおっしゃっていました。",この会話の内容と合っているものはどれか。,出張のメンバーは田中さんだけである。,部長は出張に参加しない。,ホテルの予約はすでに完了している。,出張には部長も参加する予定である。,4,"B xác nhận trưởng phòng cũng tham gia chuyến công tác và muốn phòng riêng, cho thấy trưởng phòng có tham gia.",N2,mock/q053_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:54,1,24,1,p1s3,アナウンス,社員の皆様にお知らせいたします。本日15時より、3階大会議室にて、新しい勤怠管理システムについての説明会を実施いたします。参加を希望される方は、事前に総務部までご連絡ください。なお、当日参加できない方のために、後日、録画データを共有フォルダに掲載する予定です。,このアナウンスの内容と合っているものはどれか。,説明会に参加できない人は、後日録画を見ることができる。,説明会は全社員参加必須である。,説明会は来月開催される。,総務部への連絡は不要である。,1,"Thông báo cho biết người không tham dự được sẽ có video ghi lại chia sẻ sau trên thư mục chung, không nói bắt buộc toàn bộ nhân viên tham gia.",N2,mock/q054_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:55,1,25,1,p1s3,会話,"A：山田さん、来週の会議、資料は準備できていますか。
+B：はい、ほぼ完成しているんですが、グラフの部分だけ、もう少しデータを追加したいと思っています。
+A：わかりました。いつまでに完成しそうですか。
+B：金曜日の午前中には仕上げられると思います。",Bの資料の状態として最も適切なものはどれか。,まだ何も手をつけていない。,すでに完成し、提出済みである。,ほぼ完成しているが、グラフ部分を追加中である。,資料作成をあきらめた。,3,"B nói tài liệu gần xong nhưng muốn thêm dữ liệu cho phần biểu đồ, dự kiến hoàn thành sáng thứ Sáu.",N2,mock/q055_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:56,1,26,1,p1s3,会話,"A：課長、A社との契約更新の件ですが、先方から少し条件を見直したいというお話がありました。
+B：どんな条件ですか。
+A：支払いのサイトを、現在の60日から90日に延ばしたいとのことです。
+B：それは一度、経理部にも相談してから返事をしましょう。",Bが次にとる行動として最も適切なものはどれか。,すぐにA社の要望を了承する。,Aに任せて自分は関与しない。,契約を打ち切る。,経理部に相談してから返事をする。,4,"Trưởng phòng (B) nói sẽ bàn với phòng kế toán trước khi trả lời, cho thấy hành động tiếp theo là tham vấn nội bộ trước.",N2,mock/q056_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:57,1,27,1,p1s3,会話,"A：新しく入られた田中さん、もう仕事には慣れましたか。
+B：ええ、覚えるのが早くて助かっています。ただ、まだ電話対応には少し緊張しているようです。
+A：そうですか。じゃあ、しばらくは私が近くでフォローしますね。
+B：ありがとうございます、助かります。",この会話の内容と合っているものはどれか。,田中さんはまだ仕事を何も覚えていない。,田中さんはすでに退職した。,田中さんは電話対応にまだ慣れていない。,Aは田中さんのフォローを断った。,3,"B nói Tanaka (nhân viên mới) vẫn còn hơi căng thẳng khi nghe điện thoại, còn lại thì đã quen việc nhanh.",N2,mock/q057_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:58,1,28,1,p1s3,会話,"A：来月のセミナー、会場の定員は何名でしたっけ。
+B：50名です。現在、40名の申し込みがあります。
+A：あと10名ですね。追加の案内メールを送ったほうがいいかもしれません。
+B：わかりました、本日中に送ります。",現在のセミナーの申込状況として正しいものはどれか。,定員に達し、受付を終了した。,セミナーは中止になった。,申し込みはまだゼロである。,定員50名に対し、40名の申し込みがある。,4,"B cho biết hội trường 50 người, hiện đã có 40 người đăng ký, còn thiếu 10 người.",N2,mock/q058_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:59,1,29,1,p1s3,会話,"A：昨日お願いした件、進捗はいかがですか。
+B：申し訳ございません、まだ着手できておりません。他の案件の対応に追われておりまして。
+A：そうですか。では、優先順位を少し整理しましょう。今日中にできそうな範囲を教えてください。
+B：承知いたしました。30分ほどお時間いただければ、整理してご報告します。",Bの現在の状況として最も適切なものはどれか。,他の案件に追われ、依頼された件にまだ着手していない。,依頼された仕事はすでに完了している。,依頼された件を断った。,Aに仕事を押し付けた。,1,"B xin lỗi vì chưa bắt tay vào việc được giao do bận việc khác, và hứa sẽ báo cáo lại sau khi sắp xếp thứ tự ưu tiên.",N2,mock/q059_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:60,1,30,1,p1s3,会話,"A：今度の忘年会なんですが、場所はもう決まりましたか。
+B：candidatesが2つあって、駅前の居酒屋か、ホテルの宴会場かで迷っています。
+A：予算はどれくらいですか。
+B：一人5000円くらいを考えています。",この会話の内容と合っているものはどれか。,忘年会の候補地は2つある。,忘年会の場所はすでに完全に決定している。,忘年会は中止になった。,予算は決まっていない。,1,"B nói đang phân vân giữa 2 lựa chọn địa điểm (quán nhậu gần ga hoặc sảnh tiệc khách sạn), và đã có mức ngân sách dự kiến khoảng 5000 yên/người.",N3,mock/q060_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:61,1,31,1,p1s3,会話,"A：先日お問い合わせいただいた製品の件ですが、ただいま在庫を確認しております。
+B：ありがとうございます。急ぎではないので、正確な情報をいただければと思います。
+A：かしこまりました。明日中に折り返しご連絡させていただきます。
+B：よろしくお願いします。",Aが次にすることとして最も適切なものはどれか。,今すぐ在庫状況を口頭で伝える。,Bに直接会いに行く。,製品の注文をキャンセルする。,明日中に在庫状況を確認して連絡する。,4,"A hứa sẽ liên hệ lại trong ngày mai sau khi xác nhận tồn kho, đây là hành động tiếp theo.",N2,mock/q061_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:62,1,32,1,p1s3,会話,"A：来週のオンライン会議なんですが、海外の支社も参加するので、時差に気をつけないといけませんね。
+B：そうですね。ニューヨーク支社は何時になりますか。
+A：日本時間の10時だと、向こうは夜の21時くらいだと思います。
+B：では、資料は事前に送っておいたほうがよさそうですね。",この会話の内容と合っているものはどれか。,オンライン会議には海外支社は参加しない。,ニューヨーク支社にとって、会議は夜の時間帯になる。,会議はすでに終わった。,資料は会議後に送る予定である。,2,"A nói giờ Nhật Bản 10 giờ sáng thì bên New York là khoảng 21 giờ tối, tức múi giờ tối đối với chi nhánh New York.",N2,mock/q062_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:63,1,33,1,p1s3,会話,"A：部長、先ほどのお客様からのクレームの件ですが、どのように対応すればよろしいでしょうか。
+B：まずは事実関係を整理して、明日の朝までに報告書を出してください。その後、私からお客様に連絡します。
+A：承知いたしました。すぐに取り掛かります。",Aが今からすることとして最も適切なものはどれか。,事実関係を整理し、報告書を作成する。,すぐにお客様に電話をかける。,何もせず部長の指示を待つ。,クレームを無視する。,1,"Trưởng phòng chỉ thị A sắp xếp lại sự việc và nộp báo cáo trước sáng mai, còn việc liên hệ khách hàng để trưởng phòng tự làm.",N2,mock/q063_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:64,1,34,1,p1s3,会話,"A：来月から新しいオフィスに移転するそうですね。
+B：ええ、今のオフィスより少し広くなるみたいです。
+A：それは楽しみですね。引っ越しの準備は始まっていますか。
+B：まだこれからです。来週から少しずつ荷物をまとめる予定です。",この会話の内容と合っているものはどれか。,引っ越しはすでに完了している。,荷物をまとめる作業は来週から始まる予定である。,新しいオフィスは今より狭くなる予定である。,オフィスの移転は中止になった。,2,"B nói việc chuẩn bị chuyển văn phòng chưa bắt đầu, sẽ bắt đầu dọn đồ dần từ tuần sau.",N3,mock/q064_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:65,1,35,1,p1s3,会話,"A：鈴木さん、経費精算のシステム、新しくなってから使いやすくなりましたか。
+B：はい、以前より入力項目が減って楽になりました。ただ、領収書の写真を撮る手順が少し分かりにくいです。
+A：それなら、マニュアルを作って共有部署に配ったほうがいいかもしれませんね。
+B：そうですね、私が来週までに作ってみます。",Bが今後することとして最も適切なものはどれか。,経費精算システムをもとに戻す。,領収書をすべて紙で提出する。,来週までに使い方のマニュアルを作る。,システムの使用をやめる。,3,"B nói sẽ thử làm hướng dẫn sử dụng trước tuần sau, đây là việc B sẽ làm tiếp theo.",N2,mock/q065_part1_sec3.mp3,Q6_ref
+bjt.db:mock_exam_question:66,1,36,2,p2s1,会話,"A：来週の出張、新幹線の予約はもうしましたか。
+B：はい、火曜日の朝9時発ののぞみを予約しました。
+A：ホテルはどうですか。
+B：まだです。今日中に手配します。",Bがまだ手配していないものは何か。,新幹線の予約,出張の許可,ホテルの予約,会議室の予約,3,"B đã đặt vé tàu Shinkansen xong nhưng khách sạn thì chưa, sẽ làm trong hôm nay.",N3,mock/q066_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:67,1,37,2,p2s1,会話,"A：今月の売上報告書、テンプレートが新しくなったんですね。
+B：ええ、グラフが自動で作成されるようになって、作業時間が短縮できます。
+A：それはいいですね。今度教えてください。",新しいテンプレートの利点として述べられているものはどれか。,デザインが美しくなった。,グラフが自動作成され、作業時間が短くなった。,価格が安くなった。,言語が多くなった。,2,"B nói mẫu mới có biểu đồ tự động tạo, giúp rút ngắn thời gian làm việc.",N3,mock/q067_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:68,1,38,2,p2s1,会話,"A：明日の研修、参加人数は何人くらいになりそうですか。
+B：現在の申し込みは25人ですが、会場は30人まで入れます。
+A：では、まだ余裕がありますね。",現在の研修の状況として正しいものはどれか。,定員をすでに超えている。,申し込みはゼロである。,定員30人に対し、25人の申し込みがあり、まだ余裕がある。,研修は中止になった。,3,"Hội trường chứa tối đa 30 người, hiện có 25 người đăng ký, vẫn còn chỗ trống.",N3,mock/q068_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:69,1,39,2,p2s1,会話,"A：新しく導入したチャットツール、使い心地はどうですか。
+B：便利なんですが、通知が多すぎて、逆に集中できないという声もあります。
+A：それは改善が必要そうですね。",新しいチャットツールについて挙げられている問題点は何か。,価格が高すぎる。,通知が多く、集中しにくいという意見がある。,操作方法が複雑すぎる。,対応言語が少ない。,2,B nói công cụ tiện lợi nhưng có ý kiến cho rằng thông báo quá nhiều khiến khó tập trung.,N3,mock/q069_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:70,1,40,2,p2s1,会話,"A：来月のセミナー、講師の交通費と宿泊費はこちらで負担するんですよね。
+B：はい、交通費は実費、宿泊費は上限1万5千円までとなっています。
+A：わかりました、講師にお伝えしておきます。",宿泊費の負担について正しいものはどれか。,宿泊費は負担しない。,宿泊費は全額講師が負担する。,宿泊費は上限1万5千円まで負担する。,宿泊費の上限は決まっていない。,3,"B nói chi phí lưu trú công ty chi trả tối đa 15,000 yên.",N2,mock/q070_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:71,1,41,2,p2s1,会話,"A：先方から、契約書の第3条について修正の要望がありました。
+B：どの部分ですか。
+A：支払い条件のところで、分割払いを希望されています。
+B：では、経理と法務に確認してから返答しましょう。",先方が要望している修正内容は何か。,契約金額の値下げ,支払い条件を分割払いにすること,契約期間の延長,納品場所の変更,2,"Đối tác yêu cầu sửa điều khoản thanh toán ở điều 3, muốn trả góp thay vì trả một lần.",N2,mock/q071_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:72,1,42,2,p2s1,会話,"A：来週のイベント、来場者への配布用パンフレットは何部用意しましたか。
+B：300部印刷しましたが、予想来場者数は250名なので、少し余裕を持たせています。
+A：足りなくなるよりはいいですね。",パンフレットの準備状況として正しいものはどれか。,来場者数より少ない部数しか印刷していない。,パンフレットはまだ完成していない。,来場予想数より多めに印刷している。,パンフレットの印刷は中止になった。,3,"In 300 bản trong khi số khách dự kiến chỉ 250 người, tức đã chuẩn bị dư ra một chút.",N3,mock/q072_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:73,1,43,2,p2s1,会話,"A：新商品のアンケート結果、まとまりましたか。
+B：はい、回答者の約7割が「デザインを重視する」と答えました。
+A：思ったより多いですね。マーケティング戦略に反映させましょう。",アンケート結果について正しいものはどれか。,ほとんどの回答者が価格を重視すると答えた。,アンケートはまだ実施されていない。,約7割の回答者がデザインを重視すると答えた。,回答者は全員同じ意見だった。,3,Khoảng 70% người trả lời khảo sát nói coi trọng thiết kế.,N2,mock/q073_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:74,1,44,2,p2s1,会話,"A：来月の人事異動の件、鈴木さんは大阪支社に異動になるそうですね。
+B：ええ、聞きました。後任は誰になるかまだ決まっていないようです。
+A：それは早めに決めないと引き継ぎが大変ですね。",この会話の内容と合っているものはどれか。,鈴木さんの後任はまだ決まっていない。,鈴木さんの後任はすでに決まっている。,鈴木さんの異動は中止になった。,鈴木さんは会社を辞める。,1,B nói người kế nhiệm Suzuki vẫn chưa được quyết định.,N2,mock/q074_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:75,1,45,2,p2s1,会話,"A：先月の広告キャンペーン、効果はどうでしたか。
+B：ウェブサイトのアクセス数は増えたのですが、実際の購入にはあまりつながっていないようです。
+A：では、広告内容の見直しが必要ですね。",広告キャンペーンの結果として正しいものはどれか。,アクセス数も購入数も増えた。,アクセス数が減った。,アクセス数は増えたが、購入にはあまりつながっていない。,キャンペーンはまだ始まっていない。,3,Lượt truy cập web tăng nhưng chưa dẫn đến nhiều lượt mua hàng thực tế.,N2,mock/q075_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:76,1,46,2,p2s1,会話,"A：新しいオフィスチェア、全員分注文しましたか。
+B：はい、ただ、納期が3週間ほどかかるということで、来月中旬の到着予定です。
+A：それまでは今のイスを使うしかないですね。",新しいオフィスチェアについて正しいものはどれか。,来月中旬に到着する予定である。,すでに全員に届いている。,注文はキャンセルされた。,納期は1週間である。,1,"Ghế văn phòng mới mất khoảng 3 tuần để giao, dự kiến đến giữa tháng sau.",N3,mock/q076_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:77,1,47,2,p2s1,会話,"A：取引先へのお中元、今年はどうしますか。
+B：昨年と同じく、菓子折りを送る予定ですが、今年は少し予算を上げて選んでいます。
+A：金額はどれくらいを考えていますか。
+B：一件あたり5000円くらいを想定しています。",今年のお中元について正しいものはどれか。,昨年より予算を上げ、一件5000円くらいを想定している。,昨年より予算を下げる予定である。,お中元は今年送らない。,予算はまだ何も決まっていない。,1,"B nói năm nay tăng ngân sách một chút so với năm ngoái, dự tính khoảng 5000 yên mỗi phần quà.",N3,mock/q077_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:78,1,48,2,p2s1,会話,"A：先週提出した企画書、部長からのフィードバックはありましたか。
+B：はい、全体的には評価いただいたのですが、コストの部分をもう少し詳しく書いてほしいとのことでした。
+A：では、コストの見積もりを追加しましょう。",部長からのフィードバックの内容として正しいものはどれか。,企画書全体をやり直すよう指示された。,特に修正の必要はないと言われた。,企画書は却下された。,コスト部分をより詳しく書くよう求められた。,4,Trưởng phòng đánh giá tổng thể tốt nhưng muốn phần chi phí được viết chi tiết hơn.,N2,mock/q078_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:79,1,49,2,p2s1,会話,"A：来週のクライアントとの打ち合わせ、オンラインと対面、どちらになりましたか。
+B：先方の希望で対面になりました。場所は先方のオフィスです。
+A：では、資料は紙で用意したほうがよさそうですね。",来週の打ち合わせについて正しいものはどれか。,オンラインで行われる。,対面で、先方のオフィスで行われる。,打ち合わせは中止になった。,場所はまだ決まっていない。,2,"Theo yêu cầu của đối tác, buổi họp sẽ diễn ra trực tiếp tại văn phòng của họ.",N3,mock/q079_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:80,1,50,2,p2s1,会話,"A：新入社員の研修プログラム、期間はどれくらいを予定していますか。
+B：基本研修が2週間、その後、各部署でのOJTが1か月の予定です。
+A：合計で1か月半くらいですね。",新入社員研修の期間について正しいものはどれか。,研修期間は1週間のみである。,基本研修とOJTを合わせて約1か月半である。,OJTは行わない予定である。,研修期間はまだ決まっていない。,2,"Đào tạo cơ bản 2 tuần + OJT tại các bộ phận 1 tháng, tổng cộng khoảng 1 tháng rưỡi.",N3,mock/q080_part2_sec1.mp3,Q4_ref
+bjt.db:mock_exam_question:81,1,51,2,p2s2,スケジュール表,"【本日の会議スケジュール】
+10:00-10:30 開会あいさつ・議題確認
+10:30-11:30 新製品プレゼンテーション
+11:30-12:00 質疑応答
+13:00-14:00 部署別ディスカッション",質疑応答の時間はどれか。,10:00-10:30,11:30-12:00,10:30-11:30,13:00-14:00,2,"Theo bảng lịch trình, phần hỏi đáp diễn ra từ 11:30 đến 12:00.",N3,,Q7_ref
+bjt.db:mock_exam_question:82,1,52,2,p2s2,価格表,"【会議室利用料金】
+Aルーム（10名まで）：1時間 3,000円
+Bルーム（20名まで）：1時間 5,000円
+Cルーム（50名まで）：1時間 8,000円
+※3時間以上のご利用で10%割引",30名で会議を行う場合、利用できる部屋はどれか。,Aルームのみ,Bルームのみ,AルームとBルーム,Cルームのみ,4,"Phòng B chỉ chứa tối đa 20 người, phòng A tối đa 10 người, chỉ có phòng C (tối đa 50 người) đủ chỗ cho 30 người.",N3,,Q7_ref
+bjt.db:mock_exam_question:83,1,53,2,p2s2,お知らせ,"【社内お知らせ】
+エレベーター点検のため、下記の時間帯は1号機をご利用いただけません。
+日時：7月28日（火）9:00〜12:00
+該当時間帯は2号機をご利用ください。ご不便をおかけしますが、よろしくお願いいたします。",7月28日の午前中、社員はどうすればよいか。,階段を使わなければならない。,2号機のエレベーターを利用する。,出社を控える。,1号機を予約制で利用する。,2,"Thông báo nói thang máy số 1 bảo trì buổi sáng, nhân viên nên dùng thang máy số 2 trong khung giờ đó.",N3,,Q7_ref
+bjt.db:mock_exam_question:84,1,54,2,p2s2,案内状,"【セミナー案内】
+日時：8月10日（月）14:00〜16:00
+会場：本社ビル5階　大会議室
+定員：50名（先着順）
+申込締切：8月5日（水）17:00まで
+参加費：無料",このセミナーについて正しいものはどれか。,参加費が必要である。,申込は8月10日まで受け付けている。,定員は先着順で50名までである。,会場は未定である。,3,"Thông báo nêu rõ giới hạn 50 người theo thứ tự đăng ký trước, tham gia miễn phí, hạn đăng ký là 5/8 chứ không phải 10/8.",N3,,Q7_ref
+bjt.db:mock_exam_question:85,1,55,2,p2s2,グラフ説明,"【当社の四半期売上推移（前年同期比）】
+第1四半期：+5%
+第2四半期：+8%
+第3四半期：－2%
+第4四半期：+10%
+※第3四半期は主要取引先の発注減少が影響",売上が前年同期を下回った四半期はどれか。,第3四半期,第2四半期,第1四半期,第4四半期,1,"Quý 3 có mức tăng trưởng -2% (âm), tức doanh thu thấp hơn cùng kỳ năm trước; các quý còn lại đều tăng dương.",N2,,Q7_ref
+bjt.db:mock_exam_question:86,1,56,2,p2s2,メモ,"【伝言メモ】
+田中様（△△商事）より、10:20頃お電話がありました。
+「明日の打ち合わせを、13時から14時に変更したい」とのことです。
+折り返しのお電話をお願いします。",このメモの内容について、受け取った人がすべきことは何か。,何もしなくてよい。,打ち合わせを中止する。,田中様に折り返し電話をする。,田中様のオフィスを訪問する。,3,Ghi chú yêu cầu gọi lại cho ông Tanaka để xác nhận việc đổi giờ họp.,N3,,Q7_ref
+bjt.db:mock_exam_question:87,1,57,2,p2s2,規定表,"【出張旅費規定（抜粋）】
+国内出張（日帰り）：日当2,000円
+国内出張（宿泊あり）：日当3,000円＋宿泊費実費（上限1万円/泊）
+海外出張：日当5,000円＋宿泊費実費（上限2万円/泊）",国内出張で1泊した場合の日当はいくらか。,"2,000円","3,000円","5,000円",1万円,2,"Theo quy định, công tác nội địa có ngủ lại được phụ cấp ngày 3,000 yên (cộng thêm tiền khách sạn thực chi, tối đa 10,000 yên/đêm).",N2,,Q7_ref
+bjt.db:mock_exam_question:88,1,58,2,p2s2,お知らせ,"【夏季休業のお知らせ】
+弊社は下記の期間、夏季休業とさせていただきます。
+休業期間：8月13日（木）〜8月16日（日）
+休業中にいただいたお問い合わせは、8月17日（月）以降、順次対応いたします。",8月14日に問い合わせをした場合、対応はいつになるか。,8月14日中に対応する。,8月17日以降、順次対応する。,対応しない。,8月13日以前に対応する。,2,"Trong thời gian nghỉ hè (13-16/8), các yêu cầu sẽ được xử lý dần từ ngày 17/8 trở đi.",N3,,Q7_ref
+bjt.db:mock_exam_question:89,1,59,2,p2s2,注文書,"【注文内容】
+商品名：オフィス用チェア　型番：OC-220
+数量：15脚　単価：8,000円
+納品希望日：8月20日
+備考：組み立て設置サービスを含む",この注文の合計金額はいくらか（設置サービス料は含まない）。,"80,000円","120,000円","150,000円","200,000円",2,"8,000 yên x 15 chiếc = 120,000 yên.",N3,,Q7_ref
+bjt.db:mock_exam_question:90,1,60,2,p2s2,求人票,"【求人情報】
+募集職種：営業アシスタント
+雇用形態：契約社員（1年更新）
+勤務時間：9:00〜18:00（休憩1時間）
+応募資格：日本語能力試験N2以上、普通自動車免許",この求人に応募するために必要な条件はどれか。,営業経験5年以上,日本語能力試験N2以上と普通自動車免許,TOEIC800点以上,修士号以上の学歴,2,Yêu cầu ứng tuyển ghi rõ cần chứng chỉ JLPT N2 trở lên và bằng lái xe ô tô thường.,N3,,Q7_ref
+bjt.db:mock_exam_question:91,1,61,2,p2s2,議事録抜粋,"【議事録（抜粋）】
+決定事項：
+1. 新商品の発売日を10月1日に決定
+2. 広告予算を当初計画より20%増額
+3. 発売前のプレスリリースは9月15日に実施",広告予算について決定したことは何か。,予算を当初計画より20%増やす。,予算を20%削減する。,予算は変更しない。,広告は行わない。,1,Biên bản ghi rõ ngân sách quảng cáo được tăng thêm 20% so với kế hoạch ban đầu.,N2,,Q7_ref
+bjt.db:mock_exam_question:92,1,62,2,p2s2,案内メール抜粋,"【健康診断のご案内】
+対象者：全社員
+実施期間：9月1日〜9月30日
+予約方法：社内ポータルサイトから希望日時を選択
+注意事項：当日は朝食を摂らずにお越しください。",健康診断当日の注意事項として正しいものはどれか。,朝食を摂らずに来る。,必ず朝食を摂ってから来る。,前日は絶食する。,特に注意事項はない。,1,Thông báo yêu cầu không ăn sáng trước khi đến khám sức khỏe.,N3,,Q7_ref
+bjt.db:mock_exam_question:93,1,63,2,p2s2,料金プラン表,"【クラウドサービス料金プラン】
+ライトプラン：月額3,000円（利用者5名まで）
+スタンダードプラン：月額8,000円（利用者20名まで）
+プレミアムプラン：月額15,000円（利用者無制限）",利用者が12名の場合、最も費用を抑えられるプランはどれか。,ライトプラン,スタンダードプラン,プレミアムプラン,どのプランも利用できない,2,"Gói Light chỉ hỗ trợ tối đa 5 người, không đủ cho 12 người; gói Standard hỗ trợ tối đa 20 người với giá thấp hơn Premium, nên là lựa chọn tiết kiệm nhất.",N2,,Q7_ref
+bjt.db:mock_exam_question:94,1,64,2,p2s2,お詫び状抜粋,"【お詫びとお知らせ】
+このたび、システム障害により、8月5日9:00〜11:00の間、オンラインサービスをご利用いただけない状態となりました。ご迷惑をおかけしましたことを深くお詫び申し上げます。原因はサーバーの一時的な過負荷によるものです。",システム障害の原因として述べられているものはどれか。,サーバーへの不正アクセス,サーバーの一時的な過負荷,社員の操作ミス,停電,2,"Văn bản xin lỗi nêu rõ nguyên nhân là do máy chủ tạm thời quá tải, không phải do bị tấn công hay mất điện.",N2,,Q7_ref
+bjt.db:mock_exam_question:95,1,65,2,p2s2,組織図抜粋,"【営業部　組織体制】
+営業部長：高橋
+　├ 第一営業課（国内担当）課長：中村
+　└ 第二営業課（海外担当）課長：伊藤
+※第二営業課は今年4月に新設",海外担当の課長は誰か。,高橋,伊藤,中村,まだ決まっていない,2,"Theo sơ đồ tổ chức, khóa phụ trách nước ngoài (Đệ nhị doanh nghiệp khóa) do ông Ito làm trưởng khóa.",N3,,Q7_ref
+bjt.db:mock_exam_question:1,1,66,3,p3s1,,,この件について、部長のご意見を（　　）いただけますでしょうか。,伺って,伺われて,伺わせて,伺い,3,「伺わせていただく」là khiêm nhường ngữ kép chuẩn dùng khi xin phép được hỏi ý kiến cấp trên/đối tác.,N2,,Q8
+bjt.db:mock_exam_question:2,1,67,3,p3s1,,,資料はメールに（　　）ので、ご確認ください。,添付した,添付いたしました,添付された,添付してもらった,2,"「いたす」là khiêm nhường ngữ của「する」, dùng khi nói về hành động của chính mình với người trên/khách hàng.",N2,,Q8
+bjt.db:mock_exam_question:3,1,68,3,p3s1,,,来月の展示会には、弊社（　　）3名が参加する予定です。,より,から,での,への,2,「（会社名）から〜名が参加する」là cách nói chuẩn khi nêu số người tham gia từ một tổ chức.,N2,,Q8
+bjt.db:mock_exam_question:4,1,69,3,p3s1,,,お忙しい（　　）、ご足労いただきありがとうございます。,ところ,うちに,あいだ,とおり,1,「お忙しいところ」là cụm cố định dùng để cảm ơn người khác đã dành thời gian dù đang bận.,N2,,Q8
+bjt.db:mock_exam_question:5,1,70,3,p3s1,,,納期に関しまして、今一度社内で（　　）のうえ、ご返答申し上げます。,確認して,相談される,検討,検討し,3,"「検討のうえ」là mẫu danh từ hoá＋のうえ chuẩn trong văn phong công văn, nghĩa là 'sau khi xem xét'.",N2,,Q8
+bjt.db:mock_exam_question:6,1,71,3,p3s1,,,本件は担当者が不在のため、明日以降（　　）と存じます。,対応いたしかねる,対応しかねない,対応いたしかねます,対応できかねます,4,「〜かねます」là cách nói khiêm tốn để diễn đạt 'khó có thể làm được'; đi cùng thể ます cho lịch sự đầy đủ.,N1,,Q8
+bjt.db:mock_exam_question:7,1,72,3,p3s1,,,貴社のご要望（　　）、新しいプランをご提案いたします。,にわたって,にかわって,にとって,にこたえて,4,"「〜にこたえて」nghĩa là 'để đáp lại/theo yêu cầu của', phù hợp ngữ cảnh đề xuất phương án theo mong muốn khách hàng.",N2,,Q8
+bjt.db:mock_exam_question:8,1,73,3,p3s1,,,担当者（　　）異なりますので、詳細は各部署にお問い合わせください。,につき,にかけて,にとって,によって,4,"「〜によって異なる」= 'tùy theo ... mà khác nhau', mẫu câu rất phổ biến trong văn bản hành chính.",N2,,Q8
+bjt.db:mock_exam_question:9,1,74,3,p3s1,,,このたびの契約締結（　　）、心より御礼申し上げます。,につきまして,にそって,における,にあたり,4,"「〜にあたり」dùng khi nói về một dịp/thời điểm quan trọng (ký hợp đồng, khai trương...), trang trọng hơn「〜のとき」.",N1,,Q8
+bjt.db:mock_exam_question:10,1,75,3,p3s1,,,部長は現在、海外出張中で（　　）。,おります,いらっしゃいます,ございます,なさいます,1,"Khi nói về người trong công ty mình (kể cả cấp trên) với người ngoài công ty, phải dùng khiêm nhường ngữ「おります」, không dùng tôn kính ngữ「いらっしゃいます」.",N2,,Q8
+bjt.db:mock_exam_question:11,1,76,3,p3s1,,,経費の精算は、月末（　　）に必ず提出してください。,までに,まで,までは,までも,1,"「までに」chỉ hạn chót phải hoàn thành trước một thời điểm, khác với「まで」chỉ khoảng thời gian kéo dài liên tục.",N3,,Q8
+bjt.db:mock_exam_question:12,1,77,3,p3s1,,,不明な点がございましたら、（　　）お問い合わせください。,遠慮せず,ご遠慮せず,遠慮させず,ご遠慮なく,4,"「ご遠慮なく」là cách nói lịch sự chuẩn mời người khác đừng ngại hỏi/liên hệ, thường dùng trong email/công văn.",N2,,Q8
+bjt.db:mock_exam_question:96,1,78,3,p3s1,,,お客様からのご指摘（　　）、早急に商品の点検を行いました。,をめぐって,にとって,にかんして,をうけて,4,"「〜をうけて」nghĩa là 'nhận được (ý kiến/chỉ trích) rồi mới hành động', phù hợp ngữ cảnh kiểm tra sản phẩm ngay sau khi có phản ánh từ khách hàng.",N2,,Q8
+bjt.db:mock_exam_question:97,1,79,3,p3s1,,,今回の値上げは、原材料費の高騰（　　）やむを得ない措置です。,にそう,にとる,による,にわたる,3,"「〜による」chỉ nguyên nhân/căn cứ, đúng ngữ cảnh 'do giá nguyên liệu tăng cao'.",N2,,Q8
+bjt.db:mock_exam_question:98,1,80,3,p3s1,,,契約内容（　　）、後日改めてご連絡いたします。,にたいしては,にとっては,につきましては,にくわえては,3,"「〜につきましては」là cách nói trang trọng của「〜については」, dùng trong văn bản/email công việc khi nêu chủ đề sẽ liên hệ lại sau.",N2,,Q8
+bjt.db:mock_exam_question:13,1,81,3,p3s2,,,取引先に「明日、御社に行ってもいいですか」と尋ねたい。最も適切な言い方はどれか。,明日、御社に行ってもいいですか。,明日、御社に伺ってもよろしいでしょうか。,明日、御社に参られてもよろしいでしょうか。,明日、御社にいらっしゃってもいいですか。,2,「伺う」là khiêm nhường ngữ của「行く」khi nói về việc mình đến chỗ đối tác;「よろしいでしょうか」lịch sự hơn「いいですか」.,N2,,Q8
+bjt.db:mock_exam_question:14,1,82,3,p3s2,,,取引先からの依頼を断る場面で、最も適切な表現はどれか。,それはできません。,ちょっと難しいです。,無理です、すみません。,誠に申し訳ございませんが、今回は見送らせていただきたく存じます。,4,"Từ chối trong bối cảnh thương mại cần dùng cách nói vòng, trang trọng, tránh nói thẳng「できません」/「無理です」.",N2,,Q8
+bjt.db:mock_exam_question:15,1,83,3,p3s2,,,上司に自分の考えを伝える際、謙虚さを示す最も適切な言い方はどれか。,僭越ながら、私からも一点申し上げたいと存じます。,私の考えはこうです。,私が言いたいのはこれです。,私の意見を聞いてください。,1,"「僭越ながら」là cách nói khiêm tốn khi mình (cấp dưới) muốn phát biểu ý kiến trước cấp trên, thể hiện sự tôn trọng vị trí.",N1,,Q8
+bjt.db:mock_exam_question:16,1,84,3,p3s2,,,来客に飲み物を勧める最も適切な言い方はどれか。,お飲み物は何がいいですか。,お飲み物は何にされますか。,お飲み物は何になさいますか。,お飲み物は何をもらいますか。,3,"「なさる」là tôn kính ngữ của「する」, dùng khi hỏi ý muốn/lựa chọn của khách một cách lịch sự.",N2,,Q8
+bjt.db:mock_exam_question:17,1,85,3,p3s2,,,取引先の担当者が変わったと聞いた際、最も適切な返答はどれか。,そうですか、わかりました。,へえ、そうなんですか。,さようでございますか。今後ともよろしくお願いいたします。,了解しました。,3,"「さようでございますか」là cách đáp lại lịch sự, trang trọng, phù hợp giao tiếp với đối tác bên ngoài công ty.",N1,,Q8
+bjt.db:mock_exam_question:18,1,86,3,p3s2,,,自社の資料を取引先に渡す際、最も適切な言い方はどれか。,こちらの資料を差し上げます。,こちらの資料をあげます。,こちらの資料をくださいます。,こちらの資料をいただきます。,1,"「差し上げる」là khiêm nhường ngữ của「あげる」, dùng khi mình trao vật gì đó cho người trên/khách hàng.",N2,,Q8
+bjt.db:mock_exam_question:19,1,87,3,p3s2,,,上司から書類を受け取った際、最も適切な言い方はどれか。,書類をもらいました。,書類をいただきました。,書類をくれました。,書類を受け取ってあげました。,2,"「いただく」là khiêm nhường ngữ của「もらう」, dùng khi nhận vật gì đó từ người trên.",N3,,Q8
+bjt.db:mock_exam_question:20,1,88,3,p3s2,,,会議で他部署の意見に反対する際、最も角が立たない言い方はどれか。,それは違います。,そうは思いません。,おっしゃることも理解できますが、別の観点もあるかと存じます。,それは間違っています。,3,"Khi phản đối trong họp, nên công nhận ý kiến đối phương trước rồi mới đưa quan điểm khác, tránh phủ định thẳng để giữ hòa khí.",N1,,Q8
+bjt.db:mock_exam_question:21,1,89,3,p3s2,,,電話で相手の名前が聞き取れなかった際、最も適切な聞き返し方はどれか。,何ですか。,え、誰ですか。,名前は何でしたか。,もう一度お名前を伺ってもよろしいでしょうか。,4,"Khi nghe điện thoại không rõ tên, nên xin phép hỏi lại lịch sự thay vì hỏi trống không hoặc tỏ ra ngạc nhiên.",N2,,Q8
+bjt.db:mock_exam_question:99,1,90,3,p3s2,,,取引先に、資料を確認したかどうか尋ねたい。最も適切な言い方はどれか。,資料、見ましたか。,資料を見たかどうか教えてください。,資料、確認した？,資料にはもう目を通していただけましたでしょうか。,4,"「目を通す」+「ていただけましたでしょうか」là cách hỏi lịch sự, gián tiếp, phù hợp khi hỏi đối tác đã xem tài liệu chưa.",N2,,Q8
+bjt.db:mock_exam_question:22,1,91,3,p3s3,社内文書,"社員各位
+来月より、社内の会議室予約はすべて新しい予約システムを使用することになりました。従来の予約表への記入は廃止します。予約システムの使い方については、来週水曜日に説明会を開催しますので、各部署から1名以上の参加をお願いいたします。",この文書の内容と合っているものはどれか。,来月から新しい予約システムに変わる。,説明会には全員が参加しなければならない。,会議室の予約表は今後も使用できる。,予約システムの説明会は来月開催される。,1,"Văn bản nêu rõ 'từ tháng sau' hệ thống đặt phòng mới sẽ được áp dụng, và bảng đặt phòng cũ sẽ bị bỏ (không dùng nữa); buổi giải thích diễn ra tuần sau (không phải tháng sau) và chỉ cần ít nhất 1 người/bộ phận tham dự.",N2,,Q8
+bjt.db:mock_exam_question:23,1,92,3,p3s3,社内文書,"総務部より　各位
+下記日程でオフィスの一斉清掃を実施します。当日は私物を机の上に置かないよう、ご協力をお願いいたします。清掃業者が入りますので、貴重品は各自で管理してください。日時：来週金曜日　9時〜12時",社員が当日すべきこととして正しいものはどれか。,貴重品を総務部に預ける。,9時までに退社する。,私物を机の上に置かないようにする。,清掃業者に机を片付けてもらう。,3,Đoạn văn yêu cầu nhân viên không để đồ cá nhân trên bàn và tự quản lý đồ có giá trị — không nói gửi cho tổng vụ hay nhờ đơn vị vệ sinh dọn bàn.,N2,,Q8
+bjt.db:mock_exam_question:24,1,93,3,p3s3,社外文書,拝啓　貴社ますますご清栄のこととお慶び申し上げます。さて、誠に勝手ながら、弊社は来月1日より本社を下記住所に移転いたします。これを機に社員一同、より一層のサービス向上に努めてまいる所存でございます。今後とも変わらぬお引き立てのほど、お願い申し上げます。敬具,この文書の目的として最も適切なものはどれか。,新しいサービスの案内,本社移転の案内,取引の依頼,謝罪,2,"Nội dung chính là thông báo việc chuyển trụ sở chính đến địa chỉ mới từ ngày 1 tháng sau, không phải giới thiệu dịch vụ mới hay xin lỗi.",N2,,Q8
+bjt.db:mock_exam_question:25,1,94,3,p3s3,社外文書,拝啓　時下ますますご清祥のこととお慶び申し上げます。さて、〇月分の代金お支払いにつきまして、本日現在ご入金が確認できておりません。行き違いでしたらご容赦ください。恐れ入りますが、至急ご確認くださいますようお願い申し上げます。敬具,この文書の内容と合っているものはどれか。,支払いの確認が取れていないため、確認を依頼している。,支払いはすでに確認できている。,支払い方法の変更を提案している。,契約の解除を通知している。,1,Văn bản là thư hối thúc thanh toán — cho biết chưa xác nhận được khoản thanh toán tháng đó và yêu cầu đối tác kiểm tra gấp.,N2,,Q8
+bjt.db:mock_exam_question:26,1,95,3,p3s3,社内メール,"件名：明日の会議について
+
+お疲れ様です。明日10時からの会議ですが、会議室が変更となり、第3会議室で行うことになりました。資料は本日18時までに共有フォルダにアップロードしてください。よろしくお願いいたします。",このメールを読んだ人がすべきことは何か。,資料を本日18時までに共有フォルダへアップロードする。,明日の会議を欠席する。,会議室を予約する。,会議の時間を変更する。,1,"Email yêu cầu người nhận tải tài liệu lên thư mục chung trước 18h hôm nay; phòng họp đã đổi nhưng đó là thông tin, không phải việc cần làm của người đọc.",N3,,Q8
+bjt.db:mock_exam_question:27,1,96,3,p3s3,社内メール,"件名：経費精算の締め切りについて
+
+お疲れ様です。今月の経費精算は、通常より2日早い25日が締め切りとなります。領収書の提出漏れがないよう、各自ご確認をお願いいたします。",今月の経費精算の締め切りについて正しいものはどれか。,通常と同じ日程である。,通常より2日遅い。,来月に延期された。,通常より2日早い。,4,"Email nêu rõ hạn quyết toán chi phí tháng này sớm hơn thường lệ 2 ngày, rơi vào ngày 25.",N3,,Q8
+bjt.db:mock_exam_question:28,1,97,3,p3s3,社外メール,"件名：Re: お見積もりの件
+
+株式会社山田物産　鈴木様
+
+いつもお世話になっております。ご依頼いただきましたお見積もりを添付のとおりお送りいたします。ご不明な点がございましたら、お気軽にお問い合わせください。",このメールの目的として最も適切なものはどれか。,見積書を依頼する。,契約書を送付する。,見積書を送付する。,訪問の約束をする。,3,"Tiêu đề「Re: お見積もりの件」và nội dung cho thấy đây là email trả lời, gửi kèm bảng báo giá theo yêu cầu trước đó, không phải yêu cầu báo giá.",N3,,Q8
+bjt.db:mock_exam_question:29,1,98,3,p3s3,社外メール,"件名：打ち合わせ日程の変更のお願い
+
+株式会社さくら商事　田中様
+
+お世話になっております。誠に申し訳ございませんが、来週火曜日にお約束しておりました打ち合わせを、社内の事情により木曜日に変更させていただけないでしょうか。ご都合はいかがでしょうか。",このメールの内容と合っているものはどれか。,打ち合わせを中止したい。,打ち合わせに遅刻することを伝えている。,打ち合わせの場所を変更したい。,打ち合わせの日程変更を依頼している。,4,"Email xin đổi ngày họp từ thứ Ba sang thứ Năm do việc phát sinh trong công ty, không phải huỷ họp hay đổi địa điểm.",N3,,Q8
+bjt.db:mock_exam_question:30,1,99,3,p3s3,記事,経済産業省の発表によると、今年度の中小企業のIT導入補助金の申請件数は前年度比で約3割増加した。特に、業務効率化を目的としたクラウドサービスの導入に補助金を活用する企業が多く、担当者は「今後もこの傾向は続くだろう」と分析している。,この記事の内容と合っているものはどれか。,IT導入補助金の申請件数は前年度より減った。,補助金は主に人材採用のために使われている。,今後、補助金制度は廃止される予定である。,クラウドサービス導入のために補助金を使う企業が多い。,4,"Bài báo cho biết nhiều doanh nghiệp dùng trợ cấp để triển khai dịch vụ đám mây nhằm nâng cao hiệu suất công việc; số đơn xin trợ cấp tăng ~30% chứ không giảm, và không đề cập việc bãi bỏ chế độ trợ cấp.",N2,,Q8
+bjt.db:mock_exam_question:100,1,100,3,p3s3,記事,厚生労働省の調査によると、テレワークを導入している企業の割合は年々増加しており、今年度は全体の45%に達した。特に従業員300人以上の企業での導入率が高く、担当者は「通勤時間の削減や生産性向上を目的に導入する企業が多い」と説明している。,この記事の内容と合っているものはどれか。,テレワーク導入企業の割合は減少している。,従業員300人以上の企業では導入率が低い。,今年度、テレワークを導入している企業は全体の45%である。,テレワークの目的は主に採用活動である。,3,"Bài báo nêu tỷ lệ doanh nghiệp áp dụng làm việc từ xa đạt 45% trong năm nay và đang tăng dần qua các năm, doanh nghiệp từ 300 nhân viên trở lên có tỷ lệ áp dụng cao hơn.",N2,,Q8
+bjt.db:mock_exam_question:101,2,1,1,p1s1,会話,"A：会議室の予約、13時からで大丈夫ですか。
+B：すみません、13時は別の予定が入っているので、14時からでお願いできますか。",Bが希望している会議室の予約時間はいつか。,13時から,14時から,15時から,12時から,2,"B nói 13 giờ đã có lịch khác, xin đổi phòng họp sang bắt đầu từ 14 giờ.",N3,mock/q101_part1_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:102,2,2,1,p1s1,電話,"A：お世話になっております、山田物産の中村です。伊藤課長はいらっしゃいますか。
+B：申し訳ございません、伊藤はただいま席を外しております。折り返しお電話させましょうか。",この会話に関する説明として最も適切なものはどれか。,取引先からの電話に、伊藤課長の同僚が対応している,伊藤課長本人が電話に出ている,中村がBの部下である,これは社内の内線電話である,1,"Nakamura tự xưng công ty khác (Yamada Bussan) và hỏi Trưởng phòng Ito, người nghe B trả lời Ito đang vắng mặt — đây là cuộc gọi từ đối tác được đồng nghiệp của Ito tiếp nhận.",N3,mock/q102_part1_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:103,2,3,1,p1s1,会話,"A：すみません、404号室はどちらでしょうか。10時から面接があるのですが。
+B：エレベーターで4階に上がって、突き当りを右です。",この会話が行われている場所として最も適切なものはどれか。,エレベーターの中,会社の受付,取引先の会議室,駅の改札口,2,Người hỏi đường đến phòng phỏng vấn 404 — tình huống điển hình xảy ra ở quầy tiếp tân công ty.,N3,mock/q103_part1_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:104,2,4,1,p1s1,アナウンス,本日開催の新製品発表会にご来場いただき、誠にありがとうございます。開演は14時を予定しておりますが、会場内の混雑が予想されますため、13時30分より受付を開始いたします。,このアナウンスの内容と合っているものはどれか。,発表会はすでに始まっている,受付は開演の30分前から始まる,発表会は中止になった,受付は14時に始まる,2,"Thông báo nói tiếp đón bắt đầu 13:30, sớm hơn giờ khai mạc 14:00 đúng 30 phút.",N3,mock/q104_part1_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:105,2,5,1,p1s1,会話,"A：田中さん、来週の出張、ホテルは新宿にしますか、それとも品川にしますか。
+B：取引先が品川にあるので、品川の方が便利だと思います。",Bはどちらのホテルを勧めているか。,新宿のホテル,ホテルは不要,どちらでもよい,品川のホテル,4,B nói đối tác ở Shinagawa nên khách sạn Shinagawa tiện hơn.,N3,mock/q105_part1_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:106,2,6,1,p1s1,電話,"A：お忙しいところ恐れ入ります。来週の打ち合わせの件で確認させていただきたいのですが。
+B：ああ、火曜日の件ですね。少々お待ちください、担当の者に代わります。",この会話について正しいものはどれか。,Bはこれから担当者に電話を取り次ぐ,Aは担当者本人と話している,打ち合わせはすでに終わった,Aは社内の人間である,1,"B nói sẽ chuyển máy cho người phụ trách, nghĩa là cuộc gọi sắp được chuyển tiếp.",N3,mock/q106_part1_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:107,2,7,1,p1s1,会話,"A：荷物はこちらの倉庫でよろしいでしょうか。
+B：はい、そちらの棚に置いてください。伝票にサインをお願いします。",この会話が行われている場所として最も適切なものはどれか。,駅の待合室,オフィスの会議室,倉庫,レストラン,3,Nội dung nói về việc đặt hàng hóa lên kệ và ký phiếu giao nhận — bối cảnh là kho hàng.,N3,mock/q107_part1_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:108,2,8,1,p1s1,会話,"A：課長、先ほどの資料、修正版を送っていただけますか。
+B：今すぐ送ります。念のため、印刷したものも机に置いておきますね。",Bがこれから行うことは何か。,資料を破棄する,修正版をメールで送り、印刷したものも用意する,会議を中止する,資料の内容を口頭で説明するだけ,2,B nói sẽ gửi ngay bản sửa và để thêm bản in trên bàn để phòng hờ.,N3,mock/q108_part1_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:109,2,9,1,p1s1,放送,本日、3階のコピー機が故障のため使用できません。修理業者が明日の午前中に対応する予定です。ご不便をおかけしますが、2階のコピー機をご利用ください。,この放送の内容と合っているものはどれか。,3階のコピー機はすでに修理された,コピー機はすべて使用禁止である,3階のコピー機が故障中で、2階を使うよう案内している,修理は本日中に終わる,3,"Thông báo nói máy photo tầng 3 đang hỏng, hướng dẫn dùng máy tầng 2 thay thế; sửa chữa dự kiến sáng mai mới xong.",N3,mock/q109_part1_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:110,2,10,1,p1s1,会話,"A：すみません、301会議室を予約したいのですが、明日の午前中は空いていますか。
+B：確認します…申し訳ございません、10時から11時は埋まっておりますが、それ以外は空いております。",明日の午前中で301会議室が使えない時間はいつか。,9時から10時,午前中はすべて使える,11時から12時,10時から11時,4,"B nói khung 10-11 giờ đã kín, ngoài ra đều trống.",N3,mock/q110_part1_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:111,2,11,1,p1s2,場面設定,取引先から電話があったが、担当者が会議中で電話に出られない。電話を取った際の最も適切な対応はどれか。,上の場面で最も適切な言い方はどれか。,今、会議中なので後でかけ直してください。,わかりません、後で聞いてください。,いません。,申し訳ございません、あいにく○○はただいま会議中でございます。よろしければ、終わり次第折り返しご連絡させていただきます。,4,"Cách xử lý lịch sự, chuyên nghiệp khi người cần gặp đang họp là xin lỗi và đề nghị gọi lại sau khi họp xong.",N3,mock/q111_part1_sec2.mp3,self_authored_batch2
+bjt.db:mock_exam_question:112,2,12,1,p1s2,場面設定,上司に、体調不良のため早退したいと伝えたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,早退します。,具合悪いんで帰ります。,帰りたいです。,体調が優れませんので、大変恐縮ですが、本日は早めに失礼させていただいてもよろしいでしょうか。,4,"Khi xin phép cấp trên nghỉ sớm, cần dùng cách nói khiêm nhường, xin phép rõ ràng thay vì thông báo suông.",N2,mock/q112_part1_sec2.mp3,self_authored_batch2
+bjt.db:mock_exam_question:113,2,13,1,p1s2,場面設定,取引先の担当者からいただいた名刺を受け取る際の最も適切な言葉はどれか。,この場面で最も適切な言い方はどれか。,頂戴いたします。,どうも。,もらいます。,いただきます、どうも。,1,「頂戴いたします」là cách nói khiêm nhường chuẩn khi nhận danh thiếp từ đối tác.,N3,mock/q113_part1_sec2.mp3,self_authored_batch2
+bjt.db:mock_exam_question:114,2,14,1,p1s2,場面設定,会議で上司の発言に対して、やんわりと懸念を伝えたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,それは違います。,おっしゃることはよく分かりますが、一点だけ懸念がございまして…,反対です。,それはダメです。,2,"Cách phản biện gián tiếp, thừa nhận ý kiến đối phương trước rồi mới nêu lo ngại là cách nói phù hợp trong họp.",N2,mock/q114_part1_sec2.mp3,self_authored_batch2
+bjt.db:mock_exam_question:115,2,15,1,p1s2,場面設定,取引先を訪問し、応接室に案内してくれた社員に一言かけたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,ここで待てばいいんですか。,早く来てください。,お忙しいところご案内いただき、ありがとうございます。,別にいいです。,3,Cảm ơn lịch sự người đã dẫn đường trong lúc họ đang bận là cách ứng xử phù hợp.,N3,mock/q115_part1_sec2.mp3,self_authored_batch2
+bjt.db:mock_exam_question:116,2,16,1,p1s2,場面設定,上司から指示された仕事の内容がよく理解できなかったため、もう一度説明してもらいたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,恐れ入りますが、もう一度詳しくご説明いただけますでしょうか。,もう一回言ってください。,分かりません。,え、何ですか。,1,"Khi nhờ cấp trên giải thích lại, cần dùng cách nói khiêm nhường, lịch sự.",N2,mock/q116_part1_sec2.mp3,self_authored_batch2
+bjt.db:mock_exam_question:117,2,17,1,p1s2,場面設定,取引先からの依頼を、社内の事情によりお断りしなければならない。最も適切な断り方はどれか。,この場面で最も適切な言い方はどれか。,できません。,無理です。,大変申し訳ございませんが、今回は社内の事情により見送らせていただきたく存じます。,やりません。,3,"Từ chối đối tác cần xin lỗi và diễn đạt gián tiếp, lịch sự thay vì nói thẳng không được.",N2,mock/q117_part1_sec2.mp3,self_authored_batch2
+bjt.db:mock_exam_question:118,2,18,1,p1s2,場面設定,会議に少し遅刻してしまい、会議室に入る際に一言述べたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,遅くなりまして、大変申し訳ございません。,遅れてすみません。,遅刻しました。,すみません、遅い。,1,"Xin lỗi vì đến muộn cuộc họp cần dùng câu trang trọng, lịch sự hơn so với văn nói thông thường.",N3,mock/q118_part1_sec2.mp3,self_authored_batch2
+bjt.db:mock_exam_question:119,2,19,1,p1s2,場面設定,上司からの提案に対して、賛成の意を伝えたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,いいと思います。,大変よろしいかと存じます。ぜひ進めていただきたいです。,OKです。,賛成、賛成。,2,"Đồng ý với đề xuất của cấp trên nên dùng cách nói lịch sự, trang trọng hơn.",N2,mock/q119_part1_sec2.mp3,self_authored_batch2
+bjt.db:mock_exam_question:120,2,20,1,p1s2,場面設定,取引先に、資料の送付が遅れていることを伝え、謝罪したい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,資料、まだです。,遅れてごめんなさい。,ちょっと待ってください。,資料の送付が遅れており、大変ご迷惑をおかけしております。本日中に必ずお送りいたします。,4,"Xin lỗi đối tác vì gửi tài liệu chậm cần nêu rõ tình hình, xin lỗi và cam kết thời hạn cụ thể.",N3,mock/q120_part1_sec2.mp3,self_authored_batch2
+bjt.db:mock_exam_question:121,2,21,1,p1s3,会話,"A：来月のセミナーの参加人数、まだ集計できていないんですが。
+B：申込フォームの締め切りはいつでしたっけ。
+A：今週の金曜日です。
+B：では、来週月曜には最終人数が分かりますね。それまで会場の手配は保留にしましょう。",会場の手配はいつから進めることになったか。,来週月曜以降,今週の金曜日から,今すぐ,セミナー当日,1,B đề nghị đợi đến thứ Hai tuần sau khi biết số người tham dự cuối cùng rồi mới tiến hành đặt hội trường.,N3,mock/q121_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:122,2,22,1,p1s3,会話,"A：新しい経費精算システム、使ってみましたか。
+B：はい、以前より入力項目が減って、時間が短縮できました。ただ、領収書の写真がうまくアップロードできないことがあります。
+A：それは困りますね。情報システム部に問い合わせてみましょう。",新しいシステムの問題点として述べられているのは何か。,入力項目が増えた,領収書の写真のアップロードがうまくいかないことがある,操作が複雑になった,経費精算ができなくなった,2,B nêu vấn đề là đôi khi không tải được ảnh hóa đơn lên hệ thống.,N2,mock/q122_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:123,2,23,1,p1s3,アナウンス,本日は台風の接近に伴い、交通機関に乱れが生じる可能性がございます。安全のため、通常より1時間早い17時をもって、本日の営業を終了させていただきます。,このアナウンスの内容と合っているものはどれか。,台風のため、通常より早く営業を終了する,本日は通常通り営業する,交通機関はすでに全て止まっている,明日から休業する,1,"Thông báo nói do bão đến gần nên đóng cửa sớm hơn thường lệ 1 tiếng, vào lúc 17 giờ.",N3,mock/q123_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:124,2,24,1,p1s3,会話,"A：先方から見積もりの件で、金額を少し下げられないかという相談がありました。
+B：どのくらいの割合ですか。
+A：全体の5%程度です。
+B：それくらいなら、上と相談して検討してみましょう。",Bが次に行うと考えられることは何か。,すぐに5%値引きを承諾する,取引を中止する,見積もりを白紙に戻す,上司と相談して値引きを検討する,4,B nói sẽ trao đổi với cấp trên để xem xét việc giảm giá.,N2,mock/q124_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:125,2,25,1,p1s3,会話,"A：来週の展示会、パンフレットの印刷部数はどうしましょうか。
+B：昨年は300部で足りなかったので、今年は500部にしましょう。
+A：分かりました、印刷会社に発注しておきます。",パンフレットは何部発注することになったか。,300部,400部,500部,600部,3,B đề nghị in 500 bản vì năm ngoái in 300 bản không đủ.,N3,mock/q125_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:126,2,26,1,p1s3,会話,"A：新入社員の研修プログラム、来月から始まりますよね。
+B：ええ、ただ講師の一人が急に来られなくなってしまって。
+A：それは大変ですね、代わりの講師は見つかりそうですか。
+B：今、人事部で探しているところです。",現在の状況として最も適切なものはどれか。,研修プログラムはすでに中止が決まった,新入社員が集まらない,講師が一人足りず、人事部が代わりを探している,研修は無事終了した,3,"Một giảng viên đột xuất không đến được, phòng nhân sự đang tìm người thay thế.",N2,mock/q126_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:127,2,27,1,p1s3,アナウンス,エレベーターの点検作業のため、本日14時から16時まで、東棟のエレベーターがご利用いただけません。恐れ入りますが、西棟のエレベーターまたは階段をご利用ください。,この時間帯に東棟で移動する場合、どうすればよいか。,東棟のエレベーターを使う,移動をあきらめる,西棟のエレベーターか階段を使う,16時以降まで待つ,3,Thông báo hướng dẫn dùng thang máy tòa Tây hoặc cầu thang bộ trong lúc thang máy tòa Đông đang kiểm tra.,N3,mock/q127_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:128,2,28,1,p1s3,会話,"A：先月の売上データ、グラフにまとめておいてもらえますか。
+B：はい、承知しました。部署別と商品別、どちらのグラフがよろしいですか。
+A：両方お願いできますか、会議で使うので。",Bが作成することになったグラフは何か。,部署別のグラフのみ,商品別のグラフのみ,地域別のグラフ,部署別と商品別の両方,4,A yêu cầu làm cả 2 loại biểu đồ (theo phòng ban và theo sản phẩm) để dùng trong cuộc họp.,N3,mock/q128_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:129,2,29,1,p1s3,会話,"A：新しいオフィスチェア、注文しておいてもらえますか。
+B：何脚くらい必要ですか。
+A：まずは営業部の分だけで、10脚お願いします。
+B：承知しました、来週中には届くと思います。",何脚のオフィスチェアを注文することになったか。,5脚,15脚,10脚,20脚,3,A yêu cầu đặt 10 ghế trước cho phòng kinh doanh.,N3,mock/q129_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:130,2,30,1,p1s3,会話,"A：今度のプロジェクト、スケジュールがかなりタイトですね。
+B：ええ、特にテスト期間が短いのが心配です。
+A：であれば、開発期間を1週間短縮して、テスト期間に回せないか検討してみましょう。",Aが提案していることは何か。,プロジェクトを中止する,開発期間を短縮してテスト期間を延ばす,テストを省略する,納期を延長する,2,A đề xuất rút ngắn thời gian phát triển 1 tuần để dồn thêm cho giai đoạn kiểm thử.,N2,mock/q130_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:131,2,31,1,p1s3,会話,"A：来週の役員会議の資料、何部印刷すればいいですか。
+B：出席者は8名ですが、念のため予備を2部お願いします。",資料は合計何部印刷することになるか。,10部,9部,8部,12部,1,8 người tham dự cộng thêm 2 bản dự phòng = 10 bản.,N3,mock/q131_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:132,2,32,1,p1s3,アナウンス,本社ビルの改修工事に伴い、来月1日から3日間、正面玄関が使用できなくなります。その間は、裏口からの出入りにご協力をお願いいたします。,来月1日から3日間、社員はどうする必要があるか。,正面玄関から出入りする,在宅勤務にする,会社を休む,裏口から出入りする,4,Thông báo yêu cầu nhân viên ra vào bằng cửa sau trong 3 ngày sửa chữa cửa chính.,N3,mock/q132_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:133,2,33,1,p1s3,会話,"A：クライアントとの契約書、まだ先方のサインが届いていません。
+B：催促のメールはもう送りましたか。
+A：昨日送りましたが、まだ返信がありません。
+B：では、明日もう一度電話で確認してみましょう。",Bが提案していることは何か。,契約を白紙にする,サインを待たずに手続きを進める,明日、電話で確認する,契約書を破棄する,3,B đề nghị ngày mai gọi điện xác nhận lại vì gửi mail nhắc rồi vẫn chưa có phản hồi.,N3,mock/q133_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:134,2,34,1,p1s3,会話,"A：来月の出張の交通費、新幹線とレンタカーどちらが安いですか。
+B：計算したところ、2人以上で行く場合はレンタカーの方が安くなります。
+A：今回は3人で行くので、レンタカーにしましょう。",今回の出張で使う交通手段はどれか。,新幹線,レンタカー,飛行機,バス,2,"Vì đi 3 người nên thuê xe rẻ hơn tàu Shinkansen, quyết định dùng xe thuê.",N3,mock/q134_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:135,2,35,1,p1s3,会話,"A：新商品のキャッチコピー、いくつか候補を考えてみたんですが、見ていただけますか。
+B：もちろんです。…このシンプルな方がいいですね。ターゲット層にも響きそうです。
+A：ありがとうございます、ではこちらの案で進めます。",会話の内容と合っているものはどれか。,Bが選んだ案で進めることになった,キャッチコピーはまだ何も考えられていない,キャッチコピーの案は却下された,商品自体が中止になった,1,"B chọn phương án đơn giản, A quyết định tiến hành theo phương án đó.",N2,mock/q135_part1_sec3.mp3,self_authored_batch2
+bjt.db:mock_exam_question:136,2,36,2,p2s1,会話,"A：来週の出張の航空券、もう予約しましたか。
+B：はい、予約は済みました。ただ、まだ空港までの交通手段を決めていません。",Bがまだ決めていないことは何か。,航空券の予約,空港までの交通手段,ホテルの予約,出張の日程,2,B đã đặt vé máy bay xong nhưng chưa quyết định phương tiện di chuyển ra sân bay.,N3,mock/q136_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:137,2,37,2,p2s1,会話,"A：会議の議事録、作成していただけましたか。
+B：はい、先ほど関係者にメールで送付しました。",Bはすでに何をしたか。,資料を印刷した,会議を開催した,議事録をまだ書いていない,議事録を作成し、メールで送付した,4,B đã soạn xong biên bản họp và vừa gửi email cho các bên liên quan.,N3,mock/q137_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:138,2,38,2,p2s1,会話,"A：新しいプロジェクター、会議室に設置しましたか。
+B：はい、設置は終わりましたが、まだ接続テストをしていません。",Bがまだ行っていない作業は何か。,プロジェクターの設置,接続テスト,会議室の予約,プロジェクターの購入,2,B đã lắp xong máy chiếu nhưng chưa kiểm tra kết nối.,N3,mock/q138_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:139,2,39,2,p2s1,会話,"A：取引先への提案書、内容は固まりましたか。
+B：ほぼ固まりましたが、価格の部分だけ、まだ上司の承認を待っている状態です。",提案書について、現在どのような状況か。,すべて完成し、提出済みである,内容はまだ何も決まっていない,価格以外は固まっており、価格部分は上司の承認待ちである,提案書自体が中止になった,3,"Nội dung đã gần xong, chỉ còn phần giá đang chờ cấp trên phê duyệt.",N2,mock/q139_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:140,2,40,2,p2s1,会話,"A：会場の飾り付け、終わりましたか。
+B：ほとんど終わりましたが、看板だけまだ届いていません。",まだ届いていないものは何か。,飾り付け用の花,看板,椅子,テーブル,2,"Trang trí gần xong, chỉ còn bảng hiệu chưa được giao tới.",N3,mock/q140_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:141,2,41,2,p2s1,会話,"A：新入社員向けのマニュアル、更新しましたか。
+B：更新はしましたが、まだ部長のチェックを受けていません。",マニュアルは現在どういう状態か。,破棄された,まだ更新されていない,すでに配布された,更新済みで、部長のチェック待ちである,4,Đã cập nhật xong nhưng đang chờ trưởng phòng kiểm tra.,N3,mock/q141_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:142,2,42,2,p2s1,会話,"A：来月のセミナー会場、予約できましたか。
+B：候補を2つに絞りましたが、まだどちらにするか決めていません。",会場についての現状はどれか。,候補が2つに絞られ、決定はまだである,すでに予約が完了した,会場は見つかっていない,セミナー自体が中止になった,1,Đã thu hẹp còn 2 địa điểm ứng viên nhưng chưa quyết định địa điểm nào.,N3,mock/q142_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:143,2,43,2,p2s1,会話,"A：新商品のサンプル、届きましたか。
+B：はい、届きましたが、色が注文したものと違っていたので、交換をお願いしています。",サンプルについて、現在の問題は何か。,サンプルがまだ届いていない,色が注文と違っている,数が足りない,サイズが違う,2,"Mẫu hàng đã tới nhưng màu sắc khác với đơn đặt hàng, đang yêu cầu đổi lại.",N3,mock/q143_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:144,2,44,2,p2s1,会話,"A：明日の会議、資料は全員分準備できましたか。
+B：はい、10部用意しましたが、念のためあと2部追加で印刷します。",資料は最終的に何部用意することになるか。,10部,11部,13部,12部,4,"10 bản đã chuẩn bị, cộng thêm 2 bản in thêm để phòng hờ = 12 bản.",N3,mock/q144_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:145,2,45,2,p2s1,会話,"A：先方への謝罪の件、電話で伝えましたか。
+B：電話ではなく、直接お伺いして謝罪することになりました。",謝罪はどのように行うことになったか。,電話で伝える,メールで伝える,直接訪問して伝える,手紙を送る,3,Quyết định đến trực tiếp xin lỗi thay vì gọi điện.,N3,mock/q145_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:146,2,46,2,p2s1,会話,"A：倉庫の在庫確認、終わりましたか。
+B：A棟は終わりましたが、B棟がまだです。",まだ在庫確認が終わっていないのはどこか。,A棟,両方とも終わった,B棟,両方ともまだ,3,"Tòa A đã kiểm tra xong, tòa B thì chưa.",N3,mock/q146_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:147,2,47,2,p2s1,会話,"A：新しい契約書のひな形、法務部に確認してもらいましたか。
+B：はい、確認は済みましたが、一部文言の修正を依頼されています。",契約書のひな形について正しいものはどれか。,確認は済んだが、一部修正の依頼がある,法務部の確認はまだである,そのまま使用が決定した,契約書自体が不要になった,1,Phòng pháp chế đã kiểm tra xong nhưng yêu cầu sửa một phần câu chữ.,N2,mock/q147_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:148,2,48,2,p2s1,会話,"A：来週のクライアント訪問、資料は準備できていますか。
+B：資料はできていますが、訪問する担当者がまだ決まっていません。",まだ決まっていないことは何か。,訪問する担当者,資料の内容,訪問の日時,クライアントの住所,1,Tài liệu đã xong nhưng chưa quyết định ai sẽ là người đi thăm khách hàng.,N3,mock/q148_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:149,2,49,2,p2s1,会話,"A：システムの障害、復旧しましたか。
+B：一部の機能は復旧しましたが、メール送信機能はまだ調整中です。",まだ調整中の機能は何か。,ログイン機能,印刷機能,検索機能,メール送信機能,4,Một phần chức năng đã khôi phục nhưng chức năng gửi mail vẫn đang được xử lý.,N3,mock/q149_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:150,2,50,2,p2s1,会話,"A：新オフィスの引っ越し作業、順調に進んでいますか。
+B：家具の搬入は終わりましたが、ネットワーク環境の設定がまだ完了していません。",まだ完了していない作業は何か。,ネットワーク環境の設定,家具の搬入,机の配置,看板の設置,1,Đồ nội thất đã chuyển xong nhưng thiết lập mạng vẫn chưa hoàn thành.,N3,mock/q150_part2_sec1.mp3,self_authored_batch2
+bjt.db:mock_exam_question:251,2,51,2,p2s2,配送料金表,"【宅配便 配送料金表（税込）】
+サイズ60（〜2kg）：関東 800円／関西 1,000円／九州 1,300円
+サイズ80（〜5kg）：関東 1,100円／関西 1,300円／九州 1,600円
+サイズ100（〜10kg）：関東 1,500円／関西 1,700円／九州 2,000円
+※お届け日指定は1件につき200円追加",7kgの荷物を九州へ、お届け日を指定して送る場合の料金はいくらか。,"1,600円","1,800円","2,000円","2,200円",4,"7kg vượt giới hạn 5kg của size 80 nên phải dùng size 100 (đến 10kg). Gửi Kyushu size 100 là 2,000円, cộng phí chỉ định ngày giao 200円 → tổng 2,200円.",N3,,self_authored_task057
+bjt.db:mock_exam_question:252,2,52,2,p2s2,納品書,"【納品書】
+品名：A4コピー用紙（500枚入）　数量：40箱　単価：380円
+品名：ボールペン（黒・10本入）　数量：15箱　単価：600円
+小計：24,200円　　消費税（10%）：2,420円
+※送料は5,000円以上のご注文で無料",この納品分の請求総額はいくらか。,"24,200円","26,620円","27,620円","29,200円",2,"Tiểu kế 24,200円 + thuế 2,420円 = 26,620円. Đơn trên 5,000円 nên miễn phí vận chuyển, không cộng thêm khoản nào.",N3,,self_authored_task057
+bjt.db:mock_exam_question:253,2,53,2,p2s2,研修日程表,"【新入社員研修 日程】
+1日目：会社概要・就業規則（全員）
+2日目：ビジネスマナー・電話応対（全員）
+3日目：配属先別 実務研修（営業部・製造部のみ）
+4日目：情報セキュリティ（全員）
+※3日目に研修のない社員は各部署で待機",総務部に配属された新入社員が参加しない研修はどれか。,1日目,2日目,3日目,4日目,3,Ngày 3 chỉ dành cho bộ phận kinh doanh và sản xuất; nhân viên bộ phận tổng vụ không tham gia mà chờ tại bộ phận mình.,N3,,self_authored_task057
+bjt.db:mock_exam_question:254,2,54,2,p2s2,展示会案内,"【第12回 ビジネス機器展 出展のご案内】
+会期：10月8日（火）〜10日（木）　10:00〜17:00（最終日は15:00まで）
+会場：中央国際展示場 第2ホール
+出展申込締切：8月30日（金）必着
+※小間料は申込時に50%、開催1か月前に残額をお支払いください。",この展示会について正しいものはどれか。,小間料は開催後に一括で支払う。,出展の申し込みは9月末まで受け付けている。,会期は3日間で、最終日だけ終了時間が早い。,会期中はいずれの日も17時まで開催される。,3,"Hội chợ kéo dài 3 ngày (8-10/10), riêng ngày cuối kết thúc lúc 15:00 thay vì 17:00. Hạn đăng ký là 30/8, phí gian hàng trả 50% khi đăng ký.",N2,,self_authored_task057
+bjt.db:mock_exam_question:255,2,55,2,p2s2,在庫一覧,"【倉庫別 在庫数（8月1日時点）】
+商品A：東京 120／大阪 40／福岡 0
+商品B：東京 15／大阪 85／福岡 60
+商品C：東京 0／大阪 25／福岡 110
+※在庫20未満の倉庫は「要補充」とする。",「要補充」に該当する組み合わせはいくつあるか。,2つ,3つ,4つ,5つ,2,"Các ô có tồn kho dưới 20: 商品A-福岡 (0), 商品B-東京 (15), 商品C-東京 (0) → 3 tổ hợp. Các ô còn lại (40, 120, 85, 60, 25, 110) đều từ 20 trở lên.",N3,,self_authored_task057
+bjt.db:mock_exam_question:256,2,56,2,p2s2,社内メモ,"【メモ】
+田中さんへ
+山田商事の佐藤様より、明日午後の打ち合わせを1時間遅らせたいとのお電話がありました。
+会議室は押さえ直しておきました。先方には折り返しご連絡ください。
+（14:20　受付　鈴木）",このメモを受け取った田中さんがすべきことは何か。,会議室を予約し直す。,鈴木さんに会議室の場所を確認する。,打ち合わせを中止する旨を伝える。,佐藤様に電話をかけ直す。,4,Phòng họp đã được Suzuki đặt lại rồi; việc còn lại của Tanaka là gọi lại cho khách hàng Sato (「折り返しご連絡ください」).,N3,,self_authored_task057
+bjt.db:mock_exam_question:257,2,57,2,p2s2,勤務規定抜粋,"【時間外勤務手当】
+平日22時まで：基準賃金の125%
+平日22時以降：基準賃金の150%
+休日勤務：基準賃金の135%
+休日22時以降：基準賃金の160%
+※事前申請のない時間外勤務は認めない。",土曜日の23時まで勤務した場合、23時直前の時間帯に適用される割増率はどれか。,125%,135%,150%,160%,4,Thứ bảy là ngày nghỉ; làm sau 22h vào ngày nghỉ áp dụng mức 160%.,N2,,self_authored_task057
+bjt.db:mock_exam_question:258,2,58,2,p2s2,アンケート結果,"【社内システム満足度調査（回答数200名）】
+満足：36名／やや満足：64名／どちらでもない：40名／やや不満：44名／不満：16名",「満足」または「やや満足」と回答した人は全体の何％か。,18%,32%,50%,68%,3,(36 + 64) / 200 = 100/200 = 50%.,N3,,self_authored_task057
+bjt.db:mock_exam_question:259,2,59,2,p2s2,お知らせ,"【社内システム入れ替えに伴う停止のお知らせ】
+停止期間：9月20日（金）20時 〜 9月23日（月）8時
+対象：勤怠管理システム、経費精算システム
+※メールおよびファイルサーバーは通常どおりご利用いただけます。
+※期間中の勤怠打刻は、復旧後にまとめて入力してください。",停止期間中もそのまま使えるものはどれか。,勤怠管理システム,経費精算システム,ファイルサーバー,打刻機能,3,Thông báo nêu rõ email và file server vẫn dùng bình thường; hệ thống chấm công và thanh toán chi phí mới là đối tượng bị dừng.,N3,,self_authored_task057
+bjt.db:mock_exam_question:260,2,60,2,p2s2,見積書抜粋,"【御見積書（抜粋）】
+システム初期導入費：600,000円
+月額利用料：45,000円 × 12か月
+保守サポート（年額）：120,000円
+※初年度に限り、初期導入費より10%を値引きいたします。",初年度に支払う総額はいくらか（税は考えない）。,"1,140,000円","1,200,000円","1,260,000円","1,320,000円",2,"600,000 × 0.9 = 540,000; 45,000 × 12 = 540,000; bảo trì 120,000. Tổng 540,000 + 540,000 + 120,000 = 1,200,000円.",N2,,self_authored_task057
+bjt.db:mock_exam_question:261,2,61,2,p2s2,座席表,"【第3会議室 レイアウト】
+スクール形式：最大24名
+ロの字形式：最大18名
+シアター形式：最大40名
+※スクリーンを使用する場合、シアター形式は最大32名まで。",スクリーンを使って30名で説明会を行う場合、可能な形式はどれか。,スクール形式のみ,ロの字形式のみ,シアター形式のみ,スクールとシアター,3,"Với 30 người: school tối đa 24, hình chữ ロ tối đa 18 — đều không đủ. Theater khi dùng màn chiếu tối đa 32 người, nên chỉ theater là khả thi.",N2,,self_authored_task057
+bjt.db:mock_exam_question:262,2,62,2,p2s2,議事録抜粋,"【営業会議 議事録（抜粋）】
+・新商品の発売日は当初の11月1日から11月15日へ変更する。
+・変更理由は部材調達の遅れによる生産開始の後ろ倒し。
+・販促物の制作は予定どおり進め、10月末に完成させる。
+・取引先への案内は、発売日確定後ただちに営業部より行う。",この会議で決まったことはどれか。,販促物の制作も発売日に合わせて遅らせる。,発売日を2週間ほど後ろにずらす。,部材の調達先を変更する。,取引先への案内は総務部が行う。,2,"Ngày ra mắt dời từ 1/11 sang 15/11 (khoảng 2 tuần). Vật phẩm khuyến mãi vẫn giữ tiến độ cũ, và bộ phận kinh doanh mới là bên thông báo cho khách hàng.",N2,,self_authored_task057
+bjt.db:mock_exam_question:263,2,63,2,p2s2,求人票,"【中途採用 募集要項】
+職種：海外営業（貿易実務）
+必須条件：貿易事務の実務経験3年以上、英語での商談が可能な方
+歓迎条件：中国語または韓国語の会話力、通関業務の知識
+勤務地：本社（転勤の可能性あり）",この求人に応募できる人はどれか。,貿易事務の経験が1年で、英語も中国語も話せる人。,貿易事務の経験が5年で、英語で商談ができる人。,通関業務に詳しいが、貿易事務の経験がない人。,英語は話せないが、韓国語が堪能で経験が4年ある人。,2,Điều kiện bắt buộc là ≥3 năm kinh nghiệm nghiệp vụ ngoại thương VÀ đàm phán được bằng tiếng Anh. Chỉ phương án 2 thoả mãn cả hai; tiếng Trung/Hàn chỉ là điểm cộng.,N2,,self_authored_task057
+bjt.db:mock_exam_question:264,2,64,2,p2s2,案内メール抜粋,"【社内表彰式のご案内（抜粋）】
+日時：12月5日（木）16:00〜17:30
+場所：本社8階 大会議室
+対象：受賞者および各部署の代表者2名
+※受賞者は15:30に会場へお集まりください。
+※オンライン中継もございますので、会場に来られない方はそちらをご覧ください。",この案内の内容と合っているものはどれか。,表彰式は2時間を予定している。,各部署から全員が参加しなければならない。,オンライン中継は受賞者のみ視聴できる。,受賞者は開始時刻の30分前に集合する。,4,"Lễ bắt đầu 16:00, người được trao thưởng tập trung lúc 15:30 — tức trước 30 phút. Mỗi bộ phận chỉ cử 2 đại diện, lễ kéo dài 1 tiếng rưỡi.",N2,,self_authored_task057
+bjt.db:mock_exam_question:265,2,65,2,p2s2,グラフ説明,"【部門別 経費削減率（前年度比）】
+営業部：▲3%／製造部：▲12%／総務部：▲8%／開発部：+5%
+※「▲」は削減、「+」は増加を表す。",このグラフから読み取れることはどれか。,すべての部門で経費が減った。,最も削減率が高いのは総務部である。,開発部だけ経費が前年度より増えた。,営業部の削減率は製造部を上回る。,3,"Chỉ bộ phận phát triển có dấu「+」 (tăng 5%); bộ phận sản xuất giảm nhiều nhất (12%), kinh doanh giảm ít hơn sản xuất.",N3,,self_authored_task057
+bjt.db:mock_exam_question:266,2,66,3,p3s1,,,商品が入荷し（　　）、すぐにご連絡いたします。,次第,うえで,ながら,ついでに,1,"「〜次第」nối sau thể ます, mang nghĩa 'ngay khi ~ xong thì lập tức làm việc tiếp theo' — cách nói chuẩn khi hẹn báo tin cho khách.",N2,,self_authored_task057
+bjt.db:mock_exam_question:267,2,67,3,p3s1,,,資料は明日の朝までに（　　）いたします。,お届け,ご届け,お届かせ,届けられ,1,Động từ thuần Nhật 届ける dùng khiêm nhường ngữ dạng「お＋ます形＋する／いたす」→「お届けいたします」. 「ご」đi với danh động từ gốc Hán.,N2,,self_authored_task057
+bjt.db:mock_exam_question:268,2,68,3,p3s1,,,本日は貴重なお時間を（　　）、誠にありがとうございます。,いただき,くださり,差し上げ,いたし,1,Người nói nhận thời gian từ đối phương nên dùng khiêm nhường ngữ「いただく」. 「くださる」đi với 「お時間をくださり」cũng có nhưng ở mẫu này 「を」+「いただき」là chuẩn.,N2,,self_authored_task057
+bjt.db:mock_exam_question:269,2,69,3,p3s1,,,工事は3か月に（　　）行われる予定です。,とって,つれて,かけて,わたって,4,「〜にわたって」diễn tả phạm vi thời gian/không gian kéo dài liên tục.,N2,,self_authored_task057
+bjt.db:mock_exam_question:270,2,70,3,p3s1,,,今回の展示会には、当社（　　）10社が出展します。,をはじめ,をもとに,にかけて,において,1,「〜をはじめ」nêu ví dụ tiêu biểu rồi mở rộng ra cả nhóm: 'gồm công ty chúng tôi và 10 công ty khác'.,N2,,self_authored_task057
+bjt.db:mock_exam_question:271,2,71,3,p3s1,,,確認を怠ると、大きなトラブルにつながり（　　）。,かねます,きれません,かねません,がたいです,3,「〜かねない」= có khả năng xảy ra điều xấu. 「〜かねる」ngược lại là 'khó lòng làm được'.,N2,,self_authored_task057
+bjt.db:mock_exam_question:272,2,72,3,p3s1,,,契約の締結に（　　）、改めて条件を確認させていただきます。,先立ち,沿って,限って,対して,1,"「〜に先立ち」= trước khi tiến hành việc gì đó quan trọng, dùng nhiều trong văn viết trang trọng.",N2,,self_authored_task057
+bjt.db:mock_exam_question:273,2,73,3,p3s1,,,ご都合が悪い（　　）、日程を変更いたします。,ようでしたら,ところで,ばかりに,とたんに,1,"「〜ようでしたら」là cách nói lịch sự, mềm mỏng của「〜なら」khi đặt điều kiện với đối phương.",N2,,self_authored_task057
+bjt.db:mock_exam_question:274,2,74,3,p3s1,,,誠に恐れ入りますが、その条件ではお受け（　　）。,しかねます,しかねません,しがちです,しきれます,1,"「お受けしかねます」= 'khó lòng nhận lời' — cách từ chối lịch sự, giảm nhẹ hơn「できません」.",N2,,self_authored_task057
+bjt.db:mock_exam_question:275,2,75,3,p3s1,,,詳しい仕様は添付の資料を（　　）ください。,拝見して,見えて,お見えになって,ご覧になって,4,"「ご覧になる」là tôn kính ngữ của「見る」, dùng cho hành động của đối phương. 「拝見する」là khiêm nhường ngữ, chỉ dùng cho hành động của mình.",N2,,self_authored_task057
+bjt.db:mock_exam_question:276,2,76,3,p3s1,,,現物を確認し（　　）、正確な見積もりは出せません。,ないことには,ないうちに,ないかぎりで,ないままに,1,"「〜ないことには…ない」= nếu không làm A thì không thể B, nhấn mạnh điều kiện tiên quyết.",N2,,self_authored_task057
+bjt.db:mock_exam_question:277,2,77,3,p3s1,,,料金は利用実績（　　）算出いたします。,に基づき,にわたり,をこめて,をよそに,1,"「〜に基づき」= căn cứ vào, dựa trên (số liệu, quy định) — văn phong công văn.",N2,,self_authored_task057
+bjt.db:mock_exam_question:278,2,78,3,p3s1,,,社内で検討した（　　）、改めてご返答いたします。,うえで,ところで,以来,とおりに,1,"「〜たうえで」= sau khi làm xong A rồi mới làm B, nhấn mạnh trình tự.",N2,,self_authored_task057
+bjt.db:mock_exam_question:279,2,79,3,p3s1,,,（　　）が、こちらの書類にご記入をお願いできますでしょうか。,おかげさまで,恐れ入ります,承知しました,かしこまりました,2,"「恐れ入りますが」là lời rào đón chuẩn khi nhờ vả người khác, tương đương 'phiền anh/chị…'.",N2,,self_authored_task057
+bjt.db:mock_exam_question:280,2,80,3,p3s1,,,納期が遅れましたのは、部材の調達が難航したためで（　　）。,ございます,いらっしゃいます,おられます,なさいます,1,"「〜ためでございます」— 「ございます」là dạng lịch sự của「ある／です」, dùng khi nói về phía mình. Ba lựa chọn còn lại đều là tôn kính ngữ, không dùng cho việc của bản thân.",N3,,self_authored_task057
+bjt.db:mock_exam_question:281,2,81,3,p3s2,,,電話で相手を少し待たせるとき、最も適切な言い方はどれか。,ちょっと待ってください。,少々お待ちいただけますでしょうか。,少しお待ちしてください。,お待ちになってあげてください。,2,"「少々お待ちいただけますでしょうか」là mẫu chuẩn: khiêm nhường ngữ 「いただく」+ thể nghi vấn mềm 「〜ますでしょうか」. Phương án 3 sai vì「お待ちする」là khiêm nhường ngữ, không dùng cho đối phương.",N2,,self_authored_task057
+bjt.db:mock_exam_question:282,2,82,3,p3s2,,,体調が悪く、上司に早退を申し出るとき、最も適切な言い方はどれか。,体調が悪いので帰ります。,早退させていただいてもよろしいでしょうか。,早退してもいいですか。,早退なさってもよろしいですか。,2,「〜させていただく」thể hiện xin phép cấp trên. Phương án 4 dùng tôn kính ngữ「なさる」cho hành động của chính mình nên sai.,N2,,self_authored_task057
+bjt.db:mock_exam_question:283,2,83,3,p3s2,,,納期が遅れることを取引先に伝える際、最も適切な言い方はどれか。,納期が遅れそうです。すみません。,納期の遅れにつきまして、深くお詫び申し上げます。,納期が遅れてしまい、ご迷惑をおかけしております。申し訳ございません。,納期が遅れました。ご了承ください。,3,"Phương án 3 vừa nêu sự việc, vừa thừa nhận đang gây phiền, vừa xin lỗi đúng mức. Phương án 2 chỉ có lời xin lỗi trang trọng nhưng thiếu phần thừa nhận ảnh hưởng; phương án 4 「ご了承ください」mang tính áp đặt, không phù hợp khi mình có lỗi.",N2,,self_authored_task057
+bjt.db:mock_exam_question:284,2,84,3,p3s2,,,来客を会議室へ案内するとき、最も適切な言い方はどれか。,会議室へ案内してあげます。,会議室へ行ってください。,会議室までご案内になります。,会議室までご案内いたします。,4,「ご案内いたします」là khiêm nhường ngữ chuẩn. 「ご〜になる」là tôn kính ngữ nên không dùng cho hành động của mình.,N2,,self_authored_task057
+bjt.db:mock_exam_question:285,2,85,3,p3s2,,,取引先から名刺を受け取るとき、最も適切な言い方はどれか。,頂戴いたします。,もらいます。,お受け取りになります。,いただかせてもらいます。,1,"「頂戴いたします」là cách nói chuẩn khi nhận danh thiếp. Phương án 4 là kính ngữ kép sai (「いただく」đã là khiêm nhường ngữ, không cần thêm「〜せてもらう」).",N2,,self_authored_task057
+bjt.db:mock_exam_question:286,2,86,3,p3s2,,,不在の上司あての電話に代わりに出るとき、最も適切な言い方はどれか。,部長は今いません。,部長はただいま席を外しております。,部長はただいま席を外していらっしゃいます。,部長は今おりません。折り返しさせます。,2,"Khi nói với người ngoài về cấp trên của mình, phải dùng khiêm nhường ngữ 「おります」, không dùng tôn kính ngữ「いらっしゃる」. Phương án 4 câu sau「折り返しさせます」thiếu lịch sự.",N2,,self_authored_task057
+bjt.db:mock_exam_question:287,2,87,3,p3s2,,,取引先に資料の再送をお願いするとき、最も適切な言い方はどれか。,もう一度資料を送ってください。,資料を再度お送りになってくれませんか。,お手数ですが、資料を再度お送りいただけませんでしょうか。,資料をもう一度送っていただきたいです。,3,「お手数ですが」rào đón + 「お送りいただけませんでしょうか」nghi vấn phủ định lịch sự = mức trang trọng phù hợp khi nhờ đối tác làm lại việc.,N2,,self_authored_task057
+bjt.db:mock_exam_question:288,2,88,3,p3s2,,,取引先を訪問する約束を取りつけたいとき、最も適切な言い方はどれか。,来週伺いたいのですが、ご都合はいかがでしょうか。,来週行きたいので、時間をください。,来週いらっしゃってもよろしいでしょうか。,来週参られてもよろしいでしょうか。,1,"「伺う」là khiêm nhường ngữ của「行く／訪ねる」. Phương án 3 dùng tôn kính ngữ cho mình, phương án 4「参られる」là kính ngữ kép sai.",N2,,self_authored_task057
+bjt.db:mock_exam_question:289,2,89,3,p3s2,,,会議で相手の意見に賛成する意思を示すとき、最も適切な言い方はどれか。,その意見でいいと思います。,私も同じ意見です。そのとおりだと思います。,おっしゃるとおりかと存じます。,その考えに賛成してあげます。,3,"「おっしゃるとおりかと存じます」kết hợp tôn kính ngữ「おっしゃる」với khiêm nhường ngữ 「存じます」— mức trang trọng cao nhất, phù hợp khi đồng ý với cấp trên/đối tác.",N2,,self_authored_task057
+bjt.db:mock_exam_question:290,2,90,3,p3s2,,,取引先に値引きをお願いするとき、最も適切な言い方はどれか。,もう少し安くしてください。,予算の都合上、ご検討いただける余地はございませんでしょうか。,値引きしてくださいませんか。,値引きをお願いしてもいいですか。,2,"Nêu lý do (「予算の都合上」) rồi hỏi khéo「ご検討いただける余地はございませんでしょうか」— không nói thẳng 'giảm giá' mà để đối phương giữ thể diện, đúng phong cách đàm phán Nhật.",N1,,self_authored_task057
+bjt.db:mock_exam_question:291,2,91,3,p3s3,社内文書,"社員各位
+10月より、社用車の利用申請を紙の申請書から社内ポータルでの電子申請に切り替えます。9月中は紙・電子どちらでも受け付けますが、10月1日以降は電子申請のみとなります。なお、鍵の受け渡し場所はこれまでどおり総務部窓口です。",この文書の内容と合っているものはどれか。,9月から紙の申請書は使えなくなる。,電子申請は総務部の窓口で行う。,鍵の受け渡し場所も10月から変更される。,9月は紙と電子の両方の申請が可能である。,4,"Tháng 9 là giai đoạn chuyển tiếp, nhận cả hai hình thức; từ 1/10 mới chỉ còn điện tử. Nơi giao nhận chìa khoá không đổi.",N2,,self_authored_task057
+bjt.db:mock_exam_question:292,2,92,3,p3s3,社内文書,"各部署長 各位
+来年度予算の申請書は、11月20日までに経理部へご提出ください。期限を過ぎた申請は原則として翌年度の補正予算での対応となります。なお、今年度実績が予算比80%を下回った部署は、申請時に理由書の添付が必要です。",予算比75%の実績だった部署が申請する際に必要なものは何か。,申請書のみ,申請書と理由書,補正予算の申請書,経理部長の承認印,2,"75% thấp hơn ngưỡng 80%, nên ngoài đơn xin còn phải nộp kèm bản giải trình lý do.",N2,,self_authored_task057
+bjt.db:mock_exam_question:293,2,93,3,p3s3,社外文書,"拝啓　時下ますますご清栄のこととお慶び申し上げます。
+さて、弊社では本年11月1日をもちまして、本社を下記住所へ移転する運びとなりました。電話番号およびファクス番号に変更はございません。移転作業に伴い、10月30日・31日は業務を休止させていただきます。　敬具",この文書で伝えられていることはどれか。,電話番号が11月1日から変わる。,移転先の住所は後日連絡する。,11月1日から2日間休業する。,移転のため2日間業務を休む。,4,Nghỉ làm việc ngày 30 và 31/10 (2 ngày) do chuyển văn phòng; số điện thoại không đổi và địa chỉ mới đã ghi ngay trong văn bản.,N2,,self_authored_task057
+bjt.db:mock_exam_question:294,2,94,3,p3s3,社外文書,"拝啓　平素は格別のご高配を賜り厚く御礼申し上げます。
+さて、原材料価格の高騰が続いており、弊社としても企業努力を重ねてまいりましたが、現行価格の維持が困難となりました。つきましては、来年1月納入分より製品価格を平均5%改定させていただきたく、ご案内申し上げます。　敬具",この文書の主な目的は何か。,原材料の調達先を変更したことを知らせる。,価格を引き上げることへの理解を求める。,納品の遅れをわびる。,新製品の発売を案内する。,2,"Văn bản giải thích giá nguyên liệu tăng khiến không giữ được giá cũ, rồi thông báo điều chỉnh giá trung bình 5% — mục đích chính là xin thông cảm cho việc tăng giá.",N2,,self_authored_task057
+bjt.db:mock_exam_question:295,2,95,3,p3s3,社内メール,"営業部各位
+お疲れさまです。総務部の林です。
+先月お配りした社員証について、氏名の表記に誤りがあるものが数件見つかりました。お手元の社員証をご確認のうえ、誤りがある方は今週金曜日までに総務部までお持ちください。問題がない場合は特にご連絡いただく必要はありません。",このメールを読んだ社員がすべきことは何か。,全員が金曜日までに総務部へ行く。,新しい社員証の発行を申請する。,社員証を確認し、結果を全員が返信する。,社員証を確認し、誤りがあれば総務部へ持参する。,4,Chỉ người có thẻ bị sai mới cần mang đến; nếu không có vấn đề thì không cần liên lạc gì.,N3,,self_authored_task057
+bjt.db:mock_exam_question:296,2,96,3,p3s3,社内メール,"製造部の皆さま
+お疲れさまです。品質管理課です。
+先日の抜き取り検査で、第2ラインの製品に軽微な傷が確認されました。出荷済みの製品に影響はありませんが、原因究明のため、明日より1週間、第2ラインのみ検査頻度を通常の2倍に引き上げます。ご協力をお願いいたします。",このメールの内容と合っているものはどれか。,出荷済みの製品を回収する必要がある。,全ラインで検査の回数を増やす。,第2ラインの検査回数を一時的に増やす。,第2ラインの稼働を1週間停止する。,3,"Chỉ line số 2, chỉ trong 1 tuần, và chỉ tăng tần suất kiểm tra chứ không dừng dây chuyền; hàng đã xuất không bị ảnh hưởng.",N2,,self_authored_task057
+bjt.db:mock_exam_question:297,2,97,3,p3s3,社外メール,"株式会社みどり産業
+購買部　中村様
+
+いつも大変お世話になっております。北山工業の佐々木でございます。
+先日ご依頼いただきました件につきまして、社内で検討いたしました結果、ご希望の数量は確保できる見込みとなりました。ただし、納期につきましてはご指定の日より3日ほど遅れる可能性がございます。ご都合をお聞かせいただけますでしょうか。",このメールで相手に確認したいことは何か。,注文する数量を変更してよいか。,担当者を変更してよいか。,見積書を送ってよいか。,納期が数日遅れても差し支えないか。,4,Số lượng đã đảm bảo được; điểm duy nhất cần hỏi ý là việc giao hàng có thể trễ khoảng 3 ngày.,N2,,self_authored_task057
+bjt.db:mock_exam_question:298,2,98,3,p3s3,社外メール,"アオイ商事株式会社
+営業部　高橋様
+
+お世話になっております。西田物産の井上でございます。
+本日、貴社よりご請求書を頂戴いたしましたが、数量欄が発注書と相違しているようです。弊社の発注は120個でしたが、請求書には150個と記載されております。お手数ですが、ご確認のうえご連絡いただけますと幸いです。",このメールの用件は何か。,注文数を150個に変更したい。,請求書の記載内容の確認を依頼している。,支払期日の延長をお願いしている。,商品の返品を申し出ている。,2,Người gửi chỉ ra số lượng trên hoá đơn (150) khác đơn đặt hàng (120) và nhờ đối phương kiểm tra lại — không phải đổi đơn hàng hay xin gia hạn.,N2,,self_authored_task057
+bjt.db:mock_exam_question:299,2,99,3,p3s3,記事,国内の中小企業を対象とした調査によると、業務にクラウドサービスを導入している企業は全体の62%に達し、5年前の2倍近くに増えた。導入の理由として最も多かったのは「初期費用を抑えられる」で、次いで「社外からも利用できる」が挙がった。一方、未導入企業の約半数が「情報漏えいへの不安」を理由に挙げている。,この記事の内容と合っているものはどれか。,クラウド導入の最大の理由は社外から使えることである。,未導入企業のすべてが情報漏えいを心配している。,クラウドを導入した企業は5年間でおよそ2倍になった。,中小企業の半数以上がクラウドを導入していない。,3,"Tỷ lệ đạt 62%, gần gấp đôi 5 năm trước. Lý do hàng đầu là chi phí ban đầu thấp; chỉ khoảng một nửa doanh nghiệp chưa dùng lo ngại rò rỉ thông tin.",N2,,self_authored_task057
+bjt.db:mock_exam_question:300,2,100,3,p3s3,記事,人手不足を背景に、社員の副業を認める企業が増えている。ある調査では、副業を「認めている」と回答した企業は38%で、3年前の24%から大きく伸びた。認める企業の多くは「社員の視野が広がる」ことを利点に挙げる一方、「長時間労働につながりやすい」ことを課題とする声も根強い。,この記事で述べられている副業の課題はどれか。,社員の視野が狭くなること,給与水準が下がること,人手不足が悪化すること,労働時間が長くなりやすいこと,4,"Bài viết nêu lợi ích là mở rộng tầm nhìn của nhân viên, còn vấn đề tồn tại là dễ dẫn tới làm việc quá giờ.",N2,,self_authored_task057
+bjt.db:mock_exam_question:151,3,1,1,p1s1,会話,"A：お客様から製品の不具合についてお電話をいただいております。
+B：分かりました、私が担当しますので、そちらにお回しください。",この会話が行われている場所として最も適切なものはどれか。,カスタマーサポートセンター,工場の製造ライン,取引先の応接室,駅の窓口,1,Nói về việc chuyển cuộc gọi khiếu nại sản phẩm cho người phụ trách — bối cảnh là trung tâm hỗ trợ khách hàng.,N3,mock/q151_part1_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:152,3,2,1,p1s1,会話,"A：エレベーターの点検に参りました。管理会社の田村と申します。
+B：お待ちしておりました。こちらにサインをお願いします。",この会話の関係として最も適切なものはどれか。,社内の同僚同士,求職者と面接官,取引先の役員同士,点検業者と、それを迎える社員,4,"Tamura tự xưng công ty quản lý tòa nhà đến kiểm tra thang máy, người B yêu cầu ký nhận — là nhân viên bảo trì và người tiếp đón.",N3,mock/q152_part1_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:153,3,3,1,p1s1,会話,"A：今日のランチ会、駅前のイタリアンでいいですか。
+B：いいですね、12時に現地集合にしましょう。",この会話が行われている場所として最も適切なものはどれか。,レストランの中,駅のホーム,オフィスの休憩室,取引先の会議室,3,"Đang bàn về nơi ăn trưa sắp tới (chưa đến nơi, hẹn tập trung lúc 12h) — có khả năng là đang ở văn phòng/phòng nghỉ.",N3,mock/q153_part1_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:154,3,4,1,p1s1,会話,"A：本日2次面接にまいりました、鈴木と申します。
+B：お待ちしておりました。応接室までご案内いたします。",この会話が行われている場所として最も適切なものはどれか。,会社の受付,面接会場の中,取引先のオフィス,駅の改札口,1,"Ứng viên đến phỏng vấn vòng 2, được hướng dẫn đến phòng tiếp khách — tình huống ở quầy tiếp tân.",N3,mock/q154_part1_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:155,3,5,1,p1s1,会話,"A：搬入口はこちらでよろしいでしょうか、お荷物をお届けに上がりました。
+B：はい、こちらです。台車をお使いください。",この会話が行われている場所として最も適切なものはどれか。,社員食堂,会議室,受付ロビー,搬入口,4,"Người giao hàng hỏi cửa nhập hàng, được hướng dẫn dùng xe đẩy — bối cảnh là cửa nhập hàng.",N3,mock/q155_part1_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:156,3,6,1,p1s1,電話,"A：情報システム部です。プリンターの調子が悪いとのことでしたが。
+B：ええ、印刷すると紙が詰まってしまうんです。",この会話について正しいものはどれか。,Bが社内のIT部門にトラブルを相談している,Aは社外の業者である,プリンターはすでに廃棄された,Aが機械を注文している,1,B đang báo sự cố máy in cho phòng hệ thống thông tin nội bộ (A) xử lý.,N3,mock/q156_part1_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:157,3,7,1,p1s1,会話,"A：新しく入られた方の席、こちらでよろしいですか。
+B：ええ、窓側の席にお願いします。パソコンも設定しておいてください。",この会話の内容と合っているものはどれか。,社員を解雇する相談をしている,新入社員の席を決めている,会議室の予約をしている,来客の応対をしている,2,Đang bàn về việc bố trí chỗ ngồi và chuẩn bị máy tính cho nhân viên mới vào.,N3,mock/q157_part1_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:158,3,8,1,p1s1,電話,"A：工場見学の件でお電話しました。来月20日にお伺いしてもよろしいでしょうか。
+B：確認いたしますので、少々お待ちください。",この会話の目的として最も適切なものはどれか。,工場の求人応募,工場の売却相談,製品の返品依頼,工場見学の日程調整,4,A gọi điện để hẹn ngày tham quan nhà máy — mục đích là điều chỉnh lịch tham quan.,N3,mock/q158_part1_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:159,3,9,1,p1s1,会話,"A：休憩室のコーヒーメーカー、また壊れてますね。
+B：総務に連絡しておきますね、しばらくは自販機を使いましょう。",この会話が行われている場所として最も適切なものはどれか。,取引先の応接室,休憩室,会議室,倉庫,2,Đang nói về máy pha cà phê trong phòng nghỉ bị hỏng — bối cảnh là phòng nghỉ.,N3,mock/q159_part1_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:160,3,10,1,p1s1,会話,"A：恐れ入りますが、ご来社の目的と、お約束のお時間を伺えますでしょうか。
+B：14時に営業部の佐藤様とお約束しております。",この会話が行われている場所として最も適切なものはどれか。,社員食堂,取引先のオフィス,会社の受付,工場の作業場,3,A hỏi mục đích đến và giờ hẹn của khách — tình huống tiêu biểu ở quầy tiếp tân/bảo vệ tòa nhà.,N3,mock/q160_part1_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:161,3,11,1,p1s2,場面設定,取引先との打ち合わせを、急な事情で延期しなければならなくなった。この連絡をする際に最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,誠に恐縮ですが、やむを得ない事情により、打ち合わせの日程を変更させていただきたく存じます。,打ち合わせ、延期です。,無理なので延ばします。,来られなくなりました。,1,"Xin đối tác dời lịch họp cần dùng cách nói lịch sự, xin lỗi rõ ràng, không nói cộc lốc.",N2,mock/q161_part1_sec2.mp3,self_authored_batch3
+bjt.db:mock_exam_question:162,3,12,1,p1s2,場面設定,家庭の事情で、来週1日休暇を取りたいと上司に相談したい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,来週休みます。,用事があるので休みます。,休暇ください。,来週、家庭の都合により1日お休みをいただきたいのですが、よろしいでしょうか。,4,"Xin nghỉ phép vì việc gia đình cần dùng cách xin phép lịch sự, có lý do rõ ràng.",N2,mock/q162_part1_sec2.mp3,self_authored_batch3
+bjt.db:mock_exam_question:163,3,13,1,p1s2,場面設定,急な発注に対応してくれた仕入れ先に、感謝の気持ちを伝えたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,早くて助かりました。,急なお願いにもかかわらず、迅速にご対応いただき、誠にありがとうございました。,ありがとうございました、また頼みます。,間に合ってよかったです。,2,"Cảm ơn đối tác vì đã xử lý gấp cần dùng cách nói trang trọng, thể hiện sự trân trọng.",N2,mock/q163_part1_sec2.mp3,self_authored_batch3
+bjt.db:mock_exam_question:164,3,14,1,p1s2,場面設定,上司主催の懇親会に、都合が悪く参加できない旨を伝えたい。最も適切な断り方はどれか。,この場面で最も適切な言い方はどれか。,行けません。,大変残念ではございますが、あいにく先約がございまして、今回は欠席させていただきます。,興味ないので。,用事があるのでパス。,2,Từ chối tham gia tiệc giao lưu của cấp trên cần nói tiếc nuối và có lý do lịch sự.,N2,mock/q164_part1_sec2.mp3,self_authored_batch3
+bjt.db:mock_exam_question:165,3,15,1,p1s2,場面設定,急病のため、同僚にシフトの代わりを頼みたい。最も適切な頼み方はどれか。,この場面で最も適切な言い方はどれか。,代わって。,今日は出られません。,無理なので休みます。,急な体調不良で申し訳ないのですが、本日のシフトを代わっていただくことは可能でしょうか。,4,"Nhờ đồng nghiệp đổi ca vì đột ngột bị bệnh cần xin lỗi và hỏi lịch sự, không ra lệnh.",N3,mock/q165_part1_sec2.mp3,self_authored_batch3
+bjt.db:mock_exam_question:166,3,16,1,p1s2,場面設定,役員に、稟議書の承認をお願いしたい。最も適切な依頼の仕方はどれか。,この場面で最も適切な言い方はどれか。,早くハンコください。,サインして。,お忙しいところ恐縮ですが、こちらの稟議書にご承認いただけますでしょうか。,承認、まだですか。,3,"Nhờ lãnh đạo phê duyệt văn bản cần dùng cách nói khiêm nhường, xin phép rõ ràng.",N2,mock/q166_part1_sec2.mp3,self_authored_batch3
+bjt.db:mock_exam_question:167,3,17,1,p1s2,場面設定,メールに間違った添付ファイルを送ってしまったことに気づき、謝罪したい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,先ほどお送りした添付ファイルに誤りがございました。大変失礼いたしました、正しいものを改めてお送りいたします。,ファイル間違えました。,ごめんなさい、違うやつでした。,添付、間違い。,1,"Xin lỗi vì gửi nhầm file đính kèm cần nêu rõ lỗi, xin lỗi trang trọng và cam kết gửi lại bản đúng.",N2,mock/q167_part1_sec2.mp3,self_authored_batch3
+bjt.db:mock_exam_question:168,3,18,1,p1s2,場面設定,同僚が昇進したことを知り、お祝いの言葉をかけたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,やったね。,よかったですね、じゃあ。,この度はご昇進、誠におめでとうございます。今後のご活躍を心よりお祈りしております。,昇進、おめでとう。,3,"Chúc mừng đồng nghiệp thăng chức nên dùng lời chúc trang trọng, đầy đủ ý nghĩa.",N3,mock/q168_part1_sec2.mp3,self_authored_batch3
+bjt.db:mock_exam_question:169,3,19,1,p1s2,場面設定,発送した商品が届いたかどうか、取引先に確認したい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,先日発送いたしました商品につきまして、無事にお手元に届いておりますでしょうか。,届きましたか。,荷物、着いた?,商品、届いてますよね。,1,"Xác nhận với đối tác về việc nhận hàng cần dùng cách hỏi lịch sự, trang trọng.",N3,mock/q169_part1_sec2.mp3,self_authored_batch3
+bjt.db:mock_exam_question:170,3,20,1,p1s2,場面設定,新しく着任した上司に、初対面で自己紹介をしたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,どうも、部下です。,初めまして、田中。,はじめまして、営業部の田中と申します。どうぞよろしくお願いいたします。,よろしくどうぞ。,3,"Tự giới thiệu với cấp trên mới cần nói tên, phòng ban đầy đủ và lời chào lịch sự.",N3,mock/q170_part1_sec2.mp3,self_authored_batch3
+bjt.db:mock_exam_question:171,3,21,1,p1s3,会話,"A：来期の予算案、全体的に10%削減という方針が出ましたね。
+B：広告費は削れそうですが、研修費は削らない方向で進めたいです。
+A：それは私も同感です、上に相談してみましょう。",Bが削減したくないと考えている費用は何か。,広告費,人件費,交通費,研修費,4,"B muốn giữ nguyên ngân sách đào tạo, chỉ đồng ý cắt giảm chi phí quảng cáo.",N2,mock/q171_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:172,3,22,1,p1s3,会話,"A：先方から、納品が3日遅れているとクレームが来ています。
+B：原因は分かっていますか。
+A：部品の一部に不良があり、交換対応をしていたためです。
+B：至急、状況説明の連絡を入れましょう。",納品が遅れている原因は何か。,配送業者のミス,担当者の休暇,注文数の間違い,部品の不良による交換対応,4,Nguyên nhân giao hàng chậm là do một số linh kiện bị lỗi phải đổi lại.,N2,mock/q172_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:173,3,23,1,p1s3,アナウンス,このたび、弊社製品の一部に安全上の懸念が確認されたため、対象製品を自主的に回収することといたしました。対象製品をお持ちのお客様は、下記窓口までご連絡くださいますようお願い申し上げます。,このアナウンスの内容と合っているものはどれか。,製品の値上げを知らせている,会社が閉鎖する,新製品の発売を知らせている,安全上の懸念により製品を自主回収する,4,Thông báo về việc tự nguyện thu hồi sản phẩm do phát hiện lo ngại về an toàn.,N2,mock/q173_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:174,3,24,1,p1s3,会話,"A：来月からフリーアドレス制を導入するそうですね。
+B：ええ、席を固定せず好きな場所で働けるようになります。
+A：荷物の管理はどうするんですか。
+B：各自にロッカーが割り当てられるそうです。",フリーアドレス制の内容として正しいものはどれか。,好きな場所で働け、荷物はロッカーで管理する,全員の席が固定される,在宅勤務が禁止になる,オフィスが移転する,1,"Chế độ chỗ ngồi tự do cho phép làm việc ở bất kỳ đâu, đồ đạc quản lý bằng tủ khóa riêng.",N2,mock/q174_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:175,3,25,1,p1s3,会話,"A：先日の新人研修、アンケート結果はどうでしたか。
+B：内容は好評でしたが、時間が短すぎるという意見が多かったです。
+A：では、次回は1日分増やして検討しましょう。",研修についての意見として最も多かったものは何か。,内容が難しすぎる,講師が厳しい,時間が短すぎる,場所が遠い,3,"Ý kiến nhiều nhất là thời gian đào tạo quá ngắn, nội dung thì được đánh giá tốt.",N2,mock/q175_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:176,3,26,1,p1s3,会話,"A：先月のキャンペーン、目標達成できましたか。
+B：売上は目標の90%でしたが、新規顧客数は目標を上回りました。
+A：では、次回は売上に焦点を当てた施策を考えましょう。",先月のキャンペーン結果について正しいものはどれか。,売上は目標未達だが、新規顧客数は目標超えだった,売上・新規顧客数ともに目標未達だった,すべての目標を達成した,キャンペーン自体が中止になった,1,"Doanh số đạt 90% mục tiêu (chưa đạt), nhưng số khách hàng mới lại vượt mục tiêu.",N2,mock/q176_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:177,3,27,1,p1s3,会話,"A：来月で契約更新の時期ですが、先方から条件変更の相談がありました。
+B：どのような変更ですか。
+A：契約期間を1年から2年に延ばしたいとのことです。
+B：メリットがあるか、社内で検討しましょう。",先方が希望している変更内容は何か。,契約金額の値下げ,担当者の変更,契約の解除,契約期間を1年から2年に延長すること,4,Đối tác muốn kéo dài thời hạn hợp đồng từ 1 năm lên 2 năm.,N2,mock/q177_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:178,3,28,1,p1s3,アナウンス,来月より、時間外労働の削減を目的として、原則20時以降の残業を禁止いたします。業務上やむを得ない場合は、事前に上長の許可を得てください。,このアナウンスの内容と合っているものはどれか。,残業が完全に禁止される,20時以降の残業は原則禁止だが、上長の許可があれば可能,全社員が在宅勤務になる,給料が上がる,2,"Nguyên tắc cấm làm thêm sau 20h, nhưng nếu có lý do công việc bất khả kháng, cần xin phép cấp trên trước.",N2,mock/q178_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:179,3,29,1,p1s3,会話,"A：お客様から、請求金額が違うというお問い合わせがありました。
+B：確認したところ、割引の適用漏れがあったようです。
+A：では、訂正した請求書を至急お送りしましょう。",請求金額が違っていた原因は何か。,割引の適用漏れ,お客様の勘違い,為替レートの変動,消費税の変更,1,Nguyên nhân là bỏ sót việc áp dụng chiết khấu khi lập hóa đơn.,N2,mock/q179_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:180,3,30,1,p1s3,会話,"A：来月の社員旅行、行き先の候補は決まりましたか。
+B：温泉地と海辺のリゾート、2つに絞りました。
+A：アンケートを取って、社員の希望を聞いてみましょう。",Aが提案していることは何か。,行き先をすぐに決定する,行き先を海外にする,社員旅行を中止する,社員にアンケートを取って希望を聞く,4,A đề xuất khảo sát ý kiến nhân viên trước khi chốt địa điểm du lịch công ty.,N2,mock/q180_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:181,3,31,1,p1s3,会話,"A：新しい会計ソフトのライセンス、更新時期が来ています。
+B：他社製品と比較検討しましたか。
+A：まだです、来週までに3社ほど見積もりを取ります。",Aがこれから行うことは何か。,すぐに現行ソフトを更新する,ソフト会社に苦情を言う,ソフトの利用を中止する,来週までに他社3社の見積もりを取る,4,A sẽ lấy báo giá của khoảng 3 công ty khác để so sánh trước khi gia hạn.,N2,mock/q181_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:182,3,32,1,p1s3,会話,"A：原材料の仕入れ先から、来月より価格を8%引き上げたいという連絡がありました。
+B：うちとしては受け入れられる範囲ですか。
+A：正直厳しいですが、代わりの仕入れ先を探すのも時間がかかるので、一部条件交渉をしてみます。",Aがこれから行うと考えられることは何か。,すぐに値上げを承諾する,仕入れを完全に停止する,仕入れ先と条件交渉を試みる,価格をそのまま受け入れず取引を打ち切る,3,A sẽ thử đàm phán một số điều kiện với nhà cung cấp thay vì chấp nhận ngay hoặc cắt đứt quan hệ.,N2,mock/q182_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:183,3,33,1,p1s3,会話,"A：工場の検品ライン、不良品の検出率が先月より下がっているようです。
+B：検品担当の人数を増やす必要がありますか。
+A：人数よりも、検品機器の点検を先にした方がいいかもしれません。",Aが提案していることは何か。,検品担当者を増やす,工場を閉鎖する,検品作業を廃止する,検品機器の点検を優先する,4,A đề xuất ưu tiên kiểm tra thiết bị kiểm định trước khi tăng nhân sự.,N2,mock/q183_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:184,3,34,1,p1s3,会話,"A：出張報告書の提出期限、今回から出張後3日以内に変更になったそうです。
+B：以前は1週間以内でしたよね。
+A：ええ、経理処理を早めるための変更だそうです。",出張報告書の提出期限はどう変わったか。,3日以内から1週間以内になった,1週間以内から3日以内になった,提出が不要になった,変更はない,2,Thời hạn nộp báo cáo công tác đổi từ trong 1 tuần xuống còn trong 3 ngày.,N3,mock/q184_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:185,3,35,1,p1s3,放送,来月より、社内の安全衛生ガイドラインが改定されます。特に、工場内でのヘルメット着用エリアが拡大されますので、詳細は追ってメールで配布される資料をご確認ください。,この放送の内容と合っているものはどれか。,ヘルメット着用エリアが縮小される,工場が閉鎖される,ヘルメット着用エリアが拡大される,安全ガイドラインが廃止される,3,Thông báo phạm vi bắt buộc đội mũ bảo hộ trong nhà máy sẽ được mở rộng.,N3,mock/q185_part1_sec3.mp3,self_authored_batch3
+bjt.db:mock_exam_question:186,3,36,2,p2s1,会話,"A：新しい名刺のデザイン、印刷は発注しましたか。
+B：デザインは確定しましたが、まだ発注はしていません。",Bがまだ行っていないことは何か。,印刷の発注,デザインの確定,名刺の配布,デザインの修正,1,Thiết kế đã chốt xong nhưng chưa đặt in.,N3,mock/q186_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:187,3,37,2,p2s1,会話,"A：来週の海外との電話会議、時差の調整はできましたか。
+B：はい、先方の午前9時、日本時間の夕方6時で合意しました。",会話の内容と合っているものはどれか。,時差の調整はまだできていない,会議は中止になった,日本時間の夕方6時に開催することで合意した,場所を変更することになった,3,Đã thống nhất tổ chức lúc 6 giờ chiều giờ Nhật (9 giờ sáng giờ đối tác).,N3,mock/q187_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:188,3,38,2,p2s1,会話,"A：先日のお客様への返金対応、進んでいますか。
+B：返金手続きは完了しましたが、お詫び状はまだ送っていません。",Bがまだ行っていないことは何か。,返金手続き,お詫び状の送付,お客様への連絡,返品の受け取り,2,Thủ tục hoàn tiền đã xong nhưng thư xin lỗi vẫn chưa gửi.,N3,mock/q188_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:189,3,39,2,p2s1,会話,"A：新入社員のパソコン、セットアップは終わりましたか。
+B：本体の設定は終わりましたが、社内システムのアカウント発行がまだです。",まだ完了していないものは何か。,パソコン本体の設定,机の準備,社内システムのアカウント発行,名刺の作成,3,Máy tính đã cài đặt xong nhưng tài khoản hệ thống nội bộ chưa được cấp.,N3,mock/q189_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:190,3,40,2,p2s1,会話,"A：契約書の翻訳、翻訳会社に依頼しましたか。
+B：依頼済みですが、専門用語の確認に時間がかかっていて、まだ納品されていません。",翻訳について、現在の状況はどれか。,翻訳はすでに納品された,翻訳会社への依頼はまだである,翻訳会社に依頼済みだが、まだ納品されていない,翻訳自体が不要になった,3,Đã gửi yêu cầu dịch nhưng do kiểm tra thuật ngữ chuyên môn mất thời gian nên chưa giao bản dịch.,N2,mock/q190_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:191,3,41,2,p2s1,会話,"A：来月のパンフレットのデザイン案、上司の確認は取れましたか。
+B：確認は取れましたが、写真の差し替えを1点指示されました。",デザイン案について正しいものはどれか。,上司の確認がまだである,確認済みだが、写真を1点差し替える必要がある,デザイン自体が却下された,パンフレット自体が中止になった,2,Đã được cấp trên duyệt nhưng yêu cầu thay 1 tấm ảnh.,N2,mock/q191_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:192,3,42,2,p2s1,会話,"A：サーバーの移行作業、順調ですか。
+B：データの移行は終わりましたが、動作確認テストがまだ残っています。",まだ残っている作業は何か。,データの移行,動作確認テスト,サーバーの購入,旧サーバーの廃棄,2,Di chuyển dữ liệu đã xong nhưng vẫn còn kiểm tra hoạt động.,N3,mock/q192_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:193,3,43,2,p2s1,会話,"A：新入社員の入社手続き書類、全部そろいましたか。
+B：ほとんどそろいましたが、健康診断書だけまだ提出されていません。",まだ提出されていない書類は何か。,履歴書,健康診断書,卒業証明書,銀行口座の情報,2,"Hầu hết giấy tờ đã đủ, chỉ còn giấy khám sức khỏe chưa nộp.",N3,mock/q193_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:194,3,44,2,p2s1,会話,"A：展示会のブースデザイン、業者から見積もりは来ましたか。
+B：2社から届きましたが、もう1社の返答をまだ待っている状態です。",ブースデザインの見積もりについて正しいものはどれか。,2社から届いており、もう1社を待っている,1社からのみ届いた,全社から届いた,どこからもまだ届いていない,1,"Đã nhận báo giá từ 2 công ty, đang chờ phản hồi từ công ty còn lại.",N3,mock/q194_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:195,3,45,2,p2s1,会話,"A：見積書の再提出、価格の見直しはできましたか。
+B：見直しはできましたが、上司の最終確認がまだです。",見積書について、現在の状況はどれか。,価格の見直しがまだである,見直しは済んだが、上司の最終確認待ちである,すでに先方へ送付済みである,見積もり自体が不要になった,2,Đã xem lại giá xong nhưng đang chờ cấp trên xác nhận lần cuối.,N2,mock/q195_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:196,3,46,2,p2s1,会話,"A：中途採用の面接日程、候補者への連絡はできましたか。
+B：3名には連絡しましたが、残り1名がまだ返信をくれていません。",まだ連絡が取れていないのは何名か。,1名,2名,3名,4名,1,"Đã liên lạc được với 3 người, còn 1 người chưa phản hồi.",N3,mock/q196_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:197,3,47,2,p2s1,会話,"A：創立記念イベントの準備、会場の装飾は終わりましたか。
+B：装飾は終わりましたが、来賓へのご案内状の発送がまだです。",まだ完了していない作業は何か。,会場の装飾,来賓への案内状発送,料理の手配,音響機材の準備,2,Trang trí hội trường đã xong nhưng thư mời khách quý vẫn chưa gửi.,N3,mock/q197_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:198,3,48,2,p2s1,会話,"A：カタログ用の商品撮影、スタジオの予約はできましたか。
+B：予約はできましたが、撮影する商品リストがまだ確定していません。",まだ確定していないことは何か。,スタジオの予約,撮影する商品リスト,カメラマンの手配,撮影日,2,Đã đặt được studio nhưng danh sách sản phẩm cần chụp chưa chốt.,N3,mock/q198_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:199,3,49,2,p2s1,会話,"A：来週のクライアントへのプレゼン資料、グラフの部分は完成しましたか。
+B：グラフはできましたが、まとめのスライドがまだ途中です。",まだ途中の部分はどこか。,グラフの部分,表紙,まとめのスライド,目次,3,Phần biểu đồ đã xong nhưng slide tổng kết vẫn đang làm dở.,N3,mock/q199_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:200,3,50,2,p2s1,会話,"A：オフィス改装の申請、ビル管理会社への提出はできましたか。
+B：申請書は提出しましたが、まだ許可の返答が来ていません。",現在の状況として正しいものはどれか。,申請書は提出済みだが、許可はまだ来ていない,申請書はまだ提出していない,すでに許可が下りた,申請自体が却下された,1,Đã nộp đơn xin phép nhưng chưa nhận được phản hồi đồng ý từ công ty quản lý tòa nhà.,N2,mock/q200_part2_sec1.mp3,self_authored_batch3
+bjt.db:mock_exam_question:301,3,51,2,p2s2,為替レート表,"【社内換算レート（4月分）】
+米ドル：1ドル＝148円
+ユーロ：1ユーロ＝161円
+英ポンド：1ポンド＝187円
+※海外出張の精算は、上記の社内レートを用いる。",500ユーロの経費を精算する場合、円換算額はいくらか。,"74,000円","80,500円","93,500円","96,600円",2,"500 × 161 = 80,500円. Các mức khác tương ứng với tỷ giá đô la hoặc bảng Anh.",N3,,self_authored_task057
+bjt.db:mock_exam_question:302,3,52,2,p2s2,品質検査結果,"【出荷前検査 結果一覧（第3ロット）】
+外観検査：合格
+寸法検査：合格
+耐久試験：不合格（基準値の92%）
+動作確認：合格
+※1項目でも不合格の場合、当該ロットは出荷保留とする。",この第3ロットの取り扱いはどうなるか。,そのまま出荷する。,外観のみ再検査する。,基準値を92%に変更する。,出荷を保留する。,4,Quy định ghi rõ chỉ cần 1 hạng mục không đạt thì cả lô bị giữ lại; thử nghiệm độ bền đã không đạt nên lô 3 bị hoãn xuất.,N3,,self_authored_task057
+bjt.db:mock_exam_question:303,3,53,2,p2s2,リサイクル実績,"【工場別 廃棄物リサイクル率】
+第1工場：78%／第2工場：85%／第3工場：64%／第4工場：91%
+※全社目標は80%以上。",全社目標を達成していない工場はいくつあるか。,1つ,2つ,3つ,4つ,2,Dưới 80%: nhà máy 1 (78%) và nhà máy 3 (64%) → 2 nhà máy. Nhà máy 2 (85%) và 4 (91%) đạt.,N3,,self_authored_task057
+bjt.db:mock_exam_question:304,3,54,2,p2s2,福利厚生案内,"【社員向け 保養所利用案内】
+利用資格：勤続1年以上の正社員および家族
+利用料：社員 1泊3,000円／家族 1泊2,000円／小学生以下 無料
+申込：利用希望日の1か月前までに総務部へ
+※繁忙期（7〜8月、12月）は抽選となります。",社員1名、配偶者1名、小学生の子ども2名で1泊する場合の料金はいくらか。,"3,000円","5,000円","7,000円","10,000円",2,"Nhân viên 3,000 + người nhà (vợ/chồng) 2,000 = 5,000円. Hai con tiểu học trở xuống miễn phí.",N3,,self_authored_task057
+bjt.db:mock_exam_question:305,3,55,2,p2s2,店舗営業時間,"【各店舗 営業時間のご案内】
+本店：10:00〜20:00（年中無休）
+駅前店：11:00〜21:00（第2水曜定休）
+郊外店：10:00〜19:00（毎週火曜定休）
+空港店：7:00〜22:00（年中無休）",火曜日の朝9時に営業している店舗はどれか。,本店,駅前店,郊外店,空港店,4,"9h sáng chỉ có cửa hàng sân bay mở (từ 7:00). Bản điếm và cửa hàng ngoại ô mở từ 10:00, cửa hàng trước ga từ 11:00 — và cửa hàng ngoại ô còn nghỉ thứ ba.",N3,,self_authored_task057
+bjt.db:mock_exam_question:306,3,56,2,p2s2,輸出書類チェックリスト,"【輸出時 必要書類】
+□ インボイス（3部）
+□ パッキングリスト（2部）
+□ 原産地証明書（仕向地により要／不要）
+□ 船荷証券
+※原産地証明書は、EU向けおよびASEAN向けの場合に必要。",米国向けの輸出で必要ない書類はどれか。,インボイス,パッキングリスト,船荷証券,原産地証明書,4,Giấy chứng nhận xuất xứ chỉ cần cho hàng đi EU và ASEAN; xuất sang Mỹ thì không cần.,N2,,self_authored_task057
+bjt.db:mock_exam_question:307,3,57,2,p2s2,お知らせ,"【工場見学 受け入れ再開のお知らせ】
+受け入れ再開日：6月3日より
+受け入れ人数：1回につき最大20名（10名未満はお断りする場合がございます）
+実施日：毎週火曜・木曜の午前のみ
+申込方法：見学希望日の2週間前までに専用フォームより",この案内の内容と合っているものはどれか。,見学は毎日午前と午後に実施される。,8名でも必ず見学できる。,申し込みは見学日の1週間前でよい。,1回の見学は20名までである。,4,"Mỗi lượt tối đa 20 người. Chỉ tổ chức sáng thứ ba và thứ năm, dưới 10 người có thể bị từ chối, và phải đăng ký trước 2 tuần.",N3,,self_authored_task057
+bjt.db:mock_exam_question:308,3,58,2,p2s2,経費区分表,"【経費 勘定科目の区分】
+旅費交通費：出張時の交通費・宿泊費
+接待交際費：取引先との飲食、贈答品
+会議費：社内会議の茶菓・弁当代（1人5,000円以下）
+消耗品費：文房具、事務用品
+※取引先との飲食でも1人5,000円以下は会議費として処理できる。","取引先3名と自社2名で会食し、総額20,000円だった場合の勘定科目はどれか。",旅費交通費,接待交際費,消耗品費,会議費,4,"20,000円 ÷ 5 người = 4,000円/người, dưới mức 5,000円 nên theo chú thích được hạch toán vào 会議費 thay vì 接待交際費.",N2,,self_authored_task057
+bjt.db:mock_exam_question:309,3,59,2,p2s2,アンケート結果,"【在宅勤務に関する社員アンケート（回答180名）】
+週5日在宅を希望：27名
+週2〜3日在宅を希望：99名
+月数回程度を希望：36名
+在宅を希望しない：18名",「週2〜3日在宅を希望」と答えた人は全体の何％か。,15%,20%,45%,55%,4,99 ÷ 180 = 0.55 → 55%.,N3,,self_authored_task057
+bjt.db:mock_exam_question:310,3,60,2,p2s2,議事録抜粋,"【品質会議 議事録（抜粋）】
+・顧客からの苦情件数は前月比で3割減少した。
+・減少の主因は、昨年導入した検査工程の追加によるものと考えられる。
+・ただし包装の破損に関する苦情は横ばいであり、梱包資材の見直しを検討する。
+・次回会議までに資材メーカー2社から見積もりを取ることとした。",この会議で今後の行動として決まったことは何か。,検査工程をさらに追加する。,包装の破損を苦情の対象から外す。,苦情件数の集計方法を変更する。,梱包資材の見積もりを2社から取る。,4,Hành động cụ thể được chốt là lấy báo giá vật liệu đóng gói từ 2 nhà cung cấp trước cuộc họp lần sau. Việc thêm công đoạn kiểm tra là chuyện đã làm năm ngoái.,N3,,self_authored_task057
+bjt.db:mock_exam_question:311,3,61,2,p2s2,料金表,"【翻訳サービス 料金表（1文字あたり）】
+日→英：12円／英→日：10円
+日→中：9円／中→日：8円
+※3,000文字以上のご依頼は全体から5%割引。
+※特急仕上げ（3営業日以内）は20%増し。","日本語4,000文字を英語に翻訳し、特急仕上げを依頼した場合の料金はいくらか。","45,600円","48,000円","54,720円","57,600円",3,"4,000 × 12 = 48,000円; giảm 5% do trên 3,000 chữ → 45,600円; cộng 20% phí gấp → 45,600 × 1.2 = 54,720円.",N2,,self_authored_task057
+bjt.db:mock_exam_question:312,3,62,2,p2s2,組織図抜粋,"【海外事業本部 組織】
+本部長：森田
+　├ 海外営業部（部長：川口）
+　│　├ 北米課（課長：安藤）
+　│　└ アジア課（課長：白石）
+　└ 海外管理部（部長：藤井）
+　　　└ 貿易事務課（課長：大西）",アジア課の課長が直属で報告する相手は誰か。,森田本部長,大西課長,藤井部長,川口部長,4,"Phòng châu Á nằm dưới 海外営業部 do trưởng phòng Kawaguchi phụ trách, nên trưởng bộ phận châu Á báo cáo trực tiếp lên Kawaguchi.",N2,,self_authored_task057
+bjt.db:mock_exam_question:313,3,63,2,p2s2,お詫び状抜粋,"【納品遅延のお詫び（抜粋）】
+このたびは、ご注文いただいた商品のお届けが予定より遅れましたこと、深くお詫び申し上げます。原因を調査いたしましたところ、当社倉庫における在庫データの更新漏れにより、実際には在庫がないにもかかわらず受注を承ってしまったことが判明いたしました。",納品が遅れた原因として述べられているものはどれか。,配送業者の車両トラブル,工場の生産設備の故障,倉庫の在庫データが更新されていなかったこと,注文書の記載内容の誤り,3,"Văn bản nêu rõ nguyên nhân là dữ liệu tồn kho ở kho hàng không được cập nhật, dẫn tới nhận đơn dù thực tế không còn hàng.",N2,,self_authored_task057
+bjt.db:mock_exam_question:314,3,64,2,p2s2,研修申込フォーム,"【外部研修 受講申込】
+研修名：海外取引実務セミナー
+受講料：38,000円（会員価格 30,000円）
+会場受講／オンライン受講が選択可能
+※オンライン受講の場合、受講料から3,000円を減額。
+※当社は当該団体の会員です。",この研修をオンラインで受講する場合、会社が負担する受講料はいくらか。,"27,000円","30,000円","35,000円","38,000円",1,"Công ty là hội viên nên áp dụng giá 30,000円, học trực tuyến giảm thêm 3,000円 → 27,000円.",N2,,self_authored_task057
+bjt.db:mock_exam_question:315,3,65,2,p2s2,グラフ説明,"【四半期別 海外売上高（単位：百万円）】
+第1四半期：420／第2四半期：385／第3四半期：510／第4四半期：498",このグラフから読み取れることはどれか。,売上高は四半期ごとに増え続けている。,最も売上高が低いのは第1四半期である。,第3四半期に最も高い売上高を記録した。,第4四半期は第3四半期を上回った。,3,"Quý 3 cao nhất (510). Quý 2 mới là thấp nhất (385), doanh thu không tăng liên tục, và quý 4 (498) thấp hơn quý 3.",N3,,self_authored_task057
+bjt.db:mock_exam_question:316,3,66,3,p3s1,,,先方に確認しました（　　）、来週なら対応可能とのことでした。,たびに,ばかり,うちに,ところ,4,「〜たところ」= sau khi thử làm A thì phát hiện/nhận được kết quả B — mẫu tường thuật kết quả rất hay dùng trong báo cáo công việc.,N2,,self_authored_task057
+bjt.db:mock_exam_question:317,3,67,3,p3s1,,,契約書は本日（　　）有効となります。,にとって,において,につれて,をもって,4,"「〜をもって」= tính từ mốc thời gian đó (hiệu lực, kết thúc) — văn phong công văn trang trọng.",N2,,self_authored_task057
+bjt.db:mock_exam_question:318,3,68,3,p3s1,,,組織改編に（　　）、担当業務が一部変更となります。,比べ,対し,伴い,限り,3,「〜に伴い」= kèm theo/đi cùng với sự thay đổi A thì B cũng thay đổi theo.,N2,,self_authored_task057
+bjt.db:mock_exam_question:319,3,69,3,p3s1,,,その件については、私が責任（　　）対応いたします。,を持って,において,につき,ながら,1,「責任を持って」là cụm cố định = 'chịu trách nhiệm mà làm'. Không viết「責任をもって」với nghĩa mốc thời gian như câu trên — đây là cách dùng khác.,N2,,self_authored_task057
+bjt.db:mock_exam_question:320,3,70,3,p3s1,,,納品書を確認して（　　）、お支払い手続きに進みます。,からでないと,からには,からこそ,からといって,1,「〜てからでないと…ない／進めない」= nếu chưa làm xong A thì không thể sang B.,N2,,self_authored_task057
+bjt.db:mock_exam_question:321,3,71,3,p3s1,,,（　　）、ご担当者様のお名前を伺ってもよろしいでしょうか。,差し支えなければ,念のため申しますと,おかげさまで,せっかくですが,1,「差し支えなければ」= 'nếu không có gì bất tiện' — lời rào đón lịch sự khi hỏi thông tin có thể nhạy cảm.,N2,,self_authored_task057
+bjt.db:mock_exam_question:322,3,72,3,p3s1,,,この製品は品質（　　）、価格の面でも高く評価されています。,のみならず,どころか,はもとよりで,といえども,1,"「〜のみならず…も」= không chỉ A mà cả B, dùng nhiều trong văn viết trang trọng.",N2,,self_authored_task057
+bjt.db:mock_exam_question:323,3,73,3,p3s1,,,ご希望に必ずしも添える（　　）が、できる限り検討いたします。,わけにはいきません,どころではありません,わけがありません,わけではありません,4,"「〜わけではない」= phủ định một phần ('không hẳn là ~'), phù hợp khi muốn nói khéo rằng chưa chắc đáp ứng được hết yêu cầu.",N2,,self_authored_task057
+bjt.db:mock_exam_question:324,3,74,3,p3s1,,,ご注文の件、確かに（　　）ました。,承り,伺い,申し,拝見し,1,"「承る」là khiêm nhường ngữ của「受ける／引き受ける」, dùng khi tiếp nhận đơn hàng, yêu cầu.",N2,,self_authored_task057
+bjt.db:mock_exam_question:325,3,75,3,p3s1,,,無事に契約が成立し、うれしい（　　）です。,限り,ばかり,ほど,だらけ,1,"「〜限りだ」đi với tính từ cảm xúc, nghĩa 'vô cùng ~', mức trang trọng cao.",N1,,self_authored_task057
+bjt.db:mock_exam_question:326,3,76,3,p3s1,,,先日のお礼（　　）、ご報告に伺いました。,かたがた,ながら,つつ,ついでに,1,"「〜かたがた」= làm một việc kết hợp luôn hai mục đích (vừa cảm ơn vừa báo cáo), chỉ đi với danh từ và mang sắc thái trang trọng. 「ついでに」mang nghĩa 'tiện thể' nên thất lễ với đối tác.",N1,,self_authored_task057
+bjt.db:mock_exam_question:327,3,77,3,p3s1,,,予算の制約上、計画の一部を見送らざるを（　　）。,得ません,きれません,かねません,得ています,1,"「〜ざるを得ない」= buộc phải, không còn cách nào khác — diễn tả quyết định bất đắc dĩ.",N1,,self_authored_task057
+bjt.db:mock_exam_question:328,3,78,3,p3s1,,,来週、御社に（　　）際、詳細をご説明いたします。,お目にかかる,お会いになる,ご覧になる,お見えになる,1,"「お目にかかる」là khiêm nhường ngữ của「会う」, dùng khi mình gặp đối phương. Ba phương án còn lại đều là tôn kính ngữ, không dùng cho hành động của bản thân.",N2,,self_authored_task057
+bjt.db:mock_exam_question:329,3,79,3,p3s1,,,本件の担当は、4月（　　）田村に変更となります。,より,ほど,だけ,しか,1,「〜より」ở đây là dạng trang trọng của「〜から」chỉ mốc bắt đầu.,N3,,self_authored_task057
+bjt.db:mock_exam_question:330,3,80,3,p3s1,,,ご不便を（　　）しますが、何とぞご理解のほどお願い申し上げます。,おかけ,ごかけ,お受け,ご迷惑,1,「ご不便をおかけする」là cụm cố định = 'gây bất tiện cho quý vị'. 「かける」là động từ thuần Nhật nên đi với「お」chứ không phải「ご」.,N2,,self_authored_task057
+bjt.db:mock_exam_question:331,3,81,3,p3s2,,,来客を長く待たせてしまったとき、最も適切な言い方はどれか。,遅くなってすみません。,お待たせして悪かったです。,大変お待たせいたしました。申し訳ございません。,お待ちになって疲れたでしょう。,3,"「お待たせいたしました」là khiêm nhường ngữ chuẩn, kết hợp lời xin lỗi trang trọng 「申し訳ございません」. Phương án 4 suy đoán cảm xúc của khách nên không phù hợp.",N2,,self_authored_task057
+bjt.db:mock_exam_question:332,3,82,3,p3s2,,,上司に有給休暇を申請するとき、最も適切な言い方はどれか。,来週の金曜日、休みます。,来週の金曜日、有給を取らせていただきたいのですが、よろしいでしょうか。,来週の金曜日、有給を取ってもいいですか。,来週の金曜日、お休みになってもよろしいですか。,2,「取らせていただきたいのですが」thể hiện xin phép. Phương án 4 dùng tôn kính ngữ 「お休みになる」cho hành động của chính mình nên sai.,N2,,self_authored_task057
+bjt.db:mock_exam_question:333,3,83,3,p3s2,,,電話で相手の担当者が不在のとき、伝言を頼む最も適切な言い方はどれか。,伝えておいてください。,伝言をお願いしてもいいですか。,恐れ入りますが、ご伝言をお願いできますでしょうか。,伝言を申し上げてもよろしいでしょうか。,3,「恐れ入りますが」+「お願いできますでしょうか」là mức lịch sự phù hợp khi nhờ người lạ. Phương án 4 dùng「申し上げる」sai vì lời nhắn là do mình gửi chứ không phải mình 'kính nói'.,N2,,self_authored_task057
+bjt.db:mock_exam_question:334,3,84,3,p3s2,,,会計時に領収書がほしいと伝えるとき、最も適切な言い方はどれか。,領収書をください。,領収書をいただけますでしょうか。,領収書を差し上げてください。,領収書をお渡しになりますか。,2,"「いただけますでしょうか」là cách xin lịch sự. 「差し上げる」là khiêm nhường ngữ của 'đưa cho' nên dùng ngược chiều, phương án 4 lại hỏi đối phương có đưa không, không phải lời đề nghị.",N2,,self_authored_task057
+bjt.db:mock_exam_question:335,3,85,3,p3s2,,,訪問先の受付で自分の名前を伝えるとき、最も適切な言い方はどれか。,北山工業の佐々木と申します。,北山工業の佐々木さんです。,北山工業の佐々木でいらっしゃいます。,北山工業の佐々木様です。,1,「〜と申します」là khiêm nhường ngữ chuẩn khi tự giới thiệu. Ba phương án còn lại đều gắn kính ngữ vào chính mình (「さん」「様」「いらっしゃる」) nên sai.,N2,,self_authored_task057
+bjt.db:mock_exam_question:336,3,86,3,p3s2,,,送別会への誘いを断るとき、最も角が立たない言い方はどれか。,行きません。,その日は都合が悪いので無理です。,あいにく先約がございまして、今回は失礼させていただきます。,興味がないので遠慮します。,3,「あいにく」+ nêu lý do mơ hồ nhưng hợp lý (「先約」) +「失礼させていただきます」— công thức từ chối giữ được quan hệ.,N2,,self_authored_task057
+bjt.db:mock_exam_question:337,3,87,3,p3s2,,,上司に報告書の確認をお願いするとき、最も適切な言い方はどれか。,報告書を見てください。,報告書をご確認いただけますでしょうか。,報告書を拝見していただけますか。,報告書を確認してもらえますか。,2,"「ご確認いただけますでしょうか」đúng mức với cấp trên. Phương án 3 sai vì「拝見する」là khiêm nhường ngữ, không thể dùng cho hành động của cấp trên.",N2,,self_authored_task057
+bjt.db:mock_exam_question:338,3,88,3,p3s2,,,取引先に自社の担当者変更を伝えるとき、最も適切な言い方はどれか。,来月から担当が中村に変わります。,来月より、担当が中村に変わらせていただきます。,来月より、弊社の担当が中村に代わりますので、よろしくお願い申し上げます。,来月より、中村様が担当になられます。,3,Nêu rõ 「弊社の」 (bên mình) + kết bằng 「よろしくお願い申し上げます」. Phương án 4 gắn 「様」và tôn kính ngữ「なられます」vào đồng nghiệp của mình khi nói với người ngoài nên sai.,N2,,self_authored_task057
+bjt.db:mock_exam_question:339,3,89,3,p3s2,,,電話を切る際、最も適切な言い方はどれか。,では、切ります。,またお電話しますね。,さようなら。,失礼いたします。,4,「失礼いたします」là câu kết chuẩn khi kết thúc cuộc gọi công việc. 「さようなら」quá thân mật/không dùng trong điện thoại công việc.,N2,,self_authored_task057
+bjt.db:mock_exam_question:340,3,90,3,p3s2,,,相手の提案について、その場で決められないと伝えるとき、最も適切な言い方はどれか。,決められません。,社内で検討のうえ、改めてご返答させていただきます。,ちょっと考えさせてください。,上の者に聞いてみないとわかりません。,2,「社内で検討のうえ、改めてご返答させていただきます」vừa lịch sự vừa cam kết mốc trả lời. Phương án 4 tuy đúng ý nhưng cách nói thiếu trang trọng với đối tác.,N2,,self_authored_task057
+bjt.db:mock_exam_question:341,3,91,3,p3s3,社内文書,"社員各位
+夏季の電力使用量削減にご協力ください。7月1日から9月30日までの期間、執務室の空調設定温度を28度とし、使用しない会議室の照明は必ず消灯してください。なお、サーバー室および試験室は温度管理が必要なため、この対象から除きます。",この文書の内容と合っているものはどれか。,全室の空調を28度に設定する。,サーバー室は温度設定の対象外である。,会議室の照明は常時つけておく。,取り組みは1年を通して行われる。,2,"Phòng máy chủ và phòng thử nghiệm được loại trừ vì cần kiểm soát nhiệt độ. Chiến dịch chỉ kéo dài 1/7–30/9, và đèn phòng họp không dùng thì phải tắt.",N2,,self_authored_task057
+bjt.db:mock_exam_question:342,3,92,3,p3s3,社内文書,"各位
+社内公募制度の応募受付を開始します。応募資格は勤続3年以上の社員です。応募にあたり現在の上長の承認は不要ですが、書類選考を通過した場合は面談日程の調整のため上長へ通知されます。応募内容は選考結果が出るまで同じ部署の社員には開示されません。",この制度について正しいものはどれか。,応募には事前に上長の承認が必要である。,勤続1年でも応募できる。,書類選考を通過すると上長に知らされる。,応募内容は最初から部署全員に公開される。,3,"Không cần phê duyệt trước của cấp trên, nhưng khi qua vòng hồ sơ thì cấp trên sẽ được thông báo để sắp lịch phỏng vấn. Điều kiện là thâm niên từ 3 năm.",N2,,self_authored_task057
+bjt.db:mock_exam_question:343,3,93,3,p3s3,社外文書,"拝啓　貴社ますますご清祥のこととお喜び申し上げます。
+さて、弊社では環境負荷低減の一環として、来年度より製品の梱包資材を再生紙由来のものへ順次切り替えてまいります。これに伴い、一部製品の外装デザインが変更となりますが、製品の仕様および価格に変更はございません。　敬具",この文書で伝えられている内容はどれか。,製品の価格が来年度から変わる。,梱包資材を環境に配慮したものに変える。,製品の仕様を大きく見直す。,再生紙の製品を新たに発売する。,2,"Nội dung chính là chuyển vật liệu đóng gói sang loại từ giấy tái chế; quy cách và giá sản phẩm không đổi, chỉ thiết kế bao bì ngoài thay đổi.",N2,,self_authored_task057
+bjt.db:mock_exam_question:344,3,94,3,p3s3,社外文書,"拝啓　平素は格別のお引き立てを賜り、厚く御礼申し上げます。
+さて、弊社では毎年8月13日から16日までを夏季休業とさせていただいております。休業期間中にいただいたご注文は、8月19日以降、順次出荷いたします。なお、緊急のご用件は弊社ホームページのお問い合わせフォームをご利用ください。　敬具",休業期間中に注文した場合、商品はいつ出荷されるか。,8月13日以降,8月16日以降,8月19日以降,9月以降,3,Văn bản nêu rõ đơn đặt trong kỳ nghỉ sẽ được xuất hàng lần lượt từ ngày 19/8 trở đi.,N3,,self_authored_task057
+bjt.db:mock_exam_question:345,3,95,3,p3s3,社内メール,"各部署 ご担当者様
+お疲れさまです。情報システム課です。
+先週より、社外から送信されたメールの件名に自動で［外部］と表示されるようになりました。これは差出人を装った不審メールへの対策です。表示があること自体は異常ではありません。ただし、［外部］表示があるにもかかわらず社内からの連絡を装う内容の場合は、開封せずに情報システム課までご連絡ください。",［外部］と表示されたメールについて、正しい対応はどれか。,すべて開封せずに削除する。,表示があるだけなら通常どおり扱ってよい。,すべて情報システム課へ転送する。,件名を書き換えてから開封する。,2,Việc hiển thị［外部］tự nó không phải bất thường. Chỉ khi email có nhãn ngoài nhưng lại giả danh liên lạc nội bộ thì mới không mở và báo cho bộ phận IT.,N2,,self_authored_task057
+bjt.db:mock_exam_question:346,3,96,3,p3s3,社内メール,"営業部の皆さま
+お疲れさまです。経理部の岡田です。
+四半期末の締めに伴い、9月分の経費精算は9月25日17時までに申請を完了してください。この期限を過ぎた申請は10月分として処理されます。領収書の原本提出は従来どおり月末までで構いませんが、システム上の申請だけは先に済ませてください。",このメールの内容と合っているものはどれか。,領収書の原本も9月25日までに提出する。,期限を過ぎると経費が支給されない。,システム申請は25日まで、原本提出は月末まででよい。,9月分の精算は10月に一括で行う。,3,"Đăng ký trên hệ thống hạn 25/9, nhưng nộp hoá đơn gốc vẫn theo lệ cũ là đến cuối tháng. Quá hạn thì chuyển sang kỳ tháng 10 chứ không phải mất tiền.",N2,,self_authored_task057
+bjt.db:mock_exam_question:347,3,97,3,p3s3,社外メール,"株式会社サクラ物流
+営業部　浜田様
+
+いつもお世話になっております。東西産業の宮本でございます。
+先日お送りいただいたお見積もりの件でご連絡いたしました。
+内容を拝見し、条件についてはおおむね承知いたしました。ただ、配送頻度を週2回から週3回に変更した場合の金額も併せてお示しいただけますと、社内で比較検討がしやすく助かります。",このメールで依頼していることは何か。,見積書を最初から作り直してほしい。,配送頻度を週3回にした場合の見積もりも出してほしい。,配送頻度を週1回に減らしてほしい。,契約を正式に締結したい。,2,"Người gửi đã chấp nhận điều kiện cơ bản, chỉ xin thêm một phương án báo giá với tần suất giao hàng 3 lần/tuần để so sánh nội bộ.",N2,,self_authored_task057
+bjt.db:mock_exam_question:348,3,98,3,p3s3,社外メール,"みなみ電機株式会社
+技術部　小林様
+
+お世話になっております。北山工業の佐々木でございます。
+来月予定しております共同試験につきまして、弊社の試験装置の点検日程が変更となり、当初ご提案した11月10日の実施が難しくなりました。誠に恐れ入りますが、11月17日または11月18日でご調整いただくことは可能でしょうか。ご都合をお知らせいただけますと幸いです。",このメールの用件は何か。,共同試験の中止を申し出ている。,試験の実施日の変更を相談している。,試験装置の貸し出しを依頼している。,試験結果の報告を求めている。,2,"Do lịch kiểm tra thiết bị thay đổi nên ngày 10/11 không thực hiện được, người gửi đề nghị đổi sang 17 hoặc 18/11 — tức thương lượng đổi ngày, không phải huỷ.",N2,,self_authored_task057
+bjt.db:mock_exam_question:349,3,99,3,p3s3,記事,国内の物流業界では、トラック運転手の不足が深刻化している。ある業界団体の調査では、運転手が「不足している」と答えた事業者は72%に上った。対策として最も多く挙がったのは「賃金の引き上げ」だが、実際に実施できた事業者は3割にとどまる。背景には、運賃に人件費の上昇を転嫁しにくい取引構造があると指摘されている。,この記事の内容と合っているものはどれか。,運転手不足を訴える事業者は3割である。,賃金引き上げを実施できた事業者は少数にとどまる。,運賃に人件費を転嫁するのは容易である。,対策として最も多いのは労働時間の短縮である。,2,"72% nói thiếu tài xế; biện pháp được nêu nhiều nhất là tăng lương nhưng chỉ khoảng 30% thực hiện được, do khó chuyển chi phí nhân công vào cước vận chuyển.",N2,,self_authored_task057
+bjt.db:mock_exam_question:350,3,100,3,p3s3,記事,企業の農業参入が広がっている。農林水産省によると、一般企業が設立した農業法人はこの10年でおよそ3倍に増えた。参入の動機は「自社製品の原材料を安定して確保するため」が最も多い。一方、参入後5年以内に撤退する企業も少なくなく、天候による収量の変動に対応しきれないことが主な理由として挙げられている。,この記事で撤退の理由として挙げられているものはどれか。,原材料の価格が下がったこと,農地を借りられなかったこと,天候による収穫量の変動に対応できないこと,従業員を確保できなかったこと,3,Bài viết nêu lý do rút lui chính là không ứng phó được với biến động sản lượng do thời tiết.,N2,,self_authored_task057
+bjt.db:mock_exam_question:201,4,1,1,p1s1,会話,"A：すみません、研修室はどちらでしょうか。3階と伺ったのですが。
+B：3階の突き当りです、エレベーターを降りて左手になります。",この会話が行われている場所として最も適切なものはどれか。,エレベーターホールや廊下付近,研修室の中,取引先の会議室,社員食堂,1,"Người hỏi đường đến phòng đào tạo, được chỉ dẫn ra khỏi thang máy — bối cảnh gần khu vực thang máy/hành lang.",N3,mock/q201_part1_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:202,4,2,1,p1s1,電話,"A：宅配便です。お荷物をお届けに上がったのですが、ご不在のようで。
+B：すみません、では明日の午前中に再配達をお願いできますか。",この会話について正しいものはどれか。,Bが再配達を依頼している,配達員が再配達を依頼している,荷物はすでに受け取った,荷物は返送された,1,B (người nhận) xin giao lại vào sáng mai vì lúc giao hàng vắng nhà.,N3,mock/q202_part1_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:203,4,3,1,p1s1,会話,"A：来週の学会発表、誰が登壇することになりましたか。
+B：山田さんが行くことになりました、資料も準備が進んでいるそうです。",来週の学会で発表するのは誰か。,山田さん,B,A,まだ決まっていない,1,B nói anh Yamada sẽ là người lên thuyết trình.,N3,mock/q203_part1_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:204,4,4,1,p1s1,会話,"A：初めまして、来月から御社と協業させていただく田中と申します。
+B：こちらこそ、よろしくお願いいたします。応接室へどうぞ。",この会話の関係として最も適切なものはどれか。,社内の同僚同士の初対面,面接官と応募者,新しく協業する取引先とその担当者,親子,3,Tanaka tự giới thiệu sẽ hợp tác với công ty từ tháng sau — là đối tác mới và người tiếp đón.,N3,mock/q204_part1_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:205,4,5,1,p1s1,会話,"A：本社と大阪支社をつなぐビデオ会議、音声のテストをしてもいいですか。
+B：はい、お願いします。聞こえたら手を挙げてください。",この会話が行われている場所として最も適切なものはどれか。,レストラン,ビデオ会議の準備をしている会議室,駅のホーム,工場の作業場,2,Đang kiểm tra âm thanh cho cuộc họp video giữa trụ sở chính và chi nhánh Osaka — bối cảnh phòng họp.,N3,mock/q205_part1_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:206,4,6,1,p1s1,放送,本日、社員食堂にて、お弁当のご希望を伺うアンケートを実施しております。ご協力いただける方は、入り口の用紙にご記入ください。,この放送の内容と合っているものはどれか。,社員食堂が閉鎖される,社員食堂の場所が変更になる,弁当が無料になる,弁当についてのアンケートを実施している,4,Thông báo đang thực hiện khảo sát ý kiến về cơm hộp tại căng tin.,N3,mock/q206_part1_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:207,4,7,1,p1s1,会話,"A：すみません、鍵を部屋の中に置いたまま閉めてしまいました。
+B：警備室で予備の鍵をお貸しできますので、こちらへどうぞ。",この会話について正しいものはどれか。,Aが鍵をなくした,Aが部屋に鍵を置き忘れて閉め出された,Bが鍵を壊した,鍵の交換工事をしている,2,"A để quên chìa khóa trong phòng và bị khóa ngoài, B hướng dẫn mượn chìa khóa dự phòng ở phòng bảo vệ.",N3,mock/q207_part1_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:208,4,8,1,p1s1,会話,"A：新人研修で名刺交換の練習をしますが、まずはお手本を見せますね。
+B：はい、よろしくお願いします。",この会話が行われている場所として最も適切なものはどれか。,取引先のオフィス,社員食堂,新入社員研修の会場,工場の作業場,3,Đang luyện tập trao đổi danh thiếp trong buổi đào tạo nhân viên mới.,N3,mock/q208_part1_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:209,4,9,1,p1s1,電話,"A：レンタカーの件でお電話しました。明日10時に空港でお渡しできる手配になっております。
+B：ありがとうございます、よろしくお願いします。",この会話の目的として最も適切なものはどれか。,航空券の予約,レンタカーのキャンセル,レンタカーの受け渡し時間・場所の確認,ホテルの予約変更,3,Cuộc gọi để xác nhận giờ và địa điểm giao xe thuê tại sân bay.,N3,mock/q209_part1_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:210,4,10,1,p1s1,放送,ただいまより避難訓練を行います。訓練放送に従って、落ち着いて非常階段から1階の駐車場までご移動ください。,この放送の内容と合っているものはどれか。,本当の火事が発生した,避難訓練が行われている,エレベーターの点検を行っている,社員食堂が閉鎖される,2,"Đây là thông báo diễn tập sơ tán, không phải hỏa hoạn thật.",N3,mock/q210_part1_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:211,4,11,1,p1s2,場面設定,お客様に、来月から製品の価格が改定されることを伝えたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,来月から値上げします。,誠に恐縮ではございますが、来月より製品価格を改定させていただく運びとなりました。何卒ご理解賜りますようお願い申し上げます。,値段が変わるので、よろしく。,来月から高くなります。,2,"Thông báo tăng giá sản phẩm cho khách hàng cần diễn đạt lịch sự, xin thông cảm.",N2,mock/q211_part1_sec2.mp3,self_authored_batch4
+bjt.db:mock_exam_question:212,4,12,1,p1s2,場面設定,納期に間に合わないため、クライアントに期限の延長をお願いしたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,大変申し訳ございませんが、諸事情により、納期を1週間ほど延長させていただくことは可能でしょうか。,間に合わないので延ばしてください。,無理なので待ってください。,遅れます、すみません。,1,"Xin gia hạn thời hạn với khách hàng cần xin lỗi trước, nêu lý do và đề nghị lịch sự.",N2,mock/q212_part1_sec2.mp3,self_authored_batch4
+bjt.db:mock_exam_question:213,4,13,1,p1s2,場面設定,商品の配送が遅れていることを、電話でお客様に説明したい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,ご注文いただいた商品の配送に遅れが生じており、大変ご迷惑をおかけしております。今週中には必ずお届けいたします。,まだ届きません、待ってください。,配送業者の問題です。,遅れてるみたいです。,1,Giải thích việc giao hàng chậm với khách cần xin lỗi rõ ràng và cam kết thời hạn cụ thể.,N2,mock/q213_part1_sec2.mp3,self_authored_batch4
+bjt.db:mock_exam_question:214,4,14,1,p1s2,場面設定,取引先の担当者を、自分の上司に初めて紹介したい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,この人が取引先の人です。,こちら、いつもお世話になっております、○○社の△△様でいらっしゃいます。,紹介します、取引先です。,お客さんです。,2,"Giới thiệu đối tác với cấp trên cần dùng cách nói trang trọng, kính ngữ phù hợp.",N2,mock/q214_part1_sec2.mp3,self_authored_batch4
+bjt.db:mock_exam_question:215,4,15,1,p1s2,場面設定,仕入れ先に、注文の納品を急いでもらいたい。最も適切な依頼の仕方はどれか。,この場面で最も適切な言い方はどれか。,早くしてください。,急いで、お願い。,大変恐縮ですが、事情により、可能な限り納期を早めていただくことは可能でしょうか。,早く納品してほしいんですけど。,3,"Nhờ nhà cung cấp giao hàng sớm hơn cần xin lỗi, nêu tình hình và hỏi lịch sự.",N2,mock/q215_part1_sec2.mp3,self_authored_batch4
+bjt.db:mock_exam_question:216,4,16,1,p1s2,場面設定,請求書の金額に誤りがあったことに気づき、お客様に謝罪し訂正したい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,金額、間違えてました。,請求書のミスです。,すみません、直します。,先般お送りした請求書に誤りがございました。深くお詫び申し上げますとともに、訂正版を改めてお送りいたします。,4,Xin lỗi vì hóa đơn sai và cam kết gửi lại bản đã sửa cần dùng cách nói trang trọng.,N2,mock/q216_part1_sec2.mp3,self_authored_batch4
+bjt.db:mock_exam_question:217,4,17,1,p1s2,場面設定,悪天候のため、在宅勤務にしたいと上司に相談したい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,天気悪いので家で仕事します。,行けないので休みます。,本日は悪天候により交通機関に影響が出ておりますので、可能であれば在宅勤務とさせていただけますでしょうか。,在宅にします、よろしく。,3,Xin phép làm việc tại nhà vì thời tiết xấu cần nêu lý do rõ ràng và xin phép lịch sự.,N2,mock/q217_part1_sec2.mp3,self_authored_batch4
+bjt.db:mock_exam_question:218,4,18,1,p1s2,場面設定,会議の開始前に、参加者に着席をお願いしたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,座ってください。,早く座って。,間もなく会議を始めさせていただきますので、お席にお着きいただけますでしょうか。,席、着いてください。,3,Mời người tham dự ngồi vào chỗ trước khi họp cần dùng cách nói lịch sự.,N3,mock/q218_part1_sec2.mp3,self_authored_batch4
+bjt.db:mock_exam_question:219,4,19,1,p1s2,場面設定,長期の休暇に入る前に、担当業務の引き継ぎを同僚に依頼したい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,長期休暇をいただく間、私の業務を代わりに見ていただけますでしょうか。,休みの間、頼んだよ。,やっといて。,お願いします、業務。,1,"Nhờ đồng nghiệp phụ trách công việc trong lúc nghỉ dài ngày cần hỏi lịch sự, rõ ràng.",N2,mock/q219_part1_sec2.mp3,self_authored_batch4
+bjt.db:mock_exam_question:220,4,20,1,p1s2,場面設定,取引先からいただいたお中元に対して、お礼の電話をかけたい。最も適切な言い方はどれか。,この場面で最も適切な言い方はどれか。,お土産、ありがとうございました。,頂き物、感謝です。,もらいました、どうも。,この度は結構なお品をご恵贈いただき、誠にありがとうございました。,4,"Cảm ơn đối tác vì quà tặng theo mùa cần dùng cách nói trang trọng, đúng nghi thức thương mại.",N1,mock/q220_part1_sec2.mp3,self_authored_batch4
+bjt.db:mock_exam_question:221,4,21,1,p1s3,会話,"A：新しいCRMシステム、導入から1か月経ちましたが使い勝手はどうですか。
+B：顧客情報の検索は早くなりましたが、まだ入力に慣れていない社員が多いです。
+A：では、追加の研修を検討しましょう。",現在の課題として述べられているのは何か。,入力に慣れていない社員が多い,検索速度が遅い,システムが頻繁に停止する,コストが高すぎる,1,Vấn đề hiện tại là nhiều nhân viên chưa quen với việc nhập liệu.,N2,mock/q221_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:222,4,22,1,p1s3,会話,"A：海外進出の件、役員会議での結論はどうなりましたか。
+B：東南アジア市場への進出は決定しましたが、時期は来年度以降に延期になりました。
+A：資金面の準備期間が必要ということですね。",役員会議の結論として正しいものはどれか。,海外進出自体が中止になった,今年度中に進出することになった,ヨーロッパに進出することになった,東南アジア進出は決定したが、時期は延期になった,4,Quyết định tiến vào thị trường Đông Nam Á nhưng thời điểm bị lùi lại sang năm tài chính sau.,N2,mock/q222_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:223,4,23,1,p1s3,会話,"A：ここ半年でお客様からの保証修理の件数が増えているようです。
+B：特定の部品に問題があるのか、品質管理部に調べてもらいましょう。
+A：分かりました、早急に依頼します。",Aがこれから行うことは何か。,製品の値上げをする,製品の販売を停止する,保証修理をすべて拒否する,品質管理部に調査を依頼する,4,A sẽ yêu cầu phòng quản lý chất lượng điều tra nguyên nhân số ca bảo hành tăng.,N2,mock/q223_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:224,4,24,1,p1s3,会話,"A：ペーパーレス化を進めた結果、印刷コストはどれくらい削減できましたか。
+B：前年比で約30%削減できました。ただ、一部の高齢社員からは紙の方が見やすいという声もあります。
+A：併用できる仕組みも考えましょう。",ペーパーレス化についての課題として述べられているのは何か。,コストが増加した,効果がまったくなかった,印刷機が故障した,一部社員から紙の方が見やすいという声がある,4,Vấn đề là một số nhân viên lớn tuổi cho rằng giấy dễ đọc hơn.,N2,mock/q224_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:225,4,25,1,p1s3,会話,"A：新入社員のメンター制度、担当は誰にお願いしましょうか。
+B：入社3年目の鈴木さんはどうですか、面倒見がいいと評判です。
+A：いいですね、本人の意向も確認して進めましょう。",メンター候補として名前が挙がったのは誰か。,鈴木さん,B,A,まだ誰も候補がいない,1,B đề xuất Suzuki (nhân viên năm 3) làm người hướng dẫn vì được đánh giá chu đáo.,N2,mock/q225_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:226,4,26,1,p1s3,会話,"A：隣のビルの工事、音がかなり響きますね。お客様からも苦情が来ています。
+B：工事会社に、時間帯を配慮してもらえないか相談してみましょう。
+A：それがいいですね、お願いします。",Bがこれから行うことは何か。,工事を中止させる,オフィスを移転する,工事会社に時間帯の配慮を相談する,お客様に謝罪の品を送る,3,B sẽ trao đổi với công ty thi công về việc điều chỉnh khung giờ để giảm tiếng ồn.,N2,mock/q226_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:227,4,27,1,p1s3,会話,"A：新しいパッケージデザイン、アンケート結果はどうでしたか。
+B：A案が一番人気でしたが、色使いについては年配層から意見が分かれました。
+A：では、色のバリエーションを増やす方向で検討しましょう。",アンケート結果として正しいものはどれか。,B案が最も人気だった,全員が同じ意見だった,A案が人気だが、色使いに賛否が分かれた,デザイン自体が不評だった,3,Mẫu A được ưa chuộng nhất nhưng về màu sắc thì người lớn tuổi có ý kiến trái chiều.,N2,mock/q227_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:228,4,28,1,p1s3,放送,情報セキュリティ強化のため、来月よりパスワードの定期変更が必須となります。詳細な手順は、社内ポータルサイトに掲載しておりますのでご確認ください。,この放送の内容と合っているものはどれか。,パスワードの定期変更が必須になる,パスワードが不要になる,社内ポータルサイトが閉鎖される,セキュリティ対策が廃止される,1,Thông báo yêu cầu bắt buộc đổi mật khẩu định kỳ để tăng cường bảo mật thông tin.,N3,mock/q228_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:229,4,29,1,p1s3,会話,"A：銀行に依頼していた融資の件、まだ返事がありませんね。
+B：先週追加書類を提出したので、今週中には結果が出るはずです。
+A：では、もう少し待ちましょう。",融資の件について、現在の状況はどれか。,すでに融資が決定した,融資は却下された,追加書類提出済みで、今週中に結果が出る見込みである,申請自体をまだしていない,3,"Đã nộp bổ sung giấy tờ tuần trước, dự kiến có kết quả trong tuần này.",N2,mock/q229_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:230,4,30,1,p1s3,会話,"A：展示会で獲得した名刺、フォローの担当はどう割り振りますか。
+B：業種別に3チームに分けて、来週から順にご連絡することにしましょう。",名刺のフォローはどのように進めることになったか。,すべて1人が担当する,外部業者に委託する,フォローは行わない,業種別に3チームに分けて対応する,4,Sẽ chia thành 3 nhóm theo ngành nghề để liên hệ theo dõi khách hàng tiềm năng.,N2,mock/q230_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:231,4,31,1,p1s3,放送,来月より、残業申請の承認フローが変更となります。今後は、当日の口頭申請ではなく、前日までにシステム上での事前申請が必要となりますので、ご協力をお願いいたします。,残業申請について、来月からどう変わるか。,口頭申請のみ可能になる,申請が不要になる,残業自体が禁止になる,前日までにシステムで事前申請が必要になる,4,"Quy trình đổi sang phải xin phép làm thêm giờ trước qua hệ thống, chậm nhất là trước 1 ngày.",N2,mock/q231_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:232,4,32,1,p1s3,会話,"A：駐車場の件ですが、来月から利用台数に制限がかかるそうです。
+B：どのくらいの制限ですか。
+A：1人1台までで、事前の申請制になるとのことです。",来月からの駐車場利用ルールとして正しいものはどれか。,誰でも自由に何台でも停められる,料金が有料になる,駐車場自体が廃止される,1人1台まで、事前申請が必要になる,4,Quy định mới giới hạn mỗi người 1 xe và cần đăng ký trước.,N3,mock/q232_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:233,4,33,1,p1s3,会話,"A：先方から、契約書の翻訳文に誤訳があるとご指摘がありました。
+B：それは大変ですね、どの部分ですか。
+A：金額の桁が違っていたようです。至急、翻訳会社に確認して訂正します。",指摘された誤訳の内容は何か。,日付の間違い,金額の桁の間違い,会社名の間違い,署名欄の不備,2,Lỗi dịch được chỉ ra là sai số chữ số của số tiền.,N2,mock/q233_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:234,4,34,1,p1s3,会話,"A：新しい制服の業者選定、3社から見積もりを取りましたが、どこにしますか。
+B：価格はB社が一番安いですが、生地の質はC社が一番良かったです。
+A：では、価格と品質のバランスを見て、来週の会議で決めましょう。",この会話の内容と合っているものはどれか。,すでにA社に決定した,4社目に見積もりを依頼する,制服の導入自体が中止になった,来週の会議で最終決定する予定である,4,"Sẽ quyết định cuối cùng ở cuộc họp tuần sau, cân nhắc giữa giá cả và chất lượng.",N2,mock/q234_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:235,4,35,1,p1s3,会話,"A：来期の新卒採用、目標人数は決まりましたか。
+B：営業職15名、技術職10名で計画していますが、応募状況を見て調整する予定です。",来期の新卒採用計画として正しいものはどれか。,営業職10名、技術職15名を計画している,営業職15名、技術職10名を計画している,採用は行わない予定である,全員技術職として採用する,2,"Kế hoạch tuyển 15 người vị trí kinh doanh và 10 người vị trí kỹ thuật, có thể điều chỉnh theo tình hình ứng tuyển.",N2,mock/q235_part1_sec3.mp3,self_authored_batch4
+bjt.db:mock_exam_question:236,4,36,2,p2s1,会話,"A：ビデオ会議用のカメラとマイク、発注しましたか。
+B：カメラは発注済みですが、マイクはまだ機種を検討中です。",まだ発注していないものは何か。,カメラ,マイク,モニター,スピーカー,2,Camera đã đặt hàng xong nhưng micro vẫn đang xem xét chọn loại nào.,N3,mock/q236_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:237,4,37,2,p2s1,会話,"A：社内表彰の候補者、各部署から推薦は集まりましたか。
+B：営業部と製造部からは届きましたが、開発部からはまだです。",まだ推薦が届いていない部署はどこか。,営業部,開発部,製造部,総務部,2,"Bộ phận kinh doanh và sản xuất đã gửi đề cử, chỉ còn bộ phận phát triển chưa gửi.",N3,mock/q237_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:238,4,38,2,p2s1,会話,"A：新しいロゴのデザイン、社長の承認は下りましたか。
+B：ほぼ気に入っていただけましたが、色味だけ再検討を依頼されています。",ロゴデザインについて正しいものはどれか。,社長の確認はまだである,ロゴ自体が不要になった,デザインは却下された,気に入られたが、色味の再検討を依頼された,4,Giám đốc gần như ưng ý nhưng yêu cầu xem lại tông màu.,N2,mock/q238_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:239,4,39,2,p2s1,会話,"A：社用車の点検、終わりましたか。
+B：エンジン部分は点検済みですが、タイヤの交換がまだ済んでいません。",まだ済んでいない作業は何か。,エンジンの点検,タイヤの交換,洗車,保険の更新,2,Động cơ đã kiểm tra xong nhưng thay lốp thì chưa xong.,N3,mock/q239_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:240,4,40,2,p2s1,会話,"A：海外からの輸入品、税関の手続きは終わりましたか。
+B：書類は提出済みですが、通関の許可がまだ下りていません。",現在の状況として正しいものはどれか。,書類提出はまだである,書類提出済みで、通関許可待ちである,すでに通関が完了した,輸入自体が中止になった,2,Đã nộp giấy tờ nhưng vẫn chờ giấy phép thông quan.,N2,mock/q240_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:241,4,41,2,p2s1,会話,"A：求人広告のポスター、印刷は発注しましたか。
+B：デザインの最終確認中で、発注はまだしていません。",Bがまだ行っていないことは何か。,デザインの確認,掲載先の決定,求人内容の作成,印刷の発注,4,"Đang xác nhận thiết kế lần cuối, chưa đặt in.",N3,mock/q241_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:242,4,42,2,p2s1,会話,"A：社員の健康診断、予約は取れましたか。
+B：半分の社員は予約済みですが、残りはまだ日程調整中です。",健康診断の予約について正しいものはどれか。,半分の社員が予約済みで、残りは調整中である,全員分の予約が完了した,予約はまだ誰も取れていない,健康診断自体が中止になった,1,"Một nửa nhân viên đã đặt lịch, số còn lại vẫn đang điều chỉnh ngày.",N3,mock/q242_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:243,4,43,2,p2s1,会話,"A：新しい仕入れ先との契約書、サインはもらえましたか。
+B：先方のサインはもらいましたが、こちらの捺印がまだです。",まだ済んでいないことは何か。,こちらの捺印,先方のサイン,契約金額の確認,契約書の作成,1,Phía đối tác đã ký nhưng bên mình chưa đóng dấu.,N3,mock/q243_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:244,4,44,2,p2s1,会話,"A：社員食堂の新メニュー、試食会は終わりましたか。
+B：試食会は終わりましたが、アンケート結果の集計がまだです。",まだ完了していないことは何か。,アンケート結果の集計,試食会の実施,メニューの考案,食材の発注,1,Buổi nếm thử đã xong nhưng tổng hợp kết quả khảo sát chưa xong.,N3,mock/q244_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:245,4,45,2,p2s1,会話,"A：情報システム部への問い合わせ、対応してもらえましたか。
+B：一次対応はしてもらいましたが、根本的な解決にはもう少し時間がかかるそうです。",現在の状況として正しいものはどれか。,完全に解決した,まだ何も対応されていない,一次対応済みだが、根本解決にはまだ時間がかかる,問い合わせ自体を取り消した,3,Đã được xử lý bước đầu nhưng giải quyết triệt để cần thêm thời gian.,N2,mock/q245_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:246,4,46,2,p2s1,会話,"A：出張経費の精算、領収書はすべて提出しましたか。
+B：ほとんど提出しましたが、タクシー代の領収書を1枚なくしてしまいました。",Bが提出できていないものは何か。,すべての領収書,宿泊費の領収書,タクシー代の領収書1枚,航空券の領収書,3,"Hầu hết hóa đơn đã nộp, chỉ mất 1 tờ hóa đơn tiền taxi.",N3,mock/q246_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:247,4,47,2,p2s1,会話,"A：新商品の名称、候補は絞れましたか。
+B：3案に絞りましたが、商標登録の確認がまだ終わっていません。",まだ終わっていない作業は何か。,候補案を3つに絞る作業,商標登録の確認,パッケージデザイン,価格設定,2,Đã thu hẹp còn 3 phương án tên nhưng chưa kiểm tra xong việc đăng ký thương hiệu.,N2,mock/q247_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:248,4,48,2,p2s1,会話,"A：海外向け売上報告書、英語への翻訳は終わりましたか。
+B：本文は終わりましたが、グラフ内の項目名の翻訳がまだです。",まだ翻訳が終わっていない部分はどこか。,本文,グラフ内の項目名,表紙,目次,2,Nội dung chính đã dịch xong nhưng tên các mục trong biểu đồ vẫn chưa dịch.,N3,mock/q248_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:249,4,49,2,p2s1,会話,"A：会議室のプロジェクターとスクリーン、設置は終わりましたか。
+B：スクリーンは設置しましたが、プロジェクターとの接続確認がまだです。",まだ確認できていないことは何か。,スクリーンの設置,椅子の配置,プロジェクターとの接続,照明の調整,3,Màn chiếu đã lắp nhưng chưa kiểm tra kết nối với máy chiếu.,N3,mock/q249_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:250,4,50,2,p2s1,会話,"A：会社ホームページのリニューアル、デザインは完成しましたか。
+B：トップページは完成しましたが、会社概要のページがまだ制作中です。",まだ制作中のページはどこか。,会社概要のページ,トップページ,お問い合わせページ,採用ページ,1,Trang chủ đã hoàn thành nhưng trang giới thiệu công ty vẫn đang thực hiện.,N3,mock/q250_part2_sec1.mp3,self_authored_batch4
+bjt.db:mock_exam_question:351,4,51,2,p2s2,出張精算表,"【国内出張 精算基準】
+宿泊費上限：東京・大阪 12,000円／その他地域 9,000円
+日当：日帰り 2,000円／宿泊を伴う場合 3,500円
+交通費：実費（領収書必須）
+※上限を超えた宿泊費は自己負担とする。","名古屋に1泊し、宿泊費11,000円を支払った場合、宿泊費として精算される額はいくらか。","9,000円","11,000円","12,000円","2,000円",1,"Nagoya thuộc 'khu vực khác' nên trần là 9,000円; phần vượt (2,000円) do cá nhân chịu.",N2,,self_authored_task057
+bjt.db:mock_exam_question:352,4,52,2,p2s2,人事異動通知,"【人事異動のお知らせ（4月1日付）】
+営業第一課長　村上 → 営業企画部 部長代理
+営業第二課　主任 谷口 → 営業第一課長
+管理部　斉藤 → 営業第二課 主任
+※後任が着任するまでの間、業務は各部の部長が兼務する。",4月1日以降、営業第一課長を務めるのは誰か。,村上,斉藤,谷口,各部の部長,3,Taniguchi từ chủ nhiệm phòng kinh doanh 2 được điều lên làm trưởng phòng kinh doanh 1; Murakami chuyển sang bộ phận kế hoạch.,N3,,self_authored_task057
+bjt.db:mock_exam_question:353,4,53,2,p2s2,苦情対応記録,"【お客様相談室 対応記録】
+受付日時：5月8日 10:15
+内容：購入した商品に部品が1点不足していた
+一次対応：不足部品を翌営業日に発送すると回答
+お客様のご要望：商品全体の交換を希望
+対応方針：上長判断のうえ、5月9日中に折り返し連絡する",この記録によると、次に行われることは何か。,不足部品だけを送る。,商品全体をただちに交換する。,5月9日中にお客様へ連絡する。,お客様に来店してもらう。,3,"Khách muốn đổi cả sản phẩm, khác với phương án xử lý ban đầu, nên phải chờ cấp trên quyết định và gọi lại cho khách trong ngày 9/5.",N2,,self_authored_task057
+bjt.db:mock_exam_question:354,4,54,2,p2s2,在宅勤務規程,"【在宅勤務 実施要領】
+対象者：入社6か月以上の社員
+実施可能日数：月8日まで（部署長の承認が必要）
+申請期限：実施希望日の前営業日まで
+※顧客対応業務を担当する社員は、月4日を上限とする。",顧客対応を担当する入社1年の社員が、1か月に在宅勤務できる最大日数は何日か。,制限なし,6日,8日,4日,4,"Nhân viên phụ trách chăm sóc khách hàng bị giới hạn riêng ở mức 4 ngày/tháng, thấp hơn mức chung 8 ngày.",N2,,self_authored_task057
+bjt.db:mock_exam_question:355,4,55,2,p2s2,広告出稿計画,"【下期 広告出稿計画】
+ウェブ広告：1,800万円
+交通広告：600万円
+雑誌広告：400万円
+イベント協賛：200万円
+※下期予算の総額は3,200万円で、上記に含まれない予備費が200万円ある。",計画に挙げられた4項目の合計金額はいくらか。,"2,800万円","3,400万円","3,200万円","3,000万円",4,"1,800 + 600 + 400 + 200 = 3,000万円. Tổng ngân sách 3,200万円 bao gồm thêm 200万円 dự phòng.",N3,,self_authored_task057
+bjt.db:mock_exam_question:356,4,56,2,p2s2,会議室予約状況,"【本日の会議室 予約状況】
+A室：9:00-11:00／14:00-16:00
+B室：10:00-12:00
+C室：13:00-17:00
+※各室とも18時まで利用可能。",13時から2時間、会議室を使いたい場合、利用できる部屋はどれか。,A室のみ,C室のみ,B室のみ,A室とB室,3,"13:00-15:00: phòng A đã đặt từ 14:00, phòng C bận cả 13:00-17:00. Chỉ phòng B trống (chỉ bận 10:00-12:00).",N2,,self_authored_task057
+bjt.db:mock_exam_question:357,4,57,2,p2s2,お知らせ,"【健康保険証の切り替えについて】
+10月1日より、当社加入の健康保険組合が変更となります。
+・新しい保険証は9月下旬に各自へ配付します。
+・古い保険証は10月1日以降、総務部へご返却ください。
+・扶養家族分もあわせて返却が必要です。
+※9月中は従来の保険証をそのままご使用ください。",この案内の内容と合っているものはどれか。,9月中は新しい保険証を使用する。,古い保険証は各自で処分する。,扶養家族分の返却は不要である。,古い保険証は10月以降に総務部へ返す。,4,"Thẻ cũ trả về bộ phận tổng vụ từ 1/10, kể cả phần của người phụ thuộc; trong tháng 9 vẫn dùng thẻ cũ.",N3,,self_authored_task057
+bjt.db:mock_exam_question:358,4,58,2,p2s2,売上構成比,"【製品別 売上構成比】
+製品A：42%／製品B：28%／製品C：18%／製品D：12%
+※年間売上高は25億円。",製品Cの年間売上高はおよそいくらか。,3億円,10.5億円,7億円,4.5億円,4,25億 × 18% = 4.5億円.,N3,,self_authored_task057
+bjt.db:mock_exam_question:359,4,59,2,p2s2,請求書,"【御請求書】
+作業費：180,000円
+部品代：65,000円
+出張費：15,000円
+小計：260,000円
+※お支払期限：請求書発行日の翌月末日
+※期限を過ぎた場合、年率3%の遅延損害金を申し受けます。",6月15日発行のこの請求書の支払期限はいつか。,6月30日,7月15日,7月31日,8月31日,3,Hạn thanh toán là ngày cuối của tháng kế tiếp so với ngày phát hành (15/6) → 31/7.,N2,,self_authored_task057
+bjt.db:mock_exam_question:360,4,60,2,p2s2,社内報抜粋,"【社内報 5月号より】
+今年度から、部署を越えた小規模プロジェクトへの参加を公募する制度が始まりました。所属部署の業務時間の最大20%までを、この活動に充てることができます。参加には所属長への事前申告が必要ですが、成果は所属部署の評価とは別枠で扱われます。",この制度について正しいものはどれか。,業務時間の全てを使うことができる。,所属長への申告なしで参加できる。,成果は所属部署の評価に加算される。,業務時間の2割まで活動に使える。,4,Được dùng tối đa 20% (2 phần 10) thời gian làm việc; vẫn cần báo trước cho cấp trên và thành quả được đánh giá theo khung riêng.,N3,,self_authored_task057
+bjt.db:mock_exam_question:361,4,61,2,p2s2,料金プラン表,"【クラウドストレージ 法人プラン】
+スタンダード：月額 800円／1ID（容量 100GB）
+ビジネス：月額 1,200円／1ID（容量 500GB）
+エンタープライズ：月額 1,800円／1ID（容量 無制限）
+※20ID以上の契約で、月額から10%割引。",ビジネスプランを25ID契約した場合の月額はいくらか。,"27,000円","30,000円","33,000円","45,000円",1,"1,200 × 25 = 30,000円; hợp đồng từ 20 ID trở lên giảm 10% → 27,000円.",N2,,self_authored_task057
+bjt.db:mock_exam_question:362,4,62,2,p2s2,議事録抜粋,"【広報会議 議事録（抜粋）】
+・新ブランドサイトの公開は当初予定の7月から8月へ延期する。
+・延期の理由は、掲載写真の権利確認に想定以上の時間を要しているため。
+・プレスリリースの配信は、サイト公開と同日に行う。
+・SNSでの事前告知は7月中旬から開始し、予定どおり進める。",この会議で決まったことはどれか。,SNSの事前告知も8月に延期する。,プレスリリースはサイト公開より先に配信する。,掲載写真をすべて差し替える。,サイトの公開を1か月延期する。,4,"Website dời từ tháng 7 sang tháng 8 (1 tháng). Thông cáo báo chí phát cùng ngày mở website, còn quảng bá trên mạng xã hội vẫn giữ lịch giữa tháng 7.",N3,,self_authored_task057
+bjt.db:mock_exam_question:363,4,63,2,p2s2,研修受講状況,"【コンプライアンス研修 受講状況（部署別）】
+営業部：38/40名／製造部：52/55名／管理部：20/20名／開発部：29/35名
+※受講率90%未満の部署は、再度受講案内を送付する。",再度受講案内が送られる部署はどれか。,営業部,製造部,管理部,開発部,4,"Tỷ lệ: kinh doanh 95%, sản xuất ~94.5%, quản lý 100%, phát triển 29/35 ≈ 82.9% — chỉ bộ phận phát triển dưới 90%.",N2,,self_authored_task057
+bjt.db:mock_exam_question:364,4,64,2,p2s2,案内状,"【創立50周年記念式典のご案内】
+日時：11月20日（木）15:00〜（受付14:30より）
+会場：グランドホール 3階 鳳凰の間
+※ご出欠は10月31日までに同封の返信はがきにてお知らせください。
+※記念品の準備がございますので、ご欠席の場合も必ずご返信ください。",この案内の内容と合っているものはどれか。,欠席の場合は返信しなくてよい。,出欠の連絡期限は11月20日である。,受付は式典開始の30分前から始まる。,会場は2階である。,3,"Lễ bắt đầu 15:00, quầy tiếp đón mở từ 14:30 — trước 30 phút. Kể cả vắng mặt cũng phải hồi đáp, hạn 31/10, hội trường ở tầng 3.",N3,,self_authored_task057
+bjt.db:mock_exam_question:365,4,65,2,p2s2,グラフ説明,"【月別 問い合わせ件数（今年度）】
+4月：320件／5月：285件／6月：410件／7月：395件／8月：268件",このグラフから読み取れることはどれか。,問い合わせが最も多いのは4月である。,5月から6月にかけて件数が減った。,最も件数が少ないのは8月である。,7月は6月より件数が多い。,3,"Tháng 8 thấp nhất (268). Tháng 6 mới cao nhất (410), số lượng tăng từ tháng 5 sang 6, và tháng 7 (395) thấp hơn tháng 6.",N3,,self_authored_task057
+bjt.db:mock_exam_question:366,4,66,3,p3s1,,,本製品の発売に（　　）、記念キャンペーンを実施いたします。,比べ,対し,つれ,際し,4,"「〜に際し(て)」= nhân dịp / vào lúc diễn ra sự kiện quan trọng, văn phong trang trọng.",N2,,self_authored_task057
+bjt.db:mock_exam_question:367,4,67,3,p3s1,,,創立50周年を（　　）、新しいロゴを発表いたしました。,こめて,限りに,機に,もとに,3,「〜を機に」= nhân cơ hội/lấy sự kiện đó làm bước ngoặt để thay đổi.,N2,,self_authored_task057
+bjt.db:mock_exam_question:368,4,68,3,p3s1,,,先ほどお送りいただいた資料、確かに（　　）ました。,見られ,ご覧になり,お見えになり,拝見し,4,"「拝見する」là khiêm nhường ngữ của「見る」, dùng cho hành động của chính mình khi xem tài liệu người khác gửi.",N2,,self_authored_task057
+bjt.db:mock_exam_question:369,4,69,3,p3s1,,,ご連絡が遅くなり、申し訳（　　）。,いたしません,ありません,ございません,おりません,3,"「申し訳ございません」là dạng lịch sự nhất của lời xin lỗi, chuẩn trong giao tiếp thương mại.",N3,,self_authored_task057
+bjt.db:mock_exam_question:370,4,70,3,p3s1,,,納期は厳しい（　　）、何とか間に合わせるよう努めます。,もので,ものなら,ものだから,ものの,4,"「〜ものの」= tuy A nhưng B, thể hiện sự đối lập, dùng nhiều trong văn viết.",N2,,self_authored_task057
+bjt.db:mock_exam_question:371,4,71,3,p3s1,,,ご確認いただければ（　　）です。,幸い,光栄,結構,残念,1,"「〜ていただければ幸いです」là mẫu nhờ vả lịch sự, khiêm tốn = 'nếu được ~ thì tôi rất mừng'.",N2,,self_authored_task057
+bjt.db:mock_exam_question:372,4,72,3,p3s1,,,社内規定に（　　）、厳正に処理いたします。,照らして,向かって,沿えて,並んで,1,"「〜に照らして」= đối chiếu theo (quy định, tiêu chuẩn) để phán đoán.",N1,,self_authored_task057
+bjt.db:mock_exam_question:373,4,73,3,p3s1,,,台風の影響で、イベントの中止を余儀（　　）。,なくされました,なくしました,ないままです,なくできました,1,「〜を余儀なくされる」= buộc phải chấp nhận điều không mong muốn do hoàn cảnh khách quan.,N1,,self_authored_task057
+bjt.db:mock_exam_question:374,4,74,3,p3s1,,,そちらの件は（　　）上げております。,存じ,ご存じ,承知され,おっしゃって,1,"「存じ上げる」là khiêm nhường ngữ của「知る」khi đối tượng là người/việc của đối phương. 「ご存じ」là tôn kính ngữ, dùng cho việc đối phương biết.",N2,,self_authored_task057
+bjt.db:mock_exam_question:375,4,75,3,p3s1,,,詳細は追ってご連絡（　　）と存じます。,いたしたい,なさりたい,されたい,くださりたい,1,"「ご連絡いたしたいと存じます」— khiêm nhường ngữ「いたす」cho hành động của mình, kết hợp 「〜と存じます」thay cho「〜と思います」.",N2,,self_authored_task057
+bjt.db:mock_exam_question:376,4,76,3,p3s1,,,本件を引き受けた（　　）、最後まで責任を持って進めます。,からには,からこそ,からといって,からとて,1,"「〜からには」= đã nhận/đã làm A thì đương nhiên phải B, thể hiện quyết tâm.",N2,,self_authored_task057
+bjt.db:mock_exam_question:377,4,77,3,p3s1,,,後日、改めて資料をお送り（　　）。,申し上げます,いただきます,になります,くださいます,1,"「お〜申し上げる」là dạng khiêm nhường ngữ trang trọng hơn「お〜する」, dùng khi mình gửi cho đối phương.",N2,,self_authored_task057
+bjt.db:mock_exam_question:378,4,78,3,p3s1,,,会議の日程は、参加者の都合（　　）調整いたします。,を踏まえて,にかかわらず,をものともせず,をよそに,1,"「〜を踏まえて」= dựa trên, cân nhắc đến (tình hình, ý kiến) rồi mới quyết định.",N2,,self_authored_task057
+bjt.db:mock_exam_question:379,4,79,3,p3s1,,,ご不明な点がございましたら、担当者（　　）お問い合わせください。,まで,ばかり,きり,しか,1,"「〜までお問い合わせください」— 「まで」ở đây chỉ nơi/người tiếp nhận liên hệ, là cách nói cố định trong văn bản hướng dẫn.",N3,,self_authored_task057
+bjt.db:mock_exam_question:380,4,80,3,p3s1,,,本日ご説明した内容で、ご理解（　　）ましたでしょうか。,いただけ,くださり,差し上げ,なさり,1,「ご理解いただけましたでしょうか」— mình nhận được sự thấu hiểu từ đối phương nên dùng khiêm nhường ngữ「いただく」.,N2,,self_authored_task057
+bjt.db:mock_exam_question:381,4,81,3,p3s2,,,電話でお客様の苦情を受けたとき、最初に述べる言葉として最も適切なものはどれか。,それはこちらのミスではありません。,担当者に代わりますので少しお待ちください。,どういうことでしょうか。,このたびはご不便をおかけし、誠に申し訳ございません。,4,"Dù chưa rõ lỗi thuộc về ai, việc đầu tiên là xin lỗi vì đã gây bất tiện. Phủ nhận trách nhiệm ngay từ đầu hoặc hỏi vặn lại sẽ làm khách bực thêm.",N2,,self_authored_task057
+bjt.db:mock_exam_question:382,4,82,3,p3s2,,,自分のミスを上司に報告するとき、最も適切な言い方はどれか。,ミスがあったみたいです。,申し訳ございません。私の確認不足で誤りがございました。ただちに修正いたします。,誰かが間違えたようです。,大した問題ではないと思いますが、一応ご報告します。,2,"Nhận lỗi rõ ràng, nêu nguyên nhân thuộc về mình và đưa ra hướng xử lý ngay — ba yếu tố của một báo cáo sự cố tốt.",N2,,self_authored_task057
+bjt.db:mock_exam_question:383,4,83,3,p3s2,,,取引先の請求書に誤りを見つけたとき、最も適切な伝え方はどれか。,請求書が間違っています。,請求書に誤りがあるようですので、ご確認いただけますでしょうか。,請求書を間違えましたね。,請求書の金額をこちらで直しておきます。,2,"Dùng「〜ようです」để không quy kết chắc chắn, rồi nhờ đối phương tự kiểm tra — cách nói giữ thể diện cho đối tác.",N2,,self_authored_task057
+bjt.db:mock_exam_question:384,4,84,3,p3s2,,,取引先を会食に誘うとき、最も適切な言い方はどれか。,今度飲みに行きましょう。,来週あたり、お食事でもいかがでしょうか。,食事に行ってあげましょうか。,食事に来てもいいですよ。,2,"「〜でもいかがでしょうか」là lời mời mềm mỏng, không ép buộc. 「〜てあげる」mang sắc thái ban ơn.",N2,,self_authored_task057
+bjt.db:mock_exam_question:385,4,85,3,p3s2,,,取引先の担当者が昇進したと聞いたとき、最も適切な言い方はどれか。,よかったですね。,このたびはご昇進、誠におめでとうございます。,昇進されて偉くなりましたね。,昇進おめでとう。,2,"「ご昇進、誠におめでとうございます」là câu chúc mừng chuẩn mực. 「偉くなりましたね」mang hàm ý đánh giá từ trên xuống, không phù hợp.",N2,,self_authored_task057
+bjt.db:mock_exam_question:386,4,86,3,p3s2,,,こちらの都合で会議の日程変更をお願いするとき、最も適切な言い方はどれか。,会議の日を変えてください。,勝手なお願いで恐縮ですが、会議の日程をご調整いただけないでしょうか。,会議の日程を変更しました。,会議の日程が変わるかもしれません。,2,"「勝手なお願いで恐縮ですが」thừa nhận đây là yêu cầu do phía mình, rồi nhờ điều chỉnh — đúng mực khi mình là bên gây bất tiện.",N2,,self_authored_task057
+bjt.db:mock_exam_question:387,4,87,3,p3s2,,,上司として部下の成果をほめるとき、最も適切な言い方はどれか。,よくやってくれたね。助かったよ。,まあまあだったね。,やればできるじゃないか。,私がいなくてもできたね。,1,Khen ngợi cụ thể và bày tỏ sự biết ơn. Ba phương án còn lại đều mang sắc thái hạ thấp hoặc mỉa mai dù bề ngoài là lời khen.,N2,,self_authored_task057
+bjt.db:mock_exam_question:388,4,88,3,p3s2,,,取引先に資料の取り扱いに注意してほしいと伝えるとき、最も適切な言い方はどれか。,他の人に見せないでください。,本資料は社外秘となっておりますので、お取り扱いにはご配慮くださいますようお願い申し上げます。,この資料は秘密なので気をつけて。,資料を見せたら困ります。,2,Nêu rõ tính chất tài liệu (社外秘) rồi nhờ lưu ý bằng mẫu trang trọng「〜くださいますようお願い申し上げます」— vừa rõ ràng vừa không mang tính ra lệnh.,N1,,self_authored_task057
+bjt.db:mock_exam_question:389,4,89,3,p3s2,,,席を外している同僚について取引先に説明するとき、最も適切な言い方はどれか。,田中さんは今いらっしゃいません。,田中はただいま席を外しております。,田中様は少々お出かけになっています。,田中さんはちょっと出ています。,2,"Với người ngoài, gọi đồng nghiệp bằng họ trần (không 「さん」「様」) và dùng khiêm nhường ngữ「おります」.",N2,,self_authored_task057
+bjt.db:mock_exam_question:390,4,90,3,p3s2,,,面接で志望動機を述べ始めるとき、最も適切な切り出し方はどれか。,なんとなく興味があったからです。,御社を志望いたしましたのは、海外事業に力を入れておられる点に強く惹かれたためです。,給料がよさそうだったからです。,友人に勧められたからです。,2,"Nêu lý do cụ thể gắn với đặc điểm của công ty, dùng「御社」và kính ngữ「おられる」cho hoạt động của công ty đối phương.",N2,,self_authored_task057
+bjt.db:mock_exam_question:391,4,91,3,p3s3,社内文書,"社員各位
+本社ビルの防災訓練を9月1日（月）14時より実施します。訓練開始の放送が流れましたら、各自の業務を中断し、非常階段を使用して1階正面広場へ避難してください。エレベーターは使用しないでください。来客中の社員は、お客様を伴って避難し、避難後ただちに総務部の担当者へお申し出ください。",この文書の内容と合っているものはどれか。,避難にはエレベーターを使う。,来客中の社員は訓練に参加しなくてよい。,来客がいる場合も一緒に避難する。,避難場所は地下駐車場である。,3,"Nhân viên đang tiếp khách vẫn phải sơ tán cùng khách và báo cho tổng vụ sau khi sơ tán; cấm dùng thang máy, điểm tập kết là quảng trường trước tầng 1.",N2,,self_authored_task057
+bjt.db:mock_exam_question:392,4,92,3,p3s3,社内文書,"各位
+備品の購入手続きを変更します。これまで1万円未満の備品は各部署の判断で購入できましたが、10月以降は金額にかかわらず購買部への申請が必要となります。ただし、消耗品（文房具・用紙類）については従来どおり各部署でご購入いただけます。",10月以降、購買部への申請が不要なものはどれか。,1万円未満の備品,1万円以上の備品,文房具や用紙類,すべての備品と消耗品,3,"Từ tháng 10, mọi thiết bị bất kể giá tiền đều phải xin qua bộ phận mua hàng; riêng đồ tiêu hao như văn phòng phẩm, giấy vẫn mua như cũ.",N2,,self_authored_task057
+bjt.db:mock_exam_question:393,4,93,3,p3s3,社外文書,"拝啓　貴社いよいよご清栄のこととお慶び申し上げます。
+さて、かねてよりお取引いただいております弊社製品「MXシリーズ」につきまして、部品供給の終了に伴い、来年3月末をもって生産を終了させていただくこととなりました。なお、修理・保守につきましては、生産終了後5年間は従来どおり承ります。　敬具",この文書で伝えられている内容はどれか。,来年3月末で修理の受付も終了する。,生産終了後も5年間は保守を受けられる。,部品の供給を新たに開始する。,製品の価格を改定する。,2,"Sản xuất dừng cuối tháng 3 năm sau, nhưng dịch vụ sửa chữa/bảo trì vẫn tiếp tục thêm 5 năm.",N2,,self_authored_task057
+bjt.db:mock_exam_question:394,4,94,3,p3s3,社外文書,"拝啓　時下ますますご清栄のこととお喜び申し上げます。
+さて、弊社では本年度より、請求書の発行を電子化することといたしました。つきましては、10月ご請求分より、ご登録いただいたメールアドレス宛に電子請求書をお送りいたします。紙の請求書をご希望の場合は、お手数ですが9月20日までに担当者までお申し出ください。　敬具",紙の請求書を引き続き希望する場合、どうすればよいか。,何もしなくてよい。,9月20日までに申し出る。,10月以降に申し出る。,メールアドレスを登録する。,2,Mặc định chuyển sang hoá đơn điện tử; ai vẫn muốn bản giấy phải chủ động báo trước 20/9.,N3,,self_authored_task057
+bjt.db:mock_exam_question:395,4,95,3,p3s3,社内メール,"各位
+お疲れさまです。人事部の三浦です。
+今年度の目標面談について、実施期間を10月1日から10月20日までとします。面談前までに、目標シートを人事システムへ入力しておいてください。入力がないと面談を実施できません。なお、面談日程は上長と直接調整してください。人事部で日程を指定することはありません。",このメールの内容と合っているものはどれか。,面談の日程は人事部が決める。,目標シートは面談後に入力する。,目標シートの入力がないと面談ができない。,面談期間は11月までである。,3,"Email nêu rõ không nhập bảng mục tiêu thì không thể tiến hành phỏng vấn; lịch do tự thoả thuận với cấp trên, kỳ phỏng vấn là 1–20/10.",N2,,self_authored_task057
+bjt.db:mock_exam_question:396,4,96,3,p3s3,社内メール,"総務部の皆さま
+お疲れさまです。営業部の高木です。
+先日依頼しました名刺の増刷につきまして、進捗をお伺いしたくご連絡いたしました。来週月曜日に大口の商談を控えており、それまでに手元に届くと大変助かります。難しいようでしたら、一部だけでも先に受け取れないか、ご検討いただけますと幸いです。",このメールで高木さんが希望していることは何か。,名刺のデザインを変更すること。,名刺を月曜日までに、難しければ一部だけでも受け取ること。,商談の日程を変更すること。,名刺の増刷を中止すること。,2,Người gửi hỏi tiến độ và mong nhận danh thiếp trước thứ hai; nếu không kịp thì xin nhận trước một phần.,N2,,self_authored_task057
+bjt.db:mock_exam_question:397,4,97,3,p3s3,社外メール,"株式会社アカネ工業
+購買部　森様
+
+いつも大変お世話になっております。西日本商会の川西でございます。
+先般ご相談いただきました単価の見直しにつきまして、社内で検討いたしました。
+年間発注量を現行の1.5倍にしていただけるようでしたら、単価を3%引き下げることが可能でございます。ご検討のほど、よろしくお願い申し上げます。",このメールで示されている条件はどれか。,発注量にかかわらず単価を3%下げる。,発注量を1.5倍にすれば単価を3%下げられる。,単価を3%上げる代わりに発注量を減らす。,来年から取引を停止する。,2,Giảm 3% đơn giá là có điều kiện: sản lượng đặt hàng năm phải tăng lên 1.5 lần hiện tại.,N2,,self_authored_task057
+bjt.db:mock_exam_question:398,4,98,3,p3s3,社外メール,"ひかり印刷株式会社
+営業部　大野様
+
+お世話になっております。中央出版の関でございます。
+本日到着いたしましたパンフレットについてご連絡いたします。
+納品数・仕様に問題はございませんでしたが、表紙の色味が校正時にご確認したものより濃く感じられます。恐れ入りますが、印刷時の設定について一度ご確認いただけますでしょうか。",このメールで指摘されている問題は何か。,納品数が足りない。,納品が遅れている。,表紙の色が校正時と違って見える。,仕様が注文と異なる。,3,Số lượng và quy cách đều ổn; vấn đề duy nhất là màu bìa đậm hơn so với bản duyệt in thử.,N2,,self_authored_task057
+bjt.db:mock_exam_question:399,4,99,3,p3s3,記事,オフィスの縮小に踏み切る企業が増えている。ある不動産会社の調査によれば、在宅勤務を導入した企業のうち、およそ4社に1社がオフィス面積を減らしたと回答した。一方で、削減した企業の6割が「会議室や集中作業用の個室は逆に増やした」と答えており、単なる縮小ではなく、働き方に合わせた配置の見直しが進んでいることがうかがえる。,この記事の内容と合っているものはどれか。,在宅勤務を導入した企業の大半がオフィスを縮小した。,面積を減らした企業の多くは会議室などを増やしている。,会議室を減らす企業が6割にのぼる。,オフィスの縮小は今後見込まれていない。,2,Khoảng 1/4 (không phải đa số) thu hẹp diện tích; trong số đó 60% lại tăng phòng họp và phòng làm việc tập trung.,N2,,self_authored_task057
+bjt.db:mock_exam_question:400,4,100,3,p3s3,記事,地方に本社を移す企業が少しずつ増えている。国の補助制度に加え、通信環境の整備により本社機能を都市部に置く必要性が薄れたことが背景にある。移転した企業からは「オフィス費用が下がった」「社員の通勤時間が短くなった」という声が上がる一方、「取引先との対面での打ち合わせが減り、関係づくりに時間がかかるようになった」との指摘もある。,この記事で移転の課題として挙げられているものはどれか。,オフィス費用が上がること,社員の通勤時間が延びること,補助制度が利用できないこと,取引先と対面で会う機会が減ること,4,"Bài viết nêu mặt tích cực là giảm chi phí và thời gian đi làm, còn khó khăn là ít gặp trực tiếp đối tác nên xây dựng quan hệ mất thời gian hơn.",N2,,self_authored_task057
+bjt.db:mock_exam_question:451,5,1,1,p1s1,会話,"A：出願書類はこちらでお預かりします。明細書と図面は揃っておりますでしょうか。
+B：はい、要約書も付けてまいりました。特許庁への提出はいつ頃になりますか。",この会話が行われている場所として最も適切なものはどれか。,工場の検査室,特許事務所の受付,銀行の窓口,社員食堂,2,"Nói về hồ sơ đăng ký sáng chế (bản mô tả, bản vẽ, bản tóm tắt) và việc nộp lên Cục Sáng chế — bối cảnh quầy tiếp nhận của văn phòng sở hữu trí tuệ.",N3,mock/q451_part1_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:452,5,2,1,p1s1,電話,"A：昨日の配送中に商品が破損いたしまして、保険の適用についてお伺いしたいのですが。
+B：ご契約番号をお願いします。事故報告書を明日までにご提出いただく形になります。",Bが求めているものは何か。,事故報告書の提出,破損した商品の返品,保険料の追加支払い,契約の解除,1,B yêu cầu nộp báo cáo sự cố trước ngày mai sau khi hỏi số hợp đồng.,N3,mock/q452_part1_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:453,5,3,1,p1s1,放送,第2ラインをご利用の皆様にお知らせします。ただ今より定期点検のため、30分間ラインを停止いたします。作業中の方は工程を区切り、安全確認の上、待機所へお移りください。,この放送の内容と合っているものはどれか。,第2ラインの増産が決まった,待機所が閉鎖される,工場全体が停電する,第2ラインを30分停止して点検する,4,Thông báo dừng dây chuyền số 2 trong 30 phút để kiểm tra định kỳ.,N3,mock/q453_part1_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:454,5,4,1,p1s1,会話,"A：株主総会の受付はこちらでよろしいですか。議決権行使書を持ってまいりました。
+B：はい、お預かりします。会場は2階の大ホールでございます。",この会話が行われている場所として最も適切なものはどれか。,株主総会の受付,取引先の工場,ホテルのフロント,空港のカウンター,1,"A xuất trình phiếu thực hiện quyền biểu quyết, B hướng dẫn lên hội trường — bối cảnh quầy tiếp nhận đại hội cổ đông.",N3,mock/q454_part1_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:455,5,5,1,p1s1,会話,"A：この業務委託契約書、先方の押印がまだなのですが、先に社内決裁を進めても構いませんか。
+B：法務部の確認が終わってからにしましょう。条項の修正が入る可能性があります。",Bの意見として正しいものはどれか。,すぐに社内決裁を進めてよい,契約を締結しない方がよい,法務部の確認を待つべきだ,押印は不要である,3,B cho rằng nên đợi bộ phận pháp vụ kiểm tra xong vì có thể phải sửa điều khoản.,N3,mock/q455_part1_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:456,5,6,1,p1s1,アナウンス,ご来場の皆様にご案内申し上げます。当社ブースでは、午後2時より新製品のデモンストレーションを行います。ご希望の方は、受付にてお名刺を頂戴しております。,デモンストレーションに参加したい人はどうすればよいか。,午後2時に会場の外へ出る,入場料を支払う,事前に電話で予約する,受付に名刺を出す,4,Người muốn tham gia demo cần đưa danh thiếp tại quầy tiếp nhận.,N3,mock/q456_part1_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:457,5,7,1,p1s1,電話,"A：申し訳ございません、部材の一部が通関で止まっておりまして、納期が3日ほど遅れそうです。
+B：了解しました。では代替品の在庫があるか、こちらでも確認してみます。",この会話について正しいものはどれか。,Aが注文を取り消した,Bが値引きを要求している,Aが納期の遅れを伝えている,Bが通関手続きを代行する,3,A thông báo giao hàng chậm khoảng 3 ngày do linh kiện bị giữ ở hải quan.,N3,mock/q457_part1_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:458,5,8,1,p1s1,会話,"A：見学の前に、こちらのヘルメットと安全靴をご着用ください。通路は黄色い線の内側をお歩きください。
+B：わかりました。写真の撮影は可能でしょうか。",この会話が行われている場所として最も適切なものはどれか。,美術館の入口,駅の改札,取引先の応接室,工場見学の受付付近,4,"Yêu cầu đội mũ bảo hộ, đi giày an toàn, đi trong vạch vàng — bối cảnh trước khi vào tham quan nhà máy.",N3,mock/q458_part1_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:459,5,9,1,p1s1,会話,"A：前年度の取引額が900万円でしたので、今年度からゴールド会員になりますか。
+B：恐れ入ります、1,000万円以上でプラチナ、それ未満はゴールドの据え置きとなります。",この会話について正しいものはどれか。,Aはゴールド会員のままである,Aはプラチナ会員になる,Aは会員資格を失う,Aは新規に入会する,1,"900 triệu yên chưa đạt mức 10 triệu, nên vẫn giữ hạng Gold.",N3,mock/q459_part1_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:460,5,10,1,p1s1,放送,倉庫内で作業中の皆様にお知らせします。本日午後5時より棚卸しを実施いたします。4時50分までに入出庫作業を終了し、伝票を管理室までお持ちください。,この放送で作業者に求められていることは何か。,午後5時まで残業すること,4時50分までに入出庫を終えて伝票を出すこと,倉庫の清掃を行うこと,在庫を追加発注すること,2,Yêu cầu kết thúc nhập/xuất kho trước 16h50 và mang chứng từ lên phòng quản lý.,N3,mock/q460_part1_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:461,5,11,1,p1s2,場面設定,取引先に、契約書へ押印のうえ返送してほしいと依頼したい。,この場面で最も適切な言い方はどれか。,ハンコを押して早く送り返してください。,押印がないと受け取れませんので。,契約書、押しといてもらえますか。,お手数ですが、契約書にご捺印のうえ、1部ご返送賜りますようお願い申し上げます。,4,Nhờ đối tác đóng dấu và gửi lại cần dùng thể khiêm nhường lịch sự (ご捺印のうえ／ご返送賜りますよう).,N2,mock/q461_part1_sec2.mp3,self_authored_task062
+bjt.db:mock_exam_question:462,5,12,1,p1s2,場面設定,株主総会で株主から質問を受けたが、その場では答えられず、後日改めて回答したい。,この場面で最も適切な言い方はどれか。,それは今わかりません。,後で調べて連絡します。,その質問は担当が違います。,ただ今の件につきましては、確認のうえ、後日改めてご回答申し上げます。,4,Trả lời cổ đông tại đại hội cần trang trọng: xác nhận rồi trả lời lại sau (ご回答申し上げます).,N2,mock/q462_part1_sec2.mp3,self_authored_task062
+bjt.db:mock_exam_question:463,5,13,1,p1s2,場面設定,特許の出願準備が遅れていることを、社内の上司に報告したい。,この場面で最も適切な言い方はどれか。,出願、間に合いませんでした。,出願準備の件ですが、明細書の修正に時間がかかっており、現時点で3日ほど遅れる見込みです。対応案を2点ご相談させてください。,誰かが遅れているようです。,出願の件、なんとかなると思います。,2,"Báo cáo cấp trên cần nêu rõ nguyên nhân, mức độ chậm trễ và phương án xử lý.",N2,mock/q463_part1_sec2.mp3,self_authored_task062
+bjt.db:mock_exam_question:464,5,14,1,p1s2,場面設定,保険金の請求に必要な書類を、お客様に案内したい。,この場面で最も適切な言い方はどれか。,ご請求に際しましては、事故証明書と修理見積書の2点をご用意いただけますでしょうか。,書類が2つ要ります。,書類を出さないと払えません。,事故証明書とか見積書とか、いろいろ必要です。,1,Hướng dẫn khách chuẩn bị giấy tờ nên nói rõ từng loại và dùng thể lịch sự ご用意いただけますでしょうか.,N2,mock/q464_part1_sec2.mp3,self_authored_task062
+bjt.db:mock_exam_question:465,5,15,1,p1s2,場面設定,部材の納入が遅れることになり、取引先に謝罪と説明をしたい。,この場面で最も適切な言い方はどれか。,遅れますが、こちらのせいではありません。,納期、ちょっと厳しいです。,通関が悪いので仕方ないです。,このたびは納期遅延によりご迷惑をおかけし、誠に申し訳ございません。通関手続きに時間を要しており、新たな納入予定日は改めてご連絡いたします。,4,"Xin lỗi đối tác về việc giao chậm cần có lời xin lỗi rõ ràng, nêu nguyên nhân và cam kết thông báo lịch mới.",N2,mock/q465_part1_sec2.mp3,self_authored_task062
+bjt.db:mock_exam_question:466,5,16,1,p1s2,場面設定,工場を見学に来た取引先の方に、安全のためヘルメットの着用をお願いしたい。,この場面で最も適切な言い方はどれか。,ヘルメットをかぶってください、規則ですから。,かぶらないと入れません。,安全管理上、恐れ入りますが、こちらのヘルメットをご着用いただけますでしょうか。,ヘルメット、かぶった方がいいですよ。,3,Yêu cầu khách đội mũ bảo hộ nên mở đầu bằng lý do và dùng ご着用いただけますでしょうか.,N2,mock/q466_part1_sec2.mp3,self_authored_task062
+bjt.db:mock_exam_question:467,5,17,1,p1s2,場面設定,会員特典の対象外であることを、お客様に伝えなければならない。,この場面で最も適切な言い方はどれか。,それは対象外です。,あいにくこちらのサービスは対象外となっております。代わりに、次年度から適用となる特典をご案内させていただけますでしょうか。,規約に書いてありますので。,できないことになっています。,2,Từ chối khách nên dùng đệm あいにく và đưa ra phương án thay thế thay vì chỉ nói không.,N2,mock/q467_part1_sec2.mp3,self_authored_task062
+bjt.db:mock_exam_question:468,5,18,1,p1s2,場面設定,展示会のブースで、来場者に名刺をいただきたい。,この場面で最も適切な言い方はどれか。,名刺をください。,名刺、ありますか。,差し支えなければ、お名刺を1枚頂戴できますでしょうか。,名刺を出していただかないと説明できません。,3,Xin danh thiếp cần dùng 頂戴できますでしょうか kèm đệm 差し支えなければ.,N2,mock/q468_part1_sec2.mp3,self_authored_task062
+bjt.db:mock_exam_question:469,5,19,1,p1s2,場面設定,自動更新の契約について、次回は更新しない意向を取引先に伝えたい。,この場面で最も適切な言い方はどれか。,もう契約しません。,誠に恐縮ではございますが、社内の方針変更により、本契約は期間満了をもって更新を見合わせたく存じます。,契約は切らせてもらいます。,更新はやめておきます。,2,"Từ chối gia hạn hợp đồng cần mở đầu bằng lời cáo lỗi, nêu lý do và dùng 見合わせたく存じます.",N2,mock/q469_part1_sec2.mp3,self_authored_task062
+bjt.db:mock_exam_question:470,5,20,1,p1s2,場面設定,部長に、契約書の条項について法務部へ確認してもらえないか頼みたい。,この場面で最も適切な言い方はどれか。,部長、お忙しいところ恐れ入ります。第8条の解釈について、法務部にご確認いただくことは可能でしょうか。,部長、法務部に聞いといてください。,法務部に確認しないとまずいですよ。,第8条、部長が確認してもらえますか。,1,Nhờ cấp trên cần mở đầu bằng お忙しいところ恐れ入ります và hỏi khả năng ご確認いただくことは可能でしょうか (lựa chọn 4 sai kính ngữ: もらえますか với cấp trên).,N2,mock/q470_part1_sec2.mp3,self_authored_task062
+bjt.db:mock_exam_question:471,5,21,1,p1s3,会話,"A：先方から契約書の修正案が届きましたが、第8条の自動更新を削除したいそうです。
+B：削除まではしなくても、更新の申し出期限を2か月から3か月に延ばせば足りるのでは。
+A：では、その方向で法務部に相談してみます。",この後Aは何をするか。,法務部に相談する,契約を締結しない,第8条を削除する,先方に修正案を送り返す,1,A nói sẽ trao đổi với bộ phận pháp vụ theo hướng B đề xuất.,N2,mock/q471_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:472,5,22,1,p1s3,会話,"A：今期のIR資料ですが、決算説明会の日程は6月10日で確定でしょうか。
+B：会場は押さえましたが、監査法人の最終確認が終わっていません。
+A：では、確認が取れてから正式に公表しましょう。",日程を正式に公表しない理由は何か。,会場が確保できていないから,資料が完成していないから,株主の反対があるから,監査法人の確認が終わっていないから,4,"Hội trường đã giữ được, nhưng chưa xong khâu xác nhận cuối của công ty kiểm toán.",N2,mock/q472_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:473,5,23,1,p1s3,会話,"A：競合他社が似た機構の製品を出しましたが、当社の特許に触れませんか。
+B：請求項の範囲が少しずれています。ただ、意匠の面では検討の余地がありそうです。
+A：では、意匠権について弁理士に見解を求めましょう。",Bの見方として正しいものはどれか。,意匠の面で検討の余地がある,特許権の侵害が明らかである,全く問題がない,すぐ訴訟すべきである,1,"B nói phạm vi yêu cầu bảo hộ hơi lệch, nhưng về kiểu dáng công nghiệp thì còn phải xem xét.",N2,mock/q473_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:474,5,24,1,p1s3,会話,"A：工場の火災保険、補償限度額を3億円から5億円に引き上げる案が出ています。
+B：保険料が年23万円増えますが、新棟の設備を考えると妥当だと思います。
+A：わかりました、次の稟議に上げます。",Bはこの案についてどう考えているか。,保険料が高すぎるので反対だ,他社と比較すべきだ,判断は保留したい,新棟の設備を考えると妥当だ,4,B cho rằng mức tăng phí là hợp lý nếu tính đến thiết bị của tòa nhà mới.,N2,mock/q474_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:475,5,25,1,p1s3,アナウンス,本日ご来場の皆様へご案内いたします。会場内の各ブースは午後6時に終了いたしますが、当社ブースの技術相談コーナーのみ、午後6時30分まで受付を延長いたします。ご希望の方は、6時までに受付へお申し出ください。,技術相談を希望する人はどうすればよいか。,午後6時30分までに受付へ行く,午後6時までに受付に申し出る,事前にウェブで予約する,当日は受け付けられない,2,"Quầy tư vấn kéo dài đến 18h30, nhưng phải đăng ký ở quầy trước 18h.",N2,mock/q475_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:476,5,26,1,p1s3,会話,"A：部材のアジア調達分、リードタイムが20営業日から25営業日に延びるそうです。
+B：それだと量産開始に間に合いませんね。国内調達に切り替えられませんか。
+A：単価は上がりますが、5営業日で入ります。試算してみます。",Aが次にすることは何か。,海外調達を継続する,量産の開始を延期する,発注を取り消す,国内調達に切り替えた場合の試算をする,4,"A nói đơn giá sẽ tăng nhưng hàng về trong 5 ngày làm việc, và sẽ thử tính toán.",N2,mock/q476_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:477,5,27,1,p1s3,会話,"A：第2ラインの不良率が先月から0.8%上がっています。原因は特定できましたか。
+B：金型の摩耗が主因のようです。交換すれば戻ると見ています。
+A：では分解整備を前倒しして、来月の定期点検と合わせましょう。",不良率上昇の主な原因は何か。,作業者の交代,設備の停電,材料の変更,金型の摩耗,4,B xác định nguyên nhân chính là khuôn bị mài mòn.,N2,mock/q477_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:478,5,28,1,p1s3,会話,"A：プラチナ会員向けの優先出荷ですが、対象を年間取引額800万円以上に広げる案があります。
+B：出荷体制が追いつくか心配です。まずは半年間、試験的に運用してはどうでしょう。
+A：そうですね、上半期だけ試して効果を見ましょう。",2人はどうすることにしたか。,すぐに対象を広げる,案を取りやめる,半年間、試験的に運用する,会費を値上げする,3,Hai người thống nhất chạy thử nửa năm (nửa đầu năm) rồi xem hiệu quả.,N2,mock/q478_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:479,5,29,1,p1s3,放送,社員の皆様にお知らせします。来週月曜より、機密文書の廃棄方法が変更となります。契約書および顧客情報を含む書類は、各階の施錠付き回収ボックスへお入れください。通常のシュレッダーはご使用にならないようお願いいたします。,この放送の内容と合っているものはどれか。,契約書は施錠付き回収ボックスに入れる,契約書はシュレッダーで処理する,機密文書の廃棄が禁止される,回収ボックスが撤去される,1,"Hợp đồng và tài liệu chứa thông tin khách hàng phải bỏ vào hộp thu hồi có khóa, không dùng máy hủy giấy thông thường.",N2,mock/q479_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:480,5,30,1,p1s3,会話,"A：来月の株主総会、質疑応答の想定問答集はいつまでに必要ですか。
+B：役員のリハーサルが3日前ですので、その2日前までにはお願いします。
+A：承知しました、5日前を目標に仕上げます。",想定問答集はいつまでに必要か。,株主総会の3日前まで,株主総会の5日前まで,株主総会の当日まで,株主総会の2日前まで,2,"Buổi diễn tập là 3 ngày trước, cần nộp trước đó 2 ngày → 5 ngày trước đại hội.",N2,mock/q480_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:481,5,31,1,p1s3,会話,"A：新製品の名称、商標登録の調査はどうなりましたか。
+B：同じ区分に類似の登録がありました。名称を変えるか、区分を絞るかになります。
+A：発売時期を考えると、名称変更の方が確実でしょうか。",Bが挙げた選択肢は何か。,発売を延期するか中止するか,名称を変えるか区分を絞るか,他社から権利を買うか訴訟するか,登録せずに発売するか,2,B nêu hai lựa chọn: đổi tên hoặc thu hẹp nhóm phân loại đăng ký.,N2,mock/q481_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:482,5,32,1,p1s3,会話,"A：先週の設備故障による生産停止、保険の対象になりますか。
+B：休業損害の特約を付けていれば対象ですが、免責期間が3日あります。
+A：停止は2日でしたので、今回は対象外ということですね。",この会話について正しいものはどれか。,今回の停止は保険の対象になる,特約を付けていなかった,免責期間内なので対象外である,保険契約が失効していた,3,"Thời gian miễn thường là 3 ngày, dừng máy chỉ 2 ngày nên không được chi trả.",N2,mock/q482_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:483,5,33,1,p1s3,アナウンス,工場見学にご参加の皆様にご案内いたします。本日は組立工程と検査工程をご覧いただきます。なお、塗装工程は本日メンテナンス中のため、見学経路から外させていただきます。所要時間はおよそ60分の予定です。,本日見学できない工程はどれか。,組立工程,検査工程,塗装工程,出荷工程,3,Công đoạn sơn đang bảo trì nên bị loại khỏi lộ trình tham quan.,N2,mock/q483_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:484,5,34,1,p1s3,会話,"A：展示会の出展費用、昨年より15万円上がっていますね。
+B：ブースの面積を2小間から3小間に増やしたためです。来場者数も1.5倍を見込んでいます。
+A：なるほど、それなら費用対効果は悪くないですね。",費用が上がった理由は何か。,ブースの面積を増やしたため,出展料の値上げ,装飾を豪華にしたため,会場が変更されたため,1,Chi phí tăng do mở rộng gian hàng từ 2 khoang lên 3 khoang.,N2,mock/q484_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:485,5,35,1,p1s3,会話,"A：業務委託先の情報管理体制、年1回の監査だけで十分でしょうか。
+B：契約上は年1回ですが、重要データを扱う先は半期ごとにチェックリストを提出させています。
+A：では、その運用を全社の規程に明文化しましょう。",Aが提案していることは何か。,監査を年2回に増やすこと,委託契約を解除すること,現在の運用を全社規程に明文化すること,チェックリストを廃止すること,3,A đề nghị đưa cách vận hành hiện tại (nộp checklist theo nửa năm) vào quy định toàn công ty bằng văn bản.,N2,mock/q485_part1_sec3.mp3,self_authored_task062
+bjt.db:mock_exam_question:486,5,36,2,p2s1,会話,"A：契約書の製本、2部でよろしいですか。
+B：甲乙各1部と、法務部の控えで合計3部お願いします。",契約書は何部必要か。,1部,2部,3部,4部,3,"Mỗi bên 1 bản, cộng thêm 1 bản lưu của bộ phận pháp vụ → tổng 3 bản.",N3,mock/q486_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:487,5,37,2,p2s1,会話,"A：株主総会の招集通知、発送はいつですか。
+B：総会が26日ですので、法定期限の2週間前、12日には発送します。",招集通知はいつ発送するか。,12日,14日,24日,26日,1,"Đại hội ngày 26, gửi trước 2 tuần theo luật định → ngày 12.",N3,mock/q487_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:488,5,38,2,p2s1,会話,"A：特許の年金、今年の納付はもう済んでいますか。
+B：3件中2件は納付済みです。残り1件は来月が期限です。",まだ納付していない特許は何件か。,0件,1件,2件,3件,2,"3 bằng sáng chế, đã nộp 2, còn lại 1 đến hạn tháng sau.",N3,mock/q488_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:489,5,39,2,p2s1,会話,"A：保険の見直し、代理店との打ち合わせは水曜でしたか。
+B：木曜に変更になりました。時間は同じく午後3時です。",打ち合わせはいつ行われるか。,水曜の午後3時,木曜の午前中,水曜の午前中,木曜の午後3時,4,"Đổi sang thứ Năm, giờ giữ nguyên 15h.",N3,mock/q489_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:490,5,40,2,p2s1,会話,"A：部材Aと部材B、どちらが先に入荷しますか。
+B：部材Bが先です。Aは通関待ちで、1週間後になります。",先に入荷するのはどちらか。,部材A,どちらも入荷しない,同時に入荷する,部材B,4,"Linh kiện B về trước, A còn chờ thông quan.",N3,mock/q490_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:491,5,41,2,p2s1,会話,"A：第1ラインの定期点検、今月は第2火曜でしたね。
+B：今月は祝日と重なるので、翌週の火曜に振り替えます。",今月の定期点検はいつ行うか。,第2火曜,第3火曜,第2水曜,実施しない,2,Trùng ngày lễ nên dời sang thứ Ba tuần kế tiếp = thứ Ba tuần thứ 3.,N3,mock/q491_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:492,5,42,2,p2s1,会話,"A：会員ランクの判定は毎年いつ行われますか。
+B：3月末で締めて、4月1日から新しいランクが適用されます。",新しいランクはいつから適用されるか。,3月末から,4月1日から,4月末から,翌年1月から,2,"Chốt cuối tháng 3, áp dụng hạng mới từ 1/4.",N3,mock/q492_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:493,5,43,2,p2s1,会話,"A：展示会の設営、前日の何時から入れますか。
+B：午後1時からです。ただし大型什器の搬入は午前10時から可能です。",大型什器の搬入は何時から可能か。,午前10時,午後1時,午後3時,当日の朝,1,"Đồ nội thất cỡ lớn được đưa vào từ 10h sáng, khác giờ dựng gian hàng 13h.",N3,mock/q493_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:494,5,44,2,p2s1,会話,"A：委託先の監査報告書、もう受け取りましたか。
+B：2社分は届きましたが、残る1社は来週になるそうです。",まだ届いていない報告書は何社分か。,1社分,2社分,3社分,届いていない社はない,1,"Đã nhận 2 công ty, còn 1 công ty tuần sau.",N3,mock/q494_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:495,5,45,2,p2s1,会話,"A：損害賠償責任保険の補償限度額、いくらで契約しましたか。
+B：3億円です。5億円も検討しましたが、保険料の差が大きく見送りました。",契約した補償限度額はいくらか。,1億円,3億円,5億円,契約していない,2,Ký ở mức 300 triệu yên; mức 500 triệu bị gác lại vì chênh lệch phí lớn.,N3,mock/q495_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:496,5,46,2,p2s1,会話,"A：新しい取引基本契約、締結日はいつになりますか。
+B：先方の取締役会が20日ですので、承認後の25日を予定しています。",契約の締結予定日はいつか。,20日,22日,25日,30日,3,"Hội đồng quản trị bên kia họp ngày 20, dự kiến ký ngày 25 sau khi được phê duyệt.",N3,mock/q496_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:497,5,47,2,p2s1,会話,"A：工場の安全講習、全員参加でしたか。
+B：夜勤の3名が受けられなかったので、来週別日程で実施します。",来週講習を受けるのは何名か。,1名,2名,3名,全員,3,3 người ca đêm chưa tham dự sẽ học vào lịch riêng tuần sau.,N3,mock/q497_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:498,5,48,2,p2s1,会話,"A：IRサイトの決算資料、日本語版と英語版は同時公開ですか。
+B：日本語版が当日15時、英語版は翌営業日の公開になります。",英語版はいつ公開されるか。,当日の15時,当日の18時,翌営業日,公開しない,3,Bản tiếng Anh công bố vào ngày làm việc kế tiếp.,N3,mock/q498_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:499,5,49,2,p2s1,会話,"A：試作品の金型、外注と内製どちらにしますか。
+B：今回は納期優先で外注にします。次回以降は内製化を検討しましょう。",今回の金型はどうすることにしたか。,内製にする,試作を中止する,既存の金型を流用する,外注にする,4,Lần này ưu tiên tiến độ nên đặt gia công ngoài.,N3,mock/q499_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:500,5,50,2,p2s1,会話,"A：秘密保持契約の有効期間は何年でしたか。
+B：契約期間は3年ですが、秘密保持義務は契約終了後さらに5年間存続します。",秘密保持義務は契約終了後何年続くか。,3年,5年,8年,義務は終了する,2,"Thời hạn hợp đồng 3 năm, nhưng nghĩa vụ bảo mật kéo dài thêm 5 năm sau khi kết thúc.",N3,mock/q500_part2_sec1.mp3,self_authored_task062
+bjt.db:mock_exam_question:401,5,51,2,p2s2,契約書条項抜粋,"【業務委託契約書（抜粋）】
+第8条（契約期間）
+本契約の有効期間は締結日より1年間とする。
+期間満了の2か月前までに甲乙いずれからも書面による申し出がない場合、
+本契約は同一条件でさらに1年間自動的に更新されるものとする。",契約を更新したくない場合、いつまでに手続きが必要か。,満了の1か月前まで,満了の3か月前まで,満了日当日まで,満了の2か月前まで,4,Điều khoản ghi rõ: nếu không có văn bản đề nghị từ bên nào trước thời hạn 2 tháng so với ngày hết hạn thì hợp đồng tự động gia hạn.,N2,,self_authored_task058
+bjt.db:mock_exam_question:402,5,52,2,p2s2,株主総会招集通知,"【第52期 定時株主総会 招集ご通知】
+日時：6月26日（木）午前10時
+場所：本社2階 大ホール
+議案：第1号 剰余金処分の件／第2号 取締役5名選任の件
+※議決権行使書は6月25日午後5時までに到着するようご返送ください。",議決権行使書の提出期限はいつか。,6月24日午後5時,6月26日午後5時,6月26日午前10時,6月25日午後5時,4,Thông báo ghi rõ phiếu thực hiện quyền biểu quyết phải đến nơi trước 17h ngày 25/6 — tức trước ngày họp một ngày.,N2,,self_authored_task058
+bjt.db:mock_exam_question:403,5,53,2,p2s2,保険料率表,"【企業向け 賠償責任保険 年間保険料】
+補償限度額 1億円：年 180,000円
+補償限度額 3億円：年 420,000円
+補償限度額 5億円：年 650,000円
+※過去3年間無事故の場合、保険料より15%割引。",過去3年間無事故の企業が補償限度額3億円で契約する場合、年間保険料はいくらか。,"357,000円","420,000円","63,000円","552,500円",1,"420,000 × 0.85 = 357,000円 (giảm 15% do 3 năm không xảy ra sự cố).",N2,,self_authored_task058
+bjt.db:mock_exam_question:404,5,54,2,p2s2,発注リードタイム表,"【部材別 標準リードタイム】
+国内調達品：発注日より 5営業日
+海外調達品（アジア）：発注日より 20営業日
+海外調達品（欧州）：発注日より 35営業日
+特注品：上記に加えて 10営業日
+※年末年始・大型連休は営業日に含まない。",欧州から調達する特注品の標準リードタイムは何営業日か。,35営業日,20営業日,30営業日,45営業日,4,"Hàng đặt từ châu Âu 35 ngày làm việc, hàng đặt riêng cộng thêm 10 ngày → 45 ngày làm việc.",N3,,self_authored_task058
+bjt.db:mock_exam_question:405,5,55,2,p2s2,設備保全計画,"【生産設備 保全スケジュール】
+日常点検：毎日 始業前（各ライン担当者）
+定期点検：毎月第2火曜（保全課）
+分解整備：年2回（3月・9月、外部業者）
+※分解整備の実施日は生産を停止する。",生産を停止する必要があるのはどれか。,日常点検,定期点検,分解整備,すべての点検,3,"Chỉ hạng mục đại tu (分解整備, 2 lần/năm vào tháng 3 và 9) mới phải dừng sản xuất.",N3,,self_authored_task058
+bjt.db:mock_exam_question:406,5,56,2,p2s2,会員ランク特典表,"【法人会員 特典一覧】
+シルバー（年間取引額 300万円未満）：カタログ送付
+ゴールド（300万円以上 1,000万円未満）：カタログ送付＋専任担当者
+プラチナ（1,000万円以上）：上記すべて＋年2回の優先商談会招待
+※ランクは前年度の年間取引額で毎年4月に見直す。",前年度の取引額が850万円だった企業が受けられる特典はどれか。,カタログ送付のみ,すべての特典,優先商談会への招待のみ,カタログ送付と専任担当者,4,"850万円 nằm trong khoảng 300万〜1,000万 → hạng Gold: nhận catalogue và nhân viên phụ trách riêng, chưa được mời hội đàm ưu tiên (chỉ hạng Platinum).",N2,,self_authored_task058
+bjt.db:mock_exam_question:407,5,57,2,p2s2,展示ブース区画図,"【第8回 産業機器フェア 会場区画】
+Aゾーン（入口正面）：小間料 1区画 30万円
+Bゾーン（中央通路沿い）：1区画 22万円
+Cゾーン（会場奥）：1区画 15万円
+※2区画以上のお申し込みで、合計額より1割引。",Bゾーンを3区画申し込む場合の小間料はいくらか。,66万円,54万円,60万円,59万4千円,4,22万 × 3 = 66万円; đăng ký từ 2 lô trở lên giảm 10% → 66万 × 0.9 = 59万4千円.,N2,,self_authored_task058
+bjt.db:mock_exam_question:408,5,58,2,p2s2,特許出願状況,"【当社 特許出願件数（年度別）】
+2021年度：18件（うち登録 11件）
+2022年度：24件（うち登録 15件）
+2023年度：21件（うち登録 16件）
+2024年度：27件（うち登録 14件）",登録率が最も高い年度はどれか。,2021年度,2022年度,2023年度,2024年度,3,"Tỷ lệ đăng ký thành công: 2021 = 11/18 ≈ 61%, 2022 = 15/24 ≈ 63%, 2023 = 16/21 ≈ 76%, 2024 = 14/27 ≈ 52% → cao nhất là năm tài chính 2023.",N2,,self_authored_task058
+bjt.db:mock_exam_question:409,5,59,2,p2s2,与信限度額一覧,"【取引先別 与信限度額】
+東和商事：3,000万円（現在残高 2,750万円）
+北星産業：1,500万円（現在残高 400万円）
+南海物産：2,000万円（現在残高 1,980万円）
+※残高が限度額の9割を超えた取引先は、追加受注前に審査部の承認を要する。",追加受注に審査部の承認が必要な取引先はどこか。,東和商事のみ,南海物産のみ,北星産業と南海物産,東和商事と南海物産,4,"Tỷ lệ dư nợ / hạn mức: Towa 2,750/3,000 ≈ 91.7% (vượt 90%), Hokusei 400/1,500 ≈ 26.7%, Nankai 1,980/2,000 = 99% (vượt) → Towa và Nankai cần phê duyệt.",N1,,self_authored_task058
+bjt.db:mock_exam_question:410,5,60,2,p2s2,稼働率日報,"【製造ライン 稼働率（今週）】
+月曜：92%／火曜：88%／水曜：71%／木曜：90%／金曜：94%
+※稼働率が80%を下回った日は、原因報告書の提出が必要。",原因報告書の提出が必要な日は何日あるか。,0日,3日,2日,1日,4,"Chỉ thứ tư (71%) dưới mức 80%, các ngày còn lại đều từ 88% trở lên → 1 ngày.",N3,,self_authored_task058
+bjt.db:mock_exam_question:411,5,61,2,p2s2,出荷実績表,"【地域別 出荷実績（第2四半期・単位：ケース）】
+北海道：1,240／東北：2,180／関東：8,650／中部：3,920／近畿：5,310／九州：2,700",関東の出荷数は近畿のおよそ何倍か。,約1.2倍,約2.5倍,約2.0倍,約1.6倍,4,"8,650 ÷ 5,310 ≈ 1.63 → khoảng 1.6 lần.",N3,,self_authored_task058
+bjt.db:mock_exam_question:412,5,62,2,p2s2,安全衛生チェック表,"【職場 安全衛生 月次点検項目】
+□ 消火器の設置位置と使用期限
+□ 非常口の通路確保
+□ 保護具の在庫数
+□ 化学物質の保管状況（該当部署のみ）
+※不備が見つかった項目は、点検日より3営業日以内に是正すること。",点検で不備が見つかった場合の対応として正しいものはどれか。,翌月の点検までに直す。,3営業日以内に是正する。,該当部署のみ報告すればよい。,次回の安全衛生委員会で協議する。,2,Chú thích ghi rõ hạng mục có thiếu sót phải được khắc phục trong vòng 3 ngày làm việc kể từ ngày kiểm tra.,N3,,self_authored_task058
+bjt.db:mock_exam_question:413,5,63,2,p2s2,委託業務範囲表,"【物流業務 委託範囲】
+入庫・検品：委託先が実施
+在庫管理：委託先が実施（当社システムへ日次で入力）
+梱包・出荷：委託先が実施
+返品対応：当社が実施
+顧客への問い合わせ回答：当社が実施",委託先が行わない業務はどれか。,入庫・検品,在庫管理,梱包・出荷,返品対応,4,Xử lý hàng trả lại và trả lời khách hàng do công ty tự làm; ba hạng mục còn lại giao cho bên nhận uỷ thác.,N3,,self_authored_task058
+bjt.db:mock_exam_question:414,5,64,2,p2s2,返品・交換規定,"【返品・交換について】
+・未開封の商品：到着後14日以内に限り返品可（送料は当社負担）
+・開封済みの商品：初期不良の場合のみ交換可（到着後7日以内）
+・受注生産品：いかなる場合も返品・交換不可
+※お客様のご都合による返品は、送料をご負担いただきます。",開封後に初期不良が見つかった場合、いつまでに連絡が必要か。,期限はない,到着後14日以内,到着後30日以内,到着後7日以内,4,Hàng đã mở chỉ được đổi khi lỗi ban đầu và trong vòng 7 ngày kể từ khi nhận; thời hạn 14 ngày là dành cho hàng chưa mở.,N2,,self_authored_task058
+bjt.db:mock_exam_question:415,5,65,2,p2s2,契約更新スケジュール,"【主要取引先 契約更新時期】
+大和電機：3月末満了／協和化成：6月末満了
+新光機械：9月末満了／東邦物流：12月末満了
+※更新交渉は満了の3か月前から開始する。",7月に更新交渉を開始する取引先はどこか。,大和電機,協和化成,新光機械,東邦物流,3,Đàm phán bắt đầu trước 3 tháng: Shinko hết hạn cuối tháng 9 → bắt đầu từ tháng 7. Toho (cuối tháng 12) sẽ bắt đầu từ tháng 10.,N2,,self_authored_task058
+bjt.db:mock_exam_question:416,5,66,3,p3s1,,,課長にはそのように（　　）ます。,おっしゃい,お伝えになり,申し伝え,伝えられ,3,「申し伝える」là khiêm nhường ngữ dùng khi hứa sẽ chuyển lời cho người trong công ty mình — mẫu chuẩn khi nghe điện thoại từ bên ngoài.,N2,,self_authored_task058
+bjt.db:mock_exam_question:417,5,67,3,p3s1,,,今後とも品質の向上に努めて（　　）ます。,なさい,いらっしゃい,おいでになり,まいり,4,"「〜てまいります」là dạng khiêm nhường/trang trọng của「〜ていきます」, thể hiện cam kết tiếp tục nỗ lực.",N2,,self_authored_task058
+bjt.db:mock_exam_question:418,5,68,3,p3s1,,,「明日までにご準備ください」「（　　）」,とんでもございません,ご苦労さまです,かしこまりました,おかげさまで,3,「かしこまりました」là câu đáp chuẩn khi nhận chỉ thị từ cấp trên hoặc khách hàng.,N3,,self_authored_task058
+bjt.db:mock_exam_question:419,5,69,3,p3s1,,,添付の資料を（　　）いただけますでしょうか。,お読まれ,お一読,ご拝読,ご一読,4,「一読」là danh động từ gốc Hán nên đi với「ご」→「ご一読いただく」. 「拝読」là khiêm nhường ngữ nên không dùng cho hành động của đối phương.,N2,,self_authored_task058
+bjt.db:mock_exam_question:420,5,70,3,p3s1,,,この技術は当社（　　）のものです。,ならでは,なりとも,ながらも,なりに,1,"「〜ならでは」= chỉ riêng ~ mới có, mang sắc thái khen ngợi tính độc đáo.",N2,,self_authored_task058
+bjt.db:mock_exam_question:421,5,71,3,p3s1,,,確認は早いに（　　）ことはありません。,越した,過ぎた,限った,違いない,1,"「〜に越したことはない」= không gì tốt hơn là ~, dùng để khuyên nhẹ nhàng.",N2,,self_authored_task058
+bjt.db:mock_exam_question:422,5,72,3,p3s1,,,この案件を任せられるのは、彼を（　　）ほかにいない。,おいて,もって,こめて,とわず,1,"「〜をおいてほかに〜ない」= ngoài ~ ra thì không còn ai/cái nào khác, nhấn mạnh sự duy nhất.",N1,,self_authored_task058
+bjt.db:mock_exam_question:423,5,73,3,p3s1,,,理由の（　　）、納期の遅延は認められません。,いかんによらず,いかんでは,いかんにより,いかんとして,1,「〜いかんによらず」= bất kể ~ như thế nào cũng không thay đổi kết quả. 「いかんでは」ngược lại nghĩa 'tuỳ vào ~'.,N1,,self_authored_task058
+bjt.db:mock_exam_question:424,5,74,3,p3s1,,,現場の協力（　　）、この改善は実現できませんでした。,なくしては,ないでは,なしとも,なくても,1,"「〜なくしては…ない」= nếu không có ~ thì không thể ~, nhấn mạnh điều kiện thiết yếu.",N1,,self_authored_task058
+bjt.db:mock_exam_question:425,5,75,3,p3s1,,,価格（　　）、納期の短さも評価されました。,もさることながら,はもとより,にもまして,もかまわず,1,"「〜もさることながら」= ~ đã đành, nhưng còn ~ nữa; dùng khi cả hai đều đáng nói và vế sau được nhấn mạnh hơn.",N1,,self_authored_task058
+bjt.db:mock_exam_question:426,5,76,3,p3s1,,,納期を守る（　　）、増員を決定しました。,べく,べきで,ゆえに,ままに,1,"「〜べく」= với mục đích ~, văn phong trang trọng, tương đương「〜ために」.",N1,,self_authored_task058
+bjt.db:mock_exam_question:427,5,77,3,p3s1,,,創立記念（　　）、社内で式典が行われた。,とあって,とばかり,というより,としても,1,「〜とあって」= vì là dịp/tình huống đặc biệt ~ nên (đương nhiên) xảy ra kết quả tương ứng.,N1,,self_authored_task058
+bjt.db:mock_exam_question:428,5,78,3,p3s1,,,彼は営業を担当する（　　）、新人教育も任されている。,かたわら,うちに,とともで,ながらも,1,「〜かたわら」= song song với công việc chính ~ thì còn làm thêm việc khác.,N1,,self_authored_task058
+bjt.db:mock_exam_question:429,5,79,3,p3s1,,,この提案は検討に（　　）内容だと思います。,足る,至る,及ぶ,する,1,"「〜に足る」= đủ để, xứng đáng để (được xem xét, tin cậy) — văn phong trang trọng.",N1,,self_authored_task058
+bjt.db:mock_exam_question:430,5,80,3,p3s1,,,在庫は補充する（　　）売れてしまう。,そばから,とたんに,うちに,ながらに,1,"「〜そばから」= vừa mới làm xong ~ thì ngay lập tức lại ~, nhấn mạnh sự lặp lại liên tục.",N1,,self_authored_task058
+bjt.db:mock_exam_question:431,5,81,3,p3s2,,,取引先に契約書への押印をお願いするとき、最も適切な言い方はどれか。,契約書にハンコを押してください。,ご確認のうえ、ご捺印いただけますでしょうか。,契約書に押印になってください。,契約書に押印をお願いしてもいいですか。,2,「ご確認のうえ、ご捺印いただけますでしょうか」nêu rõ trình tự (xem rồi mới đóng dấu) và dùng「ご〜いただく」đúng mức trang trọng với đối tác.,N2,,self_authored_task058
+bjt.db:mock_exam_question:432,5,82,3,p3s2,,,会議で発言を遮られたが、話を続けたいと伝えるとき、最も適切な言い方はどれか。,まだ話の途中です。,最後まで聞いてください。,恐れ入ります、もう一点だけ補足させていただけますでしょうか。,話を遮らないでいただきたいです。,3,Không chỉ trích việc bị ngắt lời mà xin phép bổ sung thêm — giữ được không khí cuộc họp. Ba phương án còn lại đều mang sắc thái trách móc.,N2,,self_authored_task058
+bjt.db:mock_exam_question:433,5,83,3,p3s2,,,上司に相談の時間をもらいたいとき、最も適切な言い方はどれか。,ちょっと時間をください。,ご相談したいことがあるのですが、お時間を頂戴できますでしょうか。,相談があるので来てください。,お時間をお取りになれますか。,2,"「お時間を頂戴できますでしょうか」là mẫu xin thời gian lịch sự. Phương án 4 dùng tôn kính ngữ nhưng lại thành hỏi năng lực của cấp trên, nghe không tự nhiên.",N2,,self_authored_task058
+bjt.db:mock_exam_question:434,5,84,3,p3s2,,,着任のあいさつで、前任者から引き継いだことを伝えるとき、最も適切な言い方はどれか。,山田の代わりに来ました。,前任の山田より引き継ぎました、佐藤と申します。,山田さんから引き継がれた佐藤です。,山田様の後任の佐藤様です。,2,"Với người ngoài, gọi người tiền nhiệm bằng họ trần (「前任の山田」) và tự giới thiệu bằng 「〜と申します」. Phương án 4 gắn「様」cho cả đồng nghiệp lẫn chính mình nên sai.",N2,,self_authored_task058
+bjt.db:mock_exam_question:435,5,85,3,p3s2,,,支払いが遅れている取引先に催促するとき、最も角が立たない言い方はどれか。,早く払ってください。,お支払いがまだのようですが、ご確認いただけますでしょうか。,支払いを忘れていませんか。,入金が確認できません。困ります。,2,"Dùng「〜のようですが」để chừa khả năng bên mình nhầm, rồi nhờ kiểm tra — cách đòi nợ giữ được quan hệ. Ba phương án còn lại đều quy kết trực tiếp.",N2,,self_authored_task058
+bjt.db:mock_exam_question:436,5,86,3,p3s2,,,社内の別部署に資料の提供を依頼するとき、最も適切な言い方はどれか。,資料をください。,お忙しいところ恐れ入りますが、資料をご提供いただけないでしょうか。,資料をご提供になってください。,資料を提供してもらえると助かるんですけど。,2,Dù là nội bộ vẫn nên có lời rào đón. Phương án 3 dùng tôn kính ngữ「ご〜になる」kết hợp 「ください」thành sai ngữ pháp kính ngữ.,N2,,self_authored_task058
+bjt.db:mock_exam_question:437,5,87,3,p3s2,,,打ち合わせの結論を確認したいとき、最も適切な言い方はどれか。,そういうことですね。,念のため確認させていただきますが、納期は月末ということでよろしいでしょうか。,納期は月末ですよね。,月末で決まりでいいですか。,2,"「念のため確認させていただきますが」+ nhắc lại nội dung cụ thể + 「〜でよろしいでしょうか」— cách xác nhận chuẩn, tránh hiểu nhầm về sau.",N2,,self_authored_task058
+bjt.db:mock_exam_question:438,5,88,3,p3s2,,,相手の説明が理解できなかったとき、最も適切な聞き返し方はどれか。,よく分かりません。,もう一度言ってください。,恐れ入りますが、もう少し詳しくご説明いただけますでしょうか。,何を言っているのか分かりません。,3,"Đặt trách nhiệm ở phía mình cần nghe kỹ hơn thay vì chê lời giải thích khó hiểu, và dùng mẫu nhờ vả lịch sự.",N2,,self_authored_task058
+bjt.db:mock_exam_question:439,5,89,3,p3s2,,,取引先の担当者を自社の上司に紹介するとき、最も適切な順序と言い方はどれか。,先に上司を取引先に紹介し、「こちらが部長の田中です」と言う。,先に取引先を上司に紹介し、「こちらが山田商事の佐藤様です」と言う。,先に上司を紹介し、「こちらが田中部長です」と言う。,同時に「田中部長と佐藤様です」と紹介する。,1,"Quy tắc giới thiệu: giới thiệu người bên mình cho khách trước, và khi nói với người ngoài thì gọi cấp trên của mình bằng họ trần + chức danh không kèm kính ngữ (「部長の田中」chứ không phải「田中部長」).",N1,,self_authored_task058
+bjt.db:mock_exam_question:440,5,90,3,p3s2,,,見積書の有効期限を伝えるとき、最も適切な言い方はどれか。,この見積もりは1か月で切れます。,本見積書の有効期限は発行日より1か月とさせていただいております。,1か月過ぎたら無効になるので気をつけてください。,見積もりの期限は1か月です。よろしく。,2,"Dùng「〜とさせていただいております」để thông báo quy định của bên mình một cách mềm mỏng, kèm mốc tính rõ ràng (kể từ ngày phát hành).",N2,,self_authored_task058
+bjt.db:mock_exam_question:441,5,91,3,p3s3,社内文書,"社員各位
+来年度より、名刺の発注方法を変更します。これまで各部署がそれぞれ業者へ発注していましたが、今後は総務部が一括して発注します。デザインは全社で統一し、部署名と役職のみ差し替えます。現在お手元にある名刺は、なくなるまでそのままご使用ください。",この文書の内容と合っているものはどれか。,手元の名刺はすぐに廃棄する。,デザインは部署ごとに決められる。,名刺の発注は総務部がまとめて行う。,各部署が引き続き業者へ発注する。,3,Từ năm sau bộ phận tổng vụ đặt gộp; thiết kế thống nhất toàn công ty; danh thiếp đang có thì dùng đến khi hết.,N2,,self_authored_task058
+bjt.db:mock_exam_question:442,5,92,3,p3s3,社内文書,"各位
+情報セキュリティ規程の改定についてお知らせします。改定の主な点は、社外への資料送付時にパスワード設定を必須とすること、および私物端末での業務データの取り扱いを原則禁止とすることの2点です。やむを得ず私物端末を使用する場合は、事前に情報システム部の許可を得てください。",私物の端末を業務に使いたい場合、どうすればよいか。,原則として自由に使える。,事前に情報システム部の許可を得る。,上長に事後報告すればよい。,いかなる場合も使用できない。,2,"Về nguyên tắc là cấm, nhưng nếu bất đắc dĩ phải dùng thì cần xin phép trước bộ phận hệ thống thông tin — không phải cấm tuyệt đối.",N2,,self_authored_task058
+bjt.db:mock_exam_question:443,5,93,3,p3s3,社外文書,"拝啓　貴社ますますご清栄のこととお慶び申し上げます。
+さて、弊社ではサポート体制の拡充に伴い、来る10月1日より問い合わせ窓口の受付時間を延長いたします。従来の平日9時〜17時から、平日8時〜20時および土曜9時〜17時へ変更となります。日曜・祝日は従来どおり休業とさせていただきます。　敬具",変更後、問い合わせができない日はいつか。,土曜日,平日の夜間,日曜・祝日,変更後はいつでも可能,3,"Sau khi mở rộng: ngày thường 8-20h, thứ bảy 9-17h; chủ nhật và ngày lễ vẫn nghỉ như cũ.",N2,,self_authored_task058
+bjt.db:mock_exam_question:444,5,94,3,p3s3,社外文書,"拝啓　平素は格別のご愛顧を賜り厚く御礼申し上げます。
+さて、弊社が長年製造してまいりました「TKシリーズ」は、おかげさまで発売より20年を迎えました。これを機に、従来品の性能を大幅に改良した後継機種を来春発売する運びとなりました。従来品につきましても、当面は併売を継続いたします。　敬具",この文書で伝えられている内容はどれか。,従来品の製造を来春で終了する。,後継機種の発売後も従来品は当面販売される。,後継機種は20年前に発売された。,従来品の価格を引き上げる。,2,"Văn bản nêu rõ sẽ tiếp tục bán song song sản phẩm cũ trong thời gian trước mắt (「当面は併売を継続」), không phải dừng sản xuất.",N2,,self_authored_task058
+bjt.db:mock_exam_question:445,5,95,3,p3s3,社内メール,"各部署 ご担当者様
+お疲れさまです。経理部です。
+来月より、5万円を超える備品購入について、見積書を2社以上から取得したうえで稟議書に添付することが必要となります。5万円以下の購入については従来どおりで変更はありません。なお、同一業者としか取引できない特殊な品目については、その理由書を添付いただければ1社の見積書で差し支えありません。",特殊な品目で1社からしか見積もりが取れない場合、どうすればよいか。,購入をあきらめる。,理由書を添付すれば1社分でよい。,5万円以下に分割して購入する。,経理部が代わりに見積もりを取る。,2,"Email nêu rõ với mặt hàng đặc thù chỉ giao dịch được với một nhà cung cấp, đính kèm bản giải trình lý do thì một báo giá là đủ.",N2,,self_authored_task058
+bjt.db:mock_exam_question:446,5,96,3,p3s3,社内メール,"営業部の皆さま
+お疲れさまです。マーケティング部の森田です。
+先月実施した顧客アンケートの速報をお送りします。回収率は42%で、前回の35%を上回りました。満足度は全体的に改善しましたが、「納品後のフォロー」の項目だけが前回を下回っています。詳細な分析は来週の会議でご報告しますので、それまでに気づいた点があればご連絡ください。",このメールの内容と合っているものはどれか。,すべての項目で満足度が改善した。,回収率は前回より下がった。,「納品後のフォロー」の評価が前回より低い。,詳細な分析はすでに完了し添付されている。,3,"Tỷ lệ thu hồi tăng (35% → 42%), mức hài lòng cải thiện nhìn chung nhưng riêng hạng mục 'chăm sóc sau giao hàng' thấp hơn lần trước; phân tích chi tiết báo cáo tuần sau.",N2,,self_authored_task058
+bjt.db:mock_exam_question:447,5,97,3,p3s3,社外メール,"大和電機株式会社
+資材部　浅井様
+
+いつも大変お世話になっております。中央精工の橋本でございます。
+先日ご相談いただいた部材の代替品につきまして、社内で検証を行いました。
+性能面では現行品と同等の結果が得られましたが、耐熱温度が現行品より10度低いという違いがございます。御社の使用環境で問題がないか、ご確認いただけますでしょうか。",このメールで相手に確認を求めていることは何か。,代替品の価格が予算に合うか。,耐熱温度の差が使用上問題ないか。,代替品の納期が間に合うか。,現行品の在庫がまだあるか。,2,"Hiệu năng tương đương, điểm khác duy nhất là nhiệt độ chịu nhiệt thấp hơn 10 độ — người gửi nhờ đối phương kiểm tra xem điều đó có ảnh hưởng tới môi trường sử dụng không.",N2,,self_authored_task058
+bjt.db:mock_exam_question:448,5,98,3,p3s3,社外メール,"株式会社みらい商会
+総務部　黒田様
+
+お世話になっております。オフィス企画の村上でございます。
+先日ご依頼いただきましたオフィス移転のお見積もりについてご連絡いたします。
+ご希望の3月中の移転ですが、年度末は業界全体が繁忙期にあたり、作業員の確保が難しい状況でございます。4月上旬であれば通常料金でご対応可能ですが、3月中をご希望の場合は割増料金が発生いたします。いかがいたしましょうか。",3月中に移転する場合、どうなるか。,対応できない。,通常料金で対応できる。,割増料金がかかる。,4月に自動的に延期される。,3,Tháng 3 là cao điểm nên vẫn làm được nhưng phát sinh phụ phí; nếu sang đầu tháng 4 thì áp dụng giá thường.,N2,,self_authored_task058
+bjt.db:mock_exam_question:449,5,99,3,p3s3,記事,企業が保有する特許を他社に開放する動きが広がっている。ある調査では、自社特許の一部を無償または低額で開放したことがある企業は全体の16%にとどまるものの、「今後検討したい」と回答した企業は38%に達した。開放の狙いとして最も多かったのは「業界全体の技術水準を引き上げ、市場そのものを大きくするため」であった。,この記事の内容と合っているものはどれか。,特許を開放した企業はすでに過半数に達している。,開放の主な狙いは自社の利益を直接増やすことである。,今後の検討を考える企業は実施済み企業より多い。,特許開放は法律で義務づけられている。,3,"Đã thực hiện 16%, đang cân nhắc 38% — nhóm cân nhắc nhiều hơn nhóm đã làm. Mục đích chính là nâng mặt bằng công nghệ ngành để mở rộng thị trường.",N2,,self_authored_task058
+bjt.db:mock_exam_question:450,5,100,3,p3s3,記事,原材料の調達先を一か所に集中させず、複数に分散する企業が増えている。背景には、自然災害や国際情勢の変化で供給が突然止まるリスクへの警戒がある。分散にはコスト増を伴うが、ある製造業の担当者は「在庫を厚く持つより、調達先を増やすほうが結果的に安上がりだった」と話す。一方、管理する取引先が増えることで事務負担が重くなるという声もある。,この記事で分散調達の課題として挙げられているものはどれか。,在庫が不足しやすくなること,取引先の管理にかかる事務負担が増えること,自然災害の被害が大きくなること,調達先の技術力が下がること,2,Bài viết nêu mặt trái là số đối tác phải quản lý tăng lên khiến gánh nặng hành chính nặng hơn; về chi phí thì lại rẻ hơn so với ôm nhiều tồn kho.,N2,,self_authored_task058

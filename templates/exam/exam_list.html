@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}S4 Thi thử & luyện dạng đề — mockup htmlTemplate/SC23_KiemTra_A.html màn S4.
+View: exam.views.exam_list_view, số liệu exam.selectors.exam_set_rows / section_rows.
+Chế độ Thi / Luyện chọn bằng link ?che-do= (GET, không cần JS); nút Bắt đầu gửi mode qua POST.
+Luyện theo dạng đề luôn ở chế độ Luyện (10 câu, ưu tiên câu chưa làm).{% endcomment %}
+
+{% block title %}{% label "exam.exams.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+<nav class="kl-crumb">
+  <a href="{% url 'exam:hub' %}" class="action-link">{% label "exam.hub.title" %}</a>
+  <span>&rsaquo;</span><span>{% label "exam.exams.title" %}</span>
+</nav>
+{% label "exam.exams.title" as title %}{% label "exam.exams.intro" as sub %}
+{% include "partials/page_header.html" with title=title subtitle=sub %}
+
+{% if not sets and not sections %}
+  {% include "partials/empty_state.html" with icon="試" text_key="exam.exams.no_data" %}
+{% else %}
+
+<section class="card mb-22">
+  <div class="ex-mode-row">
+    <h3 class="serif m-0">{% label "exam.exams.mode.title" %}</h3>
+    <div class="ex-seg" role="tablist">
+      <a href="?che-do={{ mode_exam }}" role="tab"{% if mode == mode_exam %} aria-selected="true"{% endif %}><span>{% label "exam.exams.mode.exam" %}</span></a>
+      <a href="?che-do={{ mode_practice }}" role="tab"{% if mode == mode_practice %} aria-selected="true"{% endif %}><span>{% label "exam.exams.mode.practice" %}</span></a>
+    </div>
+  </div>
+  <div class="ex-mode-help">
+    <p class="m-0{% if mode != mode_exam %} muted{% endif %}"><b>{% label "exam.exams.mode.exam" %}</b> — {% label "exam.exams.mode.exam_hint" %}</p>
+    <p class="m-0{% if mode != mode_practice %} muted{% endif %}"><b>{% label "exam.exams.mode.practice" %}</b> — {% label "exam.exams.mode.practice_hint" %}</p>
+  </div>
+</section>
+
+{% if sets %}
+<section class="card mb-22">
+  <h2 class="serif ex-h2">{% label "exam.exams.sets.title" %}</h2>
+  <div class="ex-table-wrap">
+    <table class="ex-table">
+      <thead><tr>
+        <th>{% label "exam.exams.sets.col.set" %}</th>
+        <th>{% label "exam.part.1" %}</th><th>{% label "exam.part.2" %}</th><th>{% label "exam.part.3" %}</th>
+        <th>{% label "exam.exams.sets.col.last" %}</th><th></th>
+      </tr></thead>
+      <tbody>
+      {% for s in sets %}
+        <tr>
+          <td><b>{{ s.title }}</b></td>
+          <td>{{ s.p1 }}</td><td>{{ s.p2 }}</td><td>{{ s.p3 }}</td>
+          <td>
+            {% if s.open %}<span class="tag ex-tag-mid">{% message "exam.exams.sets.doing" mode=s.open.mode_name answered=s.open.answered total=s.open.total %}</span>
+            {% elif s.last %}<span class="ex-pct t-{{ s.last.level }}">{{ s.last.percent }}%</span> <span class="muted text-sm">· {{ s.last.finished_at|date:"d/m" }}</span>
+            {% else %}<span class="muted">{% label "exam.exams.sets.never" %}</span>{% endif %}
+          </td>
+          <td class="text-right">
+            {% if s.open %}
+              <a class="btn btn-primary btn-sm" href="{% url 'exam:play' s.open.pk %}">{% label "exam.hub.resume.button" %}</a>
+            {% else %}
+              <form method="post" action="{% url 'exam:start_mock' s.slug %}" class="ex-inline">
+                {% csrf_token %}<input type="hidden" name="mode" value="{{ mode }}">
+                <button class="btn btn-outline btn-sm" type="submit">{% if s.last %}{% label "exam.exams.sets.again" %}{% else %}{% label "exam.exams.sets.start" %}{% endif %}</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="muted text-sm mb-0">{% label "exam.exams.sets.note" %}</p>
+</section>
+{% endif %}
+
+{% if sections %}
+<section class="card" id="dang-de">
+  <h2 class="serif ex-h2">{% label "exam.exams.drill.title" %} <span class="muted text-sm ex-h2-note">{% label "exam.exams.drill.note" %}</span></h2>
+  <div class="ex-drills">
+    {% for r in sections %}
+      <form method="post" action="{% url 'exam:start_drill' r.code %}" class="ex-drill{% if r.weakest %} is-weakest{% endif %}">
+        {% csrf_token %}
+        <span class="tag">{% label "exam.part.short" %} {{ r.part }}</span>
+        <b>{{ r.name }}</b>
+        {% if r.acc %}
+          <div class="bar"><i class="s-{{ r.acc.level }}" style="width:{{ r.acc.percent }}%"></i></div>
+          <span class="ex-mode-meta">{% message "exam.exams.drill.meta" count=r.count percent=r.acc.percent %}{% if r.weakest %} · <b class="t-lo">{% label "exam.exams.drill.weakest" %}</b>{% endif %}</span>
+        {% else %}
+          <div class="bar"></div>
+          <span class="ex-mode-meta">{% message "exam.exams.drill.meta_new" count=r.count %}</span>
+        {% endif %}
+        <button class="btn btn-outline btn-sm" type="submit">{% label "exam.exams.drill.start" %}</button>
+      </form>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endif %}
+{% endblock %}

@@ -24,6 +24,7 @@ from django.utils import timezone
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
+from apps.core import quiz
 from apps.core.constants import (
     QUESTION_TYPE_CLOZE,
     QUESTION_TYPE_MCQ,
@@ -52,9 +53,11 @@ RESULT_VIEWS = (RESULT_VIEW_WRONG, RESULT_VIEW_ALL)
 
 HISTORY_SIZE = 5
 
-# Nguong mau diem -- dung chung SC20 va SC22.
-LEVEL_HI = 80
-LEVEL_MID = 50
+# Nguong mau diem va cach tinh % -- dung chung voi apps.exam, nam o apps/core/quiz.py.
+LEVEL_HI = quiz.LEVEL_HI
+LEVEL_MID = quiz.LEVEL_MID
+percent = quiz.percent
+score_level = quiz.score_level
 
 # Thu tu hien chip dang cau hoi.
 QUESTION_TYPE_ORDER = (QUESTION_TYPE_MCQ, QUESTION_TYPE_ORDERING, QUESTION_TYPE_CLOZE)
@@ -68,19 +71,6 @@ SENTENCE_RE = re.compile(r"[^。\n]+(?:。|$)")
 
 def clean_choice(raw, allowed, default=None):
     return raw if raw in allowed else (default if default is not None else allowed[0])
-
-
-def percent(score, total):
-    return round(score * 100 / total) if total else 0
-
-
-def score_level(score, total):
-    p = percent(score, total)
-    if p >= LEVEL_HI:
-        return "hi"
-    if p >= LEVEL_MID:
-        return "mid"
-    return "lo"
 
 
 # =============================================================================

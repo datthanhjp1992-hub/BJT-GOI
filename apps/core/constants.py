@@ -198,3 +198,40 @@ CODE_TYPE_DAILY_GOAL = "19"
 def daily_goal_choices():
     """Lựa chọn mục tiêu ở màn onboarding — tên hiển thị lấy từ MasterCode."""
     return get_choices(CODE_TYPE_DAILY_GOAL)
+
+
+# --- Khu Kiểm tra (app apps.exam, docs/SPEC_KIEM_TRA.md mục 1.3, 11/10/2026) ---
+CODE_TYPE_EXAM_SECTION = "20"      # Dạng câu BJT: p1s1..p3s3, mã cha p1/p2/p3 = 3 phần đề
+CODE_TYPE_EXAM_KIND = "21"         # Loại bài kiểm tra
+CODE_TYPE_EXAM_MODE = "22"         # Chế độ: Thi / Luyện
+CODE_TYPE_VOCAB_QUESTION = "23"    # Dạng câu hỏi từ vựng
+
+EXAM_KIND_VOCAB = "vocab"          # Kiểm tra từ vựng — câu sinh từ Vocabulary
+EXAM_KIND_DRILL = "drill"          # Luyện theo dạng đề — 10 câu một dạng
+EXAM_KIND_MOCK = "mock"            # Thi thử — trọn một bộ đề
+EXAM_KIND_WRONGBOOK = "wrongbook"  # Ôn Sổ câu sai
+
+EXAM_MODE_EXAM = "exam"            # Thi: bấm giờ, nộp mới thấy đáp án
+EXAM_MODE_PRACTICE = "practice"    # Luyện: trả lời xong thấy đáp án ngay
+
+VOCAB_Q_MEANING = "meaning"        # 日 → Việt: hiện chữ, chọn nghĩa
+VOCAB_Q_WORD = "word"              # Việt → 日: hiện nghĩa, chọn chữ
+VOCAB_Q_READING = "reading"        # hiện chữ, chọn cách đọc
+VOCAB_Q_CLOZE = "cloze"            # câu ví dụ che từ, chọn chữ
+VOCAB_QUESTION_TYPES = (VOCAB_Q_MEANING, VOCAB_Q_WORD, VOCAB_Q_READING, VOCAB_Q_CLOZE)
+
+
+def exam_section_choices():
+    return get_choices(CODE_TYPE_EXAM_SECTION)
+
+
+def exam_kind_choices():
+    return get_choices(CODE_TYPE_EXAM_KIND)
+
+
+def exam_mode_choices():
+    return get_choices(CODE_TYPE_EXAM_MODE)
+
+
+def vocab_question_choices():
+    return get_choices(CODE_TYPE_VOCAB_QUESTION)

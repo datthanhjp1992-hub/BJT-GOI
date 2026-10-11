@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "apps.error_reports",
     # Kinh ngu (SC16-SC22) - noi dung tach han khoi vocabulary.
     "apps.keigo",
+    # Khu Kiem tra (docs/SPEC_KIEM_TRA.md) - bai tu vung, luyen dang de, thi thu.
+    "apps.exam",
     # Khu vuc quan tri SC07 - khong co model, chi doc du lieu app khac.
     "apps.admin_panel",
 ]
@@ -120,6 +122,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Audio đề thi trên Supabase Storage, bucket public "exam-audio" (docs/SPEC_KIEM_TRA.md
+# mục 0.3). URL public — không bí mật. Để trống thì câu nghe hiện "chưa có audio".
+EXAM_AUDIO_BASE_URL = env("EXAM_AUDIO_BASE_URL", default="")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

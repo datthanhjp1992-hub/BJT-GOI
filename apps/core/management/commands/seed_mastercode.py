@@ -31,6 +31,10 @@ from apps.core.constants import (
     CODE_TYPE_KEIGO_STYLE,
     CODE_TYPE_KEIGO_PAIR_TYPE,
     CODE_TYPE_QUESTION_TYPE,
+    CODE_TYPE_EXAM_SECTION,
+    CODE_TYPE_EXAM_KIND,
+    CODE_TYPE_EXAM_MODE,
+    CODE_TYPE_VOCAB_QUESTION,
 )
 
 # (code, code_name, mother_code, description, sort_order)
@@ -160,6 +164,37 @@ SEED_DATA = {
         ("mcq_blank", "Điền vào chỗ trống", None, "Chọn 1 trong 2-4 phương án", 1),
         ("ordering", "Sắp xếp câu (★)", None, "Đáp án sách dạng 3(1234)", 2),
         ("cloze", "Điền vào đoạn văn", None, "Đọc đoạn văn rồi điền (11)-(15)", 3),
+    ],
+    # Khu Kiểm tra (docs/SPEC_KIEM_TRA.md mục 1.3). Mã cha p1/p2/p3 là 3 phần đề
+    # BJT; mã con là dạng câu, khớp (part, section) của mock_exam_question.
+    CODE_TYPE_EXAM_SECTION: [
+        ("p1", "第1部 Nghe", None, "聴解", 1),
+        ("p2", "第2部 Nghe + Đọc", None, "聴読解", 2),
+        ("p3", "第3部 Đọc", None, "読解", 3),
+        ("p1s1", "Nắm bắt ngữ cảnh", "p1", "場面把握", 11),
+        ("p1s2", "Kính ngữ ứng dụng (nghe)", "p1", "発言聴解", 12),
+        ("p1s3", "Nghe hiểu toàn diện", "p1", "総合聴解", 13),
+        ("p2s1", "Tình huống hội thoại", "p2", "状況把握", 21),
+        ("p2s2", "Đọc tài liệu", "p2", "資料聴読解", 22),
+        ("p3s1", "Ngữ pháp – Từ vựng", "p3", "語彙・文法", 31),
+        ("p3s2", "Kính ngữ ứng dụng (đọc)", "p3", "表現読解", 32),
+        ("p3s3", "Đọc hiểu văn bản", "p3", "総合読解", 33),
+    ],
+    CODE_TYPE_EXAM_KIND: [
+        ("vocab", "Kiểm tra từ vựng", None, "Câu hỏi sinh từ các từ đã học", 1),
+        ("drill", "Luyện theo dạng đề", None, "10 câu của một dạng đề BJT", 2),
+        ("mock", "Thi thử", None, "Trọn một bộ đề 3 phần", 3),
+        ("wrongbook", "Ôn câu sai", None, "Ôn các câu trong Sổ câu sai", 4),
+    ],
+    CODE_TYPE_EXAM_MODE: [
+        ("exam", "Thi", None, "Bấm giờ, nộp bài mới thấy đáp án", 1),
+        ("practice", "Luyện", None, "Trả lời xong thấy đáp án ngay", 2),
+    ],
+    CODE_TYPE_VOCAB_QUESTION: [
+        ("meaning", "Chọn nghĩa", None, "日 → Việt", 1),
+        ("word", "Chọn từ", None, "Việt → 日", 2),
+        ("reading", "Cách đọc", None, "Chọn cách đọc của chữ kanji", 3),
+        ("cloze", "Điền vào câu", None, "Câu ví dụ che mất từ", 4),
     ],
 }
 
