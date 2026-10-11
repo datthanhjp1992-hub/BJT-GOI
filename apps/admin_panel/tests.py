@@ -5,6 +5,7 @@ Chạy: python manage.py test apps.admin_panel
 """
 from pathlib import Path
 
+from django.apps import apps as django_apps
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -156,10 +157,22 @@ class DataIoEngineTests(TestCase):
     def setUpTestData(cls):
         call_command("seed_mastercode", verbosity=0)
 
-    def test_registry_covers_exactly_the_18_local_tables(self):
+    def test_registry_covers_every_table_of_the_local_apps(self):
+        """Không đếm cứng số bảng: thêm app/bảng mới vào LOCAL_APP_LABELS thì
+        danh sách tự dài ra, test vẫn xanh. Chỉ đỏ khi registry bỏ sót bảng,
+        lấy trùng, hoặc một app trong danh sách không góp bảng nào."""
         models = dataio.importable_models()
-        self.assertEqual(len(models), 19, [dataio.model_label(m) for m in models])
         labels = {dataio.model_label(m) for m in models}
+        expected = {
+            dataio.model_label(m)
+            for app_label in dataio.LOCAL_APP_LABELS
+            for m in django_apps.get_app_config(app_label).get_models()
+            if not (m._meta.auto_created or m._meta.proxy)
+        } - dataio.NON_DATA_MODELS
+        self.assertEqual(labels, expected)
+        self.assertEqual(len(models), len(labels), "registry có bảng bị lặp")
+        for app_label in dataio.LOCAL_APP_LABELS:
+            self.assertTrue(any(lb.startswith(f"{app_label}.") for lb in labels), app_label)
         self.assertIn("vocabulary.vocabulary", labels)
         self.assertIn("vocabulary.vocabularytopic", labels)
         # Bảng của django.contrib.auth KHÔNG nằm trong danh sách.
@@ -745,7 +758,8 @@ class FullVocabularyDatasetTests(AdminPanelTestCase):
     def test_it_shows_up_in_the_table_list(self):
         labels = [t["label"] for t in self.client.get(reverse("admin_panel:data_index")).context["tables"]]
         self.assertEqual(labels[0], self.label)
-        self.assertEqual(len(labels), 20)  # 19 bảng + 1 mẫu gộp
+        # Mọi bảng của registry + 1 mẫu gộp.
+        self.assertEqual(len(labels), len(dataio.importable_models()) + 1)
 
     def test_one_row_writes_word_topics_and_examples(self):
         report = self._run(

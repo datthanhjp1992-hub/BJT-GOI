@@ -92,14 +92,11 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
                     {% endfor %}
                   </select>
                 </div>
-                <div class="field m-0">
-                  <label for="id_mode">{% label "learning.review.field.mode" %}</label>
-                  <select id="id_mode" name="mode">
-                    <option value="flashcard">{% label "learning.review.option.flashcard" %}</option>
-                    <option value="quiz">{% label "learning.review.option.quiz" %}</option>
-                  </select>
-                </div>
               </div>
+              <p class="muted text-sm m-0 mt-18">
+                {% message "learning.review.hint.quiz_moved" %}
+                <a href="{% url 'exam:vocab' %}">{% label "learning.review.link.vocab_quiz" %}</a>
+              </p>
             </div>
           </details>
         </form>

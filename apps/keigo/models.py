@@ -9,7 +9,7 @@ vào `Vocabulary` sẽ kéo chúng vào hàng đợi SRS của MỌI người h�
 (`learning.UserVocabularyProgress`) và vào phiếu luyện viết PDF (SC10).
 Chi tiết: claude/keigo-thiet-ke.md.
 
-12 model, tất cả kế thừa AuditableModel như 19 bảng còn lại của repo.
+12 model, tất cả kế thừa AuditableModel như mọi bảng còn lại của repo.
 Nguồn dữ liệu: Thaolejp – Khóa BJT Kính ngữ (04/2025).
 """
 from django.conf import settings

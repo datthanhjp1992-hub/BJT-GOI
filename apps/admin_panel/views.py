@@ -7,7 +7,7 @@ PHẠM VI (cập nhật 13/09/2026):
    đã sửa / bỏ qua kèm phản hồi (model ở apps/error_reports).
 3. HÒM THƯ GÓP Ý (SC12) — duyệt/từ chối góp ý người dùng gửi, cộng điểm
    theo PointRule (model + service ở apps/gamification).
-4. NHẬP / XUẤT DỮ LIỆU bằng file CSV & Excel cho cả 18 bảng + một mẫu gộp
+4. NHẬP / XUẤT DỮ LIỆU bằng file CSV & Excel cho mọi bảng của registry (apps/core/dataio.py) + một mẫu gộp
    "Từ vựng đầy đủ": tải file mẫu, xuất dữ liệu hiện có, chọn chế độ ghi, tải
    file lên và xem trước rồi mới ghi.
 (Màn "Cài đặt hệ thống" cho keep-alive đã gỡ ngày 02/10/2026 — xem spec.md T4.1.)
@@ -261,7 +261,7 @@ def _table_rows():
 
 @staff_required
 def data_index_view(request):
-    """Danh sách mẫu gộp + 18 bảng, mỗi dòng có lối tải mẫu / xuất / nhập."""
+    """Danh sách mẫu gộp + mọi bảng của registry, mỗi dòng có lối tải mẫu / xuất / nhập."""
     context = {
         "tables": _table_rows(),
         "active_nav": "admin",

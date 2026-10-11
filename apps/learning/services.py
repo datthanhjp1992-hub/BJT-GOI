@@ -18,8 +18,6 @@ from django.db.models import Count, F, Q
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 
-import random
-
 from apps.vocabulary.models import Topic, Vocabulary
 
 from . import srs
@@ -312,37 +310,6 @@ def pick_extra_new_words(user, topic, count=None):
 def get_flashcard_queue(user, topic):
     """Danh sách từ theo thứ tự học của SC04 — xem get_topic_queue()."""
     return get_topic_queue(user, topic).words
-
-
-QUIZ_CHOICE_COUNT = 4
-
-
-def get_quiz_choices(word, topic, count=QUIZ_CHOICE_COUNT):
-    """`count` lựa chọn cho câu hỏi trắc nghiệm SC06: 1 đúng (`word`) + tối đa
-    (count - 1) đáp án nhiễu, đã xáo trộn vị trí.
-
-    Ưu tiên lấy nhiễu CÙNG CHỦ ĐỀ (nghĩa dễ gây nhầm lẫn hơn nghĩa ở chủ đề
-    khác); chủ đề ít từ thì bù thêm từ TOÀN BỘ từ điển để vẫn đủ số lựa chọn
-    khi kho từ đủ lớn. Từ điển/chủ đề quá nhỏ (vd môi trường test) thì trả về
-    ÍT HƠN count lựa chọn — tốt hơn là ném lỗi giữa lúc người học đang làm bài.
-    """
-    # topic=None: hàng đợi gộp nhiều chủ đề (SC15) hoặc từ chưa gắn chủ đề
-    # nào — bỏ qua nhánh "nhiễu cùng chủ đề", lấy thẳng từ toàn bộ từ điển.
-    if topic is None:
-        same_topic = []
-    else:
-        same_topic = list(Vocabulary.objects.filter(topics=topic).exclude(pk=word.pk))
-    needed = (count - 1) - len(same_topic)
-    if needed > 0:
-        exclude_ids = {v.pk for v in same_topic} | {word.pk}
-        same_topic += list(
-            Vocabulary.objects.exclude(pk__in=exclude_ids).order_by("?")[:needed]
-        )
-
-    distractors = random.sample(same_topic, k=min(count - 1, len(same_topic)))
-    choices = [word] + distractors
-    random.shuffle(choices)
-    return choices
 
 
 # Số ví dụ câu hiện dưới thẻ (cùng con số với study_view: word.examples.all()[:3]).

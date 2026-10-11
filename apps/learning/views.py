@@ -24,7 +24,7 @@ from django.utils.cache import patch_vary_headers
 from django.views.decorators.http import require_POST
 
 from apps.core import pagination
-from apps.core.constants import SESSION_TYPE_FLASHCARD, SESSION_TYPE_QUIZ
+from apps.core.constants import SESSION_TYPE_FLASHCARD
 from apps.core.properties import label, message
 from apps.gamification import services as gamification_services
 from apps.gamification.services import CONTRIBUTION_TYPE_COMMENT
@@ -109,8 +109,7 @@ def _flashcard_session_keys(topic_slug):
 def _close_study_session(request, session_id_key):
     """Đóng StudySession đang mở (nếu có) khi hàng đợi đã hết, để lại mốc
     ended_at cho lịch sử/streak sau này biết phiên kết thúc lúc nào. Trả về
-    bản ghi đã đóng (hoặc None) để nơi gọi dựng thông báo tóm tắt nếu cần
-    (vd quiz_view hiện điểm số đúng/tổng)."""
+    bản ghi đã đóng (hoặc None) để nơi gọi dựng thông báo tóm tắt nếu cần."""
     session_id = request.session.pop(session_id_key, None)
     if not session_id:
         return None
@@ -690,89 +689,6 @@ def flashcard_more_new_view(request, topic_slug):
             "ids": merged,
         }
     return redirect("learning:flashcard", topic.slug)
-
-
-def _quiz_session_keys(topic_slug):
-    """Giống `_flashcard_session_keys` nhưng khoá riêng namespace "quiz_" —
-    user có thể mở song song flashcard và quiz của CÙNG một chủ đề (hai tab)
-    mà không đụng phiên của nhau."""
-    return f"quiz_total_{topic_slug}", f"quiz_session_id_{topic_slug}"
-
-
-def _flash_quiz_score(request, session):
-    """Điểm cuối lượt trắc nghiệm, đếm theo TỪ: "đúng ngay lần đầu / số từ"."""
-    summary = _session_summary(request, session)
-    if not summary:
-        return
-    if summary["words"]:
-        correct, total = summary["remembered"], summary["words"]
-    else:
-        correct, total = session.correct_answers, session.words_reviewed
-    flash.success(request, message(
-        "learning.quiz.success.session_complete", correct=correct, total=total,
-    ))
-
-
-@login_required
-def quiz_view(request, topic_slug):
-    """SC06_KiemTra — trắc nghiệm 4 đáp án, dùng CHUNG hàng đợi với SC04
-    (`services.get_topic_queue`): từ đang học tới giờ -> từ đến hạn -> từ mới.
-    Bấm thẳng vào 1 đáp án là nộp câu đó luôn (xem `quiz_answer_view`) —
-    không có bước "xác nhận" riêng như mockup tĩnh, cùng ngôn ngữ thiết kế
-    với 4 nút Quên/Khó/Nhớ/Dễ ở SC04."""
-    topic = get_object_or_404(Topic, slug=topic_slug)
-    total_key, session_id_key = _quiz_session_keys(topic.slug)
-    queue = services.get_topic_queue(request.user, topic)
-
-    if not queue.words:
-        # Hết từ cần kiểm tra — đóng phiên đang mở và báo điểm số nếu phiên
-        # đó thật sự có câu nào được trả lời (tránh flash "0/0" khi user mới
-        # mở màn lần đầu mà chủ đề đã hết hạn ôn sẵn từ trước).
-        session = _close_study_session(request, session_id_key)
-        request.session.pop(total_key, None)
-        _flash_quiz_score(request, session)
-        return render(request, "learning/quiz.html", {
-            "topic": topic, "word": None, "scope_label": topic.display_name,
-        })
-
-    session = _ensure_open_session(request, session_id_key, topic, SESSION_TYPE_QUIZ)
-    word = queue.words[0]
-
-    context = {
-        "topic": topic,
-        "word": word,
-        **_topic_progress(request, total_key, session, queue.words),
-        "choices": services.get_quiz_choices(word, topic),
-        "scope_label": topic.display_name,
-        "answer_action": reverse("learning:quiz_answer", args=[topic.slug, word.pk]),
-    }
-    return render(request, "learning/quiz.html", context)
-
-
-@login_required
-@require_POST
-def quiz_answer_view(request, topic_slug, vocabulary_id):
-    """Nộp 1 câu trắc nghiệm — mỗi nút đáp án ở quiz.html POST thẳng vào đây.
-    Đúng/sai quy đổi sang quality SM-2 (4 = nhớ tốt, 0 = quên) rồi dùng lại
-    NGUYÊN `review_word()` của SC04 — quiz và flashcard cùng một cơ chế SRS
-    (trả lời sai thì từ quay lại sau vài phút trong cùng lượt)."""
-    vocab = get_object_or_404(Vocabulary, pk=vocabulary_id)
-    is_correct = request.POST.get("choice") == str(vocab.pk)
-    quality = 4 if is_correct else 0
-
-    _, session_id_key = _quiz_session_keys(topic_slug)
-    _grade(
-        request, vocab, quality,
-        flow=f"quiz:{topic_slug}",
-        session_id=request.session.get(session_id_key),
-        extra={"topic": topic_slug},
-    )
-
-    if is_correct:
-        flash.success(request, message("learning.quiz.feedback.correct"))
-    else:
-        flash.error(request, message("learning.quiz.feedback.wrong", meaning=vocab.meaning_vi))
-    return redirect("learning:quiz", topic_slug=topic_slug)
 
 
 # =============================================================================
@@ -1398,7 +1314,7 @@ def _flash_postponed(request, count):
 # -----------------------------------------------------------------------------
 # Trang này KHÔNG dựng hàng đợi riêng: nó chọn tập từ bằng
 # `selectors.studied_vocabulary()` rồi đi qua ĐÚNG luồng study_* đã có
-# (`build_study_queue` -> session -> study_view/study_quiz_view). Khác biệt
+# (`build_study_queue` -> session -> study_view). Khác biệt
 # duy nhất là cờ STUDY_TOUCH_SCHEDULE_KEY: với các phạm vi "ôn thêm" (chưa đến
 # hạn / đã thuộc) phiên chỉ ghi nhận đúng-sai, không đẩy lịch SM-2.
 # =============================================================================
@@ -1508,12 +1424,6 @@ def review_start_view(request):
     limit = vocab_selectors.clean_session_limit(
         request.POST.get(vocab_selectors.LIMIT_PARAM)
     )
-    mode = (
-        SESSION_TYPE_QUIZ
-        if request.POST.get("mode") == SESSION_TYPE_QUIZ
-        else SESSION_TYPE_FLASHCARD
-    )
-
     words = vocab_selectors.studied_vocabulary(request.user, topics=topics, scope=scope)
     queue = services.build_study_queue(request.user, words, limit=limit)
     if not queue:
@@ -1524,58 +1434,5 @@ def review_start_view(request):
         request, queue, _review_scope_label(scope, topics),
         topic=topics[0] if len(topics) == 1 else None,
         touch=vocab_selectors.touches_schedule(scope),
-        mode=mode,
     )
-
-    if mode == SESSION_TYPE_QUIZ:
-        return redirect("learning:study_quiz")
     return redirect("learning:study")
-
-
-@login_required
-def study_quiz_view(request):
-    """Trắc nghiệm trên hàng đợi đã chốt — bản "nhiều chủ đề" của SC06.
-
-    `quiz_view` (SC06) chỉ chạy được trong PHẠM VI MỘT CHỦ ĐỀ vì route của nó
-    mang slug. Màn này dùng lại y nguyên template và `get_quiz_choices()`,
-    chỉ khác nguồn hàng đợi (session thay vì `get_topic_queue`).
-    """
-    scope_label = request.session.get(STUDY_SCOPE_KEY) or message("learning.study.scope.all")
-    word, remaining, _ahead = _next_queue_word(request)
-
-    if word is None:
-        session = _clear_study_session(request)
-        _flash_quiz_score(request, session)
-        return render(request, "learning/quiz.html", {
-            "word": None, "scope_label": scope_label,
-        })
-
-    # Nhiễu lấy theo chủ đề ĐẦU TIÊN của từ (hàng đợi có thể gộp nhiều chủ
-    # đề); từ không có chủ đề nào thì get_quiz_choices tự lấy từ toàn bộ từ điển.
-    topic = word.topics.first()
-    context = {
-        "topic": topic,
-        "word": word,
-        **_study_progress(request, remaining),
-        "choices": services.get_quiz_choices(word, topic),
-        "scope_label": scope_label,
-        "answer_action": reverse("learning:study_quiz_answer", args=[word.pk]),
-        "is_extra_review": not _touches_schedule(request),
-    }
-    return render(request, "learning/quiz.html", context)
-
-
-@login_required
-@require_POST
-def study_quiz_answer_view(request, vocabulary_id):
-    """Nộp một câu của phiên trắc nghiệm theo hàng đợi."""
-    vocab = get_object_or_404(Vocabulary, pk=vocabulary_id)
-    is_correct = request.POST.get("choice") == str(vocab.pk)
-    # Quy đổi giống SC06: đúng -> 4 ("Nhớ"), sai -> 0 ("Quên rồi").
-    _grade_word(request, vocab, 4 if is_correct else 0)
-
-    if is_correct:
-        flash.success(request, message("learning.quiz.feedback.correct"))
-    else:
-        flash.error(request, message("learning.quiz.feedback.wrong", meaning=vocab.meaning_vi))
-    return redirect("learning:study_quiz")
