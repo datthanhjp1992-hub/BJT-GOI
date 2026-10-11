@@ -509,8 +509,10 @@ Mỗi mốc: Dat chạy thử trên DB thật → duyệt → merge.
       bucket thật: 250 file mới, 0 thiếu — CHƯA upload)
 - [x] T7.6 S4, S5, S6
 - [x] T7.7 S7 (kèm "thêm từ trong câu sai vào ôn tập")
-- [ ] Đưa lên Supabase: `migrate` -> `scripts/import_exam.py --apply` -> `scripts/upload_exam_audio.py --apply`;
-      đặt `EXAM_AUDIO_BASE_URL` trên Render
+- [x] Đưa lên Supabase (11/10/2026): `migrate` exam 0001–0002 + 21 MasterCode mới -> `import_exam.py --apply`
+      (5 bộ, 500 câu, `check_exam_data` ổn) -> `upload_exam_audio.py --apply` (250 file; chạy lại 250 giữ nguyên;
+      `check_exam_data --audio` ổn; GET trả `audio/mpeg`, 206 Range, `public, max-age=31536000`, CDN HIT)
+- [ ] Đặt `EXAM_AUDIO_BASE_URL` trên Render, merge nhánh, deploy
 - [ ] Dat thi thử trọn 1 bộ đề (Chrome + Safari iOS), chỉnh `PART_MINUTES`
 
 #### Ghi chú khi code mốc 2 (11/10/2026) — để đối chiếu khi review
