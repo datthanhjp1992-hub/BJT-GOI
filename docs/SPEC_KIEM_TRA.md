@@ -29,18 +29,29 @@
 | ◆3 | Điểm số | Chỉ hiện **%** theo phần/dạng. **Không** quy đổi thang BJT 0–800 (khớp `CHANGELOG_YEU_CAU` mục 5). |
 | ◆4 | Ra khỏi Sổ câu sai | Đúng **2 lần liên tiếp**, hai lần cách nhau **≥ 1 ngày** (theo `User.local_today()`). |
 
-### 0.3 Cần chốt trước khi làm T7.3 (không chặn các task khác)
+### 0.3 Nơi lưu audio đề thi — **chốt B. Supabase Storage** (Dat, 11/10/2026)
 
-**Nơi lưu audio đề thi** — 250 file, **24 MB** (đo ở `BJT-WEB/media/audio/mock_exam`).
+250 file, **24 MB** (đo ở `BJT-WEB/media/audio/mock_exam`), mỗi file ~57 KB.
 
-- **A. (khuyến nghị) Đặt trong `static/audio/exam/`**, commit vào repo, WhiteNoise phục vụ
-  như CSS/JS. Không thêm hạ tầng, không mất file khi Render deploy lại (Render chỉ mất
-  `MEDIA_ROOT`, còn static được build lại từ repo). Nhược: repo nặng thêm 24 MB.
-- **B. Supabase Storage** (bucket public). Repo nhẹ, nhưng thêm biến môi trường, thêm
-  script upload, phụ thuộc thêm một dịch vụ.
+Đã so sánh với A (đặt trong `static/` của repo — WhiteNoise 6.12 trả đúng `206 Partial
+Content` nên A cũng chạy được). Chọn B vì **audio sẽ được thay / ghi đè**: upload đè là
+xong, không phải commit + deploy, lịch sử git không giữ mãi bản cũ, repo giữ nhẹ khi sau
+này thêm audio Quyển 1 (~13 MB) hay bộ đề mới.
 
-Model chỉ lưu `audio_path` dạng tương đối (`exam/q031_part1_sec1.mp3`), template tạo URL
-qua một hàm duy nhất `exam_audio_url()` → đổi A ↔ B về sau chỉ sửa đúng hàm đó.
+Chốt kèm:
+- **Bucket `exam-audio`, public.** URL cố định, app ghép thẳng; không dùng link ký tạm thời
+  (Dat: không lo bản quyền, app cá nhân).
+- **Phiên bản để phá cache khi ghi đè.** `ExamQuestion.audio_version` (số nguyên, mặc định 1);
+  URL = `EXAM_AUDIO_BASE_URL` + `audio_path` + `?v=<audio_version>`. Ghi đè file thì tăng
+  phiên bản -> CDN Supabase và trình duyệt tải bản mới ngay, không phải chờ hết hạn cache.
+- **Chỉ upload qua script** (`scripts/upload_exam_audio.py`), không upload tay trên Dashboard —
+  vì chỉ script mới tăng `audio_version`. Upload tay thì người học có thể nghe bản cũ tới khi
+  cache hết hạn.
+- **Khoá `SUPABASE_SERVICE_ROLE_KEY` chỉ nằm trong `.env` trên máy chạy script** (không
+  commit, không đặt lên Render). Render chỉ cần `EXAM_AUDIO_BASE_URL` (URL public, không bí mật).
+
+Model chỉ lưu `audio_path` dạng tương đối (`exam/q031_part1_sec1.mp3`), URL dựng ở đúng
+một hàm `exam_audio_url()` -> đổi nơi lưu về sau chỉ sửa hàm đó.
 
 ### 0.4 Không làm trong Phase 7
 
@@ -243,16 +254,31 @@ Mọi view dưới `luot/<id>/` kiểm tra `attempt.user == request.user` (404 n
   (đọc tài liệu), check không báo lỗi các câu này.
 - **Test:** import CSV mẫu 2 câu vào DB test; chạy 2 lần cùng kết quả; câu sai định dạng bị từ chối.
 
-### T7.3 Audio đề thi (0,5 ngày — sau khi chốt mục 0.3)
+### T7.3 Audio đề thi lên Supabase Storage (0,5–1 ngày)
 
-- **Phương án A:** copy 250 mp3 vào `static/audio/exam/`; `exam_audio_url(q)` =
-  `static("audio/exam/…")`. Kiểm tra `collectstatic` + WhiteNoise trả `audio/mpeg` và
-  hỗ trợ `Range` (để tua/hiện độ dài trên Safari).
-- **Phương án B:** bucket public `exam-audio`, `scripts/upload_exam_audio.py`, biến
-  `EXAM_AUDIO_BASE_URL`; `exam_audio_url(q)` = base + path.
-- **Hoàn thành:** mở một câu phần Nghe trên bản deploy Render, phát được audio trên Chrome
-  desktop + Safari iOS.
-- **Test:** `exam_audio_url` trả đúng URL cho cả hai cấu hình; câu không audio trả `""`.
+- **File:** `apps/exam/models.py` (+ migration: `ExamQuestion.audio_version`),
+  `apps/exam/audio.py` (`exam_audio_url`), `scripts/upload_exam_audio.py`,
+  `config/settings/base.py` (`EXAM_AUDIO_BASE_URL`), `.env.example`, `render.yaml`.
+- **Chuẩn bị (Dat làm / duyệt):** tạo bucket public `exam-audio`; điền `SUPABASE_URL` +
+  `SUPABASE_SERVICE_ROLE_KEY` vào `.env` máy local; đặt `EXAM_AUDIO_BASE_URL` trên Render
+  (`https://<ref>.supabase.co/storage/v1/object/public/exam-audio/`).
+- **`upload_exam_audio.py <thư mục mp3>`** — cùng khuôn `scripts/import_bjt_topics.py`:
+  mặc định chạy thử, `--apply` mới ghi.
+  - So từng file với object đang có theo mã băm nội dung (lưu SHA-256 trong metadata của
+    object): **giống -> bỏ qua; khác -> upload đè (`x-upsert: true`) + tăng `audio_version`**
+    của mọi `ExamQuestion` dùng file đó; chưa có -> upload mới.
+  - `Content-Type: audio/mpeg`, `Cache-Control: public, max-age=31536000` (an toàn vì URL
+    đổi theo `?v=` mỗi lần ghi đè).
+  - Báo cáo: mới / ghi đè / giữ nguyên / file trên bucket không còn câu nào dùng (chỉ báo,
+    không tự xoá).
+- **`exam_audio_url(question)`**: `""` nếu câu không có audio hoặc chưa cấu hình base URL;
+  còn lại base + path + `?v=`.
+- **Hoàn thành:** chạy `--apply` lần 2 báo 0 thay đổi; thay 1 file mp3 rồi chạy lại -> đúng 1
+  file ghi đè, `audio_version` tăng, trình duyệt nghe bản mới ngay; phát + tua được trên
+  Chrome desktop và Safari iOS từ bản deploy Render.
+- **Test:** `exam_audio_url` (có / không base URL, có / không audio, đổi phiên bản -> đổi URL);
+  logic so khớp của script tách thành hàm thuần (danh sách file local + danh sách object ->
+  kế hoạch upload) để test không cần mạng.
 
 ### T7.4 ⭐ Bộ máy lượt làm bài (1,5 ngày)
 
@@ -418,7 +444,7 @@ Mọi view dưới `luot/<id>/` kiểm tra `attempt.user == request.user` (404 n
 | 3 | T7.5 Kiểm tra từ vựng | 2,5 ngày | T7.4 | ✅ **Mốc 1: dùng được bài từ vựng** |
 | 4 | T7.9 (phần S1 + sidebar) | 0,5 ngày | T7.5 | |
 | 5 | T7.2 Nhập 500 câu | 1 ngày | T7.1 | |
-| 6 | T7.3 Audio | 0,5 ngày | chốt 0.3 | |
+| 6 | T7.3 Audio (Supabase Storage) | 0,5–1 ngày | bucket + key (mục 0.3) | |
 | 7 | T7.6 Thi thử + dạng đề | 3 ngày | T7.2, T7.3, T7.4 | |
 | 8 | T7.7 Kết quả | 1,5 ngày | T7.6 | ✅ **Mốc 2: thi thử trọn bộ** |
 | 9 | T7.8 Sổ câu sai | 1,5 ngày | T7.5, T7.7 | |
@@ -476,7 +502,7 @@ Mỗi mốc: Dat chạy thử trên DB thật → duyệt → merge.
   nghĩa / chọn từ, không hỏi cách đọc hay điền câu.
 
 ### Mốc 2 — Thi thử
-- [ ] Chốt nơi lưu audio (mục 0.3)
+- [x] Chốt nơi lưu audio (mục 0.3) — B. Supabase Storage, bucket public + `?v=` (11/10/2026)
 - [ ] T7.2 Nhập 500 câu + `check_exam_data`
 - [ ] T7.3 Audio
 - [ ] T7.6 S4, S5, S6
