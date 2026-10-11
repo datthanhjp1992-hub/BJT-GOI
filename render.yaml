@@ -31,3 +31,7 @@ services:
       # KHÔNG dùng "Direct connection" (chỉ có IPv6, Render gọi không tới).
       - key: DATABASE_URL
         sync: false
+      # Audio đề thi — URL public của bucket Supabase Storage "exam-audio" (không bí mật):
+      # https://<ref>.supabase.co/storage/v1/object/public/exam-audio/
+      - key: EXAM_AUDIO_BASE_URL
+        sync: false

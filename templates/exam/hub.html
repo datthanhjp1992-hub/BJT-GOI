@@ -2,8 +2,8 @@
 {% load properties_tags %}
 {% comment %}S1 Tổng quan Kiểm tra — mockup htmlTemplate/SC23_KiemTra_A.html màn S1 (Dat duyệt 11/10/2026).
 View: exam.views.hub_view, số liệu ở exam.selectors.hub().
-Mốc 1: chỉ thẻ "Kiểm tra từ vựng" bấm được; Luyện dạng đề / Thi thử / Sổ câu sai hiện
-"Sắp có" (Sổ câu sai đã đếm số câu thật — câu sai được ghi sổ từ mốc 1).{% endcomment %}
+Mốc 2: Kiểm tra từ vựng, Luyện dạng đề, Thi thử bấm được; Sổ câu sai hiện "Sắp có" (mốc 3)
+nhưng đã đếm số câu thật — câu sai được ghi sổ từ mốc 1.{% endcomment %}
 
 {% block title %}{% label "exam.hub.title" %} | {% label "common.brand.name" %}{% endblock %}
 
@@ -15,8 +15,8 @@ Mốc 1: chỉ thẻ "Kiểm tra từ vựng" bấm được; Luyện dạng đ�
   <div class="card bt-resume">
     <div>
       <div class="eyebrow">{% label "exam.hub.resume.eyebrow" %}</div>
-      <div class="bt-resume-title">{{ resume.kind_name }}
-        <span class="muted">· {% message "exam.hub.resume.progress" answered=resume.answered total=resume.total %}
+      <div class="bt-resume-title">{{ resume.title }}
+        <span class="muted">· {{ resume.mode_name }} · {% message "exam.hub.resume.progress" answered=resume.answered total=resume.total %}
         · {% label "exam.hub.resume.started" %} {{ resume.started_at|date:"d/m H:i" }}</span></div>
     </div>
     <div class="bt-resume-act">
@@ -32,18 +32,18 @@ Mốc 1: chỉ thẻ "Kiểm tra từ vựng" bấm được; Luyện dạng đ�
     <p class="muted m-0">{% label "exam.hub.card.vocab.desc" %}</p>
     <span class="ex-mode-meta">{% label "exam.hub.card.vocab.meta" %}</span>
   </a>
-  <div class="card ex-mode is-soon">
+  <a class="card ex-mode" href="{% url 'exam:exams' %}#dang-de">
     <span class="ex-mode-mark serif" aria-hidden="true">型</span>
     <h3 class="serif m-0">{% label "exam.hub.card.drill.title" %}</h3>
     <p class="muted m-0">{% label "exam.hub.card.drill.desc" %}</p>
-    <span class="ex-mode-meta"><span class="tag">{% label "exam.hub.card.soon" %}</span></span>
-  </div>
-  <div class="card ex-mode is-soon">
+    <span class="ex-mode-meta">{% label "exam.hub.card.drill.meta" %}</span>
+  </a>
+  <a class="card ex-mode" href="{% url 'exam:exams' %}">
     <span class="ex-mode-mark serif" aria-hidden="true">試</span>
     <h3 class="serif m-0">{% label "exam.hub.card.mock.title" %}</h3>
     <p class="muted m-0">{% label "exam.hub.card.mock.desc" %}</p>
-    <span class="ex-mode-meta"><span class="tag">{% label "exam.hub.card.soon" %}</span></span>
-  </div>
+    <span class="ex-mode-meta">{% label "exam.hub.card.mock.meta" %}</span>
+  </a>
   <div class="card ex-mode is-soon">
     <span class="ex-mode-mark serif" aria-hidden="true">誤</span>
     <h3 class="serif m-0">{% label "exam.hub.card.wrongbook.title" %}</h3>
@@ -66,7 +66,7 @@ Mốc 1: chỉ thẻ "Kiểm tra từ vựng" bấm được; Luyện dạng đ�
           {% for a in recent %}
             <tr>
               <td>{{ a.finished_at|date:"d/m" }}</td>
-              <td>{{ a.kind_name }}</td>
+              <td>{{ a.title }}{% if a.kind_code == "mock" %} <span class="tag">{{ a.mode_name }}</span>{% endif %}</td>
               <td><span class="ex-pct t-{{ a.level }}">{{ a.percent }}%</span> <span class="muted">{{ a.score }}/{{ a.total }}</span></td>
               <td class="muted">{{ a.duration_text }}</td>
               <td class="text-right"><a class="action-link" href="{% url 'exam:result' a.pk %}">{% label "exam.hub.recent.view" %}</a></td>
@@ -94,7 +94,13 @@ Mốc 1: chỉ thẻ "Kiểm tra từ vựng" bấm được; Luyện dạng đ�
     {% endfor %}
     {% if weak_spots %}
       {% with first=weak_spots.0 %}
-        <a class="btn btn-outline btn-sm" href="{% url 'exam:vocab' %}?dang={{ first.code }}">{% message "exam.hub.weak.practice" name=first.name %}</a>
+        {% if first.kind == "drill" %}
+          <form method="post" action="{% url 'exam:start_drill' first.code %}">
+            {% csrf_token %}<button class="btn btn-outline btn-sm" type="submit">{% message "exam.hub.weak.practice" name=first.name %}</button>
+          </form>
+        {% else %}
+          <a class="btn btn-outline btn-sm" href="{% url 'exam:vocab' %}?dang={{ first.code }}">{% message "exam.hub.weak.practice" name=first.name %}</a>
+        {% endif %}
       {% endwith %}
     {% endif %}
   </section>

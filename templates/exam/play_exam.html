@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load static properties_tags %}
+{% comment %}S5 / S6 Làm bài đề thi — mockup htmlTemplate/SC23_KiemTra_A.html màn S5, S6.
+View: exam.views._render_exam. Một template cho thi thử (Thi / Luyện) và luyện dạng đề.
+  - Chế độ Thi (timed): thanh phần + đồng hồ (server trả seconds_left, JS chỉ đếm lùi; hết
+    giờ JS gửi #exam-timeout, JS tắt thì request kế tiếp server tự nộp phần).
+    Phần Nghe: một chiều, có nút "Bỏ qua"; audio phát 1 lần (khoá ở trình duyệt — spec mục 4).
+    Phần Đọc: nhảy câu, đổi đáp án, cắm cờ. Không phản hồi đúng/sai tới khi nộp.
+  - Chế độ Luyện: trả lời xong thấy ngay đáp án, giải thích, lời thoại; audio nghe lại tự do.
+  - Lời thoại (passage của câu nghe) chỉ hiện khi show_passage; văn bản đề bài luôn hiện.{% endcomment %}
+
+{% block title %}{{ attempt.title }} · {{ question.number }} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+<div class="ex-exam" id="exam-play">
+  <div class="card ex-exam-bar">
+    <b class="serif">{{ attempt.title }}</b>
+    {% if parts %}
+      <div class="ex-parts">
+        {% for p in parts %}<span class="{% if p.current %}is-current{% elif p.done %}is-done{% endif %}">{% if p.done %}✓ {% endif %}{{ p.name }}</span>{% endfor %}
+      </div>
+    {% endif %}
+    {% if timed %}
+      <div class="ex-timer" data-seconds-left="{{ seconds_left }}" aria-live="off">
+        <b class="serif" data-timer-text>{{ seconds_left }}</b><small>{% label "exam.play.time_left" %}</small>
+      </div>
+      <form method="post" action="{% url 'exam:submit_part' attempt.pk %}" id="exam-timeout" class="ex-inline"
+            data-confirm="{% if is_last_part %}{% message 'exam.play.confirm.finish' %}{% else %}{% message 'exam.play.confirm.part' %}{% endif %}">
+        {% csrf_token %}
+        <button class="btn btn-outline btn-sm" type="submit">{% if is_last_part %}{% label "exam.play.submit_exam" %}{% else %}{% label "exam.play.submit_part" %}{% endif %}</button>
+      </form>
+    {% else %}
+      <span class="muted text-sm ex-bar-end">{% message "exam.play.correct_so_far" correct=correct_count answered=answered_count %} · {{ answered_count }}/{{ total }}</span>
+      <a class="action-link text-sm" href="{% url 'exam:exams' %}">✕ {% label "exam.play.pause" %}</a>
+    {% endif %}
+  </div>
+
+  <div class="ex-exam-grid{% if passage_is_document and show_passage %} has-doc{% endif %}">
+    {% if passage_is_document and show_passage %}
+      <aside class="ex-doc jp">
+        {% if question.passage_type %}<div class="ex-doc-type"><span class="tag">{{ question.passage_type }}</span></div>{% endif %}
+        {{ question.passage_jp|linebreaksbr }}
+      </aside>
+    {% endif %}
+
+    <div>
+      <div class="card lb-card">
+        <div class="lb-qhead ex-qhead">
+          <span class="tag">{{ section_name }}</span>
+          <span class="muted text-sm">{% label "exam.play.question" %} {{ question.number }}{% if listening_exam %} · {% label "exam.play.listening_hint" %}{% endif %}</span>
+        </div>
+
+        {% if question.audio_path %}
+          {% if audio_url %}
+            <div class="ex-audio">
+              <audio controls preload="metadata" src="{{ audio_url }}"{% if audio_once and not show_answer %} data-audio-once="{{ audio_key }}" data-play-label="{% label 'exam.play.audio_play' %}"{% endif %}></audio>
+              {% if audio_once and not show_answer %}<p class="muted text-sm m-0" data-audio-note data-done="{% label 'exam.play.audio_done' %}">{% label "exam.play.audio_once" %}</p>{% endif %}
+            </div>
+          {% else %}
+            <p class="lb-fb is-ng">{% label "exam.play.audio_missing" %}</p>
+          {% endif %}
+        {% endif %}
+
+        {% if show_passage and not passage_is_document %}
+          <div class="ex-transcript jp">
+            {% if question.passage_is_transcript %}<div class="eyebrow">{% label "exam.play.transcript" %}</div>{% endif %}
+            {{ question.passage_jp|linebreaksbr }}
+          </div>
+        {% endif %}
+
+        <div class="lb-stem jp ex-stem">{{ question.stem_jp|linebreaksbr }}</div>
+
+        {% if show_answer %}
+          {# ---------- CHẾ ĐỘ LUYỆN: ĐÃ CHẤM ---------- #}
+          <div class="lb-opts ex-opts-1">
+            {% for o in options %}
+              <div class="lb-opt{% if o.state %} is-{{ o.state }}{% endif %}">
+                <span class="n">{{ o.position }}</span><span class="t jp">{{ o.text }}</span>
+                {% if o.state == "ok" %}<span class="mk">○</span>{% elif o.state == "ng" %}<span class="mk">×</span>{% endif %}
+              </div>
+            {% endfor %}
+          </div>
+          {% if answer.is_answered %}
+            {% if answer.is_correct %}<div class="lb-fb is-ok" role="status"><b>○ {% label "exam.play.correct" %}</b></div>
+            {% else %}<div class="lb-fb is-ng" role="status"><b>× {% label "exam.play.wrong" %}</b></div>{% endif %}
+          {% endif %}
+          {% if question.explanation_vi %}
+            <div class="lb-explain"><div class="eyebrow">{% label "exam.play.explanation" %}</div>{{ question.explanation_vi|linebreaksbr }}</div>
+          {% endif %}
+          <div class="lb-actions">
+            {% if all_answered %}
+              <form method="post" action="{% url 'exam:finish' attempt.pk %}" class="ex-inline">
+                {% csrf_token %}<button class="btn btn-primary" type="submit" data-enter>{% label "exam.play.finish" %} →</button>
+              </form>
+            {% else %}
+              <a class="btn btn-primary" href="{% url 'exam:play' attempt.pk %}" data-enter>{% label "exam.play.next" %} →</a>
+            {% endif %}
+          </div>
+
+        {% elif locked %}
+          <p class="lb-fb is-ng">{% label "exam.play.locked" %}</p>
+
+        {% else %}
+          {# ---------- CHƯA TRẢ LỜI (hoặc đổi đáp án ở phần Đọc chế độ Thi) ---------- #}
+          <form method="post" action="{% url 'exam:play' attempt.pk %}" data-exam-autosubmit>
+            {% csrf_token %}
+            <input type="hidden" name="order" value="{{ answer.order }}">
+            <input type="hidden" name="t" value="0" data-exam-timer>
+            <div class="lb-opts ex-opts-1" role="radiogroup">
+              {% for o in options %}
+                <label class="lb-opt">
+                  <input type="radio" name="option" value="{{ o.position }}" required{% if o.picked %} checked{% endif %}>
+                  <span class="n">{{ o.position }}</span><span class="t jp">{{ o.text }}</span>
+                </label>
+              {% endfor %}
+            </div>
+            <div class="lb-actions">
+              <button class="btn btn-primary" type="submit" data-exam-check>{% label "exam.play.choose" %}</button>
+              <span class="muted lb-kbd">{% label "exam.play.keyboard_hint" %}</span>
+            </div>
+          </form>
+        {% endif %}
+      </div>
+
+      <div class="ex-exam-foot">
+        {% if prev_order %}<a class="action-link" href="{% url 'exam:play' attempt.pk %}?cau={{ prev_order }}">← {% label "exam.play.prev" %}</a>{% else %}<span></span>{% endif %}
+        <div class="ex-foot-act">
+          {% if listening_exam and not locked %}
+            <form method="post" action="{% url 'exam:play' attempt.pk %}" class="ex-inline">
+              {% csrf_token %}<input type="hidden" name="order" value="{{ answer.order }}"><input type="hidden" name="action" value="skip">
+              <button class="bt-linkbtn" type="submit">{% label "exam.play.skip" %} →</button>
+            </form>
+          {% elif timed %}
+            <form method="post" action="{% url 'exam:play' attempt.pk %}" class="ex-inline">
+              {% csrf_token %}<input type="hidden" name="order" value="{{ answer.order }}"><input type="hidden" name="action" value="flag">
+              <button class="bt-linkbtn" type="submit">⚑ {% if answer.flagged %}{% label "exam.play.unflag" %}{% else %}{% label "exam.play.flag" %}{% endif %}</button>
+            </form>
+            {% if next_order %}<a class="action-link" href="{% url 'exam:play' attempt.pk %}?cau={{ next_order }}">{% label "exam.play.next_question" %} →</a>{% endif %}
+          {% elif not show_answer and next_order %}
+            <a class="action-link" href="{% url 'exam:play' attempt.pk %}?cau={{ next_order }}">{% label "exam.play.next_question" %} →</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <aside class="card ex-nav">
+      <h3 class="serif ex-step">{% if timed %}{% for p in parts %}{% if p.current %}{{ p.name }}{% endif %}{% endfor %}{% else %}{% label "exam.play.all_questions" %}{% endif %}</h3>
+      <div class="ex-navgrid">
+        {% for c in cells %}
+          {% if c.locked or c.current or listening_exam %}
+            <span class="{% if c.answered %}is-ans{% endif %}{% if c.current %} is-cur{% endif %}{% if c.locked %} is-lock{% endif %}{% if c.flagged %} is-flag{% endif %}">{{ c.number }}</span>
+          {% else %}
+            <a href="{% url 'exam:play' attempt.pk %}?cau={{ c.order }}" class="{% if c.answered %}is-ans{% endif %}{% if c.flagged %} is-flag{% endif %}">{{ c.number }}</a>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="ex-legend">
+        <span><i class="is-ans"></i>{% label "exam.play.legend.answered" %}</span>
+        <span><i class="is-cur"></i>{% label "exam.play.legend.current" %}</span>
+        {% if timed %}<span><i class="is-flag"></i>{% label "exam.play.legend.flag" %}</span><span><i class="is-lock"></i>{% label "exam.play.legend.locked" %}</span>{% endif %}
+      </div>
+      {% if timed %}<p class="muted text-sm">{% label "exam.play.nav_hint" %}</p>{% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/exam_play.js' %}" defer></script>{% endblock %}

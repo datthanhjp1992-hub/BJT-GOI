@@ -134,3 +134,34 @@ class TimingTests(SimpleTestCase):
     def test_practice_mode_never_locks(self):
         attempt = _attempt(EXAM_MODE_PRACTICE, started={1: timezone.now()})
         self.assertFalse(timing.is_locked(attempt, _answer(1, part=1), current_order=5))
+
+
+class AudioUrlTests(SimpleTestCase):
+    def q(self, path="mock/q031_part1_sec1.mp3", version=1):
+        return SimpleNamespace(audio_path=path, audio_version=version)
+
+    def test_builds_versioned_url(self):
+        from django.test import override_settings
+
+        from apps.exam.audio import exam_audio_url
+        with override_settings(EXAM_AUDIO_BASE_URL="https://x.supabase.co/storage/v1/object/public/exam-audio"):
+            self.assertEqual(exam_audio_url(self.q(version=3)),
+                             "https://x.supabase.co/storage/v1/object/public/exam-audio/mock/q031_part1_sec1.mp3?v=3")
+
+    def test_empty_without_base_or_audio(self):
+        from django.test import override_settings
+
+        from apps.exam.audio import exam_audio_url
+        with override_settings(EXAM_AUDIO_BASE_URL=""):
+            self.assertEqual(exam_audio_url(self.q()), "")
+        with override_settings(EXAM_AUDIO_BASE_URL="https://x/"):
+            self.assertEqual(exam_audio_url(self.q(path="")), "")
+
+    def test_upload_plan(self):
+        from apps.exam.audio import UPLOAD_NEW, UPLOAD_OVERWRITE, UPLOAD_SAME, plan_uploads
+        local = {"mock/a.mp3": "aaa", "mock/b.mp3": "bbb", "mock/c.mp3": "ccc"}
+        remote = {"mock/a.mp3": '"AAA"', "mock/b.mp3": '"old"', "mock/z.mp3": '"zzz"'}
+        plan, orphans = plan_uploads(local, remote)
+        self.assertEqual(plan, [("mock/a.mp3", UPLOAD_SAME), ("mock/b.mp3", UPLOAD_OVERWRITE),
+                                ("mock/c.mp3", UPLOAD_NEW)])
+        self.assertEqual(orphans, ["mock/z.mp3"])

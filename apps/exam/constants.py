@@ -20,6 +20,9 @@ VOCAB_SCOPES = (SCOPE_DUE, SCOPE_TOPICS, SCOPE_MASTERED)
 # chủ đề" và không hiện ở danh sách chọn chủ đề của S2.
 KANA_LINE_SLUG_SUFFIX = "-line"
 
+# Luyện theo dạng đề: số câu mỗi lượt.
+DRILL_SIZE = 10
+
 # Chế độ Thi: thời lượng mỗi phần (phút). Chỉnh sau khi Dat thi thử thật (spec mục 1.3).
 PART_MINUTES = {1: 50, 2: 35, 3: 40}
 

@@ -501,13 +501,35 @@ Mỗi mốc: Dat chạy thử trên DB thật → duyệt → merge.
   -> thêm `.ex-play [hidden]`); ô gộp nhiều dạng (`方針=方策=政策`, `A・B`, `A、B`) chỉ hỏi
   nghĩa / chọn từ, không hỏi cách đọc hay điền câu.
 
-### Mốc 2 — Thi thử
+### Mốc 2 — Thi thử (code + test xong 11/10/2026 — chờ đưa dữ liệu lên Supabase)
 - [x] Chốt nơi lưu audio (mục 0.3) — B. Supabase Storage, bucket public + `?v=` (11/10/2026)
-- [ ] T7.2 Nhập 500 câu + `check_exam_data`
-- [ ] T7.3 Audio
-- [ ] T7.6 S4, S5, S6
-- [ ] T7.7 S7
-- [ ] Dat thi thử trọn 1 bộ đề, chỉnh `PART_MINUTES`
+- [x] Bucket `exam-audio` (public, 5 MB, `audio/mpeg`) + `.env` — đã kiểm bằng API (chỉ đọc)
+- [x] T7.2 Nhập 500 câu + `check_exam_data` (chạy thật trên DB tạm: 500 mới, lần 2: 0 thay đổi)
+- [x] T7.3 Audio: `audio_version`, `exam_audio_url`, `scripts/upload_exam_audio.py` (chạy thử với
+      bucket thật: 250 file mới, 0 thiếu — CHƯA upload)
+- [x] T7.6 S4, S5, S6
+- [x] T7.7 S7 (kèm "thêm từ trong câu sai vào ôn tập")
+- [ ] Đưa lên Supabase: `migrate` -> `scripts/import_exam.py --apply` -> `scripts/upload_exam_audio.py --apply`;
+      đặt `EXAM_AUDIO_BASE_URL` trên Render
+- [ ] Dat thi thử trọn 1 bộ đề (Chrome + Safari iOS), chỉnh `PART_MINUTES`
+
+#### Ghi chú khi code mốc 2 (11/10/2026) — để đối chiếu khi review
+- **CSV đề là MỘT file** `docs/data/exam/exam_question.csv` (4 phương án nằm trên dòng) thay cho
+  3 file nối nhau — soát bằng Excel dễ hơn. Sinh lại bằng `scripts/export_bjt_exam.py`.
+- **Đường dẫn audio** `mock/<file>.mp3` trong bucket (chừa `book1/` cho audio Quyển 1).
+- **So file audio bằng MD5 nội dung với eTag** của object (file < 5 MB luôn upload một lần nên
+  eTag = MD5) thay cho lưu SHA-256 trong metadata — đơn giản và không phụ thuộc tính năng metadata.
+- **Luyện theo dạng đề luôn ở chế độ Luyện** (đúng mockup S4: "xem giải thích ngay").
+- **Chế độ Thi:** phần Nghe đi một chiều (vị trí ở `ExamAttempt.scope["cursor"]`), có nút
+  "Bỏ qua"; phần 2–3 nhảy câu + đổi đáp án; hết giờ tự nộp ở request kế tiếp (`refresh_timing`)
+  và JS gửi `#exam-timeout`; câu bỏ trống tính sai và vào Sổ câu sai lúc nộp.
+- **Văn bản đề bài** (場面設定, tài liệu, email, bài báo) hiện ở cột trái cạnh câu hỏi; **lời thoại**
+  câu nghe chỉ hiện khi được xem đáp án (`ExamQuestion.passage_is_transcript`).
+- **Chạy thật trên trình duyệt** (DB tạm + audio phục vụ tạm từ máy): thi trọn Bộ đề 1 chế độ Thi
+  (audio phát 1 lần, F5 không phát lại, khoá câu phần Nghe, chuyển phần, tài liệu 2 cột, nộp ->
+  kết quả), luyện dạng đề (phản hồi ngay); 375px không tràn ngang.
+- **Lỗi tìm ra khi chạy thật, đã sửa:** danh sách bộ đề sai thứ tự — truy vấn có GROUP BY bỏ qua
+  `Meta.ordering` (Django >= 3.1) -> `order_by("number")` tường minh.
 
 ### Mốc 3 — Hoàn tất
 - [ ] T7.8 Sổ câu sai

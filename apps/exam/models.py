@@ -59,8 +59,11 @@ class ExamQuestion(AuditableModel):
     stem_jp = models.TextField()
     audio_path = models.CharField(
         max_length=120, blank=True,
-        help_text="Đường dẫn tương đối, vd exam/q031_part1_sec1.mp3 — URL dựng ở exam_audio_url().",
+        help_text="Đường dẫn trong bucket exam-audio, vd mock/q031_part1_sec1.mp3 — URL dựng ở exam_audio_url().",
     )
+    # Tăng mỗi lần scripts/upload_exam_audio.py ghi đè file -> URL đổi ?v= -> CDN và
+    # trình duyệt tải bản mới ngay (spec mục 0.3).
+    audio_version = models.PositiveIntegerField(default=1)
     explanation_vi = models.TextField(blank=True)
     level = models.CharField(max_length=10, blank=True, help_text="N1/N2/N3 theo nguồn")
     source_ref = models.CharField(max_length=60, unique=True, help_text="vd bjt.db:mock_exam_question:31")
@@ -77,6 +80,18 @@ class ExamQuestion(AuditableModel):
 
     def __str__(self):
         return f"{self.exam_set_id}-{self.number}"
+
+    @property
+    def passage_is_transcript(self):
+        """passage_jp là LỜI THOẠI của bài nghe (ẩn tới khi được xem đáp án)?
+
+        Câu có audio mà passage không phải 場面設定 (đề bài tình huống in sẵn) thì
+        passage chính là lời thoại. Phần Đọc / tài liệu: passage là văn bản đề bài."""
+        return bool(self.audio_path) and self.passage_type != SCENE_PASSAGE_TYPE
+
+
+# Câu kính ngữ phần Nghe in sẵn tình huống — hiện cùng câu hỏi, không phải lời thoại.
+SCENE_PASSAGE_TYPE = "場面設定"
 
 
 class ExamOption(AuditableModel):

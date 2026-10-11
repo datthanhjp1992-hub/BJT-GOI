@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}S7 Kết quả đề thi — mockup htmlTemplate/SC23_KiemTra_A.html màn S7 (T7.7).
+View: exam.views.result_view (nhánh đề thi). Dùng cho thi thử (Thi / Luyện) và luyện dạng đề.
+  - Vòng % tổng + thanh theo phần + so với lượt trước cùng bộ đề / dạng.
+  - Không quy đổi thang BJT 0–800 (◆3).
+  - "Nên luyện tiếp": dạng % thấp nhất -> nút luyện 10 câu dạng đó.
+  - "Thêm từ vào ôn tập": từ trong kho xuất hiện ở câu sai mà người học chưa học — người
+    học TỰ CHỌN rồi mới thêm (exam.views.add_words_view).
+  - Xem lại: tab Sai / Cắm cờ / Tất cả, lời thoại + audio nghe lại tự do sau khi nộp.{% endcomment %}
+
+{% block title %}{% label "exam.result.exam_title" %} · {{ attempt.title }} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+<nav class="kl-crumb">
+  <a href="{% url 'exam:hub' %}" class="action-link">{% label "exam.hub.title" %}</a>
+  <span>&rsaquo;</span><a href="{% url 'exam:exams' %}" class="action-link">{% label "exam.exams.title" %}</a>
+  <span>&rsaquo;</span><span>{% label "exam.result.exam_title" %}</span>
+</nav>
+{% message "exam.result.exam_subtitle" mode=attempt.mode_name when=attempt.finished_at|date:"H:i d/m/Y" duration=attempt.duration_text as sub %}
+{% include "partials/page_header.html" with title=attempt.title subtitle=sub %}
+
+<div class="ex-cols mb-22">
+  <section class="card">
+    <div class="ex-score">
+      <div class="ex-ring" style="--p:{{ attempt.percent }}">
+        <div><b class="serif">{{ attempt.percent }}%</b><span class="muted text-sm">{{ attempt.score }} / {{ attempt.total }}</span></div>
+      </div>
+      <div class="flex-1">
+        {% for g in parts %}
+          <div class="ex-weak">
+            <div class="ex-weak-head"><span>{{ g.name }}</span><span><b>{{ g.correct }}</b>/{{ g.total }}</span></div>
+            <div class="bar"><i class="s-{{ g.level }}" style="width:{{ g.percent }}%"></i></div>
+          </div>
+        {% endfor %}
+        {% if previous %}
+          <p class="muted text-sm m-0">{% message "exam.result.vs_previous" when=previous.finished_at|date:"d/m" percent=previous.percent %}
+            <b class="{% if delta > 0 %}t-hi{% elif delta < 0 %}t-lo{% endif %}">{% if delta > 0 %}▲ {{ delta }}{% elif delta < 0 %}▼ {{ delta_abs }}{% else %}= 0{% endif %}</b></p>
+        {% endif %}
+      </div>
+    </div>
+    <p class="muted text-sm ex-note-box">{% label "exam.result.no_scale" %}</p>
+  </section>
+
+  <section class="card">
+    {% if weakest and weakest.percent < 100 %}
+      <h3 class="serif ex-step">{% label "exam.result.next.title" %}</h3>
+      <p class="muted text-sm ex-hint">{% label "exam.result.next.hint" %}</p>
+      <div class="ex-weak-head"><b>{{ weakest.name }}</b><span>{{ weakest.correct }}/{{ weakest.total }}</span></div>
+      <div class="bar mb-14"><i class="s-{{ weakest.level }}" style="width:{{ weakest.percent }}%"></i></div>
+      <form method="post" action="{% url 'exam:start_drill' weakest.key %}" class="mb-14">
+        {% csrf_token %}<button class="btn btn-primary btn-sm" type="submit">{% label "exam.exams.drill.start" %}</button>
+      </form>
+    {% else %}
+      <p>{% message "exam.result.perfect" %}</p>
+    {% endif %}
+    <div class="lb-actions">
+      {% if is_mock %}
+        <form method="post" action="{% url 'exam:start_mock' attempt.exam_set.slug %}" class="ex-inline">
+          {% csrf_token %}<input type="hidden" name="mode" value="{{ attempt.mode_code }}">
+          <button class="btn btn-outline btn-sm" type="submit">{% label "exam.exams.sets.again" %}</button>
+        </form>
+      {% endif %}
+      <a class="action-link" href="{% url 'exam:exams' %}">{% label "exam.result.back_exams" %}</a>
+    </div>
+  </section>
+</div>
+
+<section class="card mb-22">
+  <h2 class="serif ex-h2">{% label "exam.result.by_section" %}</h2>
+  <div class="ex-table-wrap">
+    <table class="ex-table">
+      <thead><tr>
+        <th>{% label "exam.result.col.part" %}</th><th>{% label "exam.result.col.section" %}</th>
+        <th>{% label "exam.result.col.correct" %}</th><th>{% label "exam.result.col.percent" %}</th><th>{% label "exam.result.col.time" %}</th>
+      </tr></thead>
+      <tbody>
+      {% for g in sections %}
+        <tr>
+          <td>{% label "exam.part.short" %} {{ g.part }}</td><td>{{ g.name }}</td><td>{{ g.correct }}/{{ g.total }}</td>
+          <td><span class="ex-pct t-{{ g.level }}">{{ g.percent }}%</span></td><td class="muted">{{ g.avg_time }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% if words %}
+<section class="card mb-22" id="tu-moi">
+  <h2 class="serif ex-h2">{% label "exam.result.words.title" %}</h2>
+  <p class="muted text-sm ex-hint">{% label "exam.result.words.hint" %}</p>
+  <form method="post" action="{% url 'exam:add_words' attempt.pk %}">
+    {% csrf_token %}
+    <div class="checkbox-grid">
+      {% for v in words %}
+        <label class="checkbox-row"><input type="checkbox" name="words" value="{{ v.pk }}">
+          <span><b class="jp">{{ v.word }}</b> <span class="muted">（{{ v.reading }}）{{ v.meaning_vi }}</span></span></label>
+      {% endfor %}
+    </div>
+    <button class="btn btn-outline btn-sm mt-12" type="submit">{% label "exam.result.words.add" %}</button>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2 class="serif ex-h2">{% label "exam.result.review" %}</h2>
+  <nav class="ex-tabs">
+    {% for code, n in tabs %}
+      <a href="?xem={{ code }}" class="{% if tab == code %}is-active{% endif %}">{% if code == "sai" %}{% label "exam.result.tab.wrong" %}{% elif code == "co" %}{% label "exam.result.tab.flagged" %}{% else %}{% label "exam.result.tab.all" %}{% endif %} <span class="muted">{{ n }}</span></a>
+    {% endfor %}
+  </nav>
+  {% for r in rows %}
+    <details class="ex-item"{% if forloop.first %} open{% endif %}>
+      <summary>
+        <span class="ex-mark {% if r.is_correct %}is-ok{% else %}is-ng{% endif %}" aria-hidden="true">{% if r.is_correct %}○{% else %}×{% endif %}</span>
+        <span class="jp">{% label "exam.play.question" %} {{ r.question.number }} · {{ r.question.stem_jp|truncatechars:60 }}</span>
+        <span class="muted text-xs ex-item-tag">{{ r.section_name }}</span>
+      </summary>
+      <div class="ex-item-body">
+        {% if r.audio_url %}<audio controls preload="none" src="{{ r.audio_url }}"></audio>{% endif %}
+        {% if r.question.passage_jp %}
+          <div class="ex-transcript jp">
+            <div class="eyebrow">{% if r.question.passage_is_transcript %}{% label "exam.play.transcript" %}{% else %}{{ r.question.passage_type|default:"" }}{% endif %}</div>
+            {{ r.question.passage_jp|linebreaksbr }}
+          </div>
+        {% endif %}
+        <div class="jp ex-review-q">{{ r.question.stem_jp|linebreaksbr }}</div>
+        <div class="text-sm">
+          {% label "exam.result.your_answer" %}
+          {% if r.selected_option %}<span class="tag {% if r.is_correct %}ex-tag-ok{% else %}ex-tag-ng{% endif %} jp">{{ r.selected_option.position }} {{ r.selected_option.text }}</span>
+          {% else %}<span class="tag ex-tag-ng">{% label "exam.result.blank" %}</span>{% endif %}
+          {% if not r.is_correct and r.correct_option %}
+            {% label "exam.result.correct_answer" %} <span class="tag ex-tag-ok jp">{{ r.correct_option.position }} {{ r.correct_option.text }}</span>
+          {% endif %}
+        </div>
+        {% if r.question.explanation_vi %}<p class="ex-explain-text">{{ r.question.explanation_vi|linebreaksbr }}</p>{% endif %}
+      </div>
+    </details>
+  {% empty %}
+    <p class="muted">{% message "exam.result.tab_empty" %}</p>
+  {% endfor %}
+</section>
+{% endblock %}
