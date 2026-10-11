@@ -391,155 +391,6 @@ class FlashcardCommentTests(LearningTestCase):
         self.assertContains(response, reverse("gamification:comment_delete", args=[c.pk]))
 
 
-class QuizChoicesTests(LearningTestCase):
-    """apps.learning.services.get_quiz_choices — nguồn 4 lựa chọn của SC06."""
-
-    def test_returns_correct_word_plus_distractors_from_same_topic(self):
-        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約", "会計", "メニュー"])
-        word = topic.vocabularies.first()
-
-        choices = services.get_quiz_choices(word, topic)
-
-        self.assertEqual(len(choices), 4)
-        self.assertIn(word, choices)
-        self.assertEqual(len({c.pk for c in choices}), 4)  # không trùng đáp án
-
-    def test_fills_up_from_other_topics_when_topic_is_too_small(self):
-        topic = self._make_topic("Nhỏ", "nho", ["注文", "予約"])
-        self._make_topic("Khác", "khac", ["会計", "メニュー", "領収書"])
-        word = topic.vocabularies.first()
-
-        choices = services.get_quiz_choices(word, topic)
-
-        self.assertEqual(len(choices), 4)
-        self.assertIn(word, choices)
-
-    def test_returns_fewer_choices_when_the_whole_dictionary_is_too_small(self):
-        """Chỉ có 2 từ trong TOÀN BỘ từ điển -> không đủ 4 lựa chọn, trả về ít
-        hơn thay vì ném lỗi giữa lúc người học đang làm bài."""
-        topic = self._make_topic("Nhỏ", "nho", ["注文", "予約"])
-        word = topic.vocabularies.first()
-
-        choices = services.get_quiz_choices(word, topic)
-
-        self.assertEqual(len(choices), 2)
-        self.assertIn(word, choices)
-
-
-class QuizViewTests(LearningTestCase):
-    def test_requires_login(self):
-        self.client.logout()
-        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
-        url = reverse("learning:quiz", args=["nha-hang"])
-        self.assertRedirects(self.client.get(url), reverse("accounts:login") + "?next=" + url)
-
-    def test_404_for_unknown_topic(self):
-        response = self.client.get(reverse("learning:quiz", args=["khong-ton-tai"]))
-        self.assertEqual(response.status_code, 404)
-
-    def test_session_complete_state_when_nothing_is_due(self):
-        self._make_topic("Rỗng", "rong", [])
-        response = self.client.get(reverse("learning:quiz", args=["rong"]))
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNone(response.context["word"])
-
-    def test_shows_first_question_with_four_choices(self):
-        self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約", "会計", "メニュー"])
-        response = self.client.get(reverse("learning:quiz", args=["nha-hang"]))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["total"], 4)
-        self.assertEqual(response.context["position"], 1)
-        self.assertEqual(len(response.context["choices"]), 4)
-
-    def test_first_visit_creates_a_quiz_study_session(self):
-        self._make_topic("Nhà hàng", "nha-hang", ["注文"])
-        self.client.get(reverse("learning:quiz", args=["nha-hang"]))
-        self.assertEqual(
-            StudySession.objects.filter(user=self.user, session_type="quiz").count(), 1
-        )
-
-    def test_flashcard_and_quiz_sessions_of_the_same_topic_do_not_collide(self):
-        self._make_topic("Nhà hàng", "nha-hang", ["注文", "予約"])
-        self.client.get(reverse("learning:flashcard", args=["nha-hang"]))
-        self.client.get(reverse("learning:quiz", args=["nha-hang"]))
-        self.assertEqual(
-            StudySession.objects.filter(user=self.user, session_type="flashcard").count(), 1
-        )
-        self.assertEqual(
-            StudySession.objects.filter(user=self.user, session_type="quiz").count(), 1
-        )
-
-
-class QuizAnswerTests(LearningTestCase):
-    def test_get_is_not_allowed(self):
-        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
-        vocab = topic.vocabularies.first()
-        url = reverse("learning:quiz_answer", args=["nha-hang", vocab.pk])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 405)
-
-    def test_correct_answer_on_a_new_word_goes_through_the_learning_steps(self):
-        """Từ mới trả lời đúng lần đầu -> bước học 10 phút (vẫn trong lượt);
-        đúng thêm lần nữa mới tốt nghiệp sang lịch theo ngày."""
-        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
-        vocab = topic.vocabularies.first()
-        self.client.get(reverse("learning:quiz", args=["nha-hang"]))  # mở phiên
-        url = reverse("learning:quiz_answer", args=["nha-hang", vocab.pk])
-
-        response = self.client.post(url, {"choice": str(vocab.pk)})
-
-        self.assertRedirects(response, reverse("learning:quiz", args=["nha-hang"]))
-        progress = UserVocabularyProgress.objects.get(user=self.user, vocabulary=vocab)
-        self.assertEqual(progress.card_state, "learning")
-        self.assertEqual(progress.next_review_date, self.user.local_today())
-        self.assertIsNotNone(progress.due_at)
-
-        self.client.post(url, {"choice": str(vocab.pk)})
-        progress.refresh_from_db()
-        self.assertEqual(progress.card_state, "review")
-        self.assertGreater(progress.next_review_date, self.user.local_today())
-
-    def test_wrong_answer_resets_srs_level_and_counts_as_wrong(self):
-        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
-        vocab = topic.vocabularies.first()
-        self.client.get(reverse("learning:quiz", args=["nha-hang"]))
-        url = reverse("learning:quiz_answer", args=["nha-hang", vocab.pk])
-
-        self.client.post(url, {"choice": "999999"})  # id không khớp -> sai
-
-        progress = UserVocabularyProgress.objects.get(user=self.user, vocabulary=vocab)
-        self.assertEqual(progress.srs_level, 0)
-        self.assertEqual(progress.wrong_count, 1)
-
-    def test_updates_the_open_quiz_session_counts(self):
-        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
-        vocab = topic.vocabularies.first()
-        self.client.get(reverse("learning:quiz", args=["nha-hang"]))
-        url = reverse("learning:quiz_answer", args=["nha-hang", vocab.pk])
-
-        self.client.post(url, {"choice": str(vocab.pk)})
-
-        session = StudySession.objects.get(user=self.user, topic=topic, session_type="quiz")
-        self.assertEqual(session.words_reviewed, 1)
-        self.assertEqual(session.correct_answers, 1)
-
-    def test_finishing_the_queue_closes_the_session_and_flashes_the_score(self):
-        topic = self._make_topic("Nhà hàng", "nha-hang", ["注文"])
-        vocab = topic.vocabularies.first()
-        self.client.get(reverse("learning:quiz", args=["nha-hang"]))
-        url = reverse("learning:quiz_answer", args=["nha-hang", vocab.pk])
-        # Từ mới phải đúng 2 lần (qua hết bước học) mới rời lượt kiểm tra.
-        self.client.post(url, {"choice": str(vocab.pk)})
-        self.client.post(url, {"choice": str(vocab.pk)})
-
-        response = self.client.get(reverse("learning:quiz", args=["nha-hang"]))
-
-        session = StudySession.objects.get(user=self.user, topic=topic, session_type="quiz")
-        self.assertIsNotNone(session.ended_at)
-        # Điểm đếm theo TỪ (1 từ, đúng ngay lần đầu), không theo lượt (2 lượt).
-        self.assertContains(response, "1/1")
-
-
 class StudySessionViewTests(LearningTestCase):
     """Phiên học theo BỘ LỌC của SC05 (nút "Bắt đầu học")."""
 
@@ -1022,16 +873,6 @@ class ReviewStartTests(ReviewTestCase):
         self.assertRedirects(response, reverse("learning:review"))
         self.assertNotIn("study_queue", self.client.session)
 
-    def test_quiz_mode_goes_to_the_queue_based_quiz(self):
-        self._learned(self.words["会議"], due_offset=0)
-        response = self._start(scope="due", mode="quiz", limit="0")
-        self.assertRedirects(response, reverse("learning:study_quiz"))
-
-        page = self.client.get(reverse("learning:study_quiz"))
-        self.assertEqual(page.status_code, 200)
-        self.assertEqual(page.context["word"].word, "会議")
-        self.assertTrue(page.context["choices"])
-
     def test_extra_review_session_does_not_move_the_schedule(self):
         """Ôn nhóm "sắp đến hạn" rồi trả lời -> lịch ôn giữ nguyên."""
         progress = self._learned(self.words["会議"], due_offset=5, srs_level=3)
@@ -1066,18 +907,6 @@ class ReviewStartTests(ReviewTestCase):
         )
         progress.refresh_from_db()
         self.assertEqual(progress.srs_level, 2)
-
-    def test_quiz_answer_counts_into_the_session(self):
-        self._learned(self.words["会議"], due_offset=0)
-        self._start(scope="due", mode="quiz", limit="0")
-        self.client.post(
-            reverse("learning:study_quiz_answer", args=[self.words["会議"].pk]),
-            {"choice": str(self.words["会議"].pk)},
-        )
-        session = StudySession.objects.filter(user=self.user).latest("started_at")
-        self.assertEqual(session.words_reviewed, 1)
-        self.assertEqual(session.correct_answers, 1)
-
 
 # =============================================================================
 # Flow ôn tập kiểu Anki (26/09/2026): bước học, hạn mức từ mới, hoàn tác
@@ -1954,13 +1783,12 @@ class DailyStartViewTests(LearningTestCase):
 
     def test_review_start_still_keeps_its_flags_through_the_shared_helper(self):
         """review_start giờ đi qua _start_study_session — phiên "ôn thêm" phải
-        giữ đúng cờ không đẩy lịch và chế độ trắc nghiệm."""
+        giữ đúng cờ không đẩy lịch."""
         self._progress(self.topic.vocabularies.get(word="注文"), due_offset=3)
         self.client.post(reverse("learning:review_start"), {
-            "scope": vocab_selectors.SCOPE_UPCOMING, "mode": "quiz",
+            "scope": vocab_selectors.SCOPE_UPCOMING,
         })
         self.assertFalse(self.client.session["study_touch_schedule"])
-        self.assertEqual(self.client.session["study_mode"], "quiz")
         self.assertEqual(self.client.session["study_learning"], [])
 
 

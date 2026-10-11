@@ -45,7 +45,8 @@ from django.apps import apps as django_apps
 from django.core.exceptions import ValidationError
 from django.db import models
 
-# 8 app nội bộ = 31 bảng. django.contrib.auth KHÔNG đụng vào (quyết định của Dat,
+# Mọi bảng của các app nội bộ dưới đây (31 bảng lúc 11/10/2026 — đừng đếm cứng
+# con số này trong code/test). django.contrib.auth KHÔNG đụng vào (quyết định của Dat,
 # xem claude/db-schema-django.md).
 LOCAL_APP_LABELS = (
     "core",
@@ -222,7 +223,7 @@ def _all_local_models():
 
 
 def importable_models():
-    """19 bảng, xếp theo thứ tự phụ thuộc: bảng bị tham chiếu đứng trước.
+    """Mọi bảng của LOCAL_APP_LABELS, xếp theo thứ tự phụ thuộc: bảng bị tham chiếu đứng trước.
 
     Nhập theo đúng thứ tự này thì khoá ngoại luôn dò ra. Vòng lặp tự tham chiếu
     (User.created_by trỏ về chính User) không tính là phụ thuộc.
@@ -250,7 +251,7 @@ def importable_models():
 
 
 def get_importable_model(label):
-    """Tra model theo nhãn 'app_label.modelname'. None nếu không nằm trong 19 bảng."""
+    """Tra model theo nhãn 'app_label.modelname'. None nếu không nằm trong registry."""
     label = (label or "").strip().lower()
     for model in _all_local_models():
         if model_label(model) == label:
@@ -1474,7 +1475,7 @@ class FullVocabularyDataset:
 
 
 def datasets():
-    """Mẫu gộp đứng đầu, rồi tới 19 bảng theo thứ tự phụ thuộc."""
+    """Mẫu gộp đứng đầu, rồi tới mọi bảng của registry theo thứ tự phụ thuộc."""
     return [FullVocabularyDataset()] + [ModelDataset(m) for m in importable_models()]
 
 

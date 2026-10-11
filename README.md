@@ -40,7 +40,7 @@ BJT-GOI/
 │   │
 │   ├── learning/                 # tiến độ học (SRS), flashcard, quiz, dashboard
 │   │   ├── services.py            # thuật toán SM-2 (spaced repetition)
-│   │   └── views.py                # SC03, SC04, SC06
+│   │   └── views.py                # SC03, SC04, SC15 (SC06 đã gỡ — xem apps/exam)
 │   │
 │   ├── practice_sheets/           # tính năng tạo PDF luyện viết tay (SC10)
 │   │   ├── pdf_generator.py        # port từ script mockup make_practice_pdf.py
