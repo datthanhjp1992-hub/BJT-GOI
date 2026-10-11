@@ -84,6 +84,7 @@ def main():
         say(RED, "LỖI", f"Không thấy thư mục {args.folder}")
         sys.exit(1)
     setup_django(args.settings)  # nạp .env
+    from django.db import connection
     from django.db.models import F
 
     from apps.core import middleware
@@ -107,9 +108,16 @@ def main():
         sys.exit(1)
     plan, orphans = plan_uploads(local, remote)
 
-    used = set(ExamQuestion.objects.exclude(audio_path="").values_list("audio_path", flat=True))
-    unused_local = sorted(set(local) - used)
-    missing_local = sorted(used - set(local))
+    # Bảng đề chưa có (chưa migrate / chưa import) thì vẫn lập được kế hoạch upload,
+    # chỉ bỏ phần đối chiếu với câu đề và phần tăng audio_version (chưa có câu nào dùng).
+    has_table = ExamQuestion._meta.db_table in connection.introspection.table_names()
+    if has_table:
+        used = set(ExamQuestion.objects.exclude(audio_path="").values_list("audio_path", flat=True))
+    else:
+        used = None
+        say(YELLOW, "CẢNH BÁO", "DB chưa có bảng câu đề — bỏ qua đối chiếu với câu đề (chạy import_exam.py trước).")
+    unused_local = sorted(set(local) - used) if used is not None else []
+    missing_local = sorted(used - set(local)) if used is not None else []
 
     counts = {UPLOAD_NEW: 0, UPLOAD_OVERWRITE: 0, UPLOAD_SAME: 0}
     for path, action in plan:
@@ -129,7 +137,7 @@ def main():
                 except urllib.error.HTTPError as e:
                     failed.append(f"{path}: HTTP {e.code} {e.read()[:200]!r}")
                     continue
-                if action == UPLOAD_OVERWRITE:
+                if action == UPLOAD_OVERWRITE and has_table:
                     # update() không qua save() -> tự đặt updated_at; ghi nhận ngay sau
                     # khi file lên bucket để URL đổi đúng lúc nội dung đổi.
                     for q in ExamQuestion.objects.filter(audio_path=path):
