@@ -34,9 +34,9 @@ class VocabularyTopicInline(admin.TabularInline):
 
 @admin.register(Vocabulary)
 class VocabularyAdmin(admin.ModelAdmin):
-    list_display = ("word", "reading", "meaning_vi", "topic_list", "updated_at")
+    list_display = ("word", "reading", "han_viet", "meaning_vi", "topic_list", "updated_at")
     list_filter = ("topics",)
-    search_fields = ("word", "reading", "meaning_vi")
+    search_fields = ("word", "reading", "han_viet", "meaning_vi")
     inlines = [VocabularyTopicInline, ExampleSentenceInline]
 
     def get_queryset(self, request):

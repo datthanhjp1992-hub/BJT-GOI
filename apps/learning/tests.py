@@ -1896,6 +1896,15 @@ class StudyDeckTests(ReviewTestCase):
         self.assertContains(response, "js/study_deck.js")
         self.assertContains(response, "data-card-extra")
 
+    def test_han_viet_shows_only_for_words_that_have_it(self):
+        current = self._deck()["current"]
+        Vocabulary.objects.filter(pk=current).update(han_viet="CHÚ VĂN")
+        response = self.client.get(reverse("learning:study"))
+        self.assertContains(response, '<div class="han-viet back-only">CHÚ VĂN</div>', html=True)
+        cards = response.context["deck"]["cards"]
+        self.assertEqual(cards[str(current)]["han_viet"], "CHÚ VĂN")
+        self.assertEqual({c["han_viet"] for k, c in cards.items() if k != str(current)}, {""})
+
     def test_partial_render_also_carries_the_deck(self):
         response = self.client.get(reverse("learning:study"), **PARTIAL)
         self.assertContains(response, 'id="study-deck"')

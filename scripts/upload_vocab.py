@@ -180,7 +180,8 @@ def main() -> None:
                 vocab = by_pair.get(p["key"])
                 if vocab is None:
                     vocab = Vocabulary(word=data["word"], reading=data["reading"],
-                                       meaning_vi=data["meaning_vi"], audio_url=data.get("audio_url", ""))
+                                       meaning_vi=data["meaning_vi"], audio_url=data.get("audio_url", ""),
+                                       han_viet=data.get("han_viet", ""))
                     vocab.save()
                     others = [v for v in by_word.get(p["key"][0], []) if v.pk != vocab.pk]
                     if others:

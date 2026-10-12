@@ -69,6 +69,11 @@ class Vocabulary(AuditableModel):
     word = models.CharField(max_length=100, help_text="Kanji/kana form, e.g. 注文する")
     reading = models.CharField(max_length=150, help_text="Furigana reading, e.g. ちゅうもんする")
     meaning_vi = models.CharField(max_length=255)
+    han_viet = models.CharField(
+        max_length=100, blank=True,
+        help_text="Âm Hán Việt VIẾT HOA của phần chữ Hán, vd 'CHÚ VĂN'. "
+                  "Để trống khi từ không có chữ Hán hoặc có chữ không có âm Hán Việt.",
+    )
     audio_url = models.URLField(blank=True)  # reserved for future use
     topics = models.ManyToManyField(
         Topic, related_name="vocabularies", blank=True,
