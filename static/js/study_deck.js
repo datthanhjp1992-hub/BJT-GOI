@@ -191,6 +191,7 @@
     flash.style.transform = "";
     flash.querySelector(".jp").textContent = card.word;
     flash.querySelector(".reading").textContent = card.reading;
+    flash.querySelector(".han-viet").textContent = card.han_viet || "";
     flash.querySelector(".meaning").textContent = card.meaning;
 
     var stateTag = root.querySelector("[data-state-tag]");
