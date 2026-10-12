@@ -266,11 +266,10 @@ class ListViewTests(VocabularyTestCase):
         self.assertIsNone(response.context["page_obj"])
         self.assertContains(response, message("vocabulary.list.hint.not_filtered"))
         self.assertNotContains(response, "ちゅうもんする")
-        # Điều kiện cốt lõi: không có câu SQL nào đụng vào bảng từ vựng.
-        # So theo tên bảng CÓ NGOẶC KÉP: bảng nối "vocabulary_vocabularytopic"
-        # (dùng để đếm số từ mỗi chủ đề trong dropdown) có tên chứa tên bảng
-        # từ vựng, nhưng đếm trên bảng nối không phải là "tải bảng từ vựng".
-        vocabulary_table = '"%s"' % Vocabulary._meta.db_table
+        # Điều kiện cốt lõi: không có câu SQL nào TẢI bảng từ vựng (FROM).
+        # Câu đếm số từ mỗi chủ đề trong dropdown đi FROM bảng chủ đề và JOIN
+        # sang bảng từ vựng chỉ để bỏ từ đã xoá mềm — không phải "tải bảng từ vựng".
+        vocabulary_table = 'FROM "%s"' % Vocabulary._meta.db_table
         self.assertEqual(
             [q["sql"] for q in captured.captured_queries if vocabulary_table in q["sql"]],
             [],
@@ -516,3 +515,45 @@ class AdminTopicAssignmentTests(TestCase):
         response = self.client.get("/admin/vocabulary/topic/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Họp hành")
+
+
+class SoftDeleteTests(VocabularyTestCase):
+    """Xoá mềm Vocabulary/Topic: mọi chỗ đọc qua manager mặc định đều không thấy."""
+
+    def test_soft_deleted_word_is_hidden_but_restorable(self):
+        vocab = self._word("注文", "ちゅうもん", "đặt hàng")
+        UserVocabularyProgress.objects.create(user=self.user, vocabulary=vocab)
+        vocab.soft_delete()
+
+        self.assertFalse(Vocabulary.objects.filter(pk=vocab.pk).exists())
+        self.assertTrue(Vocabulary.all_objects.filter(pk=vocab.pk, is_deleted=True).exists())
+        self.assertFalse(UserVocabularyProgress.objects.filter(user=self.user).exists())
+        self.assertEqual(self.topic.vocabularies.count(), 0)
+
+        vocab.restore()
+        self.assertTrue(UserVocabularyProgress.objects.filter(user=self.user, vocabulary=vocab).exists())
+        self.assertEqual(self.topic.vocabularies.count(), 1)
+
+    def test_same_word_can_be_added_again_after_soft_delete(self):
+        self._word("注文", "ちゅうもん", "đặt hàng").soft_delete()
+        self._word("注文", "ちゅうもん", "đặt hàng (mới)")
+        self.assertEqual(Vocabulary.all_objects.filter(word="注文").count(), 2)
+
+    def test_topic_word_counts_skip_soft_deleted_words(self):
+        from apps.learning.services import get_startable_topics
+
+        self._word("注文", "ちゅうもん", "đặt hàng")
+        self._word("納品", "のうひん", "giao hàng").soft_delete()
+        topic = next(t for t in get_startable_topics() if t.pk == self.topic.pk)
+        self.assertEqual(topic.word_count, 1)
+
+    def test_admin_lists_deleted_rows_and_restores_them(self):
+        self.user.is_staff = self.user.is_superuser = True
+        self.user.save()
+        vocab = self._word("注文", "ちゅうもん", "đặt hàng")
+        vocab.soft_delete()
+        url = "/admin/vocabulary/vocabulary/"
+        self.assertContains(self.client.get(url), "注文")
+        self.client.post(url, {"action": "restore_selected", "_selected_action": [vocab.pk]})
+        vocab.refresh_from_db()
+        self.assertFalse(vocab.is_deleted)

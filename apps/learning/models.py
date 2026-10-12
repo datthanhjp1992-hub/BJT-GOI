@@ -10,9 +10,20 @@ from apps.core.models import AuditableModel
 from apps.vocabulary.models import Vocabulary
 
 
+class ActiveVocabularyManager(models.Manager):
+    """Ẩn dòng của từ đã xoá mềm (Vocabulary.is_deleted) — để thẻ đến hạn,
+    thống kê, chuỗi ngày... không đếm từ đã xoá. Thấy hết: `all_objects`."""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(vocabulary__is_deleted=False)
+
+
 class UserVocabularyProgress(AuditableModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="progress", on_delete=models.CASCADE)
     vocabulary = models.ForeignKey(Vocabulary, related_name="progress", on_delete=models.CASCADE)
+
+    objects = ActiveVocabularyManager()
+    all_objects = models.Manager()
 
     # Giai đoạn của từ trong vòng lặp ôn tập — xem apps/learning/srs.py.
     # Mặc định "review" để các dòng có từ trước khi có bước học (migration

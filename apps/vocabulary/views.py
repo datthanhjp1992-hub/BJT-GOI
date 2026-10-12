@@ -27,7 +27,7 @@ Vì trạng thái bộ lọc nằm ở query string nên trang vẫn bookmark/ch
 import re
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, render
 
 from apps.core import pagination
@@ -109,7 +109,7 @@ def vocabulary_list_view(request, topic_slug=None):
     # Query có GROUP BY thì Django bỏ qua Meta.ordering, nên phải tự sắp: theo
     # thứ tự "tự nhiên" để レッスン2 đứng trước レッスン10.
     all_topics = sorted(
-        Topic.objects.annotate(word_count=Count("vocabulary_links")),
+        Topic.objects.annotate(word_count=Count("vocabulary_links", filter=Q(vocabulary_links__vocabulary__is_deleted=False))),
         key=_natural_key,
     )
     selected_topics, topic_filters, clear_query = topic_filter_bar(

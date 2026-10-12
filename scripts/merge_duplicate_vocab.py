@@ -1,6 +1,7 @@
 """
 Gộp từ vựng trùng lặp trên Supabase: chuyển dữ liệu của từ bị xoá sang từ được
-giữ, rồi mới xoá — không mất câu ví dụ, chủ đề, tiến độ học, phiếu luyện viết...
+giữ, rồi XOÁ MỀM (is_deleted=True) — không mất câu ví dụ, chủ đề, tiến độ học,
+phiếu luyện viết... và khôi phục được ở Django admin (action "Khôi phục").
 
 File kế hoạch (.csv) mỗi dòng 1 cặp, cột bắt buộc:
     keep_id, keep_word, keep_reading, delete_id, delete_word, delete_reading
@@ -20,6 +21,9 @@ Với mỗi cặp (giữ K, xoá D), dữ liệu của D:
     - Phiếu luyện viết, sổ từ, sổ câu sai → chuyển sang K, trừ chỗ đã có K.
     - Đóng góp/bình luận, báo lỗi, kính ngữ, câu trả lời bài kiểm tra → trỏ sang K.
     - K thiếu âm Hán Việt mà D có → lấy của D.
+Phần trùng không chuyển (câu ví dụ K đã có, tiến độ ôn ít hơn) ở lại với D: bị ẩn
+cùng D, khôi phục D là hiện lại. Liên kết trùng (phiếu luyện viết...) thì xoá hẳn,
+không thì phiếu sẽ liệt kê cả K lẫn D.
 Toàn bộ trong MỘT transaction. Chạy lại sau khi đã xoá: các cặp đã xử lý được bỏ qua.
 """
 from __future__ import annotations
@@ -119,7 +123,7 @@ def main() -> None:
         say(DIM, "BỎ QUA", f"{already} cặp đã xoá từ trước")
 
     stats = {k: 0 for k in ("ví dụ chuyển", "ví dụ trùng bỏ", "chủ đề thêm", "tiến độ chuyển",
-                            "tiến độ trùng bỏ", "liên kết khác chuyển", "liên kết trùng bỏ", "từ xoá")}
+                            "tiến độ trùng bỏ", "liên kết khác chuyển", "liên kết trùng bỏ", "từ xoá mềm")}
 
     def merge(k, d, take_meaning):
         k_sentences = {norm(s) for s in k.examples.values_list("sentence_jp", flat=True)}
@@ -142,7 +146,7 @@ def main() -> None:
             mine = k_progress.get(p.user_id)
             if mine is not None and mine.correct_count + mine.wrong_count >= p.correct_count + p.wrong_count:
                 stats["tiến độ trùng bỏ"] += 1
-                continue  # bản của K ôn nhiều hơn -> bản của D xoá theo D
+                continue  # bản của K ôn nhiều hơn -> bản của D ở lại, bị ẩn cùng D
             if mine is not None:
                 mine.delete()
                 stats["tiến độ trùng bỏ"] += 1
@@ -159,7 +163,8 @@ def main() -> None:
             taken = set(model.objects.filter(**{fk: k}).values_list(*unique))
             for row in rows:
                 if tuple(getattr(row, c) for c in unique) in taken:
-                    stats["liên kết trùng bỏ"] += 1  # K đã có -> xoá theo D
+                    row.delete()  # K đã có
+                    stats["liên kết trùng bỏ"] += 1
                 else:
                     model.objects.filter(pk=row.pk).update(**{fk: k})
                     stats["liên kết khác chuyển"] += 1
@@ -171,8 +176,8 @@ def main() -> None:
         if not k.han_viet and d.han_viet:
             k.han_viet = d.han_viet
             changed.append("han_viet")
-        d.delete()
-        stats["từ xoá"] += 1
+        d.soft_delete()
+        stats["từ xoá mềm"] += 1
         if changed:
             k.save(update_fields=changed + ["updated_by", "updated_at"])
 
@@ -188,7 +193,7 @@ def main() -> None:
 
     say(DIM, "TỔNG", " · ".join(f"{v} {k}" for k, v in stats.items()))
     if args.apply:
-        say(GREEN, "XONG", f"Đã gộp và xoá {stats['từ xoá']} từ.")
+        say(GREEN, "XONG", f"Đã gộp và xoá mềm {stats['từ xoá mềm']} từ.")
     else:
         say(GREEN, "XONG", "Chạy thử xong (đã rollback). Thêm --apply để ghi thật.")
 
