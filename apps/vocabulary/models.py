@@ -8,10 +8,10 @@ from django.db import models
 from django.db.models import F, Q
 from django.db.models.functions import Greatest
 
-from apps.core.models import AuditableModel
+from apps.core.models import AuditableModel, SoftDeleteManager, SoftDeleteModel
 
 
-class Topic(AuditableModel):
+class Topic(SoftDeleteModel):
     """1 chủ đề nghiệp vụ — đơn vị phân loại DUY NHẤT của từ vựng.
 
     Từ vựng KHÔNG còn cấp độ BJT (J5..J1+): xem ghi chú ở apps/core/constants.py.
@@ -25,12 +25,18 @@ class Topic(AuditableModel):
         max_length=100, blank=True,
         help_text="Tên tiếng Nhật, vd '会議・打合せ'. Để trống thì UI chỉ hiện tên tiếng Việt.",
     )
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField()
     icon_emoji = models.CharField(max_length=8, blank=True)
     description = models.TextField(blank=True)
 
     class Meta:
         ordering = ["name"]
+        constraints = [
+            # Chỉ cấm trùng giữa các chủ đề CÒN dùng — xoá mềm rồi tạo lại cùng slug được.
+            models.UniqueConstraint(
+                fields=["slug"], condition=models.Q(is_deleted=False), name="uniq_topic_slug_active"
+            ),
+        ]
 
     @property
     def display_name(self):
@@ -65,7 +71,7 @@ class VocabularyQuerySet(models.QuerySet):
         )
 
 
-class Vocabulary(AuditableModel):
+class Vocabulary(SoftDeleteModel):
     word = models.CharField(max_length=100, help_text="Kanji/kana form, e.g. 注文する")
     reading = models.CharField(max_length=150, help_text="Furigana reading, e.g. ちゅうもんする")
     meaning_vi = models.CharField(max_length=255)
@@ -80,7 +86,8 @@ class Vocabulary(AuditableModel):
         through="vocabulary.VocabularyTopic",
     )
 
-    objects = VocabularyQuerySet.as_manager()
+    objects = SoftDeleteManager.from_queryset(VocabularyQuerySet)()
+    all_objects = VocabularyQuerySet.as_manager()
 
     class Meta:
         verbose_name_plural = "vocabularies"
@@ -104,8 +111,10 @@ class Vocabulary(AuditableModel):
             # 大家「おおや」chủ nhà vs 大家「たいか」bậc thầy.
             # Ràng buộc này cho phép script import dùng update_or_create() và
             # chạy lại bao nhiêu lần cũng ra cùng kết quả.
+            # Chỉ tính các từ chưa xoá mềm: xoá rồi nhập lại cùng từ vẫn được.
             models.UniqueConstraint(
-                fields=["word", "reading"], name="uniq_vocab_word_reading"
+                fields=["word", "reading"], condition=Q(is_deleted=False),
+                name="uniq_vocab_word_reading_active",
             ),
         ]
 

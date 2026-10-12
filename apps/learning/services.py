@@ -575,7 +575,7 @@ def get_startable_topics():
     """Chủ đề có từ, kèm `word_count`, nhiều từ nhất trước — nguồn của mục
     "Chủ đề gợi ý" (SC03) và lưới chọn chủ đề ở màn hướng dẫn lần đầu."""
     return (
-        Topic.objects.annotate(word_count=Count("vocabularies", distinct=True))
+        Topic.objects.annotate(word_count=Count("vocabularies", filter=Q(vocabularies__is_deleted=False), distinct=True))
         .filter(word_count__gt=0)
         .order_by("-word_count", "name")
     )
@@ -902,7 +902,7 @@ def get_topic_review_rows(user):
     today = user.local_today()
 
     totals = dict(
-        Topic.objects.annotate(n=Count("vocabularies", distinct=True))
+        Topic.objects.annotate(n=Count("vocabularies", filter=Q(vocabularies__is_deleted=False), distinct=True))
         .values_list("pk", "n")
     )
     progress_rows = (

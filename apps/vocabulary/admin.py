@@ -17,6 +17,37 @@ from django.contrib import admin
 from .models import ExampleSentence, Topic, Vocabulary, VocabularyTopic
 
 
+class SoftDeleteAdmin(admin.ModelAdmin):
+    """Bảng xoá mềm (Vocabulary, Topic): liệt kê CẢ dòng đã xoá — lọc bằng cột
+    "is deleted". Nút xoá thật bị tắt; dùng 2 action Xoá mềm / Khôi phục."""
+
+    actions = ["soft_delete_selected", "restore_selected"]
+
+    def get_queryset(self, request):
+        qs = self.model.all_objects.get_queryset()
+        ordering = self.get_ordering(request)
+        return qs.order_by(*ordering) if ordering else qs
+
+    def get_search_results(self, request, queryset, search_term):
+        # Ô autocomplete ở màn khác không được gợi ý dòng đã xoá.
+        if request.path.endswith("/autocomplete/"):
+            queryset = queryset.filter(is_deleted=False)
+        return super().get_search_results(request, queryset, search_term)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    @admin.action(description="Xoá mềm các dòng đã chọn")
+    def soft_delete_selected(self, request, queryset):
+        for obj in queryset.filter(is_deleted=False):
+            obj.soft_delete()
+
+    @admin.action(description="Khôi phục các dòng đã chọn")
+    def restore_selected(self, request, queryset):
+        for obj in queryset.filter(is_deleted=True):
+            obj.restore()
+
+
 class ExampleSentenceInline(admin.TabularInline):
     model = ExampleSentence
     extra = 1
@@ -33,9 +64,9 @@ class VocabularyTopicInline(admin.TabularInline):
 
 
 @admin.register(Vocabulary)
-class VocabularyAdmin(admin.ModelAdmin):
-    list_display = ("word", "reading", "han_viet", "meaning_vi", "topic_list", "updated_at")
-    list_filter = ("topics",)
+class VocabularyAdmin(SoftDeleteAdmin):
+    list_display = ("word", "reading", "han_viet", "meaning_vi", "topic_list", "is_deleted", "updated_at")
+    list_filter = ("is_deleted", "topics")
     search_fields = ("word", "reading", "han_viet", "meaning_vi")
     inlines = [VocabularyTopicInline, ExampleSentenceInline]
 
@@ -59,8 +90,9 @@ class VocabularyInline(admin.TabularInline):
 
 
 @admin.register(Topic)
-class TopicAdmin(admin.ModelAdmin):
-    list_display = ("name", "name_ja", "slug", "word_count")
+class TopicAdmin(SoftDeleteAdmin):
+    list_display = ("name", "name_ja", "slug", "word_count", "is_deleted")
+    list_filter = ("is_deleted",)
     search_fields = ("name", "name_ja", "slug")
     prepopulated_fields = {"slug": ("name",)}
     inlines = [VocabularyInline]

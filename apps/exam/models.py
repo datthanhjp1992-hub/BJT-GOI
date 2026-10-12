@@ -196,6 +196,15 @@ class ExamAnswer(AuditableModel):
         return self.selected is not None
 
 
+class WrongBookManager(models.Manager):
+    """Ẩn mục từ vựng của từ đã xoá mềm; mục câu đề thi (vocabulary rỗng) giữ nguyên."""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            models.Q(vocabulary__isnull=True) | models.Q(vocabulary__is_deleted=False)
+        )
+
+
 class WrongBookEntry(AuditableModel):
     """Một mục trong Sổ câu sai — câu đề thi HOẶC (từ vựng, dạng câu).
 
@@ -212,6 +221,9 @@ class WrongBookEntry(AuditableModel):
     last_correct_on = models.DateField(null=True, blank=True)
     last_wrong_at = models.DateTimeField()
     cleared_at = models.DateTimeField(null=True, blank=True)
+
+    objects = WrongBookManager()
+    all_objects = models.Manager()
 
     class Meta:
         ordering = ["last_wrong_at"]

@@ -47,6 +47,40 @@ class AuditableModel(models.Model):
         super().save(*args, **kwargs)
 
 
+class SoftDeleteManager(models.Manager):
+    """Chỉ trả dòng chưa xoá mềm. Cần thấy cả dòng đã xoá thì dùng `all_objects`."""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_deleted=False)
+
+
+class SoftDeleteModel(AuditableModel):
+    """Bảng xoá mềm: `objects` (manager mặc định — kéo theo related manager,
+    get_object_or_404, Django admin, dataio) chỉ thấy dòng `is_deleted=False`.
+
+    Chỉ áp cho nội dung học (Vocabulary, Topic). Câu ví dụ / liên kết chủ đề đi
+    theo từ của nó: khôi phục từ là chúng hiện lại. LƯU Ý: join qua quan hệ
+    (Count("vocabularies"), filter(vocabulary__...)) KHÔNG đi qua manager — phải
+    tự lọc `__is_deleted=False`.
+    """
+
+    is_deleted = models.BooleanField(default=False, db_index=True, editable=False)
+
+    objects = SoftDeleteManager()
+    all_objects = models.Manager()
+
+    class Meta:
+        abstract = True
+
+    def soft_delete(self):
+        self.is_deleted = True
+        self.save(update_fields=["is_deleted", "updated_by", "updated_at"])
+
+    def restore(self):
+        self.is_deleted = False
+        self.save(update_fields=["is_deleted", "updated_by", "updated_at"])
+
+
 class MasterCode(AuditableModel):
     """
     Bảng mã dùng chung cho TOÀN BỘ hệ thống — thay cho việc mỗi model tự khai
