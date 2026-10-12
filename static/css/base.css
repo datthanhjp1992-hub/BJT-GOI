@@ -630,7 +630,17 @@ label.lb-opt:hover{border-color:var(--accent);}
 .topic-option.is-checked .topic-option-count{background:var(--surface);color:var(--accent-text);}
 .dropdown-footer{display:flex;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
 /* Hàng chip chủ đề đã chọn (dưới dropdown) + chip "Đang tìm". */
-.filter-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+/* Chọn nhiều chủ đề thì chip tràn nhiều dòng: chặn ở ~2 dòng, cuộn bên trong. */
+.filter-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;max-height:72px;overflow-y:auto;}
+.filter-hint{font-size:12.5px;margin:6px 0 0;}
+/* Hàng lọc gọn (12/10/2026): trạng thái | số từ/phiên | nút, một hàng ngang. */
+.filter-row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 24px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.filter-status{border:0;margin:0;padding:0;min-width:0;display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center;}
+.filter-status legend{padding:0;margin-bottom:6px;color:var(--ink-soft);}
+.filter-status .checkbox-row{margin:0;}
+.filter-limit label{margin-bottom:6px;}
+.filter-limit select{width:auto;min-width:120px;}
+.filter-actions{display:flex;gap:10px;margin-left:auto;}
 .filter-chips:empty{display:none;}
 .filter-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 12px;border-radius:999px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--ink);font-size:13px;}
 .filter-chip.is-search{padding-left:12px;}

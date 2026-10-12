@@ -107,38 +107,36 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
         <span class="filter-chip">{{ t.icon_emoji }} {{ t.name_ja|default:t.name }}<button type="button" class="filter-chip-remove" data-value="{{ t.slug }}" aria-label="{% label 'vocabulary.list.button.remove_topic' %}">✕</button></span>
       {% endfor %}
     </div>
-    <p class="muted" style="font-size:12.5px;margin:8px 0 0;">{% message "vocabulary.list.hint.topic_is_or" %}</p>
+    <p class="muted filter-hint">{% message "vocabulary.list.hint.topic_is_or" %}</p>
 
-    <div class="divider"></div>
-
-    <div class="grid cols-2" style="align-items:start;">
-      <div>
-        <label style="margin-bottom:10px;">{% label "vocabulary.list.field.status" %}</label>
+    {% comment %}12/10/2026: trạng thái + số từ/phiên + nút gom thành MỘT hàng
+    ngang (xuống dòng khi hẹp) thay cho 2 cột xếp dọc + 2 vạch kẻ — form cũ
+    đẩy bảng kết quả xuống gần hết màn hình.{% endcomment %}
+    <div class="filter-row">
+      <fieldset class="filter-status">
+        <legend>{% label "vocabulary.list.field.status" %}</legend>
         {% for s in status_filters %}
           <label class="checkbox-row">
             <input type="checkbox" name="status" value="{{ s.code }}"{% if s.is_selected %} checked{% endif %}>
             <span>{% label s.label_key %}</span>
           </label>
         {% endfor %}
-      </div>
-      <div class="field" style="margin:0;">
+      </fieldset>
+      <div class="filter-limit">
         <label for="id_limit">{% label "vocabulary.list.field.session_limit" %}</label>
-        <select id="id_limit" name="limit">
+        {% message "vocabulary.list.hint.session_limit" as limit_hint %}
+        <select id="id_limit" name="limit" title="{{ limit_hint }}">
           {% for choice in limit_choices %}
             <option value="{{ choice }}"{% if choice == session_limit %} selected{% endif %}>
               {% if choice %}{{ choice }}{% else %}{% label "vocabulary.list.option.limit_all" %}{% endif %}
             </option>
           {% endfor %}
         </select>
-        <p class="muted" style="font-size:12.5px;margin:8px 0 0;">{% message "vocabulary.list.hint.session_limit" %}</p>
       </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="toolbar" style="margin:0;">
-      <button type="submit" class="btn btn-primary">{% label "vocabulary.list.button.filter" %}</button>
-      <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "vocabulary.list.button.reset" %}</a>
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary">{% label "vocabulary.list.button.filter" %}</button>
+        <a class="btn btn-outline" href="{% url 'vocabulary:index' %}">{% label "vocabulary.list.button.reset" %}</a>
+      </div>
     </div>
   </form>
 
