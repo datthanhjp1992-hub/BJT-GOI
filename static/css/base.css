@@ -662,6 +662,17 @@ a.pager-btn:hover{border-color:var(--accent);color:var(--accent-text);}
 @media (max-width:640px){
   .dropdown-list.topic-grid{grid-template-columns:1fr;}
   .result-bar{align-items:flex-start;}
+  /* Hàng lọc trên điện thoại: trạng thái 2 cột, ô số từ + nút trải hết ngang,
+     nút to đủ bấm bằng ngón cái. */
+  .filter-row{gap:12px;align-items:stretch;}
+  .filter-status{display:grid;grid-template-columns:1fr 1fr;width:100%;}
+  .filter-status legend{grid-column:1/-1;}
+  .filter-status .checkbox-row{min-height:40px;}
+  .filter-limit{width:100%;}
+  .filter-limit select{width:100%;}
+  .filter-actions{width:100%;margin-left:0;}
+  .filter-actions .btn{flex:1;text-align:center;min-height:44px;}
+  .dropdown-list.topic-grid{max-height:50vh;}
 }
 /* SC04 — thanh tiến độ HAI LỚP (01/10/2026): .seen (nhạt, đã xem) nằm dưới,
    .done (đậm, đã thuộc) chồng lên trên. Cùng nền/bo góc với .progressbar. */
