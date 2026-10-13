@@ -227,8 +227,11 @@ def section_rows(user):
              "acc": acc.get(code)} for code in SECTION_ORDER if pool.get(code)]
     scored = [r for r in rows if r["acc"] and r["acc"]["total"] >= WEAK_SPOT_MIN_ANSWERS]
     weakest = min(scored, key=lambda r: r["acc"]["percent"])["code"] if scored else None
+    open_ids = dict(ExamAttempt.objects.filter(user=user, kind_code=EXAM_KIND_DRILL, finished_at__isnull=True)
+                    .values_list("section_code", "pk"))
     for r in rows:
         r["weakest"] = r["code"] == weakest
+        r["open"] = open_ids.get(r["code"])
     return rows
 
 
