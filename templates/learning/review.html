@@ -70,7 +70,7 @@ thường) nên tắt JavaScript vẫn đổi tab được và mỗi tab bookmar
             <summary>{% label "learning.review.button.customize" %}</summary>
             <div class="pt-20">
               <label class="m-0 mb-8">{% label "learning.review.field.topic" %}</label>
-              <div class="checkbox-grid">
+              <div class="checkbox-grid scroll-box">
                 {% for topic in topics %}
                   <label class="checkbox-row">
                     <input type="checkbox" name="topic" value="{{ topic.slug }}">
