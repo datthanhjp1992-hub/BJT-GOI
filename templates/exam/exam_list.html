@@ -56,6 +56,9 @@ Luyện theo dạng đề luôn ở chế độ Luyện (10 câu, ưu tiên câu
           <td class="text-right">
             {% if s.open %}
               <a class="btn btn-primary btn-sm" href="{% url 'exam:play' s.open.pk %}">{% label "exam.hub.resume.button" %}</a>
+              <form method="post" action="{% url 'exam:restart' s.open.pk %}" class="ex-inline">
+                {% csrf_token %}<button class="btn btn-outline btn-sm" type="submit">{% label "exam.hub.resume.restart" %}</button>
+              </form>
             {% else %}
               <form method="post" action="{% url 'exam:start_mock' s.slug %}" class="ex-inline">
                 {% csrf_token %}<input type="hidden" name="mode" value="{{ mode }}">
@@ -88,7 +91,13 @@ Luyện theo dạng đề luôn ở chế độ Luyện (10 câu, ưu tiên câu
           <div class="bar"></div>
           <span class="ex-mode-meta">{% message "exam.exams.drill.meta_new" count=r.count %}</span>
         {% endif %}
-        <button class="btn btn-outline btn-sm" type="submit">{% label "exam.exams.drill.start" %}</button>
+        {% if r.open %}
+          {# start_drill trả lại lượt dở -> nút chính là "Làm tiếp"; formaction tránh lồng form #}
+          <button class="btn btn-primary btn-sm" type="submit">{% label "exam.hub.resume.button" %}</button>
+          <button class="bt-linkbtn" type="submit" formaction="{% url 'exam:restart' r.open %}">{% label "exam.hub.resume.restart" %}</button>
+        {% else %}
+          <button class="btn btn-outline btn-sm" type="submit">{% label "exam.exams.drill.start" %}</button>
+        {% endif %}
       </form>
     {% endfor %}
   </div>

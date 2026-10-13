@@ -17,6 +17,7 @@ urlpatterns = [
     path("luot/<int:attempt_id>/nop-phan/", views.submit_part_view, name="submit_part"),
     path("luot/<int:attempt_id>/nop/", views.finish_view, name="finish"),
     path("luot/<int:attempt_id>/bo/", views.abandon_view, name="abandon"),
+    path("luot/<int:attempt_id>/lam-lai/", views.restart_view, name="restart"),
     path("luot/<int:attempt_id>/ket-qua/", views.result_view, name="result"),          # S7
     path("luot/<int:attempt_id>/them-tu/", views.add_words_view, name="add_words"),
 ]

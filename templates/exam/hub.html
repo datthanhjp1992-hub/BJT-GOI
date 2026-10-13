@@ -20,6 +20,9 @@ Mốc 3: cả 4 thẻ bấm được (Sổ câu sai -> S8).{% endcomment %}
     </div>
     <div class="bt-resume-act">
       <a class="btn btn-primary" href="{% url 'exam:play' resume.pk %}">{% label "exam.hub.resume.button" %}</a>
+      <form method="post" action="{% url 'exam:restart' resume.pk %}">
+        {% csrf_token %}<button class="bt-linkbtn" type="submit">{% label "exam.hub.resume.restart" %}</button>
+      </form>
     </div>
   </div>
 {% endif %}

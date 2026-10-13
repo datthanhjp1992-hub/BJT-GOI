@@ -388,6 +388,30 @@ def abandon_view(request, attempt_id):
     return redirect({EXAM_KIND_VOCAB: "exam:vocab", EXAM_KIND_WRONGBOOK: "exam:wrongbook"}.get(kind, "exam:exams"))
 
 
+@login_required
+@require_POST
+def restart_view(request, attempt_id):
+    """Làm lại từ đầu: bỏ lượt dở rồi tạo lượt mới cùng bộ đề / dạng đề.
+    Bài từ vựng & sổ câu sai phải chọn lại phạm vi -> như "Bỏ bài này"."""
+    attempt = _own_attempt(request, attempt_id)
+    if attempt.is_finished:
+        return redirect("exam:result", attempt_id=attempt.pk)
+    if attempt.kind_code == EXAM_KIND_MOCK:
+        exam_set, mode = attempt.exam_set, attempt.mode_code
+        attempts.abandon(attempt)
+        result = attempts.start_mock_attempt(request.user, exam_set, mode)
+    elif attempt.kind_code == EXAM_KIND_DRILL:
+        section_code = attempt.section_code
+        attempts.abandon(attempt)
+        result = attempts.start_drill_attempt(request.user, section_code)
+    else:
+        return abandon_view(request, attempt_id)
+    if result.attempt is None:
+        flash.error(request, message("exam.mock.error.empty"))
+        return redirect("exam:exams")
+    return redirect("exam:play", attempt_id=result.attempt.pk)
+
+
 # =============================================================================
 # Kết quả
 # =============================================================================

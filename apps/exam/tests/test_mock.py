@@ -154,6 +154,22 @@ class ViewTests(MockTestCase):
         self.assertRedirects(response, reverse("exam:play", args=[attempt.pk]))
         self.assertEqual(attempt.mode_code, EXAM_MODE_EXAM)
 
+    def test_restart_replaces_open_attempt(self):
+        old = self.start(EXAM_MODE_PRACTICE)
+        attempts.answer(old, self.order_of(old, 1), 1)
+        self.client.post(reverse("exam:restart", args=[old.pk]))
+        new = ExamAttempt.objects.get(user=self.user)
+        self.assertNotEqual(new.pk, old.pk)
+        self.assertEqual(new.mode_code, EXAM_MODE_PRACTICE)
+        self.assertFalse(new.answers.filter(selected__isnull=False).exists())
+
+    def test_drill_card_offers_restart(self):
+        open_drill = attempts.start_drill_attempt(self.user, "p3s1").attempt
+        self.assertContains(self.client.get(reverse("exam:exams")), reverse("exam:restart", args=[open_drill.pk]))
+        self.client.post(reverse("exam:restart", args=[open_drill.pk]))
+        self.assertFalse(ExamAttempt.objects.filter(pk=open_drill.pk).exists())
+        self.assertTrue(ExamAttempt.objects.filter(user=self.user, section_code="p3s1", finished_at__isnull=True).exists())
+
     def test_exam_mode_hides_transcript_but_shows_audio(self):
         attempt = self.start()
         html = self.client.get(reverse("exam:play", args=[attempt.pk])).content.decode()
