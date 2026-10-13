@@ -132,6 +132,8 @@ input[type=checkbox],input[type=radio]{width:auto;padding:0;margin:0;flex:none;}
 .swatch-dot.soft{opacity:.32;}
 .review-options > summary::-webkit-details-marker{display:none;}
 .checkbox-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:2px 16px;}
+/* Danh sách chủ đề dài (40+ mục) không kéo trang: chặn chiều cao như .topic-grid, cuộn bên trong. */
+.scroll-box{max-height:320px;overflow-y:auto;padding:2px;}
 /* Mỗi thẻ "ôn thêm" là một <form> POST — nút nằm dưới cùng dù đoạn mô tả dài
    ngắn khác nhau, nhờ vậy ba thẻ thẳng hàng nút. */
 .deck{display:flex;flex-direction:column;align-items:flex-start;}
@@ -672,7 +674,7 @@ a.pager-btn:hover{border-color:var(--accent);color:var(--accent-text);}
   .filter-limit select{width:100%;}
   .filter-actions{width:100%;margin-left:0;}
   .filter-actions .btn{flex:1;text-align:center;min-height:44px;}
-  .dropdown-list.topic-grid{max-height:50vh;}
+  .dropdown-list.topic-grid,.scroll-box{max-height:50vh;}
 }
 /* SC04 — thanh tiến độ HAI LỚP (01/10/2026): .seen (nhạt, đã xem) nằm dưới,
    .done (đậm, đã thuộc) chồng lên trên. Cùng nền/bo góc với .progressbar. */

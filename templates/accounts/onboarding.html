@@ -35,7 +35,7 @@ apps.learning.services.get_startable_topics().{% endcomment %}
     <div class="card mb-20">
       <h3 class="serif m-0 mb-18"><span class="onboarding-step">2</span>{{ form.topic.label }}</h3>
       {% if form.topic.field.queryset %}
-        <div class="onboarding-topics">
+        <div class="onboarding-topics scroll-box">
           {% for choice in form.topic %}
             {% with topic=choice.data.value.instance %}
               <label class="choice-card">

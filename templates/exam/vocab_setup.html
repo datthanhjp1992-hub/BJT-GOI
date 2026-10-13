@@ -51,7 +51,7 @@ Câu hỏi sinh mới mỗi lần (exam.services.vocab_quiz). Đang có bài d�
             <span class="muted text-sm">{% label "exam.vocab.scope.topics_hint" %}</span></span>
         </label>
         {% if topics %}
-          <div class="checkbox-grid ex-topics">
+          <div class="checkbox-grid scroll-box ex-topics">
             {% for t in topics %}
               <label class="checkbox-row">
                 <input type="checkbox" name="topics" value="{{ t.pk }}"{% if t.pk|stringformat:"s" in selected_topics %} checked{% endif %}>
