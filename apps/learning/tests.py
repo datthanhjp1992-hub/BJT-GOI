@@ -1905,6 +1905,13 @@ class StudyDeckTests(ReviewTestCase):
         self.assertEqual(cards[str(current)]["han_viet"], "CHÚ VĂN")
         self.assertEqual({c["han_viet"] for k, c in cards.items() if k != str(current)}, {""})
 
+    def test_part_of_speech_tag_on_card_and_deck(self):
+        current = self._deck()["current"]
+        Vocabulary.objects.filter(pk=current).update(part_of_speech="adj-na")
+        response = self.client.get(reverse("learning:study"))
+        self.assertContains(response, '<span class="tag pos-tag" data-pos-tag>adj-na</span>', html=True)
+        self.assertEqual(response.context["deck"]["cards"][str(current)]["part_of_speech"], "adj-na")
+
     def test_partial_render_also_carries_the_deck(self):
         response = self.client.get(reverse("learning:study"), **PARTIAL)
         self.assertContains(response, 'id="study-deck"')

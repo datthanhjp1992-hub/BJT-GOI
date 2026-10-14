@@ -35,6 +35,7 @@ from apps.core.constants import (
     CODE_TYPE_EXAM_KIND,
     CODE_TYPE_EXAM_MODE,
     CODE_TYPE_VOCAB_QUESTION,
+    CODE_TYPE_PART_OF_SPEECH,
 )
 
 # (code, code_name, mother_code, description, sort_order)
@@ -195,6 +196,18 @@ SEED_DATA = {
         ("word", "Chọn từ", None, "Việt → 日", 2),
         ("reading", "Cách đọc", None, "Chọn cách đọc của chữ kanji", 3),
         ("cloze", "Điền vào câu", None, "Câu ví dụ che mất từ", 4),
+    ],
+    CODE_TYPE_PART_OF_SPEECH: [
+        ("n", "Danh từ", None, "", 1),
+        ("n-suru", "Danh từ する", None, "Danh động từ, ghép được với する", 2),
+        ("v", "Động từ", None, "", 3),
+        ("adj-i", "Tính từ đuôi い", None, "", 4),
+        ("adj-na", "Tính từ đuôi な", None, "", 5),
+        ("adv", "Phó từ", None, "", 6),
+        ("conj", "Liên từ", None, "", 7),
+        ("phrase", "Cụm từ / thành ngữ", None, "", 8),
+        ("expr", "Câu chào / câu cố định", None, "", 9),
+        ("other", "Khác", None, "", 10),
     ],
 }
 

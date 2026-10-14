@@ -235,3 +235,11 @@ def exam_mode_choices():
 
 def vocab_question_choices():
     return get_choices(CODE_TYPE_VOCAB_QUESTION)
+
+
+# Loại từ của Vocabulary — mã ngắn (vd "adj-na") hiện thẳng ở góc thẻ flashcard.
+CODE_TYPE_PART_OF_SPEECH = "24"
+
+
+def part_of_speech_choices():
+    return get_choices(CODE_TYPE_PART_OF_SPEECH)

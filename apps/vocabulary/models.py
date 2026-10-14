@@ -8,6 +8,7 @@ from django.db import models
 from django.db.models import F, Q
 from django.db.models.functions import Greatest
 
+from apps.core.constants import part_of_speech_choices
 from apps.core.models import AuditableModel, SoftDeleteManager, SoftDeleteModel
 
 
@@ -72,13 +73,17 @@ class VocabularyQuerySet(models.QuerySet):
 
 
 class Vocabulary(SoftDeleteModel):
-    word = models.CharField(max_length=100, help_text="Kanji/kana form, e.g. 注文する")
+    word =models.CharField(max_length=100, help_text="Kanji/kana form, e.g. 注文する")
     reading = models.CharField(max_length=150, help_text="Furigana reading, e.g. ちゅうもんする")
     meaning_vi = models.CharField(max_length=255)
     han_viet = models.CharField(
         max_length=100, blank=True,
         help_text="Âm Hán Việt VIẾT HOA của phần chữ Hán, vd 'CHÚ VĂN'. "
                   "Để trống khi từ không có chữ Hán hoặc có chữ không có âm Hán Việt.",
+    )
+    part_of_speech = models.CharField(
+        max_length=10, blank=True, choices=part_of_speech_choices,
+        help_text="Loại từ (MasterCode 24), vd 'adj-na'. Mã hiện ở góc phải thẻ flashcard.",
     )
     audio_url = models.URLField(blank=True)  # reserved for future use
     topics = models.ManyToManyField(

@@ -79,6 +79,7 @@ data-undo-text, data-discussion-toggle / data-discussion-body.
       <div class="flashcard-tags">
         <span class="tag{% if card_state != "review" %} level{% endif %}" data-state-tag>{% label card_state_key %}</span>{% if deck %}<span class="tag" data-repeat-tag{% if not is_repeat %} hidden{% endif %}>↻ {% label "learning.flashcard.state.repeat" %}</span>{% elif is_repeat %}<span class="tag">↻ {% label "learning.flashcard.state.repeat" %}</span>{% endif %}
       </div>
+      <span class="tag pos-tag" data-pos-tag>{{ word.part_of_speech }}</span>
       <div class="jp">{{ word.word }}</div>
       <div class="reading{% if not show_reading_on_front %} back-only{% endif %}">{{ word.reading }}</div>
       <div class="han-viet back-only">{{ word.han_viet }}</div>

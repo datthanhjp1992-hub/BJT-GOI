@@ -710,6 +710,10 @@ a.pager-btn:hover{border-color:var(--accent);color:var(--accent-text);}
 .flashcard:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
 .flashcard-tags{margin-bottom:12px;}
 .flashcard-tags .tag:last-child{margin-right:0;}
+/* Loại từ ở góc phải trên thẻ; từ chưa phân loại thì ẩn. */
+.flashcard{position:relative;}
+.flashcard .pos-tag{position:absolute;top:12px;right:12px;margin:0;}
+.flashcard .pos-tag:empty{display:none;}
 .flashcard .back-only{display:none;}
 .flashcard.is-flipped .back-only{display:block;}
 /* Âm Hán Việt: từ không có thì ô rỗng — ẩn hẳn cho khỏi chừa khoảng trống. */

@@ -190,6 +190,7 @@ Ghi chú thiết kế:
 | `21` | Loại bài kiểm tra | `vocab`, `drill`, `mock`, `wrongbook` |
 | `22` | Chế độ | `exam` (Thi), `practice` (Luyện) |
 | `23` | Dạng câu từ vựng | `meaning` (日→Việt), `word` (Việt→日), `reading` (cách đọc), `cloze` (điền vào câu) |
+| `24` | Loại từ (`Vocabulary.part_of_speech`) | `n`, `n-suru`, `v`, `adj-i`, `adj-na`, `adv`, `conj`, `phrase`, `expr`, `other` |
 
 Thời lượng phần ở chế độ Thi để trong `apps/exam/constants.py` (không phải lựa chọn hiển thị):
 `PART_MINUTES = {1: 50, 2: 35, 3: 40}` (≈ 2 giờ cho 100 câu). Chỉnh sau khi Dat thử thật.

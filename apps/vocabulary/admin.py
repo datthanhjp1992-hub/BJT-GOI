@@ -65,8 +65,8 @@ class VocabularyTopicInline(admin.TabularInline):
 
 @admin.register(Vocabulary)
 class VocabularyAdmin(SoftDeleteAdmin):
-    list_display = ("word", "reading", "han_viet", "meaning_vi", "topic_list", "is_deleted", "updated_at")
-    list_filter = ("is_deleted", "topics")
+    list_display = ("word", "reading", "part_of_speech", "han_viet", "meaning_vi", "topic_list", "is_deleted", "updated_at")
+    list_filter = ("is_deleted", "part_of_speech", "topics")
     search_fields = ("word", "reading", "han_viet", "meaning_vi")
     inlines = [VocabularyTopicInline, ExampleSentenceInline]
 
