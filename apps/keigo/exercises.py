@@ -16,6 +16,7 @@ Quy uoc du lieu (claude/keigo-thiet-ke.md muc 3):
     correct_order chi dung de ghep lai cau hoan chinh khi hien dap an.
 """
 import re
+from datetime import timedelta
 from dataclasses import dataclass, field
 
 from django.db import IntegrityError, transaction
@@ -339,6 +340,20 @@ def record_answer(attempt, question, option):
     return answer, True
 
 
+# Khoang lang giua hai lan bam dai hon muc nay = nguoi hoc bo di (dong tab, hom sau
+# lam tiep) -> chi tinh toi da muc nay, de "Lam trong X phut" khong ra hang nghin phut.
+IDLE_CAP = timedelta(minutes=10)
+
+
+def active_duration(attempt, end=None):
+    """Thoi gian lam THAT: cong cac khoang start -> tung cau tra loi -> end,
+    moi khoang toi da IDLE_CAP."""
+    times = [attempt.started_at,
+             *attempt.answers.order_by("created_at").values_list("created_at", flat=True),
+             end or attempt.finished_at]
+    return sum((min(b - a, IDLE_CAP) for a, b in zip(times, times[1:]) if b > a), timedelta())
+
+
 def finish_attempt(attempt):
     """Chot luot: finished_at + diem + mot learning.StudySession de streak va
     bieu do o dashboard/SC15 dem ca phan kinh ngu (khong sua gamification)."""
@@ -351,7 +366,7 @@ def finish_attempt(attempt):
         session_type=SESSION_TYPE_KEIGO,
         words_reviewed=attempt.total,
         correct_answers=attempt.score,
-        started_at=attempt.started_at,
+        started_at=now - active_duration(attempt, now),  # khong tinh nhung ngay bo do
         ended_at=now,
     )
     return attempt

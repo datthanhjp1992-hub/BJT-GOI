@@ -3,10 +3,13 @@ Test cho app keigo -- SC17 (trang bai hoc).
 
 Chay: python manage.py test apps.keigo
 """
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from . import selectors
 from .models import KeigoExample, KeigoForm, KeigoLesson, KeigoPattern, KeigoPhrasePair, KeigoVerb
@@ -523,6 +526,14 @@ class ExerciseFinishAndResultTests(ExerciseTestCase):
         self.client.force_login(self.other)
         url = reverse("keigo:bai_tap_ket_qua", args=[self.s1.slug]) + f"?lan={attempt.pk}"
         self.assertEqual(self.client.get(url).status_code, 404)
+
+    def test_duration_skips_days_left_open(self):
+        self.start(self.s1)
+        UserExerciseAttempt.objects.update(started_at=timezone.now() - timedelta(days=17))
+        r = self.client.get(self.do_set1()["Location"])
+        self.assertLessEqual(r.context["minutes"], 11)  # 1 khoang nghi bi cap 10 phut
+        session = StudySession.objects.get()
+        self.assertLess(session.ended_at - session.started_at, timedelta(minutes=11))
 
     def test_result_without_finished_attempt_goes_to_list(self):
         self.assertRedirects(self.client.get(reverse("keigo:bai_tap_ket_qua", args=[self.s1.slug])),

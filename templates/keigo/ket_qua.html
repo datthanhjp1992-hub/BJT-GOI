@@ -91,7 +91,7 @@ dau file do). View: keigo.views.exercise_result_view.
                 <span class="jp">{% if it.correct %}{{ it.correct.position }}. {{ it.correct.text_jp }}{% else %}—{% endif %}</span></div>
             </div>
             {% if it.question.explanation_vi %}
-              <div class="lb-explain">{{ it.question.explanation_vi|linebreaksbr }}</div>
+              <div class="lb-explain"><div class="eyebrow">{% label "keigo.exercise.play.explanation" %}</div>{{ it.question.explanation_vi|linebreaksbr }}</div>
             {% endif %}
           </li>
         {% endfor %}

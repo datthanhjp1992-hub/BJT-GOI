@@ -533,7 +533,7 @@ def exercise_result_view(request, set_slug):
         a.percent = exercises.percent(a.score, a.total)
         a.url = f"{base}?{urlencode({exercises.ATTEMPT_PARAM: a.pk})}"
 
-    minutes = max(1, round((attempt.finished_at - attempt.started_at).total_seconds() / 60))
+    minutes = max(1, round(exercises.active_duration(attempt).total_seconds() / 60))
     context = _exercise_context(
         exercise_set=exercise_set,
         attempt=attempt,

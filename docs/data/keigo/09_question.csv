@@ -1,299 +1,1129 @@
 code,section__exercise_set__slug,section__number,number,question_type,context_note,stem_jp,star_position,correct_order,explanation_vi
-lt-m1-q01,luyen-tap,1,1,mcq_blank,,これは私が父に____時計です。,,,
-lt-m1-q02,luyen-tap,1,2,mcq_blank,,友達に誕生日のプレゼントを____つもりです。,,,
-lt-m1-q03,luyen-tap,1,3,mcq_blank,,すみません、疲れたので____いただけませんか。,,,
-lt-m1-q04,luyen-tap,1,4,mcq_blank,,よく分からなかったので、もう一度説明して____ませんか。,,,
-lt-m1-q05,luyen-tap,1,5,mcq_blank,,駅までの地図をかいて____たいんですが。,,,
-lt-m1-q06,luyen-tap,1,6,mcq_blank,,お金を忘れて困っていた私に、川上さんが貸して____,,,
-lt-m1-q07,luyen-tap,1,7,mcq_blank,,この荷物重いので、運ぶのを____,,,
-lt-m1-q08,luyen-tap,1,8,mcq_blank,,先日お願いした本は、もう____,,,
-lt-m2-q01,luyen-tap,2,1,mcq_blank,,お客様、そちらの用紙の方のご記入は____,,,
-lt-m2-q02,luyen-tap,2,2,mcq_blank,,カードを____場合は、再発行の手数料がかかります。,,,
-lt-m2-q03,luyen-tap,2,3,mcq_blank,,申し訳ございません。ただ今オンラインシステムの故障のため、窓口でのみ業務を____いただいております。,,,
-lt-m2-q04,luyen-tap,2,4,mcq_blank,,お客様のお荷物は4日まで保管いたしますが、お申し出があればさらに、1週間延長して____,,,
-lt-m2-q05,luyen-tap,2,5,mcq_blank,,もう少し広い家を探しているんですが、いいところがあったら____いただけませんか。,,,
-lt-m2-q06,luyen-tap,2,6,mcq_blank,,引越しの荷造りは当社ですべていたしますが、貴重品だけはそちら様で管理____ください。,,,
-lt-m2-q07,luyen-tap,2,7,mcq_blank,,今は2部屋になっておりますが、お客様のご希望に合わせて広いワンルームとしても____,,,
-lt-m2-q08,luyen-tap,2,8,mcq_blank,,お引越しの方、おすみになったんですね。お手伝いに____,,,
-lt-m2-q09,luyen-tap,2,9,mcq_blank,,前髪はどう____,,,
+lt-m1-q01,luyen-tap,1,1,mcq_blank,,これは私が父に____時計です。,,,"Chủ ngữ là 私 (tôi), bố là người cho → tôi NHẬN từ bố: 「(私が)父にもらった時計」 = cái đồng hồ tôi nhận được từ bố. Trợ từ に ở đây chỉ nguồn nhận.
+✓ 1. もらった — X に Y をもらう: tôi nhận Y từ X. Khớp với 私が…父に.
+✗ 2. くれた — くれる có chủ ngữ là người cho (父が私にくれた). Câu đã có 私が làm chủ ngữ nên không dùng くれた được."
+lt-m1-q02,luyen-tap,1,2,mcq_blank,,友達に誕生日のプレゼントを____つもりです。,,,"Tôi tặng quà cho bạn (người ngoài) → hướng cho đi từ phía mình ra ngoài.
+✓ 1. あげる — người nói/phe mình cho người khác → あげる.
+✗ 2. くれる — chỉ dùng khi người khác cho TÔI (hoặc người phe tôi). Ở đây tôi là người cho nên sai hướng."
+lt-m1-q03,luyen-tap,1,3,mcq_blank,,すみません、疲れたので____いただけませんか。,,,"Xin phép cho bản thân được làm gì: 「Vさせていただけませんか」 = cho phép tôi được V có được không.
+✓ 2. 休ませて — 休ませていただけませんか: cho tôi nghỉ được không (người nghỉ là tôi, xin phép người nghe).
+✗ 1. 休んで — 休んでいただけませんか = nhờ ĐỐI PHƯƠNG nghỉ. Nhưng người mệt là tôi nên sai nghĩa."
+lt-m1-q04,luyen-tap,1,4,mcq_blank,,よく分からなかったので、もう一度説明して____ませんか。,,,"Nhờ người khác làm gì cho mình: 「Vてもらえませんか」 = anh/chị có thể V giúp tôi không.
+✓ 1. もらえ — 説明してもらえませんか: nhờ giải thích lại giúp tôi (thể khả năng もらえる + ませんか → lời nhờ lịch sự).
+✗ 2. あげ — Vてあげる là tôi làm cho người khác. 「説明してあげませんか」 = (anh) không giải thích cho người ta à? → sai hướng, không phải lời nhờ."
+lt-m1-q05,luyen-tap,1,5,mcq_blank,,駅までの地図をかいて____たいんですが。,,,"「Vてもらいたい」 = muốn được người khác V cho mình.
+✓ 2. もらい — かいてもらいたい: tôi muốn (anh) vẽ cho tôi bản đồ.
+✗ 1. くれ — 「かいてくれたい」 không tồn tại: くれる không ghép với たい (くれる lấy người cho làm chủ ngữ, không diễn tả mong muốn của người nhận)."
+lt-m1-q06,luyen-tap,1,6,mcq_blank,,お金を忘れて困っていた私に、川上さんが貸して____,,,"Chủ ngữ là 川上さんが (người cho mượn), người nhận là 私 → tôn kính dạng くれる = くださる.
+✓ 2. くださいました — 川上さんが私に貸してくださいました: anh Kawakami (đã) cho tôi mượn.
+✗ 1. いただきました — いただく là khiêm nhường của もらう, chủ ngữ phải là 私 (私が川上さんに貸していただいた). Câu dùng 川上さんが nên sai.
+✗ 3. さしあげました — khiêm nhường của あげる (tôi làm cho người trên). Sai hướng."
+lt-m1-q07,luyen-tap,1,7,mcq_blank,,この荷物重いので、運ぶのを____,,,"Nhờ người nghe giúp mình bê đồ: 「手伝ってもらえませんか」.
+✓ 1. 手伝ってもらえませんか — anh giúp tôi bê được không.
+✗ 2. 手伝わせてくれませんか — 'cho tôi được giúp (anh)' → nghĩa là TÔI giúp, trái ngữ cảnh (đồ của tôi nặng, tôi cần người giúp).
+✗ 3. 手伝わせてもらいませんか — vừa sai nghĩa (tôi giúp) vừa sai dạng: lời nhờ phải dùng thể khả năng もらえませんか, không phải もらいませんか."
+lt-m1-q08,luyen-tap,1,8,mcq_blank,,先日お願いした本は、もう____,,,"Hỏi về việc người trên gửi sách cho mình → người làm là đối phương, mình là người nhận ân huệ: 「送っていただく」.
+✓ 3. 送っていただいたんでしょうか — (tôi) đã được ngài gửi cho chưa ạ?
+✗ 1. 送らせてさしあげた — 'tôi để (ai đó) gửi cho ngài' → sai hướng và sai nghĩa.
+✗ 2. 送らせてくださった — 'ngài cho phép (tôi) gửi' → người gửi là tôi, sai vì tôi là người nhờ đối phương gửi."
+lt-m2-q01,luyen-tap,2,1,mcq_blank,,お客様、そちらの用紙の方のご記入は____,,,"Hỏi khách đã ghi xong chưa → tôn kính 「お + Vます + です」: おすみです → おすみでしょうか.
+✓ 1. おすみでしょうか — dạng tôn kính chuẩn của すむ (お~です) + でしょうか cho mềm.
+✗ 2. おすみされましたか — lỗi kinh điển: 「お~する」 là KHIÊM NHƯỜNG, thêm される cũng không biến nó thành tôn kính. Không dùng お~される cho hành động của khách."
+lt-m2-q02,luyen-tap,2,2,mcq_blank,,カードを____場合は、再発行の手数料がかかります。,,,"Khách làm mất thẻ → hành động của khách (他動詞 なくす) + tôn kính れる/られる: なくされる.
+✓ 2. なくされた — なくす (làm mất, tha động từ) → tôn kính なくされる. Đúng: khách là người làm mất.
+✗ 1. なくなられた — なくなる (tự mất / và 亡くなる = qua đời). なくなられた nghe như 'qua đời' → vừa sai ngữ pháp (thẻ không phải chủ ngữ được tôn kính) vừa gây hiểu lầm nghiêm trọng."
+lt-m2-q03,luyen-tap,2,3,mcq_blank,,申し訳ございません。ただ今オンラインシステムの故障のため、窓口でのみ業務を____いただいております。,,,"Phía ngân hàng/cửa hàng xin phép khách cho mình làm: 「Vさせていただく」 (khiêm nhường, nhún mình).
+✓ 2. 行わせて — 業務を行わせていただいております: chúng tôi xin phép chỉ giao dịch tại quầy.
+✗ 1. 行って — 行っていただいております = 'được (khách) thực hiện giúp' → người làm thành khách, sai."
+lt-m2-q04,luyen-tap,2,4,mcq_blank,,お客様のお荷物は4日まで保管いたしますが、お申し出があればさらに、1週間延長して____,,,"Nhân viên nói về hành động của chính mình (giữ hành lý) → khiêm nhường 「お + Vます + いたす」.
+✓ 1. お預かりいたします — chúng tôi sẽ giữ (hành lý) thêm 1 tuần.
+✗ 2. お預かりになれます — お~になる là tôn kính (hành động của khách), lại thêm khả năng → 'khách có thể giữ' → sai chủ thể."
+lt-m2-q05,luyen-tap,2,5,mcq_blank,,もう少し広い家を探しているんですが、いいところがあったら____いただけませんか。,,,"Khách nhờ nhân viên cho mình xem nhà: 見せる (cho xem) + ていただけませんか.
+✓ 1. 見せて — 見せていただけませんか: anh có thể cho tôi xem được không.
+✗ 2. お見せして — お見せする là khiêm nhường của TÔI cho người khác xem. 「お見せしていただく」 lẫn lộn khiêm nhường với nhờ vả → sai."
+lt-m2-q06,luyen-tap,2,6,mcq_blank,,引越しの荷造りは当社ですべていたしますが、貴重品だけはそちら様で管理____ください。,,,"Nhờ khách tự quản lý đồ quý → hành động của khách: tôn kính 「なさる」 + ください.
+✓ 2. なさって — 管理なさってください: xin quý khách tự quản lý (なさる = tôn kính của する).
+✗ 1. させて — 管理させてください = 'hãy để TÔI quản lý' → ngược nghĩa (câu nói đồ quý thì khách tự giữ)."
+lt-m2-q07,luyen-tap,2,7,mcq_blank,,今は2部屋になっておりますが、お客様のご希望に合わせて広いワンルームとしても____,,,"Nói khách 'có thể sử dụng' → tôn kính khả năng 「お + Vます + になれる」.
+✓ 2. お使いになれます — quý khách có thể dùng như một phòng lớn.
+✗ 1. お使いいただきます — 'được khách dùng cho' (khẳng định), không diễn đạt 'có thể', và nghe như ép khách phải dùng."
+lt-m2-q08,luyen-tap,2,8,mcq_blank,,お引越しの方、おすみになったんですね。お手伝いに____,,,"Người nói (nhân viên) nói về việc MÌNH muốn đến giúp → khiêm nhường của 行く = うかがう.
+✓ 1. うかがいたかったんですが — tôi đã muốn đến giúp nhưng...
+✗ 2. いらっしゃりたかった — いらっしゃる là tôn kính, chỉ dùng cho hành động của người trên/khách, không dùng cho bản thân."
+lt-m2-q09,luyen-tap,2,9,mcq_blank,,前髪はどう____,,,"Thợ cắt tóc hỏi khách muốn làm tóc mái thế nào: どうする → tôn kính される (hoặc なさる).
+✓ 1. されますか — する + れる (tôn kính) → どうされますか.
+✗ 2. なられますか — なる (trở thành) không hợp: tóc mái 'trở thành thế nào' + ghép tôn kính thừa られる → sai cả nghĩa lẫn dạng."
 lt-m2-q10,luyen-tap,2,10,mcq_blank,,"客「このシャツのそで、汚れが落ちていなかったんですけど。」
-店の人「あ、それは申し訳ございません。すぐやり直し____」",,,
-lt-m2-q11,luyen-tap,2,11,mcq_blank,,再度お届けに____が、お留守のようでしたので、このまま持ち帰ります。,,,
-lt-m2-q12,luyen-tap,2,12,mcq_blank,,お客様にはこのヘアスタイルが一番____と思います。,,,
-lt-m2-q13,luyen-tap,2,13,mcq_blank,,婚姻届ですね、おめでとうございます。確かに受理____,,,
-lt-m2-q14,luyen-tap,2,14,mcq_blank,,（ピッピーッ）10キロオーバーしてますよ。制限速度を____,,,
-lt-m2-q15,luyen-tap,2,15,mcq_blank,,税金をまとめて____少しお安くなりますよ。,,,
-lt-m2-q16,luyen-tap,2,16,mcq_blank,,代理の方が____場合は、委任状が必要となります。,,,
-lt-m3-q01,luyen-tap,3,1,mcq_blank,,B「部長、私の父（1）。父さん、こちらがいつもお世話になっている部長のAさんです。」,,,
-lt-m3-q02,luyen-tap,3,2,mcq_blank,,Bの父「はじめまして。息子が大変お世話になって（2）。」,,,
-lt-m3-q03,luyen-tap,4,3,mcq_blank,,D「部長、先ほど○○会社のBさんよりお電話がありました。先日の展示会でうちの新製品を（3）興味をもたれたようで、ぜひ詳しい資料がほしいと（4）。」,,,
-lt-m3-q04,luyen-tap,4,4,mcq_blank,,D「部長、先ほど○○会社のBさんよりお電話がありました。先日の展示会でうちの新製品を（3）興味をもたれたようで、ぜひ詳しい資料がほしいと（4）。」,,,
-lt-m3-q05,luyen-tap,4,5,mcq_blank,,C「ああ、そう。じゃ、私が先方に直接お電話を（5）。,,,
-lt-m3-q06,luyen-tap,4,6,mcq_blank,,B「早速お電話いただきまして、ありがとうございます。ではよく検討（6）後日、部長のAよりご連絡（7）。」,,,
-lt-m3-q07,luyen-tap,4,7,mcq_blank,,B「早速お電話いただきまして、ありがとうございます。ではよく検討（6）後日、部長のAよりご連絡（7）。」,,,
-lt-m3-q08,luyen-tap,5,8,mcq_blank,,会社の受付「A様でいらっしゃいますね。部長のCより（8）。ただ今お取り次ぎいたしますので、こちらにおかけになってお待ちくださいませ。」,,,
-lt-m3-q09,luyen-tap,5,9,mcq_blank,,会社の受付「部長、A様が（9）。」,,,
-lt-m3-q10,luyen-tap,5,10,mcq_blank,,C「あ、そう。じゃ、応接室の方へ（10）すぐ行くから。」,,,
-bt01-q01,bai-tap-1,1,1,mcq_blank,,「中山と申しますが、木村先生、____。」,,,
-bt01-q02,bai-tap-1,1,2,mcq_blank,,森田先輩、論文のことでお____したいことがあるんですが。,,,
+店の人「あ、それは申し訳ございません。すぐやり直し____」",,,"Nhân viên nói mình sẽ làm lại (giặt lại) → khiêm nhường của する = いたす.
+✓ 2. いたします — やり直しいたします: chúng tôi sẽ làm lại ngay.
+✗ 1. さしあげます — さしあげる = 'làm cho (người trên)' mang sắc thái ban ơn, không gắn trực tiếp sau danh từ やり直し; dùng với khách dễ thành bề trên."
+lt-m2-q11,luyen-tap,2,11,mcq_blank,,再度お届けに____が、お留守のようでしたので、このまま持ち帰ります。,,,"Nhân viên giao hàng nói về việc mình đến lại → khiêm nhường của 行く/来る/訪ねる = うかがう.
+✓ 1. うかがいました — tôi đã đến giao lại.
+✗ 2. まいられました — まいる là khiêm nhường, ghép thêm られる (tôn kính) là mâu thuẫn → dạng sai."
+lt-m2-q12,luyen-tap,2,12,mcq_blank,,お客様にはこのヘアスタイルが一番____と思います。,,,"Khen khách hợp kiểu tóc → tôn kính tính chất của khách: 「お似合いだ/です」.
+✓ 2. お似合いだ — お + danh từ hóa 似合い + だ: dạng tôn kính quen dùng (よくお似合いです).
+✗ 1. お似合いされる — lại là lỗi お~される: không có dạng này."
+lt-m2-q13,luyen-tap,2,13,mcq_blank,,婚姻届ですね、おめでとうございます。確かに受理____,,,"Nhân viên nói mình đã tiếp nhận giấy tờ → khiêm nhường する = いたす: 受理いたしました.
+✓ 2. いたしました — đúng khiêm nhường.
+✗ 1. させました — 受理させました = 'tôi bắt/cho (ai) tiếp nhận' → thể sai khiến, sai nghĩa."
+lt-m2-q14,luyen-tap,2,14,mcq_blank,,（ピッピーッ）10キロオーバーしてますよ。制限速度を____,,,"Cảnh sát nhắc người vi phạm: yêu cầu bình thường, lịch sự vừa đủ → 守ってください.
+✓ 1. 守ってください — xin hãy tuân thủ tốc độ.
+✗ 2. お守りしてください — お守りする là khiêm nhường (tôi bảo vệ/tuân thủ cho ngài). Bảo người khác làm hành động khiêm nhường là sai."
+lt-m2-q15,luyen-tap,2,15,mcq_blank,,税金をまとめて____少しお安くなりますよ。,,,"Hành động 'trả thuế' là của khách → tôn kính 「お + Vます + になる」.
+✓ 2. お払いになると — nếu quý khách trả gộp thì sẽ rẻ hơn.
+✗ 1. お払いされると — lỗi お~される (trộn khiêm nhường お~する với される)."
+lt-m2-q16,luyen-tap,2,16,mcq_blank,,代理の方が____場合は、委任状が必要となります。,,,"Người đại diện (khách) đến → tôn kính của 来る bằng られる: 来られる.
+✓ 1. 来られる — trường hợp người đại diện đến.
+✗ 2. 来させる — thể sai khiến 'bắt/cho đến' → sai nghĩa."
+lt-m3-q01,luyen-tap,3,1,mcq_blank,,B「部長、私の父（1）。父さん、こちらがいつもお世話になっている部長のAさんです。」,,,"Giới thiệu bố MÌNH với sếp → người trong nhà là 'phe mình' (ウチ), không được tôn kính.
+✓ 1. です — 私の父です: nói bình thường/khiêm.
+✗ 2. でいらっしゃいます — tôn kính, dùng cho người ngoài/người trên. Tôn kính bố mình trước mặt sếp là sai quy tắc ウチ・ソト."
+lt-m3-q02,luyen-tap,3,2,mcq_blank,,Bの父「はじめまして。息子が大変お世話になって（2）。」,,,"Bố nói về chính mình/con mình trước sếp của con → khiêm nhường おる.
+✓ 2. おります — 息子が大変お世話になっております: câu chào cố định, khiêm nhường.
+✗ 1. おられます — tôn kính (おる + れる), lại dùng cho con mình → sai."
+lt-m3-q03,luyen-tap,4,3,mcq_blank,,D「部長、先ほど○○会社のBさんよりお電話がありました。先日の展示会でうちの新製品を（3）興味をもたれたようで、ぜひ詳しい資料がほしいと（4）。」,,,"Chủ ngữ là anh B (khách hàng công ty khác) xem sản phẩm → tôn kính 見る = ご覧になる.
+✓ 2. ご覧になって — ngài B đã xem sản phẩm mới.
+✗ 1. 拝見なさって — 拝見 là khiêm nhường, なさる là tôn kính → trộn hai chiều, sai."
+lt-m3-q04,luyen-tap,4,4,mcq_blank,,D「部長、先ほど○○会社のBさんよりお電話がありました。先日の展示会でうちの新製品を（3）興味をもたれたようで、ぜひ詳しい資料がほしいと（4）。」,,,"D báo cáo với sếp mình (C) lời của khách B (người ngoài công ty). Khách là người được tôn kính → 言う → おっしゃる.
+✓ 1. おっしゃっていました — anh B đã nói là muốn tài liệu.
+✗ 2. 申しておりました — 申す là khiêm nhường, chỉ dùng cho người phe mình. Dùng cho khách là hạ thấp khách."
+lt-m3-q05,luyen-tap,4,5,mcq_blank,,C「ああ、そう。じゃ、私が先方に直接お電話を（5）。,,,"C (người nói) tự mình gọi điện cho đối tác → khiêm nhường 'làm cho đối phương': お電話をさしあげる.
+✓ 2. さしあげよう — tôi sẽ gọi điện trực tiếp cho bên đó.
+✗ 1. いただこう — お電話をいただく = 'được đối phương gọi cho' → người gọi là đối phương, sai."
+lt-m3-q06,luyen-tap,4,6,mcq_blank,,B「早速お電話いただきまして、ありがとうございます。ではよく検討（6）後日、部長のAよりご連絡（7）。」,,,"B nói về việc công ty MÌNH sẽ xem xét → khiêm nhường する = いたす/します (ở đây dạng nối しまして).
+✓ 1. しまして — 検討しまして: chúng tôi sẽ xem xét kỹ rồi...
+✗ 2. なさって — なさる là tôn kính, không dùng cho hành động của mình."
+lt-m3-q07,luyen-tap,4,7,mcq_blank,,B「早速お電話いただきまして、ありがとうございます。ではよく検討（6）後日、部長のAよりご連絡（7）。」,,,"Trưởng phòng A là người cùng công ty B (phe mình) → khi nói với khách thì khiêm nhường: ご連絡いたします.
+✓ 2. いたします — 部長のAよりご連絡いたします.
+✗ 1. いただきます — ご連絡いただく = 'được (khách) liên lạc cho' → người liên lạc thành khách, sai."
+lt-m3-q08,luyen-tap,5,8,mcq_blank,,会社の受付「A様でいらっしゃいますね。部長のCより（8）。ただ今お取り次ぎいたしますので、こちらにおかけになってお待ちくださいませ。」,,,"Lễ tân nói việc mình đã được trưởng phòng C dặn trước → khiêm nhường 聞く = うかがう.
+✓ 2. うかがっております — tôi đã được nghe từ trưởng phòng C.
+✗ 1. 聞いていらっしゃいます — tôn kính hành động của chính mình → sai."
+lt-m3-q09,luyen-tap,5,9,mcq_blank,,会社の受付「部長、A様が（9）。」,,,"Lễ tân báo với trưởng phòng rằng khách A đã đến → khách là người ngoài, được tôn kính: 来る → お見えになる.
+✓ 2. お見えになりました — ngài A đã đến.
+✗ 1. まいりました — まいる là khiêm nhường, dùng cho khách là hạ thấp khách."
+lt-m3-q10,luyen-tap,5,10,mcq_blank,,C「あ、そう。じゃ、応接室の方へ（10）すぐ行くから。」,,,"Trưởng phòng C bảo lễ tân dẫn khách vào phòng → hành động của lễ tân (phe mình) hướng tới khách: khiêm nhường お通しする.
+✓ 1. お通しして — dẫn (khách) vào phòng tiếp khách.
+✗ 2. お通しになって — tôn kính hành động của lễ tân (cấp dưới) → sai."
+bt01-q01,bai-tap-1,1,1,mcq_blank,,「中山と申しますが、木村先生、____。」,,,"Hỏi thầy Kimura có ở đó không → tôn kính của いる = いらっしゃる.
+✓ 3. いらっしゃいますか — thầy Kimura có ở đó không ạ.
+✗ 1. ございますか — ござる là lịch sự của ある (đồ vật), không dùng cho người.
+✗ 2. おりますか — おる là khiêm nhường, không dùng cho thầy giáo.
+✗ 4. いいますか — 'gọi là / nói' → sai nghĩa."
+bt01-q02,bai-tap-1,1,2,mcq_blank,,森田先輩、論文のことでお____したいことがあるんですが。,,,"Khiêm nhường 「お + Vます + する」: お尋ねする (tôi hỏi anh/chị).
+✓ 1. たずね — お尋ねしたい: tôi muốn hỏi.
+✗ 2/3/4. たずねる・たずねて・たずねよう — sau お phải là thể ます bỏ ます (連用形), không ghép với thể từ điển/て/ý chí."
 bt01-q03,bai-tap-1,1,3,mcq_blank,,"A「山田先生、進学のことで相談したいことがあるのですが、何時までお部屋にいらっしゃいますか。」
-B「今日は4時まで____。」",,,
-bt01-q04,bai-tap-1,1,4,mcq_blank,,田中さんは何をお飲みに____か。,,,
-bt01-q05,bai-tap-1,1,5,mcq_blank,,今からパーティーが始まります。みなさん、どうぞ最後まで____ください。,,,
-bt01-q06,bai-tap-1,1,6,mcq_blank,,どうぞ遠慮なくお____ください。,,,
-bt01-q07,bai-tap-1,1,7,mcq_blank,,それについては、私の方からご説明____。,,,
+B「今日は4時まで____。」",,,"Thầy Yamada nói về chính mình với học sinh → không tự tôn kính; nói bình thường います là tự nhiên.
+✓ 3. います — hôm nay tôi ở đến 4 giờ.
+✗ 1. いらっしゃいます / 4. おいでになります — tôn kính, không dùng cho bản thân.
+✗ 2. まいります — khiêm nhường của 行く/来る ('đi/đến'), không phải 'ở'; thầy cũng không cần khiêm nhường với học sinh."
+bt01-q04,bai-tap-1,1,4,mcq_blank,,田中さんは何をお飲みに____か。,,,"Tôn kính 「お + Vます + になる」: お飲みになる.
+✓ 4. なります — anh Tanaka dùng (uống) gì ạ.
+✗ 1/2/3. います・します・あります — không tạo thành mẫu tôn kính nào. (お飲みします là khiêm nhường, cũng sai chủ thể)."
+bt01-q05,bai-tap-1,1,5,mcq_blank,,今からパーティーが始まります。みなさん、どうぞ最後まで____ください。,,,"Mời khách: 「お + Vます + ください」 = xin hãy V (tôn kính).
+✓ 1. お楽しみ — どうぞ最後までお楽しみください.
+✗ 2. お楽しんで — お + thể て là dạng không tồn tại.
+✗ 3/4. 楽しみになり・楽しみなさり — thiếu お, và không nối được với ください theo dạng này."
+bt01-q06,bai-tap-1,1,6,mcq_blank,,どうぞ遠慮なくお____ください。,,,"Mẫu mời 「お + Vます + ください」: お使いください.
+✓ 2. 使い — お使いください: xin cứ tự nhiên dùng.
+✗ 1. 使われて — お使われて không tồn tại.
+✗ 3. 使わせて — お使わせ… sai; 使わせてください là 'cho TÔI dùng'.
+✗ 4. 使って — お + thể て là sai (お使ってください)."
+bt01-q07,bai-tap-1,1,7,mcq_blank,,それについては、私の方からご説明____。,,,"Khiêm nhường 「ご + danh từ Hán + する」: ご説明する → tôi sẽ giải thích.
+✓ 3. します — 私の方からご説明します.
+✗ 1/2/4. です・います・なります — ご説明になります là tôn kính (dùng cho người khác), các dạng còn lại không phải mẫu kính ngữ."
 bt01-q08,bai-tap-1,1,8,mcq_blank,,"A「この辞書を使わせてくださいませんか。」
-B「はい、____。」",,,
+B「はい、____。」",,,"A xin dùng từ điển, B cho phép → mời A dùng bằng tôn kính 「お + Vます + ください」.
+✓ 3. お使いください — vâng, xin cứ dùng.
+✗ 1/2. 使ってくださいません/ます — câu khẳng định/phủ định kỳ lạ, không phải lời cho phép.
+✗ 4. 使わせてください — 'cho tôi dùng' → B lại đi xin phép, ngược vai."
 bt01-q09,bai-tap-1,1,9,mcq_blank,（レストランで）,"高木「6時に予約をお願いした高木ですが。」
-店員「高木様ですね。お席にご案内____。どうぞこちらへ。」",,,
+店員「高木様ですね。お席にご案内____。どうぞこちらへ。」",,,"Nhân viên nhà hàng nói hành động của mình (dẫn khách) → khiêm nhường 「ご + N + いたす」.
+✓ 1. いたします — お席にご案内いたします.
+✗ 2. なさいます — tôn kính, dùng cho khách chứ không cho mình.
+✗ 3. くださいます — 'khách làm cho tôi' → sai chủ thể.
+✗ 4. いただきます — 'được khách dẫn' → sai."
 bt01-q10,bai-tap-1,1,10,mcq_blank,,"客「あのう、この黄色いのは何のアイスクリームですか。」
-店員「パイナップルのアイスクリーム____。」",,,
+店員「パイナップルのアイスクリーム____。」",,,"Lịch sự của です là でございます (N + でございます).
+✓ 2. でございます — đây là kem dứa ạ.
+✗ 1/3/4. がございます・はございます・もございます — ございます với が/は/も là lịch sự của ある (có), nghĩa 'có kem dứa' → không trả lời được câu hỏi 'đây là gì'."
 bt02-q01,bai-tap-2,1,1,mcq_blank,,"A「先生、お荷物を____。」
-B「ありがとう。じゃあ、よろしく。」",,,
-bt02-q02,bai-tap-2,1,2,mcq_blank,,社長はいま電話に出て____ので、しばらくお待ちください。,,,
+B「ありがとう。じゃあ、よろしく。」",,,"Đề nghị làm giúp người trên → khiêm nhường 「お + Vます + しましょうか」.
+✓ 3. お持ちしましょうか — để em mang hành lý giúp thầy nhé.
+✗ 1. 持ちますか — hỏi 'thầy có mang không' → sai nghĩa, không kính ngữ.
+✗ 2. 持たされますか — thể bị sai khiến, sai nghĩa.
+✗ 4. お持ちになりますか — tôn kính: 'thầy có tự mang không' → không phải lời đề nghị giúp."
+bt02-q02,bai-tap-2,1,2,mcq_blank,,社長はいま電話に出て____ので、しばらくお待ちください。,,,"Nhân viên nói về giám đốc CÔNG TY MÌNH với khách → khiêm nhường (ウチ・ソト): 出ております.
+✓ 1. おります — 社長はいま電話に出ております.
+✗ 2/3. なさいます・されます — tôn kính giám đốc mình trước khách là sai.
+✗ 4. いたします — 電話に出ていたします không phải dạng đúng (Vて + いる khiêm nhường là おる)."
 bt02-q03,bai-tap-2,1,3,mcq_blank,（食堂で）,"客「ランチセット、お願いします。」
-店員「Aセットと Bセット、どちらに____。」",,,
+店員「Aセットと Bセット、どちらに____。」",,,"Hỏi khách chọn suất nào → 「Nにする」 (chọn N) → tôn kính なさる.
+✓ 2. なさいますか — どちらになさいますか: quý khách chọn suất nào ạ.
+✗ 1. おりますか — khiêm nhường của いる, sai nghĩa.
+✗ 3. させられますか — bị sai khiến.
+✗ 4. いただきますか — 'tôi được...' → sai chủ thể."
 bt02-q04,bai-tap-2,1,4,mcq_blank,,"客「子供服売り場はどこですか。」
-店員「6階に____。」",,,
-bt02-q05,bai-tap-2,1,5,mcq_blank,（案内文で）,「みなさんは、創立記念パーティーが5月に開かれることを____。」,,,
-bt02-q06,bai-tap-2,1,6,mcq_blank,,木下先生は何時に____。,,,
-bt02-q07,bai-tap-2,1,7,mcq_blank,,この辞書はわたしが先生に____。,,,
-bt02-q08,bai-tap-2,1,8,mcq_blank,,何か意見がある方は____ください。,,,
-bt02-q09,bai-tap-2,1,9,mcq_blank,（メールで）,山口さん、コーヒーカップのプレゼントをありがとうございました。大切に____。,,,
-bt02-q10,bai-tap-2,1,10,mcq_blank,,木村さんが書いた絵を____か。,,,
-bt03-q01,bai-tap-3,1,1,ordering,,建物の前に____ ____ __★__ ____いたします。,3,1234,
-bt03-q02,bai-tap-3,1,2,ordering,,5階にいらっしゃる____ ____ __★__ ____ください。,3,4321,
-bt03-q03,bai-tap-3,1,3,ordering,,水野さん、中村先生がお書き____ ____ __★__ ____なりましたか。,3,4123,
-bt03-q04,bai-tap-3,1,4,ordering,,荷物は私が____ ____ __★__ ____いたします。,3,2413,
-bt03-q05,bai-tap-3,1,5,ordering,,ちょっとお聞き____ ____ __★__ ____が、この辺に本屋はありませんか。,3,2134,
+店員「6階に____。」",,,"Nói quầy hàng nằm ở tầng 6 (vật/địa điểm) → lịch sự của ある = ございます.
+✓ 4. ございます — 6階にございます.
+✗ 1. おります — おる dùng cho người/vật sống.
+✗ 2. おありです — tôn kính sở hữu của người trên (先生はお時間がおありですか), không dùng cho vị trí.
+✗ 3. いらっしゃいます — tôn kính cho người."
+bt02-q05,bai-tap-2,1,5,mcq_blank,（案内文で）,「みなさんは、創立記念パーティーが5月に開かれることを____。」,,,"Hỏi mọi người có BIẾT không → tôn kính của 知っている = ご存じだ.
+✓ 2. ご存じですか — quý vị có biết không.
+✗ 1. なさいますか — 'làm', sai nghĩa.
+✗ 3. 拝見しますか — khiêm nhường của 'xem'.
+✗ 4. お目にかかりますか — khiêm nhường của 'gặp'."
+bt02-q06,bai-tap-2,1,6,mcq_blank,,木下先生は何時に____。,,,"Tôn kính 帰る: 帰られる hoặc お帰りになる.
+✓ 2. 帰られましたか — thầy Kinoshita về lúc mấy giờ ạ.
+✗ 1. 帰りしましたか — thiếu お, không có dạng này.
+✗ 3. お帰りしましたか — お~する là khiêm nhường, dùng cho thầy là sai.
+✗ 4. 帰りになられましたか — thiếu お và lại 'nhị trùng kính ngữ' (お~になる + られる)."
+bt02-q07,bai-tap-2,1,7,mcq_blank,,この辞書はわたしが先生に____。,,,"Tôi trả từ điển cho thầy → khiêm nhường 「お + Vます + する」.
+✓ 2. お返しします.
+✗ 1. お返します — thiếu し (お + 返し + します).
+✗ 3. お返しされます — lỗi お~される.
+✗ 4. お返しになります — tôn kính, dùng cho chính mình là sai."
+bt02-q08,bai-tap-2,1,8,mcq_blank,,何か意見がある方は____ください。,,,"おっしゃる (tôn kính 言う) + てください → おっしゃってください (âm tiện っ).
+✓ 3. おっしゃって.
+✗ 1. おっしゃり + ください — sai: ください nối với thể て (hoặc お~ください).
+✗ 2. おっしゃりて — không phải thể て đúng.
+✗ 4. おっしゃい — là dạng mệnh lệnh của おっしゃる, không nối ください."
+bt02-q09,bai-tap-2,1,9,mcq_blank,（メールで）,山口さん、コーヒーカップのプレゼントをありがとうございました。大切に____。,,,"Cảm ơn quà và nói MÌNH sẽ dùng cẩn thận → 「使わせていただきます」 (xin phép được dùng, khiêm nhường).
+✓ 3. 使わせていただきます.
+✗ 1. お使いください — 'xin anh hãy dùng' → sai người dùng.
+✗ 2. 使ってくださいます — 'anh dùng cho tôi' → sai.
+✗ 4. 使われております — bị động/tôn kính lẫn lộn, sai nghĩa."
+bt02-q10,bai-tap-2,1,10,mcq_blank,,木村さんが書いた絵を____か。,,,"Hỏi người nghe đã XEM tranh chưa → tôn kính 見る = ご覧になる.
+✓ 4. ごらんになりました.
+✗ 1. おみえしました — không có dạng này (お見え là 'đến').
+✗ 2. ごらんいたしました — trộn tôn kính ご覧 với khiêm nhường いたす.
+✗ 3. おみになりました — 見る không dùng mẫu お~になる (vì có từ đặc biệt ご覧になる)."
+bt03-q01,bai-tap-3,1,1,ordering,,建物の前に____ ____ __★__ ____いたします。,3,1234,"Câu đúng: 建物の前に 車を とめない ように お願い いたします (vui lòng không đỗ xe trước tòa nhà).
+Mẫu 「Vない + ようにお願いいたします」 = xin vui lòng đừng V; お願い + いたします là khiêm nhường.
+★ (vị trí 3) = 3. ように."
+bt03-q02,bai-tap-3,1,2,ordering,,5階にいらっしゃる____ ____ __★__ ____ください。,3,4321,"Câu đúng: 5階にいらっしゃる 方は こちらの エレベーターを ご利用 ください.
+「いらっしゃる方は」 làm chủ đề; 「ご + N + ください」 là mời tôn kính.
+★ (vị trí 3) = 2. エレベーターを."
+bt03-q03,bai-tap-3,1,3,ordering,,水野さん、中村先生がお書き____ ____ __★__ ____なりましたか。,3,4123,"Câu đúng: 中村先生がお書き に なった 本を ご覧に なりましたか.
+Hai lần tôn kính 「お + Vます + になる」: お書きになった (thầy viết) và ご覧になる (bạn Mizuno xem).
+★ (vị trí 3) = 2. 本を."
+bt03-q04,bai-tap-3,1,4,ordering,,荷物は私が____ ____ __★__ ____いたします。,3,2413,"Câu đúng: 荷物は私が 明日の 午後 お とどけ いたします.
+Khiêm nhường 「お + Vます + いたす」 = お届けいたします; thời gian 明日の午後 đứng trước.
+★ (vị trí 3) = 1. お."
+bt03-q05,bai-tap-3,1,5,ordering,,ちょっとお聞き____ ____ __★__ ____が、この辺に本屋はありませんか。,3,2134,"Câu đúng: ちょっとお聞き したい こと が あります が….
+「お聞きする」 (khiêm nhường) + たい → お聞きしたいことがあります = tôi có điều muốn hỏi.
+★ (vị trí 3) = 3. が."
 bt03-q06,bai-tap-3,1,6,ordering,（受付で）,"中山「すみません。予約をした中山ですが。」
-受付「はい、中山さんですね。もうすぐお呼びしますから、そちらの____ ____ __★__ ____ください。」",3,3142,
-bt03-q07,bai-tap-3,1,7,ordering,（店の案内文で）,お探しの商品が____ ____ __★__ ____ください。,3,4132,
-bt03-q08,bai-tap-3,1,8,ordering,,明日見学に行かれる方は、8時____ ____ __★__ ____ください。,3,4312,
+受付「はい、中山さんですね。もうすぐお呼びしますから、そちらの____ ____ __★__ ____ください。」",3,3142,"Câu đúng: そちらの いすに おかけ になって お待ち ください.
+Tôn kính 「お + かけ + になる」 (mời ngồi) → nối て → お待ちください.
+★ (vị trí 3) = 4. になって."
+bt03-q07,bai-tap-3,1,7,ordering,（店の案内文で）,お探しの商品が____ ____ __★__ ____ください。,3,4132,"Câu đúng: お探しの商品が 見つからない 場合は 近くの店員に おっしゃって ください.
+Điều kiện 「~場合は」 trước, rồi đối tượng 店員に + おっしゃってください (tôn kính 言う).
+★ (vị trí 3) = 3. 近くの店員に."
+bt03-q08,bai-tap-3,1,8,ordering,,明日見学に行かれる方は、8時____ ____ __★__ ____ください。,3,4312,"Câu đúng: 8時 までに 駅の 西口に お集まり ください.
+Thời hạn 「までに」 + địa điểm 「駅の西口に」 + mời 「お集まりください」.
+★ (vị trí 3) = 1. 西口に."
 bt03-q09,bai-tap-3,1,9,ordering,（電話で）,"A「すみません。____ ____ __★__ ____ことがあるのですが。」
-B「はい。どんなことでしょうか。」",3,4312,
+B「はい。どんなことでしょうか。」",3,4312,"Câu đúng: そちらの アルバイトの 募集について うかがいたい ことがあるのですが.
+うかがう = khiêm nhường của 聞く (hỏi); 「そちらの」 chỉ phía người nghe (công ty).
+★ (vị trí 3) = 1. 募集について."
 bt03-q10,bai-tap-3,1,10,ordering,,"山田「ハンナさんは今回はじめて____ ____ __★__ ____ですか。」
-ハンナ「いえ、以前にも来たことがあります。」",3,1324,
-bt04-q01,bai-tap-4,1,1,mcq_blank,,ケーキは息子のスクールのイベントから帰ってきてから家族全員で____ました。,,,
-bt04-q02,bai-tap-4,1,2,mcq_blank,,ご登録いただいた皆様、宣伝活動をして____プロデューサーの皆様ありがとうございます。,,,
-bt04-q03,bai-tap-4,1,3,mcq_blank,,あつかましいお願い恐縮ですが、貴サイトのリンクと掲載写真の転載をご許可____。,,,
-bt04-q04,bai-tap-4,1,4,mcq_blank,,当時お作りになった明太子は、冷蔵庫で5日間熟成して____必要がございます。,,,
-bt04-q05,bai-tap-4,1,5,mcq_blank,,今後、このようなことが二度と起こらないように再発防止に努めて____。,,,
-bt04-q06,bai-tap-4,1,6,mcq_blank,,午前事務所に____よろしいでしょうか。,,,
-bt04-q07,bai-tap-4,1,7,mcq_blank,,____作品は、ご自分でお作りになった未発表の作品に限ります。,,,
-bt04-q08,bai-tap-4,1,8,mcq_blank,,今日は先生に____ということで、実家で子どものころの絵を探してきました。,,,
-bt04-q09,bai-tap-4,1,9,mcq_blank,,以前に____病院にメールで面接応募をしましたが、返信がありません。,,,
-bt04-q10,bai-tap-4,1,10,mcq_blank,,代表者は、利用日当日のご予約時間までに会議室の受付へ____ください。,,,
-bt04-q11,bai-tap-4,1,11,mcq_blank,,先日____情報に基づき、オンライン登録を済ませました。,,,
-bt04-q12,bai-tap-4,1,12,mcq_blank,,____ことはわかりますが、それは無理だと思います。,,,
-bt04-q13,bai-tap-4,1,13,mcq_blank,,Aホテルの会員様だけがご参加いただけるイベント・セミナーをご案内____。,,,
-bt04-q14,bai-tap-4,1,14,mcq_blank,,基本的に、ご自身が____作品の展示となりますが、ご家族の作品は一緒に展示可能とします。,,,
-bt04-q15,bai-tap-4,1,15,mcq_blank,,「主張レッスン」も行っております。経験をつんだ専門講師が直接ご自宅まで____。,,,
-bt05-q01,bai-tap-5,1,1,ordering,,おかけになった電話番号は現在使われておりません。恐れ入りますが、____ ____ __★__ ____ください。,3,4321,
-bt05-q02,bai-tap-5,1,2,ordering,,さあ、私のこの指____ ____ __★__ ____、すてきな声で歌ってくださいね。,3,1423,
-bt05-q03,bai-tap-5,1,3,ordering,,この町には____ ____ __★__ ____所はありません。,3,1243,
-bt05-q04,bai-tap-5,1,4,ordering,,山田社長は会話術にも____ ____ __★__ ____きっと成功なさると予感しています。,3,3214,
-bt05-q05,bai-tap-5,1,5,ordering,,味はもちろん、焼き方にもこだわったパンは、お客様に____ ____ __★__ ____、焼きたてのパンをご利用しております。,3,2413,
-bt05-q06,bai-tap-5,1,6,ordering,,20時以降のご来店の場合はフリードリンクは22時ラストオーダー、____ ____ __★__ ____。,3,4321,
-bt05-q07,bai-tap-5,1,7,ordering,,お約束の時刻にロビーにご集合ください。次のホテルで他の____ ____ __★__ ____、時間厳守でお願いいたします。,3,3412,
-bt05-q08,bai-tap-5,1,8,ordering,,引き続き____ __★__ ____ ____、こちらのページで報告させていただきます。,2,1432,
-bt05-q09,bai-tap-5,1,9,ordering,,エラーが検出された場合、内部温度が下がるまではロボットの使用が____ ____ __★__ ____。,3,4132,
-bt05-q10,bai-tap-5,1,10,ordering,,この学校で使っている貸出カードはとても興味深く、____ ____ __★__ ____ところ、破ったり無くしたりした場合はその金額を弁償させるようにしているそうです。,3,2134,
-bt05-q11,bai-tap-5,1,11,ordering,,この夏こそ、ファンをはじめ、____ ____ __★__ ____みせます。,3,4132,
-bt05-q12,bai-tap-5,1,12,ordering,,当社の業務で興味を____ ____ __★__ ____ください。,3,1243,
-bt05-q13,bai-tap-5,1,13,ordering,,皆さまのあたたかいご支援に感謝を申し上げると共に、____ ____ __★__ ____。,3,2431,
-bt05-q14,bai-tap-5,1,14,ordering,,みなさん、____ ____ __★__ ____心のこもった食事はとてもうれしいと思います。,3,2143,
-bt05-q15,bai-tap-5,1,15,ordering,,顧問の岡本先生に____ ____ __★__ ____おり、来年2月の音楽会まで活動を続けるとのこと、これも驚きました。,3,4321,
-bt06-q01,bai-tap-6,1,1,mcq_blank,,山田さんは新人だから、そばで見て____くれ。,,,
-bt06-q02,bai-tap-6,1,2,mcq_blank,,おい、君。会議室での喫煙はやめて____。,,,
-bt06-q03,bai-tap-6,1,3,mcq_blank,,すみません、この字の読み方を教えて____ませんか。,,,
+ハンナ「いえ、以前にも来たことがあります。」",3,1324,"Câu đúng: ハンナさんは今回はじめて 日本 に いらっしゃった の ですか.
+いらっしゃる = tôn kính của 来る; 「~のですか」 hỏi xác nhận.
+★ (vị trí 3) = 2. いらっしゃった."
+bt04-q01,bai-tap-4,1,1,mcq_blank,,ケーキは息子のスクールのイベントから帰ってきてから家族全員で____ました。,,,"Người nói và gia đình ăn bánh → khiêm nhường của 食べる = いただく.
+✓ 4. いただき.
+✗ 1. なさい — tôn kính của する, sai động từ và sai chủ thể.
+✗ 2. お食べいたし — 食べる không dùng mẫu お~いたす (đã có từ đặc biệt いただく).
+✗ 3. うかがい — khiêm nhường của 聞く/訪ねる."
+bt04-q02,bai-tap-4,1,2,mcq_blank,,ご登録いただいた皆様、宣伝活動をして____プロデューサーの皆様ありがとうございます。,,,"Các nhà sản xuất (người được cảm ơn) đã quảng bá CHO CHÚNG TÔI → tôn kính của くれる = くださる.
+✓ 3. くださった — 宣伝活動をしてくださったプロデューサーの皆様.
+✗ 1. さしあげた — 'tôi làm cho người trên', sai hướng.
+✗ 2. いらっしゃった / 4. おっしゃった — tôn kính của いる/言う, không nối nghĩa 'làm cho'."
+bt04-q03,bai-tap-4,1,3,mcq_blank,,あつかましいお願い恐縮ですが、貴サイトのリンクと掲載写真の転載をご許可____。,,,"Xin phép rất lịch sự: 「ご + N + 願えませんでしょうか」 (thể khả năng 願える + ませんでしょうか).
+✓ 4. 願えませんでしょうか — xin cho phép có được không ạ.
+✗ 1. 願えてもいいでしょうか — 'được phép có thể xin' → lủng củng.
+✗ 2. 願うことでしょうか / 3. 願えるわけでしょうか — không phải mẫu nhờ vả."
+bt04-q04,bai-tap-4,1,4,mcq_blank,,当時お作りになった明太子は、冷蔵庫で5日間熟成して____必要がございます。,,,"Hướng dẫn khách (người làm mentaiko là khách) cần ủ trong 5 ngày → 「Vていただく必要がございます」 = cần quý khách làm V.
+✓ 1. いただく.
+✗ 2. いらっしゃる — 熟成していらっしゃる = 'đang ủ' (tôn kính trạng thái), không hợp với 必要.
+✗ 3. うかがう / 4. おっしゃる — sai nghĩa."
+bt04-q05,bai-tap-4,1,5,mcq_blank,,今後、このようなことが二度と起こらないように再発防止に努めて____。,,,"Cam kết từ nay về sau tiếp tục nỗ lực → 「Vていく」 khiêm nhường = Vてまいる.
+✓ 3. まいります — 努めてまいります: chúng tôi sẽ tiếp tục nỗ lực.
+✗ 1. いらっしゃいます — tôn kính, sai chủ thể.
+✗ 2. いたします — 努めていたします không phải dạng đúng (いたす thay する, không thay いく).
+✗ 4. いただきます — 'được (ai) nỗ lực cho' → sai."
+bt04-q06,bai-tap-4,1,6,mcq_blank,,午前事務所に____よろしいでしょうか。,,,"Xin phép đến văn phòng → khiêm nhường 「お + うかがい + する」 (dạng thường gặp: おうかがいする) + てもよろしいでしょうか.
+✓ 2. おうかがいしても.
+✗ 1. おうかがいなっても / 3. うかがいになっても — mẫu お~になる là tôn kính → dùng cho mình là sai (và 1 còn thiếu に).
+✗ 4. うかがいにしても — không phải mẫu kính ngữ."
+bt04-q07,bai-tap-4,1,7,mcq_blank,,____作品は、ご自分でお作りになった未発表の作品に限ります。,,,"Tác phẩm do người dự thi (khách) gửi → 「ご + N + いただく」: ご応募いただく作品 = tác phẩm quý vị gửi dự thi.
+✓ 3. ご応募いただく.
+✗ 1/2/4. ご応募してまいる・ご応募しておる・ご応募いたす — đều là khiêm nhường của phía MÌNH, trong khi người ứng tuyển là khách."
+bt04-q08,bai-tap-4,1,8,mcq_blank,,今日は先生に____ということで、実家で子どものころの絵を探してきました。,,,"Người nói sẽ GẶP thầy → khiêm nhường của 会う = お目にかかる.
+✓ 1. お目にかかる.
+✗ 2. お見えになる — tôn kính của 来る (thầy đến).
+✗ 3. 拝見できる — 'có thể xem' (khiêm nhường), không phải 'gặp'.
+✗ 4. ご覧になる — tôn kính 'xem', sai chủ thể."
+bt04-q09,bai-tap-4,1,9,mcq_blank,,以前に____病院にメールで面接応募をしましたが、返信がありません。,,,"Bệnh viện mà tôi đã được cho phép tham quan trước đây → 「Vさせていただいた」 (khiêm nhường, xin phép).
+✓ 1. 見学させていただいた.
+✗ 2. 見学してまいった — まいる không dùng ở dạng bổ nghĩa quá khứ như vậy (まいった nghĩa là 'chịu thua').
+✗ 3. 見学させられていた — bị bắt phải tham quan → sai nghĩa.
+✗ 4. 見学してしまった — 'lỡ tham quan', sắc thái tiếc nuối, sai."
+bt04-q10,bai-tap-4,1,10,mcq_blank,,代表者は、利用日当日のご予約時間までに会議室の受付へ____ください。,,,"Mời khách (người đại diện) đến quầy → tôn kính 来る: お越しください.
+✓ 2. お越し — 受付へお越しください.
+✗ 1. おうかがい — khiêm nhường, không dùng để mời khách.
+✗ 3/4. おうかがって・お越して — お + thể て là dạng sai."
+bt04-q11,bai-tap-4,1,11,mcq_blank,,先日____情報に基づき、オンライン登録を済ませました。,,,"Thông tin mà TÔI được quý công ty gửi cho → 「お + Vます + いただく」.
+✓ 3. お送りいただいた.
+✗ 1. お送りいたした — khiêm nhường: 'tôi đã gửi' → sai người gửi.
+✗ 2. お送ってくださった — お + thể て là sai (đúng phải là お送りくださった).
+✗ 4. お送りさしあげた — 'tôi gửi cho người trên' → sai hướng."
+bt04-q12,bai-tap-4,1,12,mcq_blank,,____ことはわかりますが、それは無理だと思います。,,,"Điều ngài NÓI thì tôi hiểu → tôn kính 言う = おっしゃる.
+✓ 1. おっしゃる — おっしゃることはわかりますが….
+✗ 2. いらっしゃる — いる/行く/来る.
+✗ 3. うかがう — khiêm nhường 'nghe/hỏi', dùng cho mình.
+✗ 4. めしあがる — 'ăn/uống'."
+bt04-q13,bai-tap-4,1,13,mcq_blank,,Aホテルの会員様だけがご参加いただけるイベント・セミナーをご案内____。,,,"Khách sạn giới thiệu sự kiện cho hội viên → khiêm nhường ご案内いたします.
+✓ 2. いたします.
+✗ 1. まいります — まいる nghĩa 'đi/đến'.
+✗ 3. なさいます — tôn kính, sai chủ thể.
+✗ 4. くださいます — 'hội viên giới thiệu cho tôi' → sai."
+bt04-q14,bai-tap-4,1,14,mcq_blank,,基本的に、ご自身が____作品の展示となりますが、ご家族の作品は一緒に展示可能とします。,,,"Tác phẩm do chính quý vị làm → tôn kính 「お + Vます + になる」: お作りになった.
+✓ 4. お作りになった.
+✗ 1/3. お作って… — お + thể て là sai.
+✗ 2. お作りにした — mẫu đúng là になる, không phải にする."
+bt04-q15,bai-tap-4,1,15,mcq_blank,,「主張レッスン」も行っております。経験をつんだ専門講師が直接ご自宅まで____。,,,"Giảng viên (phía công ty) đến tận nhà khách → khiêm nhường 訪ねる = うかがう.
+✓ 4. うかがいます.
+✗ 1. いただきます — 'nhận' → sai nghĩa.
+✗ 2. いらっしゃいます — tôn kính, dùng cho nhân viên phe mình trước khách là sai.
+✗ 3. なさいます — 'làm' (tôn kính), sai."
+bt05-q01,bai-tap-5,1,1,ordering,,おかけになった電話番号は現在使われておりません。恐れ入りますが、____ ____ __★__ ____ください。,3,4321,"Câu đúng: 番号を お確かめ になって おかけ直し ください.
+Tôn kính 「お確かめになる」 (xin kiểm tra) → て → 「おかけ直しください」 (xin gọi lại).
+★ (vị trí 3) = 2. になって."
+bt05-q02,bai-tap-5,1,2,ordering,,さあ、私のこの指____ ____ __★__ ____、すてきな声で歌ってくださいね。,3,1423,"Câu đúng: 私のこの指 で ひいて さしあげます から、すてきな声で歌ってくださいね.
+「Vてさしあげる」 = tôi làm cho người khác (ở đây: đệm đàn bằng ngón tay này cho bạn hát); から nêu lý do.
+★ (vị trí 3) = 2. さしあげます."
+bt05-q03,bai-tap-5,1,3,ordering,,この町には____ ____ __★__ ____所はありません。,3,1243,"Câu đúng: この町には 別に ご覧に なる ような 所はありません.
+「別に~ない」 = chẳng có gì đặc biệt; 「ご覧になる」 tôn kính 見る; 「~ような所」.
+★ (vị trí 3) = 4. なる."
+bt05-q04,bai-tap-5,1,4,ordering,,山田社長は会話術にも____ ____ __★__ ____きっと成功なさると予感しています。,3,3214,"Câu đúng: 会話術にも すぐれて 視野も広く持って いらっしゃいます から きっと成功なさる.
+「~にすぐれている」 = giỏi về; dạng tôn kính 「~ていらっしゃる」; から nêu lý do dẫn đến 成功なさる.
+★ (vị trí 3) = 1. いらっしゃいます."
+bt05-q05,bai-tap-5,1,5,ordering,,味はもちろん、焼き方にもこだわったパンは、お客様に____ ____ __★__ ____、焼きたてのパンをご利用しております。,3,2413,"Câu đúng: お客様に おいしく いただいて もらう ため、焼きたてのパンを….
+「おいしくいただく」 = ăn ngon (khiêm nhường 食べる); 「~てもらうため」 = để khách được ăn ngon.
+★ (vị trí 3) = 1. もらう."
+bt05-q06,bai-tap-5,1,6,ordering,,20時以降のご来店の場合はフリードリンクは22時ラストオーダー、____ ____ __★__ ____。,3,4321,"Câu đúng: ….22時ラストオーダー、お席は 23時まで で ございます.
+「N + でございます」 là lịch sự của です; 23時まで là danh từ + まで.
+★ (vị trí 3) = 2. で."
+bt05-q07,bai-tap-5,1,7,ordering,,お約束の時刻にロビーにご集合ください。次のホテルで他の____ ____ __★__ ____、時間厳守でお願いいたします。,3,3412,"Câu đúng: 次のホテルで他の お客様 が お待ち ですので、時間厳守で….
+Tôn kính 「お + Vます + です」: お待ちです = (khách khác) đang đợi.
+★ (vị trí 3) = 1. お待ち."
+bt05-q08,bai-tap-5,1,8,ordering,,引き続き____ __★__ ____ ____、こちらのページで報告させていただきます。,2,1432,"Câu đúng: 引き続き ご報告 できる ことが ございましたら、こちらのページで….
+「ご報告できる」 (khiêm nhường khả năng) + 「ことがございましたら」 (nếu có việc).
+★ (vị trí 2) = 4. できる."
+bt05-q09,bai-tap-5,1,9,ordering,,エラーが検出された場合、内部温度が下がるまではロボットの使用が____ ____ __★__ ____。,3,4132,"Câu đúng: ロボットの使用が できませんので 電源を切り 30分以上休ませて ください.
+Nêu lý do (できませんので) → hai yêu cầu nối tiếp 電源を切り、休ませてください.
+★ (vị trí 3) = 3. 30分以上休ませて."
+bt05-q10,bai-tap-5,1,10,ordering,,この学校で使っている貸出カードはとても興味深く、____ ____ __★__ ____ところ、破ったり無くしたりした場合はその金額を弁償させるようにしているそうです。,3,2134,"Câu đúng: 値段を書き込む 項目があった ので 先生にうかがった ところ、….
+「~ので」 nêu lý do; 「うかがったところ」 = khi (tôi) hỏi thầy thì…; うかがう là khiêm nhường 聞く.
+★ (vị trí 3) = 3. ので."
+bt05-q11,bai-tap-5,1,11,ordering,,この夏こそ、ファンをはじめ、____ ____ __★__ ____みせます。,3,4132,"Câu đúng: ファンをはじめ、チームを支えて くださった 皆様の ご期待にこたえて みせます.
+「Vてくださった皆様」 = quý vị đã ủng hộ (tôn kính くれる); 「ご期待にこたえる」 = đáp lại kỳ vọng.
+★ (vị trí 3) = 3. 皆様の."
+bt05-q12,bai-tap-5,1,12,ordering,,当社の業務で興味を____ ____ __★__ ____ください。,3,1243,"Câu đúng: 興味を お持ち になったことが ございましたら お教え ください.
+Tôn kính 「お持ちになる」 → 「ことがございましたら」 → mời 「お教えください」.
+★ (vị trí 3) = 4. ございましたら."
+bt05-q13,bai-tap-5,1,13,ordering,,皆さまのあたたかいご支援に感謝を申し上げると共に、____ ____ __★__ ____。,3,2431,"Câu đúng: 被災地の 一日も早い 復興を心より お祈り申し上げます.
+「お + Vます + 申し上げる」 là khiêm nhường mức cao nhất (お祈り申し上げます).
+★ (vị trí 3) = 3. 復興を心より."
+bt05-q14,bai-tap-5,1,14,ordering,,みなさん、____ ____ __★__ ____心のこもった食事はとてもうれしいと思います。,3,2143,"Câu đúng: 家族と離れて ここで過ごして いらっしゃいます から 心のこもった食事は….
+「Vていらっしゃる」 = tôn kính của ている; から nêu lý do.
+★ (vị trí 3) = 4. いらっしゃいます."
+bt05-q15,bai-tap-5,1,15,ordering,,顧問の岡本先生に____ ____ __★__ ____おり、来年2月の音楽会まで活動を続けるとのこと、これも驚きました。,3,4321,"Câu đúng: 岡本先生に うかがった ところ 3年生も 参加して おり、….
+「先生にうかがったところ」 = khi tôi hỏi thầy thì…; 「参加しており」 là dạng nối trang trọng của ている.
+★ (vị trí 3) = 2. 3年生も."
+bt06-q01,bai-tap-6,1,1,mcq_blank,,山田さんは新人だから、そばで見て____くれ。,,,"Sếp nhờ người nghe làm gì đó cho người dưới (Yamada là nhân viên mới) → 「Vてやる」 (làm cho người dưới) + くれ (mệnh lệnh nhờ của くれる).
+✓ 1. やって — 見てやってくれ: hãy trông chừng (kèm cặp) cậu ấy giúp tôi.
+✗ 2. くれて — 見てくれてくれ: lặp くれる, sai.
+✗ 3/4. やらないで・くれないで — phủ định 'đừng trông' → trái nghĩa."
+bt06-q02,bai-tap-6,1,2,mcq_blank,,おい、君。会議室での喫煙はやめて____。,,,"Cấp trên ra lệnh thẳng cho cấp dưới (おい、君) → mệnh lệnh của くれる = くれ (やめてくれ = thôi ngay đi).
+✓ 2. くれ.
+✗ 1/4. くる・こい — やめてくる/こい = 'đi thôi rồi quay lại' → sai nghĩa.
+✗ 3. もらえ — mệnh lệnh của もらえる 'hãy nhận được', không dùng ra lệnh trực tiếp người nghe."
+bt06-q03,bai-tap-6,1,3,mcq_blank,,すみません、この字の読み方を教えて____ませんか。,,,"Nhờ lịch sự: 「Vていただけませんか」 (thể khả năng いただける).
+✓ 3. いただけ.
+✗ 4. いただき — いただきませんか = 'anh không nhận à?' → không phải lời nhờ.
+✗ 1/2. いき・き — 教えていきませんか / 教えてきませんか: sai nghĩa."
 bt06-q04,bai-tap-6,1,4,mcq_blank,,"えっ、パンフレットがないんですか？
-じゃあ、鈴木さんが持っていますから、鈴木さんに見せて____ください。",,,
-bt06-q05,bai-tap-6,1,5,mcq_blank,,最近は、若い人にもっと起業して____と、大学の授業で起業に関する科目が増えてきている。,,,
-bt06-q06,bai-tap-6,1,6,mcq_blank,,すまないが、息子に数学を教えて____くれないか。,,,
-bt06-q07,bai-tap-6,1,7,ordering,,運動会でお子様が頑張っている____ ____ __★__ ____ください。,3,2413,
-bt06-q08,bai-tap-6,1,8,ordering,,教えたいけど、他の____ ____ __★__ ____？今忙しいんだ。,3,4132,
-bt06-q09,bai-tap-6,1,9,ordering,,テレビ局を____ ____ __★__ ____ませんか。,3,4132,
-bt06-q10,bai-tap-6,1,10,ordering,,せっかくの海外旅行なんだから、____ ____ __★__ ____くれよ。,3,2341,
-bt07-q01,bai-tap-7,1,1,mcq_blank,,お客様から必要な範囲の個人情報を収集させていただきます。予めご____ください。,,,
-bt07-q02,bai-tap-7,1,2,mcq_blank,,差し支えなければ先生にお目に____と存じます。,,,
-bt07-q03,bai-tap-7,1,3,mcq_blank,,打ち合わせの日程調整の件につきまして、ご返事くださいますようお願い____。,,,
-bt07-q04,bai-tap-7,1,4,mcq_blank,,いつも先生のご指導を____、ありがとうございます。,,,
-bt07-q05,bai-tap-7,1,5,mcq_blank,,お買い求めの商品は在庫状況により出荷延期の場合が____。,,,
-bt07-q06,bai-tap-7,1,6,mcq_blank,,犯罪集団から取り上げたぞうぶつの真偽をお見定め____。,,,
-bt07-q07,bai-tap-7,1,7,mcq_blank,,____学に入学希望です。お手数ですが、審査用フォームを送っていただけないでしょうか。,,,
-bt07-q08,bai-tap-7,1,8,mcq_blank,,先生から____借した専門の辞典、明日先生の研究室に返却に伺います。,,,
-bt07-q09,bai-tap-7,1,9,mcq_blank,,こちらはベルギーのチョコレートです。どうぞ____ください。,,,
-bt07-q10,bai-tap-7,1,10,mcq_blank,,得意先の部長が____。,,,
-bt08-q01,bai-tap-8,1,1,mcq_blank,,微力ながら課長をお手助け____。,,,
-bt08-q02,bai-tap-8,1,2,mcq_blank,,あのドレスを____いらっしゃる方はどなたですか。,,,
-bt08-q03,bai-tap-8,1,3,mcq_blank,,わざわざここまでお越しいただき、ご説明を____、恐縮です。,,,
-bt08-q04,bai-tap-8,1,4,mcq_blank,,社長がご愛読になる本の名前をお教え____。,,,
-bt08-q05,bai-tap-8,1,5,mcq_blank,,部長は服のセンスもよくて____ね。,,,
-bt08-q06,bai-tap-8,1,6,ordering,,安全のため、お客様のお荷物は____ ____ __★__ ____おります。,3,2341,
+じゃあ、鈴木さんが持っていますから、鈴木さんに見せて____ください。",,,"Bảo người nghe hãy nhờ Suzuki cho xem: 「(鈴木さんに)見せてもらってください」.
+✓ 2. もらって — bạn hãy nhờ anh Suzuki cho xem.
+✗ 1. あげて — 見せてあげてください = 'hãy cho anh Suzuki xem' → ngược hướng.
+✗ 3. くれて — くれてください không tồn tại.
+✗ 4. やって — 'cho Suzuki xem (người dưới)' → ngược hướng."
+bt06-q05,bai-tap-6,1,5,mcq_blank,,最近は、若い人にもっと起業して____と、大学の授業で起業に関する科目が増えてきている。,,,"Xã hội muốn người trẻ khởi nghiệp → 「Vてもらいたい」 = muốn (người khác) làm V.
+✓ 2. もらいたい.
+✗ 1. もらえない — 'không được làm cho', trái ý.
+✗ 3. くださる — kính ngữ không hợp văn viết chung, và không diễn tả mong muốn.
+✗ 4. あげる — 起業してあげる = 'khởi nghiệp giúp ai đó' → sai."
+bt06-q06,bai-tap-6,1,6,mcq_blank,,すまないが、息子に数学を教えて____くれないか。,,,"Nhờ người nghe dạy toán cho con trai mình (người dưới) → 「教えてやってくれないか」; trong lựa chọn, あげて đóng vai やって.
+✓ 1. あげて — 教えてあげてくれないか: cậu dạy giúp con trai tôi được không.
+✗ 2. くれて — くれてくれない lặp, sai.
+✗ 3. もらって — 'nhận được việc dạy' → sai hướng.
+✗ 4. くださって — tôn kính, không nối với くれないか."
+bt06-q07,bai-tap-6,1,7,ordering,,運動会でお子様が頑張っている____ ____ __★__ ____ください。,3,2413,"Câu đúng: お子様が頑張っている 姿を 是非 見て あげて ください.
+「Vてあげてください」 = xin hãy làm V cho (con) — ở đây là xem con thi đấu.
+★ (vị trí 3) = 1. 見て."
+bt06-q08,bai-tap-6,1,8,ordering,,教えたいけど、他の____ ____ __★__ ____？今忙しいんだ。,3,4132,"Câu đúng: 他の 人に 教えて もらって くれない？
+「Vてもらってくれない？」 = cậu đi nhờ người khác dạy cho được không (vì tôi đang bận).
+★ (vị trí 3) = 3. もらって."
+bt06-q09,bai-tap-6,1,9,ordering,,テレビ局を____ ____ __★__ ____ませんか。,3,4132,"Câu đúng: テレビ局を 見学したい んですが 案内して いただけ ませんか.
+「~んですが」 mở đầu lý do → nhờ 「案内していただけませんか」.
+★ (vị trí 3) = 3. 案内して."
+bt06-q10,bai-tap-6,1,10,ordering,,せっかくの海外旅行なんだから、____ ____ __★__ ____くれよ。,3,2341,"Câu đúng: 今すぐ 帰りたい なんて 言わないで くれよ.
+「~なんて」 nhấn mạnh việc bất ngờ/chê; 「言わないでくれ」 = đừng nói thế.
+★ (vị trí 3) = 4. なんて."
+bt07-q01,bai-tap-7,1,1,mcq_blank,,お客様から必要な範囲の個人情報を収集させていただきます。予めご____ください。,,,"Xin khách 'thông cảm, chấp nhận' trước → cụm cố định 「予めご了承ください」.
+✓ 2. 了承 — chấp nhận, thông cảm (dùng khi xin khách hiểu cho điều kiện của mình).
+✗ 1. 承知 — 'biết, nắm rõ' (thường dùng cho mình: 承知しました).
+✗ 3. 承諾 — đồng ý một yêu cầu cụ thể (承諾を得る).
+✗ 4. 承認 — phê duyệt chính thức."
+bt07-q02,bai-tap-7,1,2,mcq_blank,,差し支えなければ先生にお目に____と存じます。,,,"Khiêm nhường của 会う = お目にかかる → お目にかかりたいと存じます.
+✓ 3. かかりたい.
+✗ 1. 入れたい — お目に入れる là 'cho (người trên) xem'.
+✗ 2/4. 見えたい・入りたい — không có cụm お目に見える / お目に入る theo nghĩa này."
+bt07-q03,bai-tap-7,1,3,mcq_blank,,打ち合わせの日程調整の件につきまして、ご返事くださいますようお願い____。,,,"「お願い申し上げます」 là khiêm nhường mức cao của お願いします.
+✓ 1. 申し上げます.
+✗ 2. なさいます — tôn kính, dùng cho chính mình là sai.
+✗ 3. させます — sai khiến.
+✗ 4. いただきます — 'được nhờ' → sai nghĩa."
+bt07-q04,bai-tap-7,1,4,mcq_blank,,いつも先生のご指導を____、ありがとうございます。,,,"'Nhận' sự chỉ dạy của thầy → khiêm nhường của 受ける = 承る (cũng: ご指導をいただき).
+✓ 4. 承り — ご指導を承り: được thầy chỉ dạy.
+✗ 1. 差し上げ — 'biếu', ngược hướng.
+✗ 2. ください — 'xin hãy', không nối danh từ を + 、.
+✗ 3. 差し支え — 'trở ngại', sai nghĩa."
+bt07-q05,bai-tap-7,1,5,mcq_blank,,お買い求めの商品は在庫状況により出荷延期の場合が____。,,,"'Có trường hợp…' → 場合がある → lịch sự 場合がございます.
+✓ 2. ございます.
+✗ 1. でございます — = です, nhưng 場合が + です không thành câu.
+✗ 3. おります — dùng cho người/trạng thái ている.
+✗ 4. いらっしゃいます — tôn kính cho người."
+bt07-q06,bai-tap-7,1,6,mcq_blank,,犯罪集団から取り上げたぞうぶつの真偽をお見定め____。,,,"Mẫu nhờ trang trọng 「お + Vます + 願います」 (お見定め願います = xin hãy thẩm định).
+✓ 1. 願います.
+✗ 2. 願いです — không phải mẫu đúng.
+✗ 3/4. 願いします・願いいたします — thiếu お ở đầu (phải là お願いします), không ghép sau お見定め."
+bt07-q07,bai-tap-7,1,7,mcq_blank,,____学に入学希望です。お手数ですが、審査用フォームを送っていただけないでしょうか。,,,"Gọi trường của người nhận một cách tôn kính → tiền tố 貴 (貴学, 貴社, 貴校).
+✓ 4. 貴.
+✗ 2. 弊 — khiêm nhường cho bên mình (弊社).
+✗ 1. 高 / 3. 名 — 高学・名学 không phải cách gọi tôn kính trường."
+bt07-q08,bai-tap-7,1,8,mcq_blank,,先生から____借した専門の辞典、明日先生の研究室に返却に伺います。,,,"Khiêm nhường 'mượn' → 拝借 (拝 = tiền tố khiêm nhường: 拝見, 拝読, 拝借).
+✓ 1. 拝 — 先生から拝借した辞典.
+✗ 2. 貴 / 3. 御 / 4. 高 — đều là tiền tố tôn kính cho người khác, không ghép với 借."
+bt07-q09,bai-tap-7,1,9,mcq_blank,,こちらはベルギーのチョコレートです。どうぞ____ください。,,,"Mời người khác ăn → tôn kính của 食べる = 召し上がる.
+✓ 3. 召し上がって — どうぞ召し上がってください.
+✗ 1. 頂いて — khiêm nhường (tôi ăn), không dùng mời.
+✗ 2. お食い — không tồn tại, 食う còn là từ thô.
+✗ 4. 食べ — 食べください thiếu て, sai ngữ pháp."
+bt07-q10,bai-tap-7,1,10,mcq_blank,,得意先の部長が____。,,,"Tôn kính 来る = お見えになる (bản thân お見え đã là kính ngữ).
+✓ 3. お見えになりました.
+✗ 1. 見えられた — 見える + られる: kính ngữ thừa, không chuẩn.
+✗ 2. 見れました — 'đã có thể thấy' (ら抜き), sai nghĩa.
+✗ 4. お見えになられました — nhị trùng kính ngữ (お~になる + られる)."
+bt08-q01,bai-tap-8,1,1,mcq_blank,,微力ながら課長をお手助け____。,,,"Khiêm nhường mức cao 「お + Vます + 申し上げる」: お手助け申し上げます.
+✓ 2. 申し上げます.
+✗ 1. 申されます — 申す (khiêm) + れる (tôn) → mâu thuẫn.
+✗ 3. 申し出します — 申し出る là 'đề xuất', không phải đuôi kính ngữ.
+✗ 4. 申しかかります — không tồn tại."
+bt08-q02,bai-tap-8,1,2,mcq_blank,,あのドレスを____いらっしゃる方はどなたですか。,,,"Tôn kính của 着る = 召す (お召しになる). 'Người đang mặc chiếc váy kia' → 召していらっしゃる.
+✓ 1. 召して.
+✗ 2. 召し上がって — là 'ăn/uống'.
+✗ 3. お召にして — sai mẫu (đúng là お召しになって).
+✗ 4. 召した — 召したいらっしゃる sai, phải là thể て."
+bt08-q03,bai-tap-8,1,3,mcq_blank,,わざわざここまでお越しいただき、ご説明を____、恐縮です。,,,"'Được nghe giải thích' → khiêm nhường 承る (受ける/聞く).
+✓ 4. 承り — ご説明を承り、恐縮です.
+✗ 1. なさり — tôn kính, sai chủ thể (người nói nghe giải thích).
+✗ 2. 致し — 'tôi giải thích' → sai, người giải thích là đối phương.
+✗ 3. 差し支え — 'trở ngại', sai nghĩa."
+bt08-q04,bai-tap-8,1,4,mcq_blank,,社長がご愛読になる本の名前をお教え____。,,,"Mẫu nhờ 「お + Vます + 願います」: お教え願います = xin hãy cho tôi biết.
+✓ 1. 願います.
+✗ 2. くださいます — câu tường thuật 'ngài dạy cho', không phải lời nhờ.
+✗ 3. なさいます — お教えなさいます không phải mẫu đúng.
+✗ 4. いたします — お教えいたします = 'tôi sẽ chỉ cho' → ngược nghĩa."
+bt08-q05,bai-tap-8,1,5,mcq_blank,,部長は服のセンスもよくて____ね。,,,"Khen tính chất của trưởng phòng: 「Aくて + いらっしゃる」 = tôn kính của いる/だ cho tính từ.
+✓ 2. いらっしゃいます — センスもよくていらっしゃいますね.
+✗ 1. ございます — dùng cho mình/vật, không tôn kính người trên (よくてございます sai dạng).
+✗ 3. おります — khiêm nhường.
+✗ 4. あります — không nối được với よくて."
+bt08-q06,bai-tap-8,1,6,ordering,,安全のため、お客様のお荷物は____ ____ __★__ ____おります。,3,2341,"Câu đúng: お客様のお荷物は すべて 預からせて いただくことに なって おります.
+「Vさせていただく」 (xin phép làm) + 「ことになっておる」 (theo quy định).
+★ (vị trí 3) = 4. いただくことに."
 bt08-q07,bai-tap-8,1,7,ordering,,"A「中野先生のご専門は何ですか。」
-B「私も、よく分からないですけど、____ ____ __★__ ____みたいですよ。」",3,4213,
-bt08-q08,bai-tap-8,1,8,ordering,,20日までに____ __★__ ____ ____できます。,2,3241,
-bt08-q09,bai-tap-8,1,9,ordering,,人間は____ ____ __★__ ____おりません。,3,4231,
-bt08-q10,bai-tap-8,1,10,ordering,,出席欠席の____ ____ __★__ ____ようお願いいたします。,3,4132,
-bt09-q01,bai-tap-9,1,1,mcq_blank,,他のお客様のご迷惑になりますので、館内での喫煙は____ようお願いいたします。,,,
+B「私も、よく分からないですけど、____ ____ __★__ ____みたいですよ。」",3,4213,"Câu đúng: 日米関係に ついて 研究して おいでになる みたいですよ.
+「Vておいでになる」 = tôn kính của ている (giống ていらっしゃる).
+★ (vị trí 3) = 1. 研究して."
+bt08-q08,bai-tap-8,1,8,ordering,,20日までに____ __★__ ____ ____できます。,2,3241,"Câu đúng: 20日までに お申し込み いただければ 今月中に お届け できます.
+「ご/お + N + いただければ」 (nếu quý khách đăng ký) → 「お届けできます」 (khiêm nhường khả năng).
+★ (vị trí 2) = 2. いただければ."
+bt08-q09,bai-tap-8,1,9,ordering,,人間は____ ____ __★__ ____おりません。,3,4231,"Câu đúng: 人間は お金のために 生きている とは 私はそう存じて おりません.
+「~とは存じておりません」 = tôi không nghĩ rằng… (存じる khiêm nhường của 思う/知る).
+★ (vị trí 3) = 3. とは."
+bt08-q10,bai-tap-8,1,10,ordering,,出席欠席の____ ____ __★__ ____ようお願いいたします。,3,4132,"Câu đúng: 出席欠席の いかんによらず 同封した 葉書にて お返事くださる ようお願いいたします.
+「~のいかんによらず」 = bất kể; 「葉書にて」 = bằng bưu thiếp; 「お返事くださるようお願いいたします」.
+★ (vị trí 3) = 3. 葉書にて."
+bt09-q01,bai-tap-9,1,1,mcq_blank,,他のお客様のご迷惑になりますので、館内での喫煙は____ようお願いいたします。,,,"Mẫu 「ご + N + くださるようお願いいたします」 = xin quý khách vui lòng V.
+✓ 3. ご遠慮くださる.
+✗ 1. ご遠慮いただく — ご遠慮いただくようお願い… nghe được nhưng mẫu chuẩn sau 'よう' khi nhờ trực tiếp là くださる; đề chọn くださる.
+✗ 2. ご遠慮になれる — tôn kính khả năng 'có thể kiêng', sai nghĩa.
+✗ 4. ご遠慮なさる — tôn kính khẳng định, không hợp mẫu nhờ."
 bt09-q02,bai-tap-9,1,2,mcq_blank,,"A「すみませんが、博物館内でのカメラやビデオは____。」
-B「そうですか、どうもすみません。」",,,
-bt09-q03,bai-tap-9,1,3,mcq_blank,,ご意見を____たく、アンケートを同封させていただきます。,,,
-bt09-q04,bai-tap-9,1,4,mcq_blank,,二十四時間どなたでも本会館のすべてのスポーツ施設を____。,,,
-bt09-q05,bai-tap-9,1,5,mcq_blank,,長い間ご無沙汰しておりますが、お元気でいらっしゃいますか。一度____と思っておりますが、ご都合はいかがでしょう。,,,
-bt09-q06,bai-tap-9,1,6,mcq_blank,,お客様、申し訳ございませんが、あちらの方たちにお席を____わけには参りませんでしょうか。,,,
-bt09-q07,bai-tap-9,1,7,mcq_blank,,オーストラリアに渡った叔母さんのことはよく____。,,,
+B「そうですか、どうもすみません。」",,,"Cấm/nhờ khéo bằng mẫu cố định 「ご遠慮願います」 = xin vui lòng không (chụp ảnh).
+✓ 2. ご遠慮願います.
+✗ 1. ご遠慮くださいます — câu tường thuật 'ngài kiêng cho tôi', không phải lời yêu cầu.
+✗ 3. ご遠慮致します — 'tôi xin kiêng' → người kiêng thành mình, sai.
+✗ 4. ご遠慮なさいます — tường thuật tôn kính, không phải yêu cầu."
+bt09-q03,bai-tap-9,1,3,mcq_blank,,ご意見を____たく、アンケートを同封させていただきます。,,,"'Được nghe' ý kiến của khách → khiêm nhường 承る; 「承りたく」 = muốn được nghe.
+✓ 4. 承り.
+✗ 1. お聞かせし — お聞かせする = 'tôi cho ngài nghe' → ngược hướng.
+✗ 2. 受け付け — 受け付けたく nghe như xử lý hồ sơ, không kính ngữ.
+✗ 3. お聞きされ — lỗi お~される."
+bt09-q04,bai-tap-9,1,4,mcq_blank,,二十四時間どなたでも本会館のすべてのスポーツ施設を____。,,,"'Ai cũng CÓ THỂ sử dụng' → tôn kính khả năng 「ご + N + になれる」.
+✓ 1. ご利用になれます.
+✗ 2. ご利用できます — ご~できる là khiêm nhường khả năng (tôi có thể…), dùng cho khách là sai.
+✗ 3. ご利用いたします — khiêm nhường, sai chủ thể.
+✗ 4. ご利用なさいます — tôn kính nhưng không mang nghĩa 'có thể'."
+bt09-q05,bai-tap-9,1,5,mcq_blank,,長い間ご無沙汰しておりますが、お元気でいらっしゃいますか。一度____と思っておりますが、ご都合はいかがでしょう。,,,"Người viết muốn GẶP người nhận → khiêm nhường 会う = お目にかかる.
+✓ 4. お目にかかりたい.
+✗ 1. ご覧になりたい — tôn kính 'xem', dùng cho mình là sai.
+✗ 2. お目にかけたい / 3. ご覧に入れたい — 'cho (người trên) xem', sai nghĩa."
+bt09-q06,bai-tap-9,1,6,mcq_blank,,お客様、申し訳ございませんが、あちらの方たちにお席を____わけには参りませんでしょうか。,,,"Nhờ khách nhường ghế: 「お + Vます + いただく + わけには参りませんでしょうか」 = có thể nhờ quý khách… được không.
+✓ 4. お譲りいただく.
+✗ 1. お譲りできる — 'tôi có thể nhường' → sai người nhường.
+✗ 2. お譲りになれる — 'khách có thể nhường' (tôn kính khả năng) nhưng không thành lời nhờ với わけにはいかない.
+✗ 3. お譲りいたす — khiêm nhường của mình, sai."
+bt09-q07,bai-tap-9,1,7,mcq_blank,,オーストラリアに渡った叔母さんのことはよく____。,,,"Biết về dì của MÌNH (phe mình, không phải người trên cần tôn) → 「存じております」.
+✓ 3. 存じております.
+✗ 1. 存じ上げております — 存じ上げる chỉ dùng khi đối tượng là NGƯỜI cần kính (biết ngài A), không dùng cho người nhà mình.
+✗ 2. 存じていらっしゃいます — trộn khiêm & tôn.
+✗ 4. ご存じでおります — ご存じ là tôn kính, đi với おる là sai."
 bt09-q08,bai-tap-9,1,8,mcq_blank,,"A「そのマフラー、よくお似合いですね。」
-B「ありがとうございます。三島部長の奥様に____んです。」",,,
-bt09-q09,bai-tap-9,1,9,mcq_blank,,先日はお招きいただきまして、ありがとうございました。とても____ございました。,,,
-bt09-q10,bai-tap-9,1,10,mcq_blank,,参加を希望される方は、申し込み用紙に____。,,,
-bt10-q01,bai-tap-10,1,1,mcq_blank,,同封のアンケートは、質問に____上でポストにお入れくださいますようにお願いいいたします。,,,
-bt10-q02,bai-tap-10,1,2,mcq_blank,,今週一週間に限って____お客様に粗品を差し上げます。,,,
-bt10-q03,bai-tap-10,1,3,mcq_blank,,お客様に、ご案内____。ただいま6階におきまして全国連合ブックフェアを開いております。,,,
+B「ありがとうございます。三島部長の奥様に____んです。」",,,"Tôi NHẬN chiếc khăn từ phu nhân trưởng phòng → khiêm nhường của もらう = ちょうだいする.
+✓ 1. ちょうだいした — 奥様にちょうだいしたんです.
+✗ 2. くださった — chủ ngữ phải là phu nhân (奥様が), nhưng câu dùng 奥様に → không khớp.
+✗ 3. さし上げる — 'tôi biếu', ngược hướng.
+✗ 4. いただく — thì hiện tại không hợp (đã nhận rồi); đúng phải là いただいた."
+bt09-q09,bai-tap-9,1,9,mcq_blank,,先日はお招きいただきまして、ありがとうございました。とても____ございました。,,,"Tính từ đuôi い + ございます → biến âm 'ゅう': 楽しい → 楽しゅうございます (rất trang trọng).
+✓ 1. 楽しゅう.
+✗ 2. 楽しい — 楽しいございます không đúng.
+✗ 3. 楽しう — viết sai, phải là しゅう.
+✗ 4. 楽そう — 'trông có vẻ nhàn', sai nghĩa."
+bt09-q10,bai-tap-9,1,10,mcq_blank,,参加を希望される方は、申し込み用紙に____。,,,"Yêu cầu trang trọng 「ご + N + 願います」: ご記入願います = xin vui lòng điền.
+✓ 2. ご記入願います.
+✗ 1. ご記入なさってお願いします — dài dòng và lẫn lộn.
+✗ 3. ご記入してお願いします — ご~する là khiêm nhường của mình → sai.
+✗ 4. ご記入し願います — không phải mẫu đúng."
+bt10-q01,bai-tap-10,1,1,mcq_blank,,同封のアンケートは、質問に____上でポストにお入れくださいますようにお願いいいたします。,,,"Sau khi QUÝ KHÁCH trả lời xong… → 「お + Vます + いただいた上で」.
+✓ 4. お答えいただいた.
+✗ 1. お答えになった — tôn kính, đúng chủ thể nhưng mẫu 'nhờ' trong thư khảo sát dùng いただく (đề chọn いただいた).
+✗ 2. お答えされた — lỗi お~される.
+✗ 3. お答えいたした — khiêm nhường, sai chủ thể."
+bt10-q02,bai-tap-10,1,2,mcq_blank,,今週一週間に限って____お客様に粗品を差し上げます。,,,"Khách đến cửa hàng (cho chúng tôi) → 「ご + N + くださった」.
+✓ 2. ご来店くださった.
+✗ 1. ご来店いたした — khiêm nhường, sai chủ thể.
+✗ 3. ご来店していたした — dạng sai.
+✗ 4. ご来店してくださった — thừa して; mẫu đúng là ご来店くださる."
+bt10-q03,bai-tap-10,1,3,mcq_blank,,お客様に、ご案内____。ただいま6階におきまして全国連合ブックフェアを開いております。,,,"Thông báo trang trọng: 「ご案内申し上げます」 (khiêm nhường mức cao).
+✓ 3. 申し上げます.
+✗ 1. いただきます — 'được khách giới thiệu' → sai.
+✗ 2. いたしてございます — dạng thừa, không dùng.
+✗ 4. させられております — bị sai khiến, sai nghĩa."
 bt10-q04,bai-tap-10,1,4,mcq_blank,,"A「吉田さんは、お幸せですね。奥様がおきれいで____から。」
-B「いや、とんでもない。」",,,
-bt10-q05,bai-tap-10,1,5,mcq_blank,,あのう、久保教授でいらっしゃいますか。私、先日、教授の講演会で____伊藤と申します。,,,
-bt10-q06,bai-tap-10,1,6,mcq_blank,,安倍教授はもう30年も中国史を研究して____そうです。,,,
-bt10-q07,bai-tap-10,1,7,mcq_blank,,これからも子どものための番組製作の努力を続けて____と存じます。,,,
-bt10-q08,bai-tap-10,1,8,mcq_blank,,社長もこの事件は____いらっしゃいますか。,,,
+B「いや、とんでもない。」",,,"Khen vợ của người nghe (người ngoài) xinh → tôn kính: きれいでいらっしゃる.
+✓ 3. いらっしゃる.
+✗ 1. おる / 4. いたす — khiêm nhường, hạ thấp vợ người khác.
+✗ 2. なさる — きれいでなさる không tồn tại."
+bt10-q05,bai-tap-10,1,5,mcq_blank,,あのう、久保教授でいらっしゃいますか。私、先日、教授の講演会で____伊藤と申します。,,,"Tôi đã GẶP giáo sư ở buổi diễn thuyết → khiêm nhường 会う = お目にかかる.
+✓ 1. お目にかかった.
+✗ 2. お伺いした — 'đã đến thăm/hỏi', không phải 'gặp'.
+✗ 3. ご覧になった / 4. お会いになった — tôn kính, dùng cho mình là sai."
+bt10-q06,bai-tap-10,1,6,mcq_blank,,安倍教授はもう30年も中国史を研究して____そうです。,,,"Giáo sư đã nghiên cứu 30 năm → 「Vておいでになる」 = tôn kính của ている.
+✓ 4. おいでになる — 研究しておいでになる.
+✗ 1. ご覧にいれる — 'cho xem'.
+✗ 2. ご覧になる — 研究してご覧になる = 'thử nghiên cứu xem', sai nghĩa.
+✗ 3. お越しになる — chỉ có nghĩa 'đến/đi', không thay ている."
+bt10-q07,bai-tap-10,1,7,mcq_blank,,これからも子どものための番組製作の努力を続けて____と存じます。,,,"Cam kết của bên mình 'tiếp tục nỗ lực' → Vていく khiêm nhường = Vてまいる.
+✓ 3. まいりたい — 続けてまいりたいと存じます.
+✗ 1. なさりたい — tôn kính cho mình là sai.
+✗ 2. おりたい — 続けておりたい nghĩa 'muốn đang tiếp tục', không tự nhiên.
+✗ 4. いたしたい — いたす thay する, không thay いく."
+bt10-q08,bai-tap-10,1,8,mcq_blank,,社長もこの事件は____いらっしゃいますか。,,,"Hỏi giám đốc có BIẾT vụ này không → tôn kính: ご存じでいらっしゃいますか.
+✓ 4. ご存じで.
+✗ 1. 伺って / 3. 承って — khiêm nhường 'nghe', dùng cho giám đốc là sai.
+✗ 2. 存じて — 存じる là khiêm nhường."
 bt10-q09,bai-tap-10,1,9,mcq_blank,,"A「すみません。お写真を____よろしいでしょうか。」
-B「ええ、かまいませんよ。」",,,
-bt10-q10,bai-tap-10,1,10,mcq_blank,,荒木教授が丁寧に____おかげで、論文を書き上げることができました。心をこめて深く感謝しております。,,,
-bt11-q01,bai-tap-11,1,1,mcq_blank,,このたびの報道で皆様に大変ご心配をおかけしましたことを心より____。申し訳ございませんでした。」,,,
+B「ええ、かまいませんよ。」",,,"Xin phép được XEM ảnh của người nghe → 「拝見させていただいてもよろしいでしょうか」.
+✓ 2. 拝見させていただいて.
+✗ 1. 拝見してくださって — 'ngài xem cho tôi' + 拝見 (khiêm) → mâu thuẫn.
+✗ 3. 拝見になって — trộn khiêm 拝見 với tôn お~になる.
+✗ 4. 拝見されて — 拝見 + される: mâu thuẫn."
+bt10-q10,bai-tap-10,1,10,mcq_blank,,荒木教授が丁寧に____おかげで、論文を書き上げることができました。心をこめて深く感謝しております。,,,"Nhờ giáo sư (chủ ngữ là 荒木教授が) chỉ dẫn cho tôi → tôn kính của くれる: ご指導くださった.
+✓ 2. ご指導くださった.
+✗ 3. ご指導いただいた — chủ ngữ phải là TÔI (私が教授にご指導いただいた); câu dùng 教授が nên không khớp.
+✗ 1. ご指導さしあげた — 'tôi chỉ dẫn cho giáo sư' → ngược.
+✗ 4. ご指導なさった — tôn kính nhưng thiếu ý 'làm cho tôi', không hợp với おかげで."
+bt11-q01,bai-tap-11,1,1,mcq_blank,,このたびの報道で皆様に大変ご心配をおかけしましたことを心より____。申し訳ございませんでした。」,,,"Xin lỗi trang trọng nhất: 「お詫び申し上げます」.
+✓ 1. おわび申し上げます.
+✗ 2. おわびいただきます — 'được (ai) xin lỗi', sai chủ thể.
+✗ 3. わびていただきます — 'nhờ ai đó xin lỗi' → sai.
+✗ 4. わびていらっしゃいます — tôn kính, dùng cho mình là sai."
 bt11-q02,bai-tap-11,1,2,mcq_blank,,"面接官「おそれいりますが、この料理屋に向ける資格は____。」
-応募者「はい、調理師の資格をお持ちしています。」",,,
+応募者「はい、調理師の資格をお持ちしています。」",,,"Người phỏng vấn hỏi ứng viên có bằng không → tôn kính sở hữu 「お持ちです」.
+✓ 3. お持ちですか.
+✗ 1. お持ちいただけますか — 'có thể mang giùm không' → sai nghĩa.
+✗ 2. お持ちになりますか — 'có mang đi không' (hành động), không phải 'có sở hữu'.
+✗ 4. お持ちしますか — khiêm nhường, sai chủ thể.
+(Lưu ý: câu trả lời của ứng viên trong đề 「お持ちしています」 là sai — đúng ra phải là 「持っております」.)"
 bt11-q03,bai-tap-11,1,3,mcq_blank,,"店員「こちらのキャンピングカーは、中古車ですが、____新車と変わらないくらいきれいです。」
-客「そうですね。」",,,
-bt11-q04,bai-tap-11,1,4,mcq_blank,,貴社の製品に興味を持ちました。一度お時間をいただき、もう少しお話を____いただければと思っております。,,,
-bt11-q05,bai-tap-11,1,5,mcq_blank,,石原先生が私に毎日熱心に指導を____。そのおかげで志望校の東大へ合格できました。本当にお世話になり、ありがとうございました。,,,
-bt11-q06,bai-tap-11,1,6,mcq_blank,,悩んでいる時は、誰かに話を____気が楽になったり、少し状況を冷静に見ることができるようになったりします。,,,
-bt11-q07,bai-tap-11,1,7,mcq_blank,,私は、娘がやりたいことはなるべく____と思っています。,,,
+客「そうですね。」",,,"Nhân viên nói với khách 'như quý khách thấy đấy' → 「ご覧のように」.
+✓ 1. ご覧のように.
+✗ 2. ご覧いただくために — 'để khách xem', sai nghĩa.
+✗ 3. 拝見したとおり / 4. 拝見したきり — khiêm nhường, dùng cho hành động xem của khách là sai."
+bt11-q04,bai-tap-11,1,4,mcq_blank,,貴社の製品に興味を持ちました。一度お時間をいただき、もう少しお話を____いただければと思っております。,,,"Xin được NGHE chuyện → cho tôi nghe = 聞かせていただく.
+✓ 3. 聞かせて — お話を聞かせていただければ.
+✗ 1. 聞いて — 聞いていただく = 'nhờ ngài nghe tôi' → ngược.
+✗ 2. 聞けて — không nối ていただく được.
+✗ 4. 聞かれて — bị động, sai."
+bt11-q05,bai-tap-11,1,5,mcq_blank,,石原先生が私に毎日熱心に指導を____。そのおかげで志望校の東大へ合格できました。本当にお世話になり、ありがとうございました。,,,"Chủ ngữ là 石原先生が, người nhận là 私 → 「Vてくださいました」.
+✓ 2. してくださいました.
+✗ 4. していただきました — chủ ngữ phải là 私 (私が先生に指導していただいた); câu dùng 先生が → không khớp.
+✗ 1. いらっしゃいました / 3. まいりました — không nối với 指導を."
+bt11-q06,bai-tap-11,1,6,mcq_blank,,悩んでいる時は、誰かに話を____気が楽になったり、少し状況を冷静に見ることができるようになったりします。,,,"Chỉ cần NHỜ ai nghe mình nói là đã nhẹ lòng → 「聞いてもらうだけで」.
+✓ 2. 聞いてもらうだけで.
+✗ 1. 聞いてあげることは — 'nghe cho người khác', sai hướng (người đang buồn là mình).
+✗ 3. 聞いてくれることに — ngữ pháp không nối được với 気が楽になる.
+✗ 4. 聞いてやるだけが — sai hướng và sai nghĩa."
+bt11-q07,bai-tap-11,1,7,mcq_blank,,私は、娘がやりたいことはなるべく____と思っています。,,,"Cha mẹ muốn CHO con (người dưới) làm điều con muốn → 「やらせてやりたい」 (sai khiến cho phép + てやる).
+✓ 1. やらせてやりたい.
+✗ 2. やらせていただく — khiêm nhường, 'tôi xin được làm'.
+✗ 3. やらせてもらった / 4. やらせてくれた — quá khứ và sai hướng (con cho tôi làm)."
 bt11-q08,bai-tap-11,1,8,mcq_blank,,"A「ごめんごめん。この前借りた本、きょう返そうと思っていたのに、持ってくるの忘れちゃった。」
-B「ああ、別に急がないから、次に会う時に____よ。」",,,
-bt11-q09,bai-tap-11,1,9,mcq_blank,,もしこちらに____ことがありましたら、ぜひお立ち寄りください。,,,
-bt11-q10,bai-tap-11,1,10,mcq_blank,,皆さんは、最近になって木造建築が見直されていることを____。,,,
-bt11-q11,bai-tap-11,1,11,mcq_blank,,当商品はクレジットカード決済限定にてご注文を____。,,,
+B「ああ、別に急がないから、次に会う時に____よ。」",,,"Bạn bè nói chuyện thân mật: 'lần sau mang trả cũng được' → 「持ってきてくれればいい」.
+✓ 3. 持ってきてくれればいい.
+✗ 1. 持ってきてくれるはずだ — 'chắc là sẽ mang', sai ý.
+✗ 2/4. 持ってきてあげる… — 'tôi mang cho cậu' → ngược hướng (người mượn là A)."
+bt11-q09,bai-tap-11,1,9,mcq_blank,,もしこちらに____ことがありましたら、ぜひお立ち寄りください。,,,"Nếu NGÀI có dịp đến đây → tôn kính 来る = おいでになる.
+✓ 4. おいでになる.
+✗ 1. まいる — khiêm nhường, dùng cho người nghe là sai.
+✗ 2. お目にかかる — 'gặp' (khiêm).
+✗ 3. ご覧になる — 'xem'."
+bt11-q10,bai-tap-11,1,10,mcq_blank,,皆さんは、最近になって木造建築が見直されていることを____。,,,"Hỏi người nghe có biết không → câu hỏi: ご存じでしょうか.
+✓ 2. ご存じでしょうか.
+✗ 1. ご存じです — câu khẳng định, không hỏi được.
+✗ 3. ご存じのようです / 4. ご存じなのでしょう — phỏng đoán, không phải câu hỏi trực tiếp."
+bt11-q11,bai-tap-11,1,11,mcq_blank,,当商品はクレジットカード決済限定にてご注文を____。,,,"Cửa hàng nhận đơn hàng → khiêm nhường 受ける = うけたまわる (ご注文をうけたまわります).
+✓ 4. うけたまわります.
+✗ 1. 申し上げます — 'nói', không đi với ご注文を.
+✗ 2. 差し上げます — 'biếu', sai.
+✗ 3. いたします — ご注文をいたします = 'tôi đặt hàng' → sai chủ thể."
 bt11-q12,bai-tap-11,1,12,mcq_blank,,"店員「お客様、なにか____、ご案内いたしますが。」
-客「あ、居間に敷くカーペットを探しているんです。」",,,
+客「あ、居間に敷くカーペットを探しているんです。」",,,"Nhân viên hỏi khách đang TÌM gì → tôn kính 「お + Vます + です」: お探しでしたら.
+✓ 1. お探しでしたら.
+✗ 2. 探してくださいましたら — 'nếu khách tìm cho tôi', sai nghĩa.
+✗ 3. お探ししましたら — khiêm nhường, chủ thể thành nhân viên.
+✗ 4. 探させていただきましたら — 'nếu tôi được phép tìm', sai."
 bt11-q13,bai-tap-11,1,13,mcq_blank,,"山本「石原さん、ギターが欲しいって言っていましたよね。私の息子が使っていたギターがあるんです。よければどうですか。」
 石原「いいんですか。」
-山本「はい。息子に聞いたら、弾いてくれる方がいるなら、ぜひと言っていたので、どうぞもらって____。」",,,
-bt11-q14,bai-tap-11,1,14,mcq_blank,,今、世界はコロナウイルスでたくさんの尊い命が奪われ、当たり前のことが当たり前ではなくなり、生きていくことの厳しさを____毎日です。,,,
-bt12-q01,bai-tap-12,1,1,mcq_blank,,入場券を____でない方は、こちらでお求めください。,,,
-bt12-q02,bai-tap-12,1,2,mcq_blank,,今回はその工場の撮影に成功したので、皆さんにも____たいと思う。,,,
-bt12-q03,bai-tap-12,1,3,mcq_blank,,ご用が____、わたくしにおっしゃってください。,,,
-bt12-q04,bai-tap-12,1,4,mcq_blank,,先生、ここがよくわからなかったのですが、もう一度____か。,,,
-bt12-q05,bai-tap-12,1,5,mcq_blank,,こちらは山田さんのお父さんで____。,,,
-bt12-q06,bai-tap-12,1,6,mcq_blank,,パーティーのご案内状をお送りしたいのですが、つきましてはご住所を____ませんでしょうか。,,,
-bt12-q07,bai-tap-12,1,7,mcq_blank,,先生は、学生たちに「テストはよくできました」と____。,,,
-bt12-q08,bai-tap-12,1,8,mcq_blank,,おじょうさまの結婚式には、ぜひわがホテルをご利用____でしょうか。,,,
-bt12-q09,bai-tap-12,1,9,mcq_blank,,本日は大変にぎやかな「春の懇親会」に____、まことにありがとうございます。,,,
-bt12-q10,bai-tap-12,1,10,mcq_blank,,すっかり寒くなって____が、皆さんはいかがお過ごしでしょうか。,,,
-bt12-q11,bai-tap-12,2,11,cloze,,(11),,,
-bt12-q12,bai-tap-12,2,12,cloze,,(12),,,
-bt12-q13,bai-tap-12,3,13,cloze,,(13),,,
-bt12-q14,bai-tap-12,3,14,cloze,,(14),,,
-bt12-q15,bai-tap-12,3,15,cloze,,(15),,,
-bt13-q01,bai-tap-13,1,1,mcq_blank,,弊社の山本という者が、午後に原稿をいただきに____ので，よろしくお願いいたします。,,,
-bt13-q02,bai-tap-13,1,2,mcq_blank,（手紙で）,師走を迎え、慌ただしい日々をお過ごしのことと____が、お元気でいらっしゃいますか。,,,
-bt13-q03,bai-tap-13,1,3,mcq_blank,,田中さんをはじめ皆様と貴重な時間を____、普段お聞きすることのないお話を伺うことができ、大変勉強になりました。,,,
-bt13-q04,bai-tap-13,1,4,mcq_blank,（メールで）,このたびは山田様がおけがをされてご入院なさったとのこと、本当に驚きました。その後の具合はいかがでございますか。一刻も早く回復____。,,,
+山本「はい。息子に聞いたら、弾いてくれる方がいるなら、ぜひと言っていたので、どうぞもらって____。」",,,"Yamamoto cho đàn của con trai mình (phe mình) → khiêm tốn 「もらってやってください」 = xin hãy nhận giùm (cho con tôi vui).
+✓ 2. やってください.
+✗ 1. やりませんか — 'không làm à', không phải lời mời nhận.
+✗ 3. いただきませんか — 'chúng ta nhận đi' → sai.
+✗ 4. いただいてください — いただく là khiêm nhường, không bảo người khác làm."
+bt11-q14,bai-tap-11,1,14,mcq_blank,,今、世界はコロナウイルスでたくさんの尊い命が奪われ、当たり前のことが当たり前ではなくなり、生きていくことの厳しさを____毎日です。,,,"'Bị buộc phải cảm nhận' sự khắc nghiệt (không tự nguyện) → thể sai khiến bị động 感じさせられる.
+✓ 4. 感じさせられる.
+✗ 3. 感じさせている — 'đang làm cho (ai) cảm thấy', chủ thể sai.
+✗ 1. 感じてもらう / 2. 感じてやる — nhờ/cho người khác cảm nhận, sai nghĩa."
+bt12-q01,bai-tap-12,1,1,mcq_blank,,入場券を____でない方は、こちらでお求めください。,,,"Tôn kính sở hữu 「お + Vます + です」: お持ちです → phủ định お持ちでない.
+✓ 1. お持ち — 入場券をお持ちでない方 = quý khách không có vé.
+✗ 2. お持ちになり — お持ちになりでない sai dạng (phải là お持ちにならない).
+✗ 3. 持ち — 持ちでない không tồn tại.
+✗ 4. 持ちにいたし — khiêm nhường và sai dạng."
+bt12-q02,bai-tap-12,1,2,mcq_blank,,今回はその工場の撮影に成功したので、皆さんにも____たいと思う。,,,"Tôi CHO mọi người xem ảnh → khiêm nhường của 見せる = お目にかける.
+✓ 3. お目にかけ — 皆さんにもお目にかけたい.
+✗ 1. 拝見し — 'tôi xem', ngược hướng.
+✗ 2. ごらんになり — 'người khác xem' (tôn kính), không đi với 皆さんに + たい của mình.
+✗ 4. お目にかかり — 'gặp', sai nghĩa."
+bt12-q03,bai-tap-12,1,3,mcq_blank,,ご用が____、わたくしにおっしゃってください。,,,"Nếu ngài CÓ việc → tôn kính của ある (sở hữu của người trên) = おありだ → おありでしたら.
+✓ 1. おありでしたら.
+✗ 2. おありましたら — おあり là danh từ hóa, phải đi với です/でしたら, không chia như động từ.
+✗ 3. いらっしゃったら — dùng cho người tồn tại, không cho 'có việc'.
+✗ 4. おっしゃったら — 'nếu nói', sai nghĩa."
+bt12-q04,bai-tap-12,1,4,mcq_blank,,先生、ここがよくわからなかったのですが、もう一度____か。,,,"Nhờ thầy giải thích lại → 「Vていただけませんか」.
+✓ 2. 説明していただけません — (thêm か) → giải thích lại giúp em được không ạ.
+✗ 1. 説明していただきます — câu khẳng định 'tôi sẽ được giải thích', không phải lời nhờ.
+✗ 3. ご説明いたします — 'tôi sẽ giải thích', ngược vai.
+✗ 4. ご説明になります — tường thuật tôn kính, không phải lời nhờ."
+bt12-q05,bai-tap-12,1,5,mcq_blank,,こちらは山田さんのお父さんで____。,,,"Bố của anh Yamada là người ngoài, cần tôn kính: でいらっしゃる (tôn kính của だ/である).
+✓ 4. いらっしゃいます — 山田さんのお父さんでいらっしゃいます.
+✗ 1. います — でいます không phải dạng đúng.
+✗ 2. おります — khiêm nhường, hạ thấp bố người khác.
+✗ 3. いられます — không phải kính ngữ chuẩn."
+bt12-q06,bai-tap-12,1,6,mcq_blank,,パーティーのご案内状をお送りしたいのですが、つきましてはご住所を____ませんでしょうか。,,,"教える là từ thuần Nhật (和語) → dùng お, không dùng ご. Trước ませんでしょうか cần thể KHẢ NĂNG 願える.
+✓ 3. お教え願え — お教え願えませんでしょうか: xin vui lòng cho biết địa chỉ được không.
+✗ 1/2. ご教え… — ご chỉ đi với từ Hán (ご説明, ご連絡), không đi với 教え.
+✗ 4. お教え願い — 願いませんでしょうか không phải thể khả năng → không thành lời nhờ."
+bt12-q07,bai-tap-12,1,7,mcq_blank,,先生は、学生たちに「テストはよくできました」と____。,,,"Thầy NÓI với học sinh → tôn kính 言う = おっしゃる.
+✓ 3. おっしゃいました.
+✗ 1. もうしました — khiêm nhường, dùng cho thầy là sai.
+✗ 2. まいりました / 4. いらっしゃいました — 'đi/đến', sai nghĩa."
+bt12-q08,bai-tap-12,1,8,mcq_blank,,おじょうさまの結婚式には、ぜひわがホテルをご利用____でしょうか。,,,"Mời khách dùng khách sạn: 「ご + N + いただけないでしょうか」 = có thể nhờ quý khách dùng… được không.
+✓ 4. いただけない.
+✗ 2. いただかない — không phải thể khả năng → không thành lời nhờ.
+✗ 1. いたせない — khiêm nhường, chủ thể là mình.
+✗ 3. なさらない — 'ngài không dùng sao', lời mời kém lịch sự hơn và sai mẫu với ご利用."
+bt12-q09,bai-tap-12,1,9,mcq_blank,,本日は大変にぎやかな「春の懇親会」に____、まことにありがとうございます。,,,"Tôi được mời đến bữa tiệc → 「お + Vます + いただき」.
+✓ 2. お招きいただき.
+✗ 1. お招きなさり / 4. お招きになり — tôn kính, đúng chủ thể người mời nhưng mẫu cảm ơn chuẩn là 'お招きいただき、ありがとうございます'; ở đây dùng なさり/になり ngay trước ありがとう là không tự nhiên.
+✗ 3. お招きいたし — 'tôi mời', ngược."
+bt12-q10,bai-tap-12,1,10,mcq_blank,,すっかり寒くなって____が、皆さんはいかがお過ごしでしょうか。,,,"Thời tiết dần lạnh → 「寒くなってまいりました」 (てくる → khiêm nhường てまいる, mở đầu thư trang trọng).
+✓ 4. まいりました.
+✗ 1. いらっしゃいました / 2. くださいました / 3. いただきました — tôn kính hoặc cho/nhận, không dùng cho thời tiết."
+bt12-q11,bai-tap-12,2,11,cloze,,(11),,,"Đến thăm nhà thầy cũ dịp đầu năm → khiêm nhường 訪ねる = うかがう: 年始にうかがって.
+✓ 1. うかがって.
+✗ 2. 頂載して — 'nhận', sai nghĩa.
+✗ 3. 拝見して — 'xem', sai nghĩa.
+✗ 4. ご覧になって — tôn kính 'xem', sai cả chủ thể."
+bt12-q12,bai-tap-12,2,12,cloze,,(12),,,"Bà cụ đã nhỏ người LẠI CÒN lưng hơi còng (cộng thêm điểm bất lợi) → 「~うえに」.
+✓ 4. 小柄なうえに.
+✗ 3. 小柄なわりに — 'tuy nhỏ người mà…' (trái kỳ vọng) → không hợp nghĩa.
+✗ 1. 大柄なうちに / 2. 大柄なものの — 'to người' mâu thuẫn với việc không với tới tay nắm."
+bt12-q13,bai-tap-12,3,13,cloze,,(13),,,"Cô giáo đã dạy cho chúng em niềm vui chơi nhạc → tôn kính của くれる: 教えてくださった.
+✓ 3. 教えてくださった.
+✗ 1. 教えてさしあげた — 'em dạy cho cô', ngược hướng.
+✗ 2. お教えにされた — dạng sai.
+✗ 4. お教えいたした — khiêm nhường 'em dạy', sai chủ thể."
+bt12-q14,bai-tap-12,3,14,cloze,,(14),,,"Muốn cô NGHE chúng em biểu diễn → 「聞いていただきたい」.
+✓ 4. 聞いていただきたい.
+✗ 1. 召してもらいたい — 召す là 'mặc/ăn', sai nghĩa.
+✗ 2. 拝見させていただきたい — 'em xin được xem', sai chủ thể và sai nghĩa (nghe chứ không phải xem).
+✗ 3. 上がってもらいたい — 'mời lên/ăn', sai nghĩa."
+bt12-q15,bai-tap-12,3,15,cloze,,(15),,,"Chào cuối thư: chúc cô giữ gìn sức khoẻ → 「お元気でお過ごしください」 (お + Vます + ください).
+✓ 2. お過ごしください.
+✗ 1. お過ごさせください — dạng sai.
+✗ 3. 過ごさせていただきます — 'em xin được sống', sai nghĩa.
+✗ 4. 過ごしていただきます — mang sắc thái ép buộc, không dùng làm lời chúc."
+bt13-q01,bai-tap-13,1,1,mcq_blank,,弊社の山本という者が、午後に原稿をいただきに____ので，よろしくお願いいたします。,,,"Người của CÔNG TY MÌNH (弊社の山本) sẽ đến chỗ khách → dùng khiêm nhường của 行く: あがる (cũng có thể うかがう・まいる).
+✓ 2. あがります — 原稿をいただきにあがります: người bên chúng tôi sẽ đến nhận bản thảo.
+✗ 1. みえます — 見える là TÔN KÍNH của 来る (dùng khi khách/người trên đến). Dùng cho nhân viên công ty mình trước mặt khách là trái quy tắc ウチ・ソト.
+✗ 3. くださいます / 4. さしあげます — động từ cho/nhận, không thay được nghĩa 'đến'.
+(Ghi chú: dữ liệu gốc từng đánh dấu đáp án 1 — đã sửa thành 2 theo quy tắc kính ngữ.)"
+bt13-q02,bai-tap-13,1,2,mcq_blank,（手紙で）,師走を迎え、慌ただしい日々をお過ごしのことと____が、お元気でいらっしゃいますか。,,,"Câu mở đầu thư: 'chắc hẳn ngài đang bận rộn' → 「~ことと存じます」 (存じる = khiêm nhường của 思う).
+✓ 3. 存じます.
+✗ 1. 致します — 'làm', sai nghĩa.
+✗ 2. 承ります — 'xin nhận/nghe', sai nghĩa.
+✗ 4. 申し上げます — 'xin nói', không đi với ~ことと."
+bt13-q03,bai-tap-13,1,3,mcq_blank,,田中さんをはじめ皆様と貴重な時間を____、普段お聞きすることのないお話を伺うことができ、大変勉強になりました。,,,"Tôi được (mọi người cho phép) cùng trải qua thời gian quý báu → 「過ごさせていただく中で」.
+✓ 4. 過ごさせていただく中で.
+✗ 3. 過ごしていただく中で — 'nhờ mọi người trải qua' → sai chủ thể.
+✗ 1/2. ~くださる一方で — 'một mặt… mặt khác' (đối lập) → sai logic (câu là 'trong quá trình')."
+bt13-q04,bai-tap-13,1,4,mcq_blank,（メールで）,このたびは山田様がおけがをされてご入院なさったとのこと、本当に驚きました。その後の具合はいかがでございますか。一刻も早く回復____。,,,"Chúc người bị thương mau hồi phục → 「回復されますように」 (れる tôn kính + ますように = cầu mong).
+✓ 1. されますように.
+✗ 2. 願ってはどうですか — 'sao không cầu mong đi' → bất lịch sự.
+✗ 3. いたしたく思います — khiêm nhường 'tôi muốn hồi phục' → sai chủ thể.
+✗ 4. していらっしゃるでしょうか — câu hỏi, không phải lời chúc."
 bt13-q05,bai-tap-13,1,5,mcq_blank,,"山田「石原先生をご存じですか｡」
-田中「石原先生ならよく____よ｡」",,,
-bt13-q06,bai-tap-13,1,6,mcq_blank,,会場でスマートフォンが使えないということは参加者には____、みんな困っていた。主催者は全員知っていたらしい。,,,
-bt13-q07,bai-tap-13,1,7,mcq_blank,,出品・輸入共に、それぞれ該当の受付期間、条件・注意事項がございますので、下記説明を____お手続きください。,,,
-bt13-q08,bai-tap-13,1,8,mcq_blank,,1日使ったヘルメットを清潔に保ち、次に装着の際は気持ちよく____｡,,,
-bt13-q09,bai-tap-13,1,9,mcq_blank,,お客さまのご都合による返品は____ので、あらかじめご了解ください。,,,
+田中「石原先生ならよく____よ｡」",,,"Biết một NGƯỜI cần tôn kính (thầy Ishihara) → 存じ上げる (khiêm nhường của 知る khi đối tượng là người).
+✓ 2. 存じ上げています.
+✗ 1. 知っていただけます — 'được ngài biết cho', sai.
+✗ 3. お目にかかれます — 'có thể gặp', không phải 'biết'.
+✗ 4. お会いになっています — tôn kính dùng cho chính mình là sai."
+bt13-q06,bai-tap-13,1,6,mcq_blank,,会場でスマートフォンが使えないということは参加者には____、みんな困っていた。主催者は全員知っていたらしい。,,,"Người tham gia KHÔNG ĐƯỢC THÔNG BÁO (bị động của sai khiến 知らせる) → 知らされておらず (dạng nối trang trọng).
+✓ 1. 知らされておらず.
+✗ 2. 知らされていないと — と không nối được với 、みんな困っていた.
+✗ 3. 知られつつも — 'dù đang bị biết', sai nghĩa.
+✗ 4. 知られたためか — 'có lẽ vì đã bị biết', trái nghĩa."
+bt13-q07,bai-tap-13,1,7,mcq_blank,,出品・輸入共に、それぞれ該当の受付期間、条件・注意事項がございますので、下記説明を____お手続きください。,,,"Sau khi QUÝ KHÁCH đã xem kỹ thì làm thủ tục → 「ご覧になった上で」 (~た上で = sau khi đã… rồi).
+✓ 3. ご覧になった上で.
+✗ 1/2. ご覧の結果・ご覧になった結果 — 'kết quả của việc xem', không hợp yêu cầu.
+✗ 4. ご覧くださった上に — 上に = 'hơn nữa', sai nghĩa."
+bt13-q08,bai-tap-13,1,8,mcq_blank,,1日使ったヘルメットを清潔に保ち、次に装着の際は気持ちよく____｡,,,"Muốn người dùng tiếp theo đội mũ thoải mái → 「かぶって頂きたい」 (muốn được ai đó làm).
+✓ 1. かぶって頂きたい.
+✗ 2. かぶらせて頂きたくない — 'không muốn được phép đội', trái nghĩa.
+✗ 3. かぶってやりたい — 'tôi muốn đội cho (người dưới)', sai.
+✗ 4. かぶらせてくれたくない — dạng sai."
+bt13-q09,bai-tap-13,1,9,mcq_blank,,お客さまのご都合による返品は____ので、あらかじめご了解ください。,,,"Từ chối lịch sự: 「Vかねます」 = không thể V được; khiêm nhường する → いたしかねます.
+✓ 4. いたしかねます — chúng tôi không thể nhận trả hàng.
+✗ 2. いたしかねません — かねない nghĩa 'có thể xảy ra (điều xấu)', trái nghĩa.
+✗ 1/3. さしあげかね… — さしあげる = 'biếu', sai nghĩa."
 bt13-q10,bai-tap-13,1,10,mcq_blank,,"A「芥川賞受賞、おめでとうございます。受賞された時のお気持ちを____。」
-B「受賞の知らせを受けた時はまったく信じられなかったですね。」",,,
-bt13-q11,bai-tap-13,1,11,mcq_blank,,子供が嫌がっているにもかかわらず無理に____のは、余計に嫌いになってしまうだけです。,,,
-bt13-q12,bai-tap-13,1,12,mcq_blank,,あまりいびきがひどいと、友人や家族から____、一緒に旅行してもらえないこともあります。,,,
-bt13-q13,bai-tap-13,1,13,mcq_blank,,去年開園する前は、ここは牛を飼い、乳を搾る農家の農場だった。広い畑が拡がり、牛の鳴き声があたりに響いて、のんびりした気分に____ところだった。,,,
-bt13-q14,bai-tap-13,1,14,mcq_blank,,私は、校内に畑を作って生徒たちに野菜を____ことを校長に提案した。,,,
-bt13-q15,bai-tap-13,1,15,mcq_blank,,リーさんはクラスで日本語が一番上手だが、これまで多くの生徒を教えてきた私に____、まだまだなんだ。,,,
-bt13-q16,bai-tap-13,1,16,mcq_blank,,経理職の立場____、コスト削減への取り組み方が魅力だと思う。単純に人件費や経費をカットするのではなく、生産設備の開発で、生産能力を上げたりしてコスト削減を実現させている。,,,
-bt13-q17,bai-tap-13,1,17,mcq_blank,,親に内緒で同棲して、一緒に住んでいることが後からばれてしまうと、無理やり____、結婚を認めてもらえなくなったりしてしまう場合があります。,,,
-bt13-q18,bai-tap-13,1,18,mcq_blank,,昨日2時間も____あげく、まずい料理を食べさせられた。,,,
-bt13-q19,bai-tap-13,1,19,mcq_blank,,ハチの巣をご自身で対処されると、万が一____大変危険です。,,,
-bt14-q01,bai-tap-14,1,1,mcq_blank,,3月21日にバスツアーを開催予定でしたが、新型コロナウイルスの感染拡大を考慮し、ご参加者の安全を第一に考えた結果、中止することにいたししました。何卒ご理解____お願い申し上げます。,,,
-bt14-q02,bai-tap-14,1,2,mcq_blank,,この度は、弊社の電話対応に不手際があり、ご迷惑をおかけしましたことを深く____,,,
-bt14-q03,bai-tap-14,1,3,mcq_blank,,契約の内容を確認させていただきましたが、1点ご変更____項目がございます。,,,
-bt14-q04,bai-tap-14,1,4,mcq_blank,,可能な限りご予算内で対応させていただきますので、是非前向きにご検討いただければ幸いに____。,,,
-bt14-q05,bai-tap-14,1,5,mcq_blank,,アンティーク商品のため、経年による多少の傷や汚れ、色落ちなどがございます。写真をよく____、購入くださいますようお願いいたします。,,,
-bt14-q06,bai-tap-14,1,6,mcq_blank,,お客様から____ご意見・ご指摘は今後の運営に反映させて参りますので、お気づきの点等がございましたら是非ともお気軽にお寄せください。,,,
-bt14-q07,bai-tap-14,1,7,mcq_blank,,具合はいかがですか。一日も早くお元気に____書中にてお見舞い申し上げます。,,,
-bt14-q08,bai-tap-14,1,8,mcq_blank,,大統領に再選されたA氏は「これまで実施してきた施策の結果を検証しつつ、計画に掲げる政策・施策を着実に実行して____」と決意を述べた。,,,
-bt14-q09,bai-tap-14,1,9,mcq_blank,,弊社は商品の発送には十分配慮しておりますが、配送時の破損による劣化等お気づきの点がございましたら、直ちに電話にてお知らせ____,,,
-bt14-q10,bai-tap-14,1,10,mcq_blank,,ご結婚おめでとうございます。今の気持ちを____,,,
-bt14-q11,bai-tap-14,1,11,mcq_blank,,素晴らしい旅館でした。ありがとうございました。また、来年のこの時期にお邪魔に____、ので、よろしくお願いいたします。,,,
-bt14-q12,bai-tap-14,1,12,mcq_blank,,新入社員の山下さんのことなんですが、仕事中におしゃべりが多くて困っているんです。課長から一言____。,,,
-bt14-q13,bai-tap-14,1,13,mcq_blank,,課長、税務署に提出する書類なんですが、なるべく早く____。,,,
-bt14-q14,bai-tap-14,1,14,mcq_blank,,この「市長のブログ」では、私が市役所の中で感じたこと、皆さんのお話を____感じたことを率直に書かせていただきたいと思っています。,,,
+B「受賞の知らせを受けた時はまったく信じられなかったですね。」",,,"Phóng viên xin người nhận giải chia sẻ cảm xúc → 「お聞かせ願えますか」 = có thể cho tôi được nghe không.
+✓ 2. お聞かせ願えますか.
+✗ 1. お聞きいただけませんか — 'nhờ ngài nghe (tôi)', ngược.
+✗ 3. お話になるでしょうか — 'liệu ngài có nói không', phỏng đoán, không phải lời nhờ.
+✗ 4. お話し申し上げましょうか — 'để tôi kể cho ngài nghe', ngược."
+bt13-q11,bai-tap-13,1,11,mcq_blank,,子供が嫌がっているにもかかわらず無理に____のは、余計に嫌いになってしまうだけです。,,,"Ép trẻ làm dù trẻ ghét → thể sai khiến: やらせる.
+✓ 4. やらせる.
+✗ 1. やりぬく — 'làm đến cùng', chủ thể là trẻ, không thể hiện việc ép.
+✗ 2. やりたがる — 'trẻ muốn làm', trái với 嫌がっている.
+✗ 3. やられる — bị động, sai."
+bt13-q12,bai-tap-13,1,12,mcq_blank,,あまりいびきがひどいと、友人や家族から____、一緒に旅行してもらえないこともあります。,,,"Bị bạn bè/gia đình GHÉT (bị động của 嫌がる) → 嫌がられ.
+✓ 2. 嫌がられ.
+✗ 1. 嫌で — 'vì ghét', chủ thể sai.
+✗ 3. 嫌がらず — 'không ghét', trái nghĩa.
+✗ 4. 嫌がらせ — 'quấy rối', danh từ, sai nghĩa."
+bt13-q13,bai-tap-13,1,13,mcq_blank,,去年開園する前は、ここは牛を飼い、乳を搾る農家の農場だった。広い畑が拡がり、牛の鳴き声があたりに響いて、のんびりした気分に____ところだった。,,,"Tâm trạng tự nhiên trở nên thư thái (không do mình chủ động) → sai khiến bị động: のんびりした気分にさせられる.
+✓ 1. させられる.
+✗ 2. しつつある — 'đang dần làm', sai nghĩa.
+✗ 3. なっている — có nghĩa gần nhưng không hợp với ~ところだった trong mô tả trải nghiệm của người khác; đề chọn させられる.
+✗ 4. されがちな — 'hay bị', sai nghĩa."
+bt13-q14,bai-tap-13,1,14,mcq_blank,,私は、校内に畑を作って生徒たちに野菜を____ことを校長に提案した。,,,"Cho/bắt học sinh trồng rau → sai khiến: 生徒たちに野菜を育てさせる.
+✓ 3. 育てさせる.
+✗ 1. 育てられる — bị động/khả năng, sai.
+✗ 2. 育たれる — 育つ là tự động từ, không có tân ngữ 野菜を.
+✗ 4. 育つ — tự động từ, không đi với を."
+bt13-q15,bai-tap-13,1,15,mcq_blank,,リーさんはクラスで日本語が一番上手だが、これまで多くの生徒を教えてきた私に____、まだまだなんだ。,,,"'Nếu để TÔI nói thì…' → 「私に言わせると」 (đưa ra đánh giá chủ quan).
+✓ 3. 言わせると.
+✗ 1/2. 言われれば・言われたら — 'nếu bị nói', sai nghĩa.
+✗ 4. 言わせて — không nối được với まだまだなんだ."
+bt13-q16,bai-tap-13,1,16,mcq_blank,,経理職の立場____、コスト削減への取り組み方が魅力だと思う。単純に人件費や経費をカットするのではなく、生産設備の開発で、生産能力を上げたりしてコスト削減を実現させている。,,,"'Nói từ lập trường người làm kế toán (xin phép được nói)' → cố định 「~の立場から言わせてもらえば」.
+✓ 4. から言わせてもらえば.
+✗ 1/3. に言わせて… — 立場に言わせる sai (phải là 立場から).
+✗ 2. から言わせてやれば — やる là 'làm cho người dưới', sai sắc thái."
+bt13-q17,bai-tap-13,1,17,mcq_blank,,親に内緒で同棲して、一緒に住んでいることが後からばれてしまうと、無理やり____、結婚を認めてもらえなくなったりしてしまう場合があります。,,,"Bị bố mẹ BẮT chia tay (không tự nguyện) → sai khiến bị động: 別れさせられる.
+✓ 1. 別れさせられたり.
+✗ 2. 別れたり — tự chia tay, mất ý 'bị ép' (無理やり).
+✗ 3. 別れられたり — bị động/khả năng, sai.
+✗ 4. 別れさせたり — 'bắt người khác chia tay', sai chủ thể."
+bt13-q18,bai-tap-13,1,18,mcq_blank,,昨日2時間も____あげく、まずい料理を食べさせられた。,,,"「~たあげく」 = sau khi… (rốt cuộc kết quả xấu). Bị bắt đợi 2 tiếng → 待たされた + あげく.
+✓ 4. 待たされた.
+✗ 2. 待たされる — あげく phải đi với thể た.
+✗ 1/3. 待たせた・待たせる — 'bắt người khác đợi', sai chủ thể."
+bt13-q19,bai-tap-13,1,19,mcq_blank,,ハチの巣をご自身で対処されると、万が一____大変危険です。,,,"'Lỡ mà bị (ong) đốt thì…' → 「Vでもしたら」 (giả định điều xấu) + bị động 刺される.
+✓ 2. 刺されでもしたら.
+✗ 1. 刺されさえしたら — 'chỉ cần bị đốt là…', sắc thái điều kiện đủ, không hợp.
+✗ 3/4. 刺させる… — sai khiến 'cho ong đốt', sai nghĩa."
+bt14-q01,bai-tap-14,1,1,mcq_blank,,3月21日にバスツアーを開催予定でしたが、新型コロナウイルスの感染拡大を考慮し、ご参加者の安全を第一に考えた結果、中止することにいたししました。何卒ご理解____お願い申し上げます。,,,"Xin khách thông cảm: 「ご理解いただきたく、お願い申し上げます」.
+✓ 3. いただきたく.
+✗ 1. 差し上げたく — 'tôi muốn biếu', sai.
+✗ 2. いたしたく — 'tôi muốn hiểu', sai chủ thể.
+✗ 4. 申し上げたく — 'tôi muốn nói', không đi với ご理解."
+bt14-q02,bai-tap-14,1,2,mcq_blank,,この度は、弊社の電話対応に不手際があり、ご迷惑をおかけしましたことを深く____,,,"Xin lỗi trang trọng: 「深くお詫び申し上げます」.
+✓ 4. お詫び申し上げます.
+✗ 1/2. 詫びでいただきます・お詫びいただきます — 'được (ai) xin lỗi', sai.
+✗ 3. 詫びでいらっしゃいます — sai dạng và tôn kính chính mình."
+bt14-q03,bai-tap-14,1,3,mcq_blank,,契約の内容を確認させていただきましたが、1点ご変更____項目がございます。,,,"'Có 1 mục muốn nhờ ngài thay đổi' → 「ご変更願いたい項目」.
+✓ 4. 願いたい.
+✗ 1. くだざりたい — sai chính tả và くださる không đi với たい.
+✗ 2. なさりたい — 'ngài muốn thay đổi', sai ý (người muốn là mình).
+✗ 3. になりたい — ご変更になりたい = tôn kính của 'muốn thay đổi' của đối phương, sai ý."
+bt14-q04,bai-tap-14,1,4,mcq_blank,,可能な限りご予算内で対応させていただきますので、是非前向きにご検討いただければ幸いに____。,,,"Cụm cố định trong thư: 「~いただければ幸いに存じます」 = tôi sẽ rất vui nếu…
+✓ 2. 存じます.
+✗ 1. 承ります / 3. 預かります / 4. 頂戴します — không đi với 幸いに."
+bt14-q05,bai-tap-14,1,5,mcq_blank,,アンティーク商品のため、経年による多少の傷や汚れ、色落ちなどがございます。写真をよく____、購入くださいますようお願いいたします。,,,"Xin khách xem kỹ ảnh RỒI MỚI mua → 「ご覧になった上で」.
+✓ 4. ご覧になった上で.
+✗ 1/2. ご覧の結果・ご覧になった結果 — 'kết quả của việc xem', sai nghĩa.
+✗ 3. ご覧くださった上に — 上に = 'hơn nữa', sai."
+bt14-q06,bai-tap-14,1,6,mcq_blank,,お客様から____ご意見・ご指摘は今後の運営に反映させて参りますので、お気づきの点等がございましたら是非ともお気軽にお寄せください。,,,"Ý kiến mà chúng tôi NHẬN từ khách → khiêm nhường của もらう = 頂戴する.
+✓ 3. 頂戴した.
+✗ 1. なさった — 'khách làm', không đi với ご意見 + から.
+✗ 2. 差し上げた — 'tôi biếu', ngược.
+✗ 4. おいでくださった — 'đến', sai nghĩa."
+bt14-q07,bai-tap-14,1,7,mcq_blank,,具合はいかがですか。一日も早くお元気に____書中にてお見舞い申し上げます。,,,"Chúc người bệnh mau KHỎE LẠI → お元気になる → tôn kính なられる + ますように.
+✓ 2. なられますように.
+✗ 1. されますように — お元気にされる không tự nhiên (する không đi với お元気に theo nghĩa này).
+✗ 3. 願ってはどうでしょうか — bất lịch sự.
+✗ 4. していらっしゃると存じ — không nối được với 書中にて."
+bt14-q08,bai-tap-14,1,8,mcq_blank,,大統領に再選されたA氏は「これまで実施してきた施策の結果を検証しつつ、計画に掲げる政策・施策を着実に実行して____」と決意を述べた。,,,"Cam kết 'sẽ tiếp tục thực hiện' → Vていく khiêm nhường = Vて参る.
+✓ 2. 参ります.
+✗ 1. いたします — いたす thay する, không thay いく.
+✗ 3. 願います / 4. 頂戴します — sai nghĩa."
+bt14-q09,bai-tap-14,1,9,mcq_blank,,弊社は商品の発送には十分配慮しておりますが、配送時の破損による劣化等お気づきの点がございましたら、直ちに電話にてお知らせ____,,,"Yêu cầu khách báo ngay → 「お + Vます + 願います」: お知らせ願います.
+✓ 1. 願います.
+✗ 2. いたします — 'tôi sẽ thông báo', ngược.
+✗ 3. なさいます — tường thuật, không phải yêu cầu.
+✗ 4. 申します — 'nói', sai."
+bt14-q10,bai-tap-14,1,10,mcq_blank,,ご結婚おめでとうございます。今の気持ちを____,,,"Xin người mới cưới chia sẻ cảm xúc → 「お聞かせ願えますか」.
+✓ 3. お聞かせ願えますか.
+✗ 1. お聞きいただけませんか — 'nhờ ngài nghe tôi', ngược.
+✗ 2. お話になるでしょうか — phỏng đoán, không phải lời nhờ.
+✗ 4. お話し申し上げましょうか — 'để tôi kể', ngược."
+bt14-q11,bai-tap-14,1,11,mcq_blank,,素晴らしい旅館でした。ありがとうございました。また、来年のこの時期にお邪魔に____、ので、よろしくお願いいたします。,,,"Tôi (khách) sẽ đến làm phiền lần nữa → khiêm nhường 「お邪魔にあがる」 (あがる = khiêm nhường của 行く).
+✓ 2. あがります.
+✗ 1. 願います — sai nghĩa.
+✗ 3. なさいます / 4. 見えます — tôn kính, dùng cho mình là sai."
+bt14-q12,bai-tap-14,1,12,mcq_blank,,新入社員の山下さんのことなんですが、仕事中におしゃべりが多くて困っているんです。課長から一言____。,,,"Nhờ trưởng phòng NÓI với nhân viên mới → tôn kính 言う = おっしゃる + てくださいませんか.
+✓ 4. おしゃってくださいませんか (chính tả đúng: おっしゃって).
+✗ 1. 申し上げてもよろしいですか — 'tôi nói được không', ngược.
+✗ 2. お詫びくださいませんか — 'xin lỗi giúp', sai nghĩa.
+✗ 3. 伺ってもよろしいでしょうか — 'tôi hỏi được không', sai."
+bt14-q13,bai-tap-14,1,13,mcq_blank,,課長、税務署に提出する書類なんですが、なるべく早く____。,,,"Nhờ khéo cấp trên: 「~ていただけると助かるんですが」 = nếu anh làm giúp thì tốt quá.
+✓ 3. 作っていただけると助かるんですが.
+✗ 1. 作っていただいてはいかがでしょうか — 'sao anh không thử nhờ ai làm' → sai.
+✗ 2. 作っていただいたと思うんですが — 'tôi nghĩ là đã được làm rồi', sai thì.
+✗ 4. 作っていただくんでしょうか — câu hỏi lơ lửng, không phải lời nhờ."
+bt14-q14,bai-tap-14,1,14,mcq_blank,,この「市長のブログ」では、私が市役所の中で感じたこと、皆さんのお話を____感じたことを率直に書かせていただきたいと思っています。,,,"Thị trưởng được (người dân) cho nghe chuyện → 「聞かせていただく中で」.
+✓ 4. 聞かせていただく中で.
+✗ 2. 聞いていただく中で — 'nhờ mọi người nghe tôi', ngược.
+✗ 1/3. ~一方で — 'mặt khác', sai logic."
 bt14-q15,bai-tap-14,1,15,mcq_blank,,"部長「田中君、今度の会議でこのプロジェクトの説明をするのは青木課長だっけ？」
-田中「はい、課長がご説明____。」",,,
+田中「はい、課長がご説明____。」",,,"Nhân viên Tanaka nói với trưởng phòng về khoá trưởng Aoki (cấp trên của Tanaka, cùng nhóm nhưng người nghe cũng là người trong công ty) → trong nội bộ vẫn tôn kính cấp trên: ご説明なさいます.
+✓ 1. なさいます.
+✗ 2. いただきます — 'được giải thích', sai chủ thể.
+✗ 3. 申します — khiêm nhường cho người trên của mình là sai trong nội bộ.
+✗ 4. 願います — 'xin hãy giải thích', sai."
 bt14-q16,bai-tap-14,1,16,mcq_blank,（電話で）,"吉井「あ、斉藤先生でいらっしゃいますか。東洋出版の吉井でございますが、今から投稿をいただきにあがってもよろしいでしょうか。」
-斉藤「すみません。まだできていないんですが。。。あと一週間ほど____。」",,,
+斉藤「すみません。まだできていないんですが。。。あと一週間ほど____。」",,,"Thầy Saito (tác giả) chưa viết xong, muốn NHỜ người biên tập chờ thêm khoảng 1 tuần → lời nhờ khéo 「Vていただくわけにはいきませんか」 = có thể nào anh chờ giúp tôi được không.
+✓ 4. 待っていただくわけにはいきませんか — người chờ là biên tập viên, thầy là người nhận ân huệ → ていただく; わけにはいきませんか làm lời nhờ mềm, ngại ngùng (vì mình là người gây chậm trễ).
+✗ 1. 待っておいでになります — tôn kính 'anh đang chờ' (tường thuật), không phải lời nhờ.
+✗ 2. お待ち申し上げております — 'tôi đang chờ anh' → ngược vai.
+✗ 3. 待たせていただくことにしましょうか — 'hay là tôi quyết định để anh chờ nhé': tự mình quyết định việc bắt người khác chờ, nghe áp đặt, không phải lời nhờ.
+(Ghi chú: dữ liệu gốc từng đánh dấu đáp án 3 — đã sửa thành 4.)"
 bt14-q17,bai-tap-14,1,17,mcq_blank,（パーティーで）,"石井「あ、山田さんはS社にお勤めなんですね。今度、スミスさんがCEOになられるそうで。」
 山田「えっ、石井さん、スミスとお知り合いなんですか。」
-石井「ええ、以前アメリカで大変お世話になりまして、よく____よ。」",,,
-bt14-q18,bai-tap-14,1,18,mcq_blank,,皆様のおかげで____ございました。,,,
-bt15-q01,bai-tap-15,1,1,mcq_blank,,指定席ですから急がなくても____。,,,
-bt15-q02,bai-tap-15,1,2,mcq_blank,,今回をもちまして無料サービスは____のでご了承ください。,,,
-bt15-q03,bai-tap-15,1,3,mcq_blank,,さきほど中村様とおっしゃる方が____。,,,
-bt15-q04,bai-tap-15,1,4,mcq_blank,,ノーベル賞を受賞された方に____、大変光栄に存じます。,,,
-bt15-q05,bai-tap-15,1,5,mcq_blank,,____お好きなものを召し上がってください。,,,
-bt15-q06,bai-tap-15,1,6,mcq_blank,,わざわざ____のに、留守をして申し訳ありません。,,,
-bt15-q07,bai-tap-15,1,7,mcq_blank,,先生におかれましては、ますますご健勝のことと____。,,,
-bt15-q08,bai-tap-15,1,8,mcq_blank,,後ほど係りの者がご用件を____ので、少々お待ちください。,,,
+石井「ええ、以前アメリカで大変お世話になりまして、よく____よ。」",,,"Biết NGƯỜI cần kính (ông Smith) → 存じ上げています.
+✓ 1. 存じ上げています.
+✗ 2. 知っていただけます — 'được ông ấy biết', sai.
+✗ 3. ご存知です — tôn kính, dùng cho chính mình là sai.
+✗ 4. 市って差し上げ — lỗi chính tả & sai nghĩa."
+bt14-q18,bai-tap-14,1,18,mcq_blank,,皆様のおかげで____ございました。,,,"Tính từ い + ございます → 楽しゅうございました (rất trang trọng).
+✓ 1. 楽しゅう.
+✗ 2/3/4. 楽しい・楽しかった・楽しくて — không ghép trực tiếp với ございました."
+bt15-q01,bai-tap-15,1,1,mcq_blank,,指定席ですから急がなくても____。,,,"'Quý khách VẪN CÓ THỂ ngồi được' → tôn kính khả năng お + Vます + になれる.
+✓ 4. おかけになれますよ.
+✗ 2. おかけになりますよ — 'ngài sẽ ngồi', không có nghĩa 'có thể'.
+✗ 1. おかけなさいますよ / 3. おかけられますよ — dạng sai."
+bt15-q02,bai-tap-15,1,2,mcq_blank,,今回をもちまして無料サービスは____のでご了承ください。,,,"Thông báo (bên mình) xin phép kết thúc dịch vụ → 「終了させていただきます」.
+✓ 3. 終了させていただきます.
+✗ 1. 終了していただきます — 'nhờ khách kết thúc', sai.
+✗ 2. 終了なさっております / 4. 終了していらっしゃいます — tôn kính dịch vụ của mình là sai."
+bt15-q03,bai-tap-15,1,3,mcq_blank,,さきほど中村様とおっしゃる方が____。,,,"Khách tên Nakamura đã ĐẾN → tôn kính của 来る = お見えになる.
+✓ 4. お見えになりました.
+✗ 1. まいられました — khiêm + tôn, mâu thuẫn.
+✗ 2. うかがってくださいました — trộn khiêm うかがう với くださる.
+✗ 3. お越しいただきました — 'tôi được ngài đến' → chủ ngữ phải là tôi, nhưng câu có 方が."
+bt15-q04,bai-tap-15,1,4,mcq_blank,,ノーベル賞を受賞された方に____、大変光栄に存じます。,,,"Tôi được GẶP người đoạt giải Nobel → khiêm nhường khả năng お目にかかれる.
+✓ 3. お目にかかれて.
+✗ 1/4. お目にかけ… — 'cho xem', sai nghĩa.
+✗ 2. お目にかかられて — khiêm + tôn kính られる mâu thuẫn."
+bt15-q05,bai-tap-15,1,5,mcq_blank,,____お好きなものを召し上がってください。,,,"Mời khách đừng ngại → tôn kính 遠慮する = ご遠慮なさる → ご遠慮なさらないで.
+✓ 2. ご遠慮なさらないで.
+✗ 1. ご遠慮いたさないで — khiêm nhường, không dùng cho khách.
+✗ 3. ご遠慮いただけないで / 4. ご遠慮させないで — sai dạng/nghĩa."
+bt15-q06,bai-tap-15,1,6,mcq_blank,,わざわざ____のに、留守をして申し訳ありません。,,,"Ngài đã cất công ĐẾN mà tôi lại vắng nhà → 「おいでいただいた」 (tôi được ngài đến).
+✓ 4. おいでいただいた.
+✗ 1. お寄りいたした — khiêm nhường, sai chủ thể.
+✗ 2. お見えされた — lỗi お~される.
+✗ 3. お越しさせた — sai khiến, sai."
+bt15-q07,bai-tap-15,1,7,mcq_blank,,先生におかれましては、ますますご健勝のことと____。,,,"Câu chào trong thư: 「ますますご健勝のことと存じます」 (tôi nghĩ rằng ngài vẫn khỏe mạnh).
+✓ 2. 存じます.
+✗ 1. 申し上げます — không đi với ~ことと.
+✗ 3. 申されます — mâu thuẫn khiêm/tôn.
+✗ 4. ご存じです — tôn kính 'ngài biết', sai nghĩa."
+bt15-q08,bai-tap-15,1,8,mcq_blank,,後ほど係りの者がご用件を____ので、少々お待ちください。,,,"Nhân viên phụ trách (phe mình) sẽ đến hỏi việc → 「伺いにまいります」 (khiêm nhường kép đúng).
+✓ 1. 伺いにまいります.
+✗ 2. 伺いに見えます / 3. 伺いにいらっしゃいます — tôn kính cho người phe mình là sai.
+✗ 4. 伺わせてまいります — sai khiến, sai."
 bt15-q09,bai-tap-15,1,9,mcq_blank,,"A「最近祖父の体調があまりよくなくて…。」
-B「それは____。」",,,
+B「それは____。」",,,"Bày tỏ đồng cảm với nỗi lo của người nghe → tôn kính trạng thái: ご心配ですね.
+✓ 2. ご心配ですね.
+✗ 1. ご心配いたしますね / 4. ご心配しておりますね — khiêm nhường 'tôi lo', không phải đồng cảm với người nghe (và ご心配する cho mình hơi lạ).
+✗ 3. ご心配させますね — sai khiến, sai."
 bt15-q10,bai-tap-15,1,10,mcq_blank,,"A「何かお飲み物を____。」
-B「ええ、ありがとうございます。」",,,
-bt15-q11,bai-tap-15,1,11,mcq_blank,,創立50周年を記念しまして、パーティーを開きますので____。,,,
-bt15-q12,bai-tap-15,1,12,mcq_blank,,どうぞ温かいうちに____。,,,
-bt15-q13,bai-tap-15,1,13,mcq_blank,,午後6時までにご連絡いただければ、本日中に____。,,,
-bt15-q14,bai-tap-15,1,14,mcq_blank,,すみません。この言葉の意味が分からないので____。,,,
-bt15-q15,bai-tap-15,1,15,mcq_blank,,お名前は存じ上げておりますが、まだ____ことはございません。,,,
-bt15-q16,bai-tap-15,1,16,mcq_blank,,昨日お送りいただいた資料にまちがいがありましたので____。,,,
-bt15-q17,bai-tap-15,1,17,mcq_blank,,____、その後お変わりございませんか。,,,
-bt15-q18,bai-tap-15,1,18,mcq_blank,,当社の製品を____ありがとうございます。,,,
-bt15-q19,bai-tap-15,1,19,mcq_blank,,ご多忙中にもかかわらず、わざわざ____恐縮でございます。,,,
-bt15-q20,bai-tap-15,1,20,mcq_blank,,突然急ぎの仕事が入ってしまったので、何人かの手を____いいですか。,,,
-bt16-q01,bai-tap-16,1,1,mcq_blank,,先生が丁寧にご説明____ので、私にもよく分かりました。,,,
-bt16-q02,bai-tap-16,1,2,mcq_blank,,皆さん、わざわざお出迎え____、ありがとうございます。,,,
-bt16-q03,bai-tap-16,1,3,mcq_blank,,本日は雨の中、遠くまで____、ありがとうございました。,,,
-bt16-q04,bai-tap-16,1,4,mcq_blank,,お客様、こちらの料理は醤油など何もつけずに、どうぞそのまま____。,,,
-bt16-q05,bai-tap-16,1,5,mcq_blank,,お忙しいのにご連絡____、本当にすみませんでした。,,,
-bt16-q06,bai-tap-16,1,6,mcq_blank,,「先生、私が荷物をお持ち____。」,,,
+B「ええ、ありがとうございます。」",,,"Đề nghị mang đồ uống cho khách → khiêm nhường お持ちいたしましょうか.
+✓ 2. お持ちいたしましょうか.
+✗ 1. お持ちなさいますか — sai dạng tôn kính.
+✗ 3. お持ちいただけますか — 'khách mang giùm được không', ngược.
+✗ 4. お持ちさしあげましょうか — sai dạng (đúng là お持ちしましょうか / 持ってさしあげましょうか)."
+bt15-q11,bai-tap-15,1,11,mcq_blank,,創立50周年を記念しまして、パーティーを開きますので____。,,,"Thông báo trang trọng: 「ご案内申し上げます」.
+✓ 3. ご案内申し上げます.
+✗ 1. ご案内存じ上げます — 存じ上げる là 'biết', sai.
+✗ 2. ご案内うけたまわります — 'nhận', sai.
+✗ 4. ご案内願います — 'xin hãy hướng dẫn', ngược."
+bt15-q12,bai-tap-15,1,12,mcq_blank,,どうぞ温かいうちに____。,,,"Mời ăn: 「おあがりください」 (あがる = tôn kính của 食べる khi dùng お~ください) hoặc 召し上がってください.
+✓ 1. おあがりください.
+✗ 2. おあがりされてください — lỗi お~される.
+✗ 3. 召し上がられてください — nhị trùng kính ngữ.
+✗ 4. お召しになってください — 'mặc', sai nghĩa."
+bt15-q13,bai-tap-15,1,13,mcq_blank,,午後6時までにご連絡いただければ、本日中に____。,,,"Chúng tôi CÓ THỂ giao trong ngày → khiêm nhường khả năng お + Vます + できる.
+✓ 3. お届けできます.
+✗ 1. お届けになれます — tôn kính khả năng, chủ thể thành khách.
+✗ 2. お届けられます — dạng sai.
+✗ 4. お届けされます — lỗi お~される."
+bt15-q14,bai-tap-15,1,14,mcq_blank,,すみません。この言葉の意味が分からないので____。,,,"Nhờ giải thích → 「ご説明いただけませんか」.
+✓ 2. ご説明いただけませんか.
+✗ 1. ご説明させていただけませんか — 'cho tôi giải thích', ngược.
+✗ 3. ご説明いただきませんか — không phải thể khả năng, không thành lời nhờ.
+✗ 4. ご説明させてくださいませんか — 'cho tôi giải thích', ngược."
+bt15-q15,bai-tap-15,1,15,mcq_blank,,お名前は存じ上げておりますが、まだ____ことはございません。,,,"Tôi chưa từng GẶP người đó → khiêm nhường お会いする.
+✓ 3. お会いした.
+✗ 1. お会いになった / 2. ご覧になった — tôn kính, dùng cho mình là sai.
+✗ 4. 拝見した — 'xem', không phải 'gặp'."
+bt15-q16,bai-tap-15,1,16,mcq_blank,,昨日お送りいただいた資料にまちがいがありましたので____。,,,"Tôi báo cáo cho người nhận → khiêm nhường ご報告いたします.
+✓ 1. ご報告いたします.
+✗ 2. ご報告になります / 4. ご報告なさいます — tôn kính, sai chủ thể.
+✗ 3. ご報告いただきます — 'được người khác báo cáo', ngược."
+bt15-q17,bai-tap-15,1,17,mcq_blank,,____、その後お変わりございませんか。,,,"Mở đầu thư theo mùa: 「寒くなってまいりましたが」.
+✓ 1. 寒くなってまいりましたが.
+✗ 2. 寒くなさっておりますが — なさる cho thời tiết, sai.
+✗ 3. 寒くなってございますが / 4. 寒くてございますが — dạng sai (đúng: 寒うございます)."
+bt15-q18,bai-tap-15,1,18,mcq_blank,,当社の製品を____ありがとうございます。,,,"Cảm ơn khách đã dùng sản phẩm → 「ご愛用いただきまして」.
+✓ 2. ご愛用いただきまして.
+✗ 1. ご愛用なさいまして — đúng chủ thể nhưng mẫu cảm ơn chuẩn dùng いただきまして; なさいまして + ありがとう không tự nhiên.
+✗ 3. ご愛用いたしまして — 'tôi dùng', ngược.
+✗ 4. ご愛用さしあげまして — sai."
+bt15-q19,bai-tap-15,1,19,mcq_blank,,ご多忙中にもかかわらず、わざわざ____恐縮でございます。,,,"Ngài đã cất công đến → 「お越しくださり」.
+✓ 4. お越しくださり.
+✗ 1. お伺いなさり — trộn khiêm うかがう với tôn なさる.
+✗ 2. おまいりになられ — sai dạng, thừa kính ngữ.
+✗ 3. いらっしゃられ — nhị trùng kính ngữ."
+bt15-q20,bai-tap-15,1,20,mcq_blank,,突然急ぎの仕事が入ってしまったので、何人かの手を____いいですか。,,,"Tôi xin mượn sức vài người → khiêm nhường お借りする + てもいいですか.
+✓ 3. お借りしても.
+✗ 1. 借りていただいても — 'nhờ người khác mượn', sai.
+✗ 2. お借りさせても — dạng sai.
+✗ 4. 借りられても — bị động, sai."
+bt16-q01,bai-tap-16,1,1,mcq_blank,,先生が丁寧にご説明____ので、私にもよく分かりました。,,,"Thầy (chủ ngữ 先生が) giải thích cho tôi → 「ご説明くださった」.
+✓ 2. くださった.
+✗ 1. いただいた — chủ ngữ phải là tôi (先生に…いただいた); câu dùng 先生が.
+✗ 3. いたした — khiêm nhường, sai chủ thể.
+✗ 4. さしあげた — 'tôi làm cho thầy', ngược."
+bt16-q02,bai-tap-16,1,2,mcq_blank,,皆さん、わざわざお出迎え____、ありがとうございます。,,,"Mọi người đã ra đón (cho tôi) → 「お出迎えくださり」.
+✓ 4. くださり.
+✗ 1/2. られて・されて — dạng sai sau お~.
+✗ 3. いただれ — không tồn tại."
+bt16-q03,bai-tap-16,1,3,mcq_blank,,本日は雨の中、遠くまで____、ありがとうございました。,,,"Cảm ơn khách đã ĐẾN dù trời mưa → 「おいでくださって」.
+✓ 1. おいでくださって.
+✗ 2. 参ってさしあげて / 3. 来てさしあげて — 'tôi đến cho ngài', ngược.
+✗ 4. 来られてくださって — nhị trùng kính ngữ."
+bt16-q04,bai-tap-16,1,4,mcq_blank,,お客様、こちらの料理は醤油など何もつけずに、どうぞそのまま____。,,,"Mời khách ăn → 「お召し上がりください」 (お + Vます + ください).
+✓ 2. お召し上がりください.
+✗ 1. お召し上がってください — お + thể て là sai.
+✗ 3. 召し上がりなさってください — thừa kính ngữ.
+✗ 4. 召し上がらせてください — 'cho tôi ăn', ngược."
+bt16-q05,bai-tap-16,1,5,mcq_blank,,お忙しいのにご連絡____、本当にすみませんでした。,,,"Cảm ơn/xin lỗi vì NGÀI đã liên lạc → 「ご連絡いただき」.
+✓ 2. いただき.
+✗ 1. 申し — ご連絡申し = 'tôi liên lạc', ngược.
+✗ 3. いたし — 'tôi liên lạc', ngược.
+✗ 4. ねがい — 'xin hãy liên lạc', sai nghĩa."
+bt16-q06,bai-tap-16,1,6,mcq_blank,,「先生、私が荷物をお持ち____。」,,,"Khiêm nhường 「お + Vます + する」: お持ちします.
+✓ 3. します.
+✗ 1/2/4. です・います・なります — お持ちです/お持ちになります là tôn kính (cho thầy), dùng cho mình là sai."
 bt16-q07,bai-tap-16,1,7,mcq_blank,,"A「今度の旅行では、珍しい本を手に入れたんですよ。ちょっとお見せ____か。」
-B「それはぜひお願いします。」",,,
-bt16-q08,bai-tap-16,1,8,mcq_blank,,先生、この本をあさってまでお借り____よろしいでしょうか。,,,
-bt16-q09,bai-tap-16,1,9,mcq_blank,,田中先生、最近先生が____ご本のことで、おうかがいしたいんですが。,,,
-bt16-q10,bai-tap-16,1,10,mcq_blank,,ここでお待ち____ください。,,,
-bt16-q11,bai-tap-16,1,11,mcq_blank,,先月引っ越しましたので、近くに____ときは、ぜひお立ち寄りください。,,,
+B「それはぜひお願いします。」",,,"Đề nghị cho người nghe xem → khiêm nhường お見せしましょう.
+✓ 1. しましょう.
+✗ 2. にしましょう — không có mẫu お~にする.
+✗ 3/4. なりましょう・になりましょう — お~になる là tôn kính, dùng cho mình là sai."
+bt16-q08,bai-tap-16,1,8,mcq_blank,,先生、この本をあさってまでお借り____よろしいでしょうか。,,,"Xin phép mượn sách → khiêm nhường お借りしても.
+✓ 2. しても.
+✗ 1. されても — lỗi お~される.
+✗ 3. なさっても / 4. くださっても — tôn kính, sai chủ thể."
+bt16-q09,bai-tap-16,1,9,mcq_blank,,田中先生、最近先生が____ご本のことで、おうかがいしたいんですが。,,,"Cuốn sách thầy VIẾT → tôn kính お書きになった.
+✓ 2. お書きになった.
+✗ 1. お書きした — khiêm nhường, sai chủ thể.
+✗ 3/4. お書かれ… — dạng sai."
+bt16-q10,bai-tap-16,1,10,mcq_blank,,ここでお待ち____ください。,,,"Mời khách đợi ở đây → 「お待ちになってください」 (tôn kính + ください).
+✓ 1. になって.
+✗ 2. して — お待ちしてください = khiêm nhường, bảo khách làm hành động khiêm nhường là sai.
+✗ 3. になさって — dạng sai.
+✗ 4. させて — 'cho tôi đợi', ngược."
+bt16-q11,bai-tap-16,1,11,mcq_blank,,先月引っ越しましたので、近くに____ときは、ぜひお立ち寄りください。,,,"Nếu NGÀI có dịp đến gần → tôn kính 来る = お越しになる.
+✓ 3. おこしになった.
+✗ 1. うかがった / 2. まいった / 4. おじゃました — khiêm nhường, dùng cho người nghe là sai."
 bt16-q12,bai-tap-16,1,12,mcq_blank,,"A「じゃ、私、お先に失礼____いただきます。」
-B「あ、おつかれさま。」",,,
+B「あ、おつかれさま。」",,,"Xin phép về trước: cố định 「お先に失礼させていただきます」.
+✓ 2. させて.
+✗ 1. して — 失礼していただきます = 'nhờ ngài thất lễ', sai.
+✗ 3. なさって — tôn kính, sai chủ thể.
+✗ 4. いたして — いたしていただく là dạng sai."
 bt16-q13,bai-tap-16,1,13,mcq_blank,,"A「課長、今日は熱があるので、____いただきたいのですが。」
-B「はい、わかりました。じゃ、お大事に。」",,,
-bt16-q14,bai-tap-16,1,14,mcq_blank,,お借りした本を楽しく____いただきました。,,,
-bt16-q15,bai-tap-16,1,15,mcq_blank,,ドアのところに私の傘を____いいですか。,,,
-bt16-q16,bai-tap-16,1,16,mcq_blank,（メールで）,田中です。先日お話があったスピーチの件なんですが、ぜひ私に____。,,,
+B「はい、わかりました。じゃ、お大事に。」",,,"Xin phép NGHỈ (người nghỉ là tôi) → 「休ませていただきたい」.
+✓ 4. 休ませて.
+✗ 1. 休まれて / 2. お休みになって — 'nhờ trưởng phòng nghỉ', ngược.
+✗ 3. お休みいたして — dạng sai với いただく."
+bt16-q14,bai-tap-16,1,14,mcq_blank,,お借りした本を楽しく____いただきました。,,,"Tôi đã đọc cuốn sách mượn một cách thích thú → cách nói khiêm nhường 「読ませていただきました」 (xin phép được đọc – cảm ơn người cho mượn).
+✓ 3. 読ませて — 楽しく読ませていただきました.
+✗ 1. 読まれて — tôn kính/bị động, dùng cho mình là sai.
+✗ 2. お読みに — お~に chỉ đi với なる (お読みになる, tôn kính người khác). 「お読みにいただく」 không đúng ngữ pháp.
+✗ 4. 読まされて — 'bị bắt đọc', trái với 楽しく.
+(Ghi chú: dữ liệu gốc từng đánh dấu đáp án 2 — đã sửa thành 3.)"
+bt16-q15,bai-tap-16,1,15,mcq_blank,,ドアのところに私の傘を____いいですか。,,,"Xin phép để ô ở cửa → 「置かせていただいてもいいですか」.
+✓ 3. 置かせていただいても.
+✗ 1. 置かせてくださっても — khá gần nhưng mẫu xin phép chuẩn là させていただいても.
+✗ 2. お置きくださっても / 4. お置きになっても — 'ngài để', sai chủ thể."
+bt16-q16,bai-tap-16,1,16,mcq_blank,（メールで）,田中です。先日お話があったスピーチの件なんですが、ぜひ私に____。,,,"Tôi xin được làm bài phát biểu → 「やらせていただけないでしょうか」.
+✓ 2. やらせていただけないでしょうか.
+✗ 1. やっていただけないでしょうか — 'nhờ ngài làm', ngược.
+✗ 3. やってもよろしいでしょうか — nghĩa gần đúng nhưng kém khiêm nhường; đề chọn mẫu させていただけないでしょうか.
+✗ 4. やらせてもよろしいでしょうか — 'để (người khác) làm có được không', sai."
 bt16-q17,bai-tap-16,1,17,mcq_blank,,"A「この仕事、だれかやってくれないかなあ。」
-B「だれもやる人がないから、私が____。」",,,
+B「だれもやる人がないから、私が____。」",,,"Không ai làm thì tôi xin làm → 「やらせていただきます」.
+✓ 1. やらせていただきます.
+✗ 2. やっていただきます — 'nhờ người khác làm', ngược.
+✗ 3. やってくださいます — 'ngài làm cho', sai.
+✗ 4. やらせていくださいます — dạng sai."
 bt16-q18,bai-tap-16,1,18,mcq_blank,,"A「これが最近書いた本ですが、あなたに差し上げますから、どうぞお読みください。」
-B「はい、____いただきます。」",,,
-bt16-q19,bai-tap-16,1,19,mcq_blank,,このたび代表として国際会議に____いただくことになりました。,,,
-bt16-q20,bai-tap-16,1,20,mcq_blank,,今日の午後はちょっと早めに____いただきたいのですが。,,,
-bt16-q21,bai-tap-16,1,21,mcq_blank,,資料をコピーしたいんですが、コピー機を____よろしいですか。,,,
-bt16-q22,bai-tap-16,1,22,mcq_blank,,私が皆様のご意見を____うえで、来週ご報告いたします。,,,
-bt16-q23,bai-tap-16,1,23,mcq_blank,,本日は素晴らしい披露宴に____、ありがとうございます。,,,
-bt16-q24,bai-tap-16,1,24,mcq_blank,,わざわざ宅配便でお送り____よろしかったのに。,,,
-bt16-q25,bai-tap-16,1,25,mcq_blank,,外線に____場合は最初に0を押してください。,,,
-bt16-q26,bai-tap-16,1,26,mcq_blank,,この件について皆様で____願いたいと思います。,,,
-bt16-q27,bai-tap-16,1,27,mcq_blank,,シンポジウムに参加してくださるかどうか、先生のご意向を伺いに____,,,
-bt16-q28,bai-tap-16,1,28,mcq_blank,,田中さんは来月こちらに____そうです。,,,
-bt16-q29,bai-tap-16,1,29,mcq_blank,,ご質問がなければ、この記者会見は____。,,,
-bt16-q30,bai-tap-16,1,30,mcq_blank,,決まりを守らない方が当アパートより____。,,,
-bt16-q31,bai-tap-16,1,31,mcq_blank,,お酒はほとんど何でも取りそろえて____。,,,
-bt16-q32,bai-tap-16,1,32,mcq_blank,,お気に____場合、料金はおただきません。,,,
+B「はい、____いただきます。」",,,"Nhận sách và nói 'xin phép được đọc/xem' → 「拝見させていただきます」.
+✓ 3. 拝見させて.
+✗ 1. 拝見して — 拝見していただきます = 'nhờ ngài xem', sai.
+✗ 2. ご覧になって / 4. ご覧にならせて — tôn kính, sai chủ thể."
+bt16-q19,bai-tap-16,1,19,mcq_blank,,このたび代表として国際会議に____いただくことになりました。,,,"Tôi được cử đi hội nghị → 「行かせていただく」 (khiêm nhường).
+✓ 2. いかせて.
+✗ 1. いかれて — tôn kính/bị động, sai.
+✗ 3. いかされて — bị bắt đi, sắc thái tiêu cực.
+✗ 4. いかせられて — dạng sai."
+bt16-q20,bai-tap-16,1,20,mcq_blank,,今日の午後はちょっと早めに____いただきたいのですが。,,,"Xin phép về sớm → 「帰らせていただきたい」.
+✓ 2. 帰らせて.
+✗ 1. 帰られて — 'nhờ ngài về', sai.
+✗ 3. 帰されて — 'bị cho về', sai sắc thái.
+✗ 4. 帰らされて — 'bị bắt về', sai."
+bt16-q21,bai-tap-16,1,21,mcq_blank,,資料をコピーしたいんですが、コピー機を____よろしいですか。,,,"Xin phép dùng máy photo → 「使わせていただいてもよろしいですか」.
+✓ 2. 使わせていただいても.
+✗ 1. 使わせてくださっても — dạng không tự nhiên với よろしいですか.
+✗ 3. 使ってあげっても — sai dạng.
+✗ 4. 使ってくれても — 'nhờ máy dùng cho', sai."
+bt16-q22,bai-tap-16,1,22,mcq_blank,,私が皆様のご意見を____うえで、来週ご報告いたします。,,,"Tôi nghe ý kiến của mọi người xong rồi báo cáo → khiêm nhường うかがう + 「~たうえで」.
+✓ 1. うかがった.
+✗ 2. うかがわれた — tôn kính khiêm nhường mâu thuẫn.
+✗ 3. うかがわせる — sai khiến, sai.
+✗ 4. うかがっている — うえで (sau khi) phải đi với thể た."
+bt16-q23,bai-tap-16,1,23,mcq_blank,,本日は素晴らしい披露宴に____、ありがとうございます。,,,"Cảm ơn vì được mời → 「お招きいただき」.
+✓ 4. お招きいただき.
+✗ 1. お招きいたし — 'tôi mời', ngược.
+✗ 2/3. お招きなさり・お招きになり — tôn kính hành động mời của đối phương, không phải mẫu cảm ơn chuẩn."
+bt16-q24,bai-tap-16,1,24,mcq_blank,,わざわざ宅配便でお送り____よろしかったのに。,,,"'Ngài không cần cất công gửi cũng được' → 「お送りくださらなくてもよろしかったのに」.
+✓ 4. くださらなくても.
+✗ 1/2. られなくても・されなくても — dạng sai sau お送り.
+✗ 3. いたさなくても — khiêm nhường, sai chủ thể."
+bt16-q25,bai-tap-16,1,25,mcq_blank,,外線に____場合は最初に0を押してください。,,,"Hướng dẫn khách gọi ra ngoài → tôn kính おかけになる.
+✓ 2. おかけになる.
+✗ 1. おかけする — khiêm nhường, sai chủ thể.
+✗ 3/4. おかけられ… — dạng sai."
+bt16-q26,bai-tap-16,1,26,mcq_blank,,この件について皆様で____願いたいと思います。,,,"Mẫu 「ご + N + 願いたい」 = muốn nhờ mọi người (thảo luận).
+✓ 3. ご相談.
+✗ 1. ご相談して — ご~する là khiêm nhường.
+✗ 2. ご相談に / 4. ご相談になって — không nối được với 願いたい."
+bt16-q27,bai-tap-16,1,27,mcq_blank,,シンポジウムに参加してくださるかどうか、先生のご意向を伺いに____,,,"Tôi đã đến để hỏi ý thầy → khiêm nhường 行く = あがる.
+✓ 1. あがりました.
+✗ 2. おいでになりました / 3. みえました — tôn kính, dùng cho mình là sai.
+✗ 4. うけたまわりました — 'nhận', sai."
+bt16-q28,bai-tap-16,1,28,mcq_blank,,田中さんは来月こちらに____そうです。,,,"Anh Tanaka (người được kính) sẽ đến đây → tôn kính お越しになる.
+✓ 2. おこしになる.
+✗ 1. おじゃまになる — dạng sai (おじゃまする là khiêm).
+✗ 3. おありになる — 'có', sai nghĩa.
+✗ 4. おいきになる — không chuẩn (đúng: いらっしゃる)."
+bt16-q29,bai-tap-16,1,29,mcq_blank,,ご質問がなければ、この記者会見は____。,,,"Bên mình xin phép kết thúc buổi họp báo → 「終わらせていただきます」.
+✓ 3. 終わらせていただきます.
+✗ 1. 終わらせてくださいます — 'ngài cho phép kết thúc' (tường thuật), sai.
+✗ 2/4. お終わり… — dạng sai."
+bt16-q30,bai-tap-16,1,30,mcq_blank,,決まりを守らない方が当アパートより____。,,,"Yêu cầu người vi phạm rời khỏi căn hộ → 「退去していただきます」 (cách nói cứng rắn nhưng lịch sự).
+✓ 1. 退去していただきます.
+✗ 2. 退去させてもらいます — 'tôi được phép rời đi' / bắt rời, sắc thái sai.
+✗ 3. 退去させてさしあげます — 'làm ơn cho rời đi', sai.
+✗ 4. 退去させていただけます — 'tôi có thể được rời đi', sai."
+bt16-q31,bai-tap-16,1,31,mcq_blank,,お酒はほとんど何でも取りそろえて____。,,,"Cửa hàng có đủ loại rượu → 「取りそろえてございます」 (Vてある lịch sự = Vてございます).
+✓ 4. ございます.
+✗ 1. いたします — 取りそろえていたします sai dạng.
+✗ 2. まいります — 'sẽ tiếp tục', sai nghĩa.
+✗ 3. なさいます — tôn kính, sai chủ thể."
+bt16-q32,bai-tap-16,1,32,mcq_blank,,お気に____場合、料金はおただきません。,,,"'Nếu không vừa ý' → お気に召す (tôn kính của 気に入る) → お気に召さない場合.
+✓ 3. 召さない.
+✗ 1/2. なさらない・ならない — お気になさらない = 'đừng bận tâm', sai nghĩa.
+✗ 4. 存じない — 'không biết', sai."
