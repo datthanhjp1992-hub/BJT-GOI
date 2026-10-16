@@ -32,16 +32,17 @@
       </div>
     {% endif %}
   {% else %}
-    <p class="muted" style="font-size:13px;margin:0 0 12px;">{% label "grammar.chapters" %} &middot; {{ total_count }} {% label "grammar.count" %}</p>
+    <p class="muted" style="font-size:13px;margin:0 0 12px;">{% label "grammar.chapters" %} &middot; <b>{{ mastered_total }}</b> / {{ total_count }} {% label "grammar.count" %} {% label "grammar.mastered" %}</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px;margin-bottom:24px;">
       {% for c in chapters %}
         <a class="card" href="{% url 'grammar:chapter' c.jp %}" style="padding:10px 14px;margin:0;text-decoration:none;color:inherit;display:block;">
           <div style="display:flex;gap:6px;align-items:baseline;">
             <span class="muted" style="font-size:12px;">{{ c.no }}.</span>
             <span class="jp" style="font-weight:600;min-width:0;">{{ c.jp }}</span>
-            <span class="muted" style="font-size:12px;margin-left:auto;">{{ c.count }}</span>
           </div>
           <div style="font-size:13.5px;margin-top:2px;">{{ c.vi }}</div>
+          <div class="bar" style="margin-top:8px;"><i class="s-hi" style="width:{{ c.percent }}%"></i></div>
+          <div class="muted" style="font-size:12px;margin-top:3px;">{% if c.mastered %}{{ c.mastered }}/{{ c.count }} {% label "grammar.mastered" %}{% if c.mastered == c.count %} ✓{% endif %}{% else %}{% label "grammar.not_started" %}{% endif %}</div>
         </a>
       {% endfor %}
     </div>

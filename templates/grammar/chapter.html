@@ -1,20 +1,59 @@
 {% extends "base.html" %}
 {% load properties_tags %}
-{% comment %}Một chương ngữ pháp (~16 mẫu) trên một trang, có chương trước/sau để học liền mạch.{% endcomment %}
+{% comment %}Học từng mẫu -- MỘT mẫu một màn hình (?i=), trang không bao giờ dài ra (spec.md rule 9).
+Trước/sau là link thường; có JS thì phím ← → bấm hộ. Đã thuộc = do bài kiểm tra chương đặt.{% endcomment %}
 
-{% block title %}{{ jp }} · {% label "grammar.title" %} | {% label "common.brand.name" %}{% endblock %}
+{% block title %}{{ pattern.pattern }} · {{ jp }} | {% label "common.brand.name" %}{% endblock %}
 
 {% block content %}
-  <div class="eyebrow">
-    <a href="{% url 'grammar:index' %}" class="action-link">{% label "grammar.chapter.back" %}</a>
+<div class="lb-wrap">
+  <div class="ex-play-head" style="display:flex;gap:12px;align-items:center;margin-bottom:14px;">
+    <a class="action-link" href="{% url 'grammar:index' %}">{% label "grammar.chapter.back" %}</a>
+    <div class="bar" style="flex:1;"><i class="s-mid" style="width:{{ percent }}%"></i></div>
+    <span class="muted text-sm">{{ i }} / {{ total }}</span>
   </div>
-  <h1 class="serif" style="font-size:28px;margin:0 0 4px;"><span class="muted" style="font-size:20px;">{{ no }}.</span> <span class="jp">{{ jp }}</span></h1>
-  <p class="muted" style="margin:0 0 18px;">{{ vi }} &middot; {{ patterns|length }} {% label "grammar.count" %}</p>
 
-  {% include "grammar/_rows.html" with rows=patterns %}
+  <p class="muted" style="margin:0 0 8px;font-size:13.5px;">{{ no }}. <span class="jp">{{ jp }}</span> · {{ vi }}
+    &middot; {{ mastered_count }}/{{ total }} {% label "grammar.mastered" %}</p>
 
-  <div class="pagination" style="justify-content:space-between;">
-    {% if prev %}<a class="tag" href="{% url 'grammar:chapter' prev %}">{% label "grammar.chapter.prev" %} <span class="jp">{{ prev }}</span></a>{% else %}<span></span>{% endif %}
-    {% if next %}<a class="tag" href="{% url 'grammar:chapter' next %}"><span class="jp">{{ next }}</span> {% label "grammar.chapter.next" %}</a>{% endif %}
+  <div class="card lb-card">
+    <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px;">
+      <span class="jp" style="font-size:28px;font-weight:600;">{{ pattern.pattern }}</span>
+      {% if pattern.level %}<span class="tag">{{ pattern.level }}</span>{% endif %}
+      {% if is_mastered %}<span class="tag t-hi">✓ {% label "grammar.mastered" %}</span>{% endif %}
+    </div>
+    <p style="font-size:18px;margin:0 0 14px;">{{ pattern.meaning_vi }}</p>
+    {% if pattern.connection_form %}<p class="muted" style="margin:0 0 14px;">{% label "grammar.connection" %} <span class="jp">{{ pattern.connection_form }}</span></p>{% endif %}
+    {% if pattern.example_jp %}
+      <div style="border-left:3px solid var(--border);padding-left:12px;margin-bottom:14px;">
+        <p class="jp" style="margin:0;font-size:17px;">{{ pattern.example_jp }}</p>
+        <p class="muted" style="margin:4px 0 0;">{{ pattern.example_vi }}</p>
+      </div>
+    {% endif %}
+    {% if pattern.note %}<p class="muted" style="margin:0;font-size:14px;">💡 {{ pattern.note }}</p>{% endif %}
   </div>
+
+  <div class="lb-actions" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;">
+    {% if i > 1 %}<a class="btn btn-outline" href="?i={{ i|add:'-1' }}" data-key="ArrowLeft">← {% label "grammar.study.prev" %}</a>{% endif %}
+    {% if i < total %}
+      <a class="btn btn-primary" href="?i={{ i|add:'1' }}" data-key="ArrowRight">{% label "grammar.study.next" %} →</a>
+    {% else %}
+      <a class="btn btn-primary" href="{% url 'grammar:quiz' jp %}?moi=1" data-key="ArrowRight">{% label "grammar.quiz.start" %} →</a>
+    {% endif %}
+    <span class="muted text-sm" style="margin-left:auto;">{% label "grammar.study.keyboard_hint" %}</span>
+  </div>
+  {% if i < total %}
+    <p style="margin-top:14px;"><a class="action-link" href="{% url 'grammar:quiz' jp %}?moi=1">{% label "grammar.quiz.start_now" %}</a></p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("keydown", function (e) {
+  if (e.ctrlKey || e.metaKey || e.altKey || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  var link = document.querySelector('[data-key="' + e.key + '"]');
+  if (link) { e.preventDefault(); link.click(); }
+});
+</script>
 {% endblock %}

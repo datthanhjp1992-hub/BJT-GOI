@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static properties_tags %}
+{% comment %}Kiểm tra cuối chương -- mỗi lần MỘT câu, chấm ngay (PRG). Dùng chung class .lb-* và
+static/js/exam_play.js với bài Kiểm tra (data-exam-autosubmit: bấm là gửi, phím 1-4 / Enter).
+Đúng -> mẫu "đã thuộc"; sai -> bỏ "đã thuộc", kết quả cuối có link học lại từng mẫu sai.{% endcomment %}
+
+{% block title %}{% label "grammar.quiz.title" %} · {{ jp }} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+<div class="lb-wrap">
+  {% if result %}
+    <div class="card lb-card">
+      <p class="muted" style="margin:0 0 6px;">{{ no }}. <span class="jp">{{ jp }}</span> · {{ vi }}</p>
+      <h1 class="serif" style="font-size:30px;margin:0 0 14px;">{{ score }} / {{ total }}</h1>
+      {% if wrong %}
+        <p style="margin:0 0 8px;">{% label "grammar.quiz.relearn" %}</p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
+          {% for n, p in wrong %}<a class="tag" href="{% url 'grammar:chapter' jp %}?i={{ n }}"><span class="jp">{{ p.pattern }}</span></a>{% endfor %}
+        </div>
+      {% else %}
+        <div class="lb-fb is-ok" role="status"><b>○ {% label "grammar.quiz.perfect" %}</b></div>
+      {% endif %}
+      <div class="lb-actions" style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a class="btn btn-primary" href="{% url 'grammar:index' %}" data-enter>{% label "grammar.chapter.back" %}</a>
+        <a class="btn btn-outline" href="?moi=1">{% label "grammar.quiz.retry" %}</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="ex-play-head" style="display:flex;gap:12px;align-items:center;margin-bottom:14px;">
+      <a class="action-link" href="{% url 'grammar:chapter' jp %}">✕ {% label "grammar.quiz.quit" %}</a>
+      <div class="bar" style="flex:1;"><i class="s-mid" style="width:{{ percent }}%"></i></div>
+      <span class="muted text-sm">{{ i }} / {{ total }}</span>
+    </div>
+
+    <div class="card lb-card">
+      <div class="lb-qhead" style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <span class="tag"><span class="jp">{{ jp }}</span></span>
+        <span class="muted text-sm">{% label "grammar.quiz.correct_so_far" %} {{ score }}</span>
+      </div>
+      <p class="lb-ask">{% if question.kind == "cloze" %}{% label "grammar.quiz.ask.cloze" %}{% else %}{% label "grammar.quiz.ask.meaning" %}{% endif %}</p>
+      <div class="ex-prompt{% if question.kind == 'cloze' %} is-sentence jp{% else %} is-vi{% endif %}" style="margin-bottom:16px;font-size:19px;">{{ question.prompt }}</div>
+
+      {% if answered %}
+        <div class="lb-opts">
+          {% for o in question.options %}
+            <div class="lb-opt{% if o.id == question.answer_id %} is-ok{% elif o.id == chosen %} is-ng{% endif %}">
+              <span class="n">{{ forloop.counter }}</span><span class="t jp">{{ o.text }}</span>
+              {% if o.id == question.answer_id %}<span class="mk">○</span>{% elif o.id == chosen %}<span class="mk">×</span>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+        {% if is_correct %}
+          <div class="lb-fb is-ok" role="status"><b>○ {% label "exam.play.correct" %}</b> · {% label "grammar.quiz.now_mastered" %}</div>
+        {% else %}
+          <div class="lb-fb is-ng" role="status"><b>× {% label "exam.play.wrong" %}</b>
+            {% label "exam.play.answer_is" %} <b class="jp">{{ pattern.pattern }}</b> — {{ pattern.meaning_vi }}</div>
+        {% endif %}
+        {% if question.kind == "cloze" %}<p class="muted" style="margin:0 0 14px;"><span class="jp">{{ pattern.example_jp }}</span><br>{{ pattern.example_vi }}</p>{% endif %}
+        <div class="lb-actions">
+          <a class="btn btn-primary" href="?i={{ i|add:'1' }}" data-enter>{% if i < total %}{% label "exam.play.next" %}{% else %}{% label "grammar.quiz.see_result" %}{% endif %} →</a>
+        </div>
+      {% else %}
+        <form method="post" action="{% url 'grammar:quiz_answer' jp %}" data-exam-autosubmit>
+          {% csrf_token %}
+          <input type="hidden" name="i" value="{{ i }}">
+          <div class="lb-opts" role="radiogroup">
+            {% for o in question.options %}
+              <label class="lb-opt">
+                <input type="radio" name="option" value="{{ o.id }}" required>
+                <span class="n">{{ forloop.counter }}</span><span class="t jp">{{ o.text }}</span>
+              </label>
+            {% endfor %}
+          </div>
+          <div class="lb-actions">
+            <button class="btn btn-primary" type="submit" data-exam-check>{% label "exam.play.check" %}</button>
+            <span class="muted lb-kbd">{% label "exam.play.keyboard_hint" %}</span>
+          </div>
+        </form>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/exam_play.js' %}" defer></script>{% endblock %}

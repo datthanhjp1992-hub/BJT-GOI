@@ -5,6 +5,7 @@ khung chương theo 日本語表現文型500; câu ví dụ/giải thích là t�
 Bảng phẳng, một dòng một mẫu: không đưa vào `Vocabulary` vì sẽ kéo vào hàng đợi SRS.
 Nguồn nhập: docs/data/grammar/grammar_pattern.csv qua scripts/import_grammar.py.
 """
+from django.conf import settings
 from django.db import models
 
 from apps.core.models import AuditableModel
@@ -43,3 +44,20 @@ class GrammarPattern(AuditableModel):
 
     def __str__(self):
         return self.pattern
+
+
+class UserGrammarProgress(AuditableModel):
+    """Tiến độ một học viên với một mẫu. `is_mastered` chỉ do bài kiểm tra chương đặt:
+    trả lời đúng -> True, sai -> False (phải học lại)."""
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="grammar_progress")
+    pattern = models.ForeignKey(GrammarPattern, on_delete=models.CASCADE, related_name="progress")
+    is_mastered = models.BooleanField(default=False)
+    correct_count = models.PositiveIntegerField(default=0)
+    wrong_count = models.PositiveIntegerField(default=0)
+    last_answered_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["user", "pattern"], name="uniq_grammar_progress_user_pattern")]
+        verbose_name = "Tiến độ ngữ pháp"
+        verbose_name_plural = "Tiến độ ngữ pháp"
