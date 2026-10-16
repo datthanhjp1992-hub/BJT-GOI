@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}Một chương ngữ pháp (~16 mẫu) trên một trang, có chương trước/sau để học liền mạch.{% endcomment %}
+
+{% block title %}{{ jp }} · {% label "grammar.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">
+    <a href="{% url 'grammar:index' %}" class="action-link">{% label "grammar.chapter.back" %}</a>
+  </div>
+  <h1 class="serif" style="font-size:28px;margin:0 0 4px;"><span class="muted" style="font-size:20px;">{{ no }}.</span> <span class="jp">{{ jp }}</span></h1>
+  <p class="muted" style="margin:0 0 18px;">{{ vi }} &middot; {{ patterns|length }} {% label "grammar.count" %}</p>
+
+  {% include "grammar/_rows.html" with rows=patterns %}
+
+  <div class="pagination" style="justify-content:space-between;">
+    {% if prev %}<a class="tag" href="{% url 'grammar:chapter' prev %}">{% label "grammar.chapter.prev" %} <span class="jp">{{ prev }}</span></a>{% else %}<span></span>{% endif %}
+    {% if next %}<a class="tag" href="{% url 'grammar:chapter' next %}"><span class="jp">{{ next }}</span> {% label "grammar.chapter.next" %}</a>{% endif %}
+  </div>
+{% endblock %}

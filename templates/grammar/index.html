@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load properties_tags %}
-{% comment %}Mẫu ngữ pháp -- một form GET (?q=&cap=&chuong=), không cần JavaScript. Mỗi mẫu một thẻ.{% endcomment %}
+{% comment %}Mẫu ngữ pháp -- lưới 31 chương (phương án A); có ?q= thì hiện kết quả tìm trên cả 500 mẫu.{% endcomment %}
 
 {% block title %}{% label "grammar.title" %} | {% label "common.brand.name" %}{% endblock %}
 
@@ -8,55 +8,42 @@
   <h1 class="serif" style="font-size:30px;margin:0 0 8px;">{% label "grammar.title" %}</h1>
   <p class="muted" style="margin:0 0 22px;max-width:640px;">{% label "grammar.intro" %}</p>
 
-  <form method="get" action="{% url 'grammar:index' %}" class="toolbar is-stacked">
+  <form method="get" action="{% url 'grammar:index' %}" class="toolbar is-stacked" style="flex-wrap:nowrap;">
     <input class="grow" name="q" type="search" value="{{ query }}"
-           placeholder="{% label 'grammar.search.placeholder' %}" autocomplete="off" aria-label="{% label 'grammar.search.placeholder' %}">
-    <select name="cap" aria-label="{% label 'grammar.filter.level' %}">
-      <option value="">{% label "grammar.filter.level" %}</option>
-      {% for lv in levels %}<option value="{{ lv }}"{% if lv == level %} selected{% endif %}>{{ lv }}</option>{% endfor %}
-    </select>
-    <select name="chuong" aria-label="{% label 'grammar.filter.category' %}">
-      <option value="">{% label "grammar.filter.category" %}</option>
-      {% for c in categories %}<option value="{{ c }}"{% if c == category %} selected{% endif %}>{{ c }}</option>{% endfor %}
-    </select>
-    <button type="submit" class="btn btn-primary">{% label "grammar.search.button" %}</button>
+           placeholder="{% label 'grammar.search.placeholder' %}" autocomplete="off" aria-label="{% label 'grammar.search.all' %}">
+    <button type="submit" class="btn btn-primary" style="flex:none;">{% label "grammar.search.button" %}</button>
   </form>
 
-  <p class="muted" style="font-size:13px;margin:0 0 14px;">{{ paginator.count }} / {{ total_count }} {% label "grammar.count" %}</p>
-
-  {# Mỗi mẫu một dòng <details>: gập sẵn cho trang ngắn (thẻ mở sẵn dài ~8 màn hình); bấm mới mở ví dụ. #}
-  <div class="card" style="padding:4px 18px;margin-bottom:22px;">
-  {% for g in page_obj %}
-    <details style="padding:8px 0;{% if not forloop.last %}border-bottom:1px solid var(--border);{% endif %}">
-      <summary style="cursor:pointer;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;">
-        <span class="jp" style="font-size:17px;font-weight:600;">{{ g.pattern }}</span>
-        <span>{{ g.meaning_vi }}</span>
-        {% if g.level %}<span class="tag">{{ g.level }}</span>{% endif %}
-      </summary>
-      <div style="padding:8px 0 4px 2px;">
-        {% if g.category %}<a class="tag" href="?chuong={{ g.category|urlencode }}" style="margin-bottom:8px;display:inline-block;">{{ g.category }}</a>{% endif %}
-        {% if g.connection_form %}<p class="muted" style="margin:0 0 8px;font-size:13.5px;">{% label "grammar.connection" %} <span class="jp">{{ g.connection_form }}</span></p>{% endif %}
-        {% if g.example_jp %}
-          <p class="jp" style="margin:0;">{{ g.example_jp }}</p>
-          <p class="muted" style="margin:2px 0 0;">{{ g.example_vi }}</p>
+  {% if query %}
+    <div class="eyebrow" style="margin-bottom:10px;">
+      <a href="{% url 'grammar:index' %}" class="action-link">{% label "grammar.chapter.back" %}</a>
+      &rsaquo; {% label "grammar.results" %} &middot; {{ paginator.count }} {% label "grammar.count" %}
+    </div>
+    {% include "grammar/_rows.html" with rows=page_obj show_chapter=True %}
+    {% if page_obj.has_other_pages %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a class="tag" href="?page={{ page_obj.previous_page_number }}{{ pagination_query }}">{% label "common.pagination.prev" %}</a>
         {% endif %}
-        {% if g.note %}<p class="muted" style="margin:8px 0 0;font-size:13.5px;">💡 {{ g.note }}</p>{% endif %}
+        <span>{{ page_obj.number }} / {{ paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a class="tag" href="?page={{ page_obj.next_page_number }}{{ pagination_query }}">{% label "common.pagination.next" %}</a>
+        {% endif %}
       </div>
-    </details>
-  {% empty %}
-    <p class="muted">{% label "grammar.empty" %}</p>
-  {% endfor %}
-  </div>
-
-  {% if page_obj.has_other_pages %}
-    <div class="pagination">
-      {% if page_obj.has_previous %}
-        <a class="tag" href="?page={{ page_obj.previous_page_number }}{{ pagination_query }}">{% label "common.pagination.prev" %}</a>
-      {% endif %}
-      <span>{{ page_obj.number }} / {{ paginator.num_pages }}</span>
-      {% if page_obj.has_next %}
-        <a class="tag" href="?page={{ page_obj.next_page_number }}{{ pagination_query }}">{% label "common.pagination.next" %}</a>
-      {% endif %}
+    {% endif %}
+  {% else %}
+    <p class="muted" style="font-size:13px;margin:0 0 12px;">{% label "grammar.chapters" %} &middot; {{ total_count }} {% label "grammar.count" %}</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px;margin-bottom:24px;">
+      {% for c in chapters %}
+        <a class="card" href="{% url 'grammar:chapter' c.jp %}" style="padding:10px 14px;margin:0;text-decoration:none;color:inherit;display:block;">
+          <div style="display:flex;gap:6px;align-items:baseline;">
+            <span class="muted" style="font-size:12px;">{{ c.no }}.</span>
+            <span class="jp" style="font-weight:600;min-width:0;">{{ c.jp }}</span>
+            <span class="muted" style="font-size:12px;margin-left:auto;">{{ c.count }}</span>
+          </div>
+          <div style="font-size:13.5px;margin-top:2px;">{{ c.vi }}</div>
+        </a>
+      {% endfor %}
     </div>
   {% endif %}
 {% endblock %}

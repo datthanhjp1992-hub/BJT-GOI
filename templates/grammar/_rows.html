@@ -1,0 +1,25 @@
+{% load properties_tags %}
+{% comment %}Danh sách mẫu dạng <details> gập sẵn (spec.md rule 9) — dùng chung cho trang chương và kết quả tìm.
+Biến: rows; show_chapter = True thì hiện link về chương của mẫu.{% endcomment %}
+<div class="card" style="padding:4px 18px;margin-bottom:22px;">
+{% for g in rows %}
+  <details style="padding:8px 0;{% if not forloop.last %}border-bottom:1px solid var(--border);{% endif %}">
+    <summary style="cursor:pointer;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;">
+      <span class="jp" style="font-size:17px;font-weight:600;">{{ g.pattern }}</span>
+      <span>{{ g.meaning_vi }}</span>
+      {% if g.level %}<span class="tag">{{ g.level }}</span>{% endif %}
+    </summary>
+    <div style="padding:8px 0 4px 2px;">
+      {% if show_chapter and g.category %}<a class="tag" href="{% url 'grammar:chapter' g.category %}" style="margin-bottom:8px;display:inline-block;">{% label "grammar.chapter.label" %} {{ g.category }}</a>{% endif %}
+      {% if g.connection_form %}<p class="muted" style="margin:0 0 8px;font-size:13.5px;">{% label "grammar.connection" %} <span class="jp">{{ g.connection_form }}</span></p>{% endif %}
+      {% if g.example_jp %}
+        <p class="jp" style="margin:0;">{{ g.example_jp }}</p>
+        <p class="muted" style="margin:2px 0 0;">{{ g.example_vi }}</p>
+      {% endif %}
+      {% if g.note %}<p class="muted" style="margin:8px 0 0;font-size:13.5px;">💡 {{ g.note }}</p>{% endif %}
+    </div>
+  </details>
+{% empty %}
+  <p class="muted">{% label "grammar.empty" %}</p>
+{% endfor %}
+</div>

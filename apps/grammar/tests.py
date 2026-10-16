@@ -49,13 +49,23 @@ class IndexViewTests(TestCase):
         self.client.logout()
         self.assertEqual(self.client.get(reverse("grammar:index")).status_code, 302)
 
-    def test_lists_all(self):
+    def test_index_shows_chapters_in_book_order_not_patterns(self):
         resp = self.client.get(reverse("grammar:index"))
-        self.assertContains(resp, "〜につけ")
-        self.assertContains(resp, "〜をよそに")
+        self.assertEqual([c["jp"] for c in resp.context["chapters"]], ["対象", "無関係"])
+        self.assertEqual(resp.context["chapters"][0]["vi"], "Đối tượng")
+        self.assertNotContains(resp, "〜につけ")
 
-    def test_filters(self):
-        url = reverse("grammar:index")
-        self.assertNotContains(self.client.get(url, {"cap": "N1"}), "〜につけ")
-        self.assertNotContains(self.client.get(url, {"chuong": "対象"}), "〜をよそに")
-        self.assertNotContains(self.client.get(url, {"q": "bất chấp"}), "〜につけ")
+    def test_chapter_page_lists_only_that_chapter_with_next_link(self):
+        resp = self.client.get(reverse("grammar:chapter", args=["対象"]))
+        self.assertContains(resp, "〜につけ")
+        self.assertNotContains(resp, "〜をよそに")
+        self.assertEqual(resp.context["next"], "無関係")
+        self.assertIsNone(resp.context["prev"])
+
+    def test_unknown_chapter_404(self):
+        self.assertEqual(self.client.get(reverse("grammar:chapter", args=["xyz"])).status_code, 404)
+
+    def test_search_spans_all_chapters(self):
+        resp = self.client.get(reverse("grammar:index"), {"q": "bất chấp"})
+        self.assertContains(resp, "〜をよそに")
+        self.assertNotContains(resp, "〜につけ")
