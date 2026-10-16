@@ -24,6 +24,11 @@ Giữ đúng các quy ước đang có trong dự án:
 6. **Logic nằm ở `services.py` / `selectors.py`,** view chỉ lắp context.
 7. **Mỗi task có test** trong `apps/<app>/tests.py`. Chạy `python manage.py test` xanh trước khi commit.
 8. **Cập nhật `flowChart/js/flows.js`** khi luồng xử lý thay đổi.
+9. **Không để trang bị kéo quá dài.** Danh sách dài phải phân trang, gập lại
+   (`<details>`: một dòng tóm tắt, bấm mới mở chi tiết) hoặc cuộn trong khung riêng —
+   không xếp nhiều thẻ mở sẵn nối nhau. Mục tiêu: ở 1280×860 trang không quá ~2 màn hình
+   (`document.documentElement.scrollHeight` ≤ ~1.700px); ở điện thoại 375px không cuộn
+   ngang. Đo cả hai khổ trước khi commit. (Ví dụ: `templates/grammar/index.html`.)
 
 ---
 

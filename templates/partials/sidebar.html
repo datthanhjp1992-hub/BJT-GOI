@@ -100,6 +100,9 @@ falsy, khong loi).
       </div>
     </details>
 
+    <a class="sidenav-link{% if active_nav == "grammar" %} active{% endif %}"
+       href="{% url 'grammar:index' %}">{% label "common.nav.grammar" %}</a>
+
     {% if user.is_staff %}
       <details class="sidenav-group"{% if active_nav == "admin" %} open{% endif %}>
         <summary class="sidenav-link{% if active_nav == "admin" %} active{% endif %}">
