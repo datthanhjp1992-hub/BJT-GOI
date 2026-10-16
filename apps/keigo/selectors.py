@@ -133,7 +133,7 @@ LESSON_IRREGULAR_STYLES = {
 
 # Cac bang cap tu ma ve trai la cach noi SAI (hien × / ○). Cac bang con lai la
 # "thuong -> lich su" (hien mui ten), cushion thi ve trai rong.
-WRONG_PAIR_TYPES = {"wrong", "double", "baito"}
+WRONG_PAIR_TYPES = {"wrong", "double", "baito", "mix_type", "uchi_soto", "office", "service"}
 
 
 @dataclass
@@ -251,7 +251,7 @@ def lesson_stats(lesson):
 # KHONG them model: xep lai CUNG bang KeigoPhrasePair ma SC17 dang hien, nhung
 # gom theo pair_type XUYEN chuong (SC17 rai 87 cap o chuong 3, 6, 7).
 #   ?view=<pair_type>  tab dang mo (la / trong -> tab dau tien co du lieu)
-#   ?q=                tim trong CA 8 nhom, bo qua ?view=
+#   ?q=                tim trong MOI nhom, bo qua ?view=
 #   ?an=1              tu kiem tra -- che ve lich su bang <details>
 # =============================================================================
 PITFALL_VIEW_PARAM = "view"

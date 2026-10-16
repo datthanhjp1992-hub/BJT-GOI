@@ -221,7 +221,8 @@ class KeigoPhrasePair(AuditableModel):
     group_label = models.CharField(max_length=120, blank=True)
     casual = models.CharField(max_length=200, blank=True, help_text="Vế trái / vế SAI.")
     polite = models.CharField(max_length=200, help_text="Vế phải / vế ĐÚNG / cụm từ đệm.")
-    note_vi = models.CharField(max_length=255, blank=True)
+    # 500: lời giải của các nhóm bổ sung từ bjt.db (mix_type, office...) dài tới ~280 ký tự.
+    note_vi = models.CharField(max_length=500, blank=True)
     # Đánh số riêng trong phạm vi từng pair_type (KHÔNG theo lesson) vì UI nhóm
     # theo pair_type — một bảng trong sách = một pair_type.
     display_order = models.PositiveSmallIntegerField(default=0)

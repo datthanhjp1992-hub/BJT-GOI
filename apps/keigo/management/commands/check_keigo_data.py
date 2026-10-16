@@ -32,11 +32,11 @@ from apps.keigo.models import (
 
 EXPECTED = {
     "lesson": 7,
-    "verb": 47,
-    "form": 175,
+    "verb": 50,
+    "form": 186,
     "pattern": 39,
     "example": 101,
-    "phrase_pair": 87,
+    "phrase_pair": 158,
     "exercise_set": 17,
     "question": 262,
     "ordering": 34,

@@ -232,6 +232,17 @@ class PitfallTests(LessonTestCase):
         self.assertEqual(resp.context["total"], 7)
         self.assertEqual(resp.context["lesson_count"], 2)
 
+    def test_added_wrong_types_render_as_x_o(self):
+        """Nhom bo sung tu bjt.db (mix_type...) phai vao cum × / ○, khong phai bang →."""
+        KeigoPhrasePair.objects.create(lesson=self.ch7, pair_type="mix_type",
+                                       casual="お待ちしてください。", polite="お待ちください。",
+                                       note_vi="お待ちする là khiêm nhường ngữ.")
+        resp = self.get(view="mix_type")
+        self.assertEqual([(t.code, t.kind) for t in resp.context["shown"]],
+                         [("mix_type", selectors.PITFALL_KIND_XO)])
+        self.assertContains(resp, "お待ちする là khiêm nhường ngữ.")
+        self.assertContains(resp, '<span class="mk">×</span>')
+
     def test_link_back_to_lesson_item(self):
         resp = self.get(view="adj_gozai")
         self.assertContains(resp, f'href="{self.url(self.ch3, "cap-adj_gozai")}"')

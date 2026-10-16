@@ -1,10 +1,10 @@
 lesson__slug,pair_type,group_label,casual,polite,note_vi,display_order
-mot-so-quy-tac-chia-dong-tu-co-quy-tac,wrong,,佐藤さんはおられますか？,佐藤さんはいらっしゃいますか？,,1
-mot-so-quy-tac-chia-dong-tu-co-quy-tac,wrong,,鈴木様でございますか？,鈴木様でいらっしゃいますか？,,2
-mot-so-quy-tac-chia-dong-tu-co-quy-tac,wrong,,ご確認してください。,ご確認ください。,,3
+mot-so-quy-tac-chia-dong-tu-co-quy-tac,wrong,,佐藤さんはおられますか？,佐藤さんはいらっしゃいますか？,おられる là kính ngữ kép (khiêm nhường ngữ おる + れる tôn kính) không tự nhiên khi hỏi về người thứ ba; いらっしゃる mới là tôn kính ngữ chuẩn của いる.,1
+mot-so-quy-tac-chia-dong-tu-co-quy-tac,wrong,,鈴木様でございますか？,鈴木様でいらっしゃいますか？,"でございます là khiêm nhường ngữ dùng cho bản thân/công ty mình, không dùng để hỏi về người khác; でいらっしゃいますか mới đúng là tôn kính ngữ.",2
+mot-so-quy-tac-chia-dong-tu-co-quy-tac,wrong,,ご確認してください。,ご確認ください。,ご＋動詞＋してください là kính ngữ kép thừa; chỉ cần ご確認ください.,3
 mot-so-quy-tac-chia-dong-tu-co-quy-tac,wrong,,ただいま田中部長がおっしゃったように…,ただいま部長の田中が申したように…,（社外の人に対して）,4
-mot-so-quy-tac-chia-dong-tu-co-quy-tac,wrong,,資料は拝見されましたでしょうか。,資料はご覧いただけますしたでしょうか。,,5
-mot-so-quy-tac-chia-dong-tu-co-quy-tac,wrong,,おっしゃられました,おっしゃいました,,6
+mot-so-quy-tac-chia-dong-tu-co-quy-tac,wrong,,資料は拝見されましたでしょうか。,資料はご覧いただけましたでしょうか。,,5
+mot-so-quy-tac-chia-dong-tu-co-quy-tac,wrong,,おっしゃられました,おっしゃいました,"おっしゃられる là kính ngữ kép (おっしゃる đã là tôn kính ngữ + られる) — thừa, chỉ cần おっしゃいました.",6
 mot-so-quy-tac-chia-dong-tu-co-quy-tac,noun_biz,,今日,本日,,1
 mot-so-quy-tac-chia-dong-tu-co-quy-tac,noun_biz,,昨日「きのう」,昨日「さくじつ」,,2
 mot-so-quy-tac-chia-dong-tu-co-quy-tac,noun_biz,,明日「あした」,明日「あす、みょうにち」,,3
@@ -86,3 +86,74 @@ mot-so-quy-tac-chia-dong-tu-co-quy-tac,teinei,,いいですか,～よろしい�
 mot-so-quy-tac-chia-dong-tu-co-quy-tac,teinei,,,前に「お」「ご」などを付ける,,10
 mot-so-quy-tac-chia-dong-tu-co-quy-tac,teinei,,食事,お食事,,11
 mot-so-quy-tac-chia-dong-tu-co-quy-tac,teinei,,説明,ご説明,,12
+tham-khao,mix_type,,先生もこの店をよく御利用されるんですか。,先生もこの店をよく御利用になるんですか（利用されるんですか／御利用なさるんですか）。,「御利用される」bị hiểu là ghép「ご利用する」(khiêm nhường ngữ I) + 「れる」(tôn kính ngữ) — lẫn lộn 2 loại kính ngữ trong 1 từ. Nên dùng thẳng dạng tôn kính thuần: 利用される／利用なさる／御利用になる／御利用なさる.,1
+tham-khao,mix_type,,御乗車できません。,御乗車になれません（または御乗車いただけません）。,"(loa nhà ga) 「お(ご)……できる」là dạng khả năng của khiêm nhường ngữ I (dùng cho việc bản thân có thể làm), không phù hợp khi nói về hành động của khách. Cần dùng dạng khả năng của tôn kính ngữ「お(ご)……になれる」.",2
+tham-khao,mix_type,,お分かりにくい説明でした。,お分かりになりにくい説明でした。,"Với cụm động từ+tính từ (分かる＋にくい), chỉ biến đổi phần động từ thành tôn kính ngữ (お分かりになる) rồi mới ghép đuôi 「～にくい」「～やすい」, không tôn kính hoá cả cụm.",3
+tham-khao,mix_type,,担当者に伺ってください。,担当者にお聞きください（お尋ねください）。,"(nhân viên lễ tân nói với khách) 「伺う」là khiêm nhường ngữ I, tôn trọng đối tượng mà hành động “hỏi” hướng tới (ở đây là「担当者」thuộc phía nhân viên) — không phải kính ngữ dành cho hành động của khách. Muốn tôn trọng khách đang được nói tới, phải dùng tôn kính ngữ.",4
+tham-khao,mix_type,,課長、そのファイルも会議室にお持ちしますか。,課長、そのファイルも会議室にお持ちになりますか。,"(hỏi để biết cấp trên có tự mang đi không) 「お持ちする」là khiêm nhường ngữ I (hành động của bản thân người nói), nên câu hỏi vô tình hỏi ngược lại ""tôi có nên mang giúp không"" thay vì hỏi ""cấp trên có tự mang không"". Cần tôn kính ngữ「お持ちになる」để hỏi về hành động của cấp trên.",5
+tham-khao,mix_type,,御在宅する必要はありません。,御在宅の必要はありません（または御在宅なさる必要はありません）。,"(trong thông báo gửi khách hàng) 「ご……する」là công thức tạo khiêm nhường ngữ I, không phù hợp để nói về việc khách ở nhà. Cần tôn kính ngữ「ご在宅なさる」hoặc rút gọn thành「ご在宅の」.",6
+tham-khao,mix_type,,明日は、田中先生のところに参ります。,明日は、田中先生のところに伺います。,"(nói với thầy Katou về thầy Tanaka) 「参る」là khiêm nhường ngữ II — chỉ thể hiện sự trang trọng với NGƯỜI ĐANG NGHE (thầy Katou), không tôn trọng người thứ ba (thầy Tanaka) được nhắc tới. Muốn tôn trọng thầy Tanaka với tư cách là đích đến của hành động, phải dùng khiêm nhường ngữ I「伺う」.",7
+tham-khao,mix_type,,先生は私の家に伺ってくださった。,先生は私の家に来てくださった（おいでくださった）。,"「伺う」là khiêm nhường ngữ I, tôn trọng phía ""đích đến"" — ở đây đích đến lại là ""nhà tôi"" (phía người nói), nên vô tình hạ thấp thầy giáo thay vì tôn trọng thầy. Kết hợp với「くださる」(vốn cần động từ ở dạng tôn kính) là không hợp lý — phải dùng động từ tôn kính như「来てくださる／おいでくださる」.",8
+tham-khao,mix_type,,私のお考えを申し上げます。,私の考えを申し上げます。,"Gắn 「お／ご」vào việc/ý kiến của chính mình (お考え, ご旅行) vô tình biến nó thành tôn kính ngữ dành cho bản thân — sai nguyên tắc. Chỉ gắn 「お／ご」vào phía mình khi đó là khiêm nhường ngữ hướng tới người khác (vd お待ちする, ご説明する), không phải khi chỉ đơn thuần nói về sự việc của bản thân.",9
+tham-khao,mix_type,,部長がそう申しました。,部長がそうおっしゃいました。,"「申す」là khiêm nhường ngữ, chỉ dùng cho mình hoặc người bên mình khi nói với người ngoài. Nói về cấp trên trong nội bộ phải dùng tôn kính ngữ 「おっしゃる」.",10
+tham-khao,mix_type,,少々お待ちしてください。,少々お待ちいただけますでしょうか。,"「お待ちする」là khiêm nhường ngữ (việc mình đợi) nên không ghép với 「ください」cho đối phương. Tình huống kính ngữ dịch vụ, bài 10 Q2.",11
+tham-khao,mix_type,Kính ngữ kép (二重敬語),お読みになられる資料です。,お読みになる資料です。,"「お読みになる」đã là tôn kính ngữ hoàn chỉnh, thêm「られる」nữa tạo thành kính ngữ kép (二重敬語) — thừa, chỉ cần một lớp tôn kính.",12
+tham-khao,mix_type,Kính ngữ kép (二重敬語),ご覧になられますか。,ご覧になりますか。,"Kính ngữ kép: 「ご覧になる」đã là tôn kính ngữ của 「見る」, thêm 「られる」thành thừa. Tình huống bài 1 Q2 (mời đối phương xem tài liệu).",13
+tham-khao,uchi_soto,,うち,私ども,うち là cách nói thông thường/suồng sã khi nói về công ty mình; trong giao tiếp công việc trang trọng nên dùng 私ども.,1
+tham-khao,uchi_soto,,田中社長様,田中社長,"Chức danh (社長、部長…) đã mang tính tôn kính, không gắn thêm 様 vì sẽ tạo thành kính ngữ kép thừa.",2
+tham-khao,uchi_soto,,あなたはどう考えますか。,佐藤さんはどう考えますか。／お考えをお聞かせください。,"(hỏi tiền bối) 「あなた」nghe trung tính nhưng hơi xa cách, thường chỉ dùng cho người ngang hàng hoặc dưới mình — không phù hợp khi hỏi người lớn tuổi/cấp trên hơn. Nên gọi thẳng tên hoặc diễn đạt tránh dùng đại từ ngôi hai.",3
+tham-khao,uchi_soto,,（電話で）田中さんはいらっしゃいますか。 → はい、田中さんは今おりません。,はい、田中はただいま席を外しております。,"Khi nói với người ngoài về đồng nghiệp của mình, bỏ 「さん」và dùng khiêm nhường ngữ. Tình huống bài 12 Q2 / bài 3 Q3.",4
+tham-khao,uchi_soto,,こちらは弊社の田中部長でいらっしゃいます。,こちらは営業部部長の田中でございます。,"Giới thiệu người bên mình cho khách thì dùng 「でございます」, không dùng tôn kính ngữ 「でいらっしゃる」và không gắn chức danh sau tên như 「田中部長」. Tình huống bài 2 Q3.",5
+tham-khao,uchi_soto,,お名前をいただけますか。,お名前を伺ってもよろしいでしょうか。,"「名前をいただく」nghĩa đen là ""nhận lấy cái tên"" — sai logic. Hỏi tên phải dùng 「伺う」hoặc 「お聞かせ願えますか」. Tình huống lễ tân, bài 3 Q3.",6
+tham-khao,uchi_soto,,（自分の会社について）御社の新製品です。,弊社の新製品でございます。,「御社」dùng để gọi công ty của ĐỐI PHƯƠNG. Công ty mình phải gọi là 「弊社」(nói) hoặc 「当社」. Lỗi rất hay gặp khi mới đi làm.,7
+tham-khao,uchi_soto,,部長、ご苦労さまでした。,部長、お疲れさまでした。,「ご苦労さま」là lời cấp trên nói với cấp dưới. Cấp dưới nói với cấp trên phải dùng 「お疲れさまです／でした」.,8
+tham-khao,office,,印刷してもらっていいですか。,印刷していただけますか／してくださいますか。,"～てもらっていいですか mang tính suồng sã, trực tiếp; nên dùng ～ていただけますか／てくださいますか lịch sự hơn.",1
+tham-khao,office,,それでは、発表させていただきます。,それでは、発表いたします。,"(không có ai cho phép/không hưởng ơn huệ gì cụ thể) 「（さ）せていただく」chỉ thực sự phù hợp khi có yếu tố (1) được phép từ phía đối phương và (2) bản thân được hưởng lợi/ơn huệ từ việc đó. Nếu không có ngữ cảnh đó, dùng khiêm nhường ngữ II đơn giản「いたします」sẽ gọn và tự nhiên hơn, tránh lạm dụng「させていただく」.",2
+tham-khao,office,,その日はちょっと行けません。無理です。,あいにくその日は予定が入っておりまして……。,"Từ chối thẳng 「無理です」quá cứng trong tiếng Nhật thương mại. Nên nêu lý do mơ hồ và bỏ lửng câu (bài 4 Q2), để đối phương tự hiểu mà không ai mất mặt.",3
+tham-khao,office,,資料を見てあげましょうか。,資料を拝見しましょうか。,"「〜てあげる」mang sắc thái ban ơn, không dùng với cấp trên hay khách hàng. Khi mình xem tài liệu của người khác thì dùng khiêm nhường ngữ 「拝見する」.",4
+tham-khao,office,,（面接で）私は御社に入りたいです。,ぜひ御社で働かせていただきたいと考えております。,Trong phỏng vấn nên dùng 「〜させていただきたいと考えております」thay cho 「〜たいです」— vừa khiêm tốn vừa đúng mức trang trọng. Bài 15 Q2.,5
+tham-khao,office,,お久しぶりです。元気だった?,ご無沙汰しております。お元気でいらっしゃいましたか。,「ご無沙汰しております」lịch sự hơn nhiều so với 「お久しぶりです」trong ngữ cảnh công việc; 「いらっしゃる」dùng thay cho 「いる」khi hỏi về tình trạng của đối phương.,6
+tham-khao,office,,おめでとう、課長になったんだね。,この度は課長へのご昇進、誠におめでとうございます。,Lời chúc mừng trong công việc cần nêu rõ sự kiện bằng cấu trúc 「この度は〜、おめでとうございます」thay vì câu chúc ngắn suồng sã.,7
+tham-khao,office,,何回も同じミスしないでよ。,同じ間違いが続いているようですので、次回からは気をつけていただけますか。,"Khi nhắc nhở đồng nghiệp/cấp dưới trong công việc cần giữ giọng điệu lịch sự, dùng 「〜ようですので」để giảm nhẹ mức độ trách móc trực tiếp.",8
+tham-khao,office,,はい、はい、わかりました。,申し訳ございません。以後、十分注意いたします。,"Khi bị nhắc nhở, đáp lại bằng 「はい、はい」nghe thiếu thành khẩn; nên xin lỗi và cam kết chú ý bằng thể khiêm nhường.",9
+tham-khao,office,,今日中にやっといて。,お忙しいところ恐縮ですが、今日中にご確認いただけますでしょうか。,Nhờ vả cấp trên/đồng nghiệp không dùng mệnh lệnh trực tiếp mà xin phép bằng 「〜ていただけますでしょうか」kèm lời xin lỗi vì làm phiền.,10
+tham-khao,office,,早退してもいい?,大変恐縮ですが、本日早退させていただけないでしょうか。,Xin phép cấp trên dùng cấu trúc khiêm nhường kép 「〜させていただけないでしょうか」thay vì câu hỏi xin phép suồng sã 「〜てもいい?」.,11
+tham-khao,service,,ご注文のほう、以上でよろしかったでしょうか。,ご注文は以上でよろしいでしょうか。,"Hai lỗi của ""tiếng Nhật cửa hàng"": 「〜のほう」thừa (không có gì để so sánh) và 「よろしかった」dùng quá khứ cho việc đang diễn ra. Bài 10 Q2.",1
+tham-khao,service,,"1,000円、あずかるね。","1,000円、お預かりします。",「お預かりします」là khiêm nhường ngữ của 「あずかります」— nhân viên hạ thấp hành động của mình để thể hiện tôn trọng khách hàng; câu vế trái quá suồng sã cho quan hệ nhân viên-khách.,2
+tham-khao,service,,京都、行ったことある?,京都へいらっしゃったこと、おありですか。,"「いらっしゃる」là tôn kính ngữ của 「行く」, dùng khi hỏi về hành động của người lớn tuổi/mới gặp lần đầu; 「おありですか」là dạng rút gọn lịch sự của 「おありになりますか」.",3
+tham-khao,service,,どこ行きますか?,どちらまでいかれますか。,"Nhân viên dịch vụ (tài xế taxi) nói với khách cần dùng tôn kính ngữ; 「いかれます」là dạng tôn kính đơn giản (thêm 「れる」) của 「行きます」, đồng thời 「どちら」lịch sự hơn 「どこ」.",4
+tham-khao,service,,注文決まった?,ご注文はお決まりでしょうか。,"Khi hỏi khách hàng, thêm 「ご」cho danh từ liên quan đến khách (ご注文) và dùng dạng tôn kính 「お決まりでしょうか」thay vì hỏi trực tiếp bằng thể thường.",5
+tham-khao,service,,ちょっと聞こえないんですけど。,恐れ入りますが、お電話が少し遠いようで…,"「恐れ入りますが」kèm cách đổ lỗi cho đường dây điện thoại (お電話が遠い) là cách nói giảm nhẹ lịch sự thay vì nói thẳng ""nghe không rõ"".",6
+tham-khao,service,,今いないんで、また電話して。,あいにく席を外しておりまして、恐れ入りますが後ほどおかけ直しいただけますでしょうか。,"「席を外す」là cách nói lịch sự khi người được gọi tạm vắng mặt; yêu cầu gọi lại phải dùng thể khiêm nhường xin phép, không ra lệnh trực tiếp.",7
+tham-khao,noun_org,Gọi phía đối phương (尊敬),会社,{貴社|きしゃ}・{御社|おんしゃ},,1
+tham-khao,noun_org,Gọi phía đối phương (尊敬),店,{貴店|きてん},,2
+tham-khao,noun_org,Gọi phía đối phương (尊敬),銀行,{貴行|きこう},,3
+tham-khao,noun_org,Gọi phía đối phương (尊敬),学校,{貴校|きこう},,4
+tham-khao,noun_org,Gọi phía đối phương (尊敬),新聞,{貴紙|きし},,5
+tham-khao,noun_org,Gọi phía đối phương (尊敬),雑誌,{貴誌|きし},,6
+tham-khao,noun_org,Gọi phía đối phương (尊敬),地位,{貴職|きしょく},chức vụ (tự xưng trong văn bản),7
+tham-khao,noun_org,Gọi phía đối phương (尊敬),家,{御宅|おんたく},,8
+tham-khao,noun_org,Gọi phía mình (謙譲),会社,{弊社|へいしゃ},,9
+tham-khao,noun_org,Gọi phía mình (謙譲),店,{弊店|へいてん},,10
+tham-khao,noun_org,Gọi phía mình (謙譲),銀行,{弊行|へいこう},,11
+tham-khao,noun_org,Gọi phía mình (謙譲),学校,{弊校|へいこう},,12
+tham-khao,noun_org,Gọi phía mình (謙譲),新聞,{弊紙|へいし}・{小紙|しょうし},,13
+tham-khao,noun_org,Gọi phía mình (謙譲),雑誌,{弊誌|へいし}・{小誌|しょうし},,14
+tham-khao,noun_org,Gọi phía mình (謙譲),地位,{小職|しょうしょく},chức vụ (tự xưng trong văn bản),15
+tham-khao,noun_org,Gọi phía mình (謙譲),家,{拙宅|せったく},,16
+tham-khao,family,Gia đình người khác (尊敬),父,お{父様|とうさま}／お{父|とう}さん,,1
+tham-khao,family,Gia đình người khác (尊敬),母,お{母様|かあさま}／お{母|かあ}さん,,2
+tham-khao,family,Gia đình người khác (尊敬),兄,お{兄様|にいさま}／お{兄|にい}さん,,3
+tham-khao,family,Gia đình người khác (尊敬),姉,お{姉様|ねえさま}／お{姉|ねえ}さん,,4
+tham-khao,family,Gia đình người khác (尊敬),夫,ご{主人|しゅじん},,5
+tham-khao,family,Gia đình người khác (尊敬),妻,{奥様|おくさま},,6
+tham-khao,family,Gia đình người khác (尊敬),息子,{息子|むすこ}さん／ご{子息|しそく},,7
+tham-khao,family,Gia đình người khác (尊敬),娘,お{嬢|じょう}さん／お{嬢様|じょうさま},,8
+tham-khao,family,Gia đình mình — khi nói với người ngoài,父,{父|ちち},,9
+tham-khao,family,Gia đình mình — khi nói với người ngoài,母,{母|はは},,10
+tham-khao,family,Gia đình mình — khi nói với người ngoài,兄,{兄|あに},,11
+tham-khao,family,Gia đình mình — khi nói với người ngoài,姉,{姉|あね},,12
+tham-khao,family,Gia đình mình — khi nói với người ngoài,夫,{主人|しゅじん}／{夫|おっと},,13
+tham-khao,family,Gia đình mình — khi nói với người ngoài,妻,{妻|つま}／{家内|かない},,14
+tham-khao,family,Gia đình mình — khi nói với người ngoài,息子,{息子|むすこ},,15
+tham-khao,family,Gia đình mình — khi nói với người ngoài,娘,{娘|むすめ},,16

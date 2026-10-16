@@ -8,7 +8,7 @@ hien, o day gom theo pair_type xuyen chuong. Hang du lieu dung lai nguyen class
 .kl-xo / table.kl-pairs cua SC17; chi khung trang (.lt-*) la CSS moi.
 
 Tat ca la GET, khong JavaScript:
-  ?view=<pair_type>  tab     ?q=  tim trong ca 8 nhom     ?an=1  tu kiem tra
+  ?view=<pair_type>  tab     ?q=  tim trong moi nhom     ?an=1  tu kiem tra
 Tu kiem tra: ve lich su nam trong <details> -- bam "Hien dap an" moi mo. Nhom
 cushion khong co ve thuong nen khong che, chi hien dong giai thich.
 Moi chuoi tieng Nhat di qua |ruby (escape TRUOC roi moi ghep <ruby>).{% endcomment %}
@@ -54,7 +54,7 @@ Moi chuoi tieng Nhat di qua |ruby (escape TRUOC roi moi ghep <ruby>).{% endcomme
     </a>
   </div>
 
-  {# ========== 8 TAB / 3 CUM ========== #}
+  {# ========== TAB / 3 CUM ========== #}
   <nav class="lt-tabs" aria-label="{% label 'keigo.pitfall.tabs_label' %}">
     {% for kind, group_types in clusters %}
       <div class="lt-tabgroup">
@@ -94,18 +94,23 @@ Moi chuoi tieng Nhat di qua |ruby (escape TRUOC roi moi ghep <ruby>).{% endcomme
       {% if t.kind == "xo" %}
         {% for g in t.groups %}
           {% if g.label %}<h3 class="kl-subhead jp lt-formula">{{ g.label|ruby }}</h3>{% endif %}
+          <div class="lt-xogrid">
           {% for row in g.items %}
             <div class="kl-xo">
               <div class="x"><span class="mk">×</span><span class="jp">{{ row.casual|ruby }}</span></div>
               {% for p in row.answers %}
                 <div class="o"><span class="mk">○</span>
                   {% if check %}<details class="lt-reveal"><summary>{% label "keigo.pitfall.check.reveal" %}</summary>{% endif %}
-                  <span class="jp">{{ p.polite|ruby }}</span>{% if p.note_vi %}<span class="note">{{ p.note_vi }}</span>{% endif %}
+                  <span class="jp">{{ p.polite|ruby }}</span>
+                  {# Loi giai dai (nhom bo sung tu bjt.db) thu vao "Vi sao?" -- giu trang ngan #}
+                  {% if p.note_vi|length > 40 %}<details class="lt-why"><summary>{% label "keigo.pitfall.why" %}</summary><span class="note">{{ p.note_vi }}</span></details>
+                  {% elif p.note_vi %}<span class="note">{{ p.note_vi }}</span>{% endif %}
                   {% if check %}</details>{% endif %}
                 </div>
               {% endfor %}
             </div>
           {% endfor %}
+          </div>
         {% endfor %}
 
       {% elif t.kind == "cush" %}

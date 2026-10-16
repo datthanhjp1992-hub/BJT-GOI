@@ -160,6 +160,13 @@ SEED_DATA = {
         ("cushion", "Từ đệm", None, "クッション言葉 — vế casual để trống (tr.20)", 6),
         ("teinei", "Quy tắc 丁寧語", None, "です→でございます ... (tr.17-18)", 7),
         ("adj_gozai", "Biến âm tính từ", None, "安い→安うございます (tr.11)", 8),
+        # Bổ sung từ bjt.db (BJT-WEB): keigo_quiz + bảng keigo — không có trong sách Thaolejp.
+        ("mix_type", "Nhầm tôn kính ↔ khiêm nhường", None, "Bổ sung · 敬語の指針 (文化審議会) & bài giảng", 9),
+        ("uchi_soto", "Trong – ngoài công ty", None, "Bổ sung · ウチ・ソト, cách xưng hô", 10),
+        ("office", "Nói với cấp trên, đồng nghiệp", None, "Bổ sung · câu suồng sã → câu công sở", 11),
+        ("service", "Nói với khách hàng", None, "Bổ sung · tiếng Nhật dịch vụ, điện thoại", 12),
+        ("noun_org", "Gọi công ty, tổ chức", None, "Bổ sung · 貴社／弊社 ...", 13),
+        ("family", "Gọi người trong gia đình", None, "Bổ sung · お父様／父 ...", 14),
     ],
     CODE_TYPE_QUESTION_TYPE: [
         ("mcq_blank", "Điền vào chỗ trống", None, "Chọn 1 trong 2-4 phương án", 1),

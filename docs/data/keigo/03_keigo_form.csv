@@ -174,3 +174,14 @@ verb__plain_form,verb__reading,style_code,form,reading,is_irregular,note_vi,disp
 確認する,,teinei,確認します,,false,,173
 借りる,,teinei,借ります,,false,,174
 承諾する,,teinei,承諾します,,false,,175
+与える,,sonkei,くださる,,false,Khi người trên cho mình.,176
+待つ,,sonkei,お待ちくださる,,false,,177
+帰る,,kenjo,おいとまする,,false,Xin phép ra về khi đang ở nhà/công ty người khác.,178
+食べる,,sonkei,おあがりになる,,false,,179
+持つ,,sonkei,お持ちになる,,false,,180
+持つ,,kenjo,お持ちする,,false,Mình cầm/mang giúp người trên.,181
+持つ,,teinei,持ちます,,false,,182
+死ぬ,,sonkei,お亡くなりになる,,false,Không có dạng khiêm nhường; nói về người nhà mình dùng 亡くなる.,183
+ある,,sonkei,おありになる,,false,Rút gọn: おありですか.,184
+ある,,teinei,あります,,false,,185
+ある,,teinei,ございます,,false,Trang trọng hơn あります.,186

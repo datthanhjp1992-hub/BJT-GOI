@@ -257,7 +257,7 @@ def _pitfall_url(view, check, query=""):
 def pitfall_view(request):
     """SC19_LoiThuongGap -- 87 cap tu KeigoPhrasePair gom theo pair_type.
 
-    Tab ?view=, tim ?q= (quet ca 8 nhom), tu kiem tra ?an=1 -- tat ca la GET,
+    Tab ?view=, tim ?q= (quet moi nhom), tu kiem tra ?an=1 -- tat ca la GET,
     khong JavaScript. Xem selectors.pitfall_page() va 7 quyet dinh o dau
     htmlTemplate/SC19_LoiThuongGap_A.html."""
     query = (request.GET.get(selectors.SEARCH_PARAM) or "").strip()
