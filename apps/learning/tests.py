@@ -1912,6 +1912,21 @@ class StudyDeckTests(ReviewTestCase):
         self.assertContains(response, '<span class="tag pos-tag" data-pos-tag>adj-na</span>', html=True)
         self.assertEqual(response.context["deck"]["cards"][str(current)]["part_of_speech"], "adj-na")
 
+    def test_speaker_button_disabled_until_word_has_audio(self):
+        current = self._deck()["current"]
+        response = self.client.get(reverse("learning:study"))
+        self.assertContains(response, 'data-audio-url=""')
+        self.assertContains(response, "data-speak", count=1)
+        self.assertRegex(response.content.decode(), r'data-speak[^>]*\sdisabled>')
+        url = "https://example.supabase.co/storage/v1/object/public/vocab-audio/1.mp3"
+        Vocabulary.objects.filter(pk=current).update(audio_url=url)
+        response = self.client.get(reverse("learning:study"))
+        self.assertContains(response, f'data-audio-url="{url}"')
+        self.assertNotRegex(response.content.decode(), r'data-speak[^>]*\sdisabled>')
+        cards = response.context["deck"]["cards"]
+        self.assertEqual(cards[str(current)]["audio_url"], url)
+        self.assertEqual({c["audio_url"] for k, c in cards.items() if k != str(current)}, {""})
+
     def test_partial_render_also_carries_the_deck(self):
         response = self.client.get(reverse("learning:study"), **PARTIAL)
         self.assertContains(response, 'id="study-deck"')

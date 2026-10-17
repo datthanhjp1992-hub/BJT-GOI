@@ -196,12 +196,28 @@ function isTypingTarget(el) {
   return !!(el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)));
 }
 
+// Nút loa trên thẻ (data-speak): phát Vocabulary.audio_url. Dùng chung MỘT <audio> để bấm liên tục
+// không chồng tiếng; link hỏng / bị chặn tự phát thì thôi, không báo lỗi giữa lúc đang học.
+var wordAudio = null;
+function playWordAudio(button) {
+  var url = button.getAttribute("data-audio-url");
+  if (!url || button.disabled) { return; }
+  if (!wordAudio) { wordAudio = new Audio(); }
+  wordAudio.pause();
+  wordAudio.src = url;
+  wordAudio.currentTime = 0;
+  var played = wordAudio.play();
+  if (played && played.catch) { played.catch(function () {}); }
+}
+
 function initStudyShortcuts() {
   document.addEventListener("click", function (event) {
     if (event.target.closest("[data-shortcut-open]")) {
       toggleShortcutDialog();
       return;
     }
+    var speak = event.target.closest("[data-speak]");
+    if (speak) { playWordAudio(speak); return; }   // bấm loa không lật thẻ
     if (event.target.closest("[data-reveal]") || event.target.closest("[data-flashcard]")) {
       if (suppressCardClick) { suppressCardClick = false; return; }
       revealCard();
@@ -274,6 +290,7 @@ function initCardSwipe() {
 
   document.addEventListener("touchstart", function (event) {
     var target = event.target.closest && event.target.closest("[data-flashcard]");
+    if (target && event.target.closest("[data-speak]")) { return; }   // chạm loa không tính là vuốt
     if (!target || event.touches.length !== 1 || !isRevealed(studyScreen()) || isPanelBusy()) { return; }
     card = target;
     var t = event.touches[0];

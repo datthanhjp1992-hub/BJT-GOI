@@ -1079,6 +1079,7 @@ def _study_cards_json(request, vocabulary_ids):
             "reading": word.reading,
             "han_viet": word.han_viet,
             "part_of_speech": word.part_of_speech,
+            "audio_url": word.audio_url,
             "meaning": word.meaning_vi,
             "state": card.progress.card_state if card.progress else srs.NEW,
             "comments": card.comment_count,

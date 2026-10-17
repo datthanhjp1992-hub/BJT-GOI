@@ -3,6 +3,9 @@
 ## 1. Bỏ chức năng nghe phát âm (đọc từ)
 - Đã xóa nút "🔊 Nghe phát âm" khỏi màn hình Flashcard (SC04) ở cả 3 style.
 - Không cần thiết kế audio player / TTS trong scope hiện tại.
+- **Cập nhật 17/10/2026 (Dat): thêm lại nút loa trên Flashcard / ôn tập**, chỉ phát file —
+  không dùng giọng máy của trình duyệt. Nguồn: `Vocabulary.audio_url` (audio tạo bằng VOICEVOX,
+  tải lên Supabase — Dat làm riêng). Từ chưa có link thì nút mờ, không bấm được.
 
 ## 2. Style có thể chọn trong Cài đặt
 - Thêm màn hình mới **SC08_CaiDat** (Cài đặt): user chọn 1 trong 3 style (A/B/C) bằng cách bấm vào thẻ preview màu.

@@ -81,6 +81,15 @@ data-undo-text, data-discussion-toggle / data-discussion-body.
       </div>
       <span class="tag pos-tag" data-pos-tag>{{ word.part_of_speech }}</span>
       <div class="jp">{{ word.word }}</div>
+      {% comment %}Nút loa (17/10/2026 — bỏ quyết định ở CHANGELOG_YEU_CAU mục 1): phát Vocabulary.audio_url
+      (audio VOICEVOX trên Supabase, Dat đang làm ở session khác). Chưa có link thì nút mờ, không bấm được;
+      có link là tự chạy. main.js chặn để bấm loa không lật thẻ; study_deck.js cập nhật khi đổi thẻ.{% endcomment %}
+      <button type="button" class="speak-btn" data-speak data-audio-url="{{ word.audio_url }}"
+              data-title-on="{% label 'learning.flashcard.button.speak' %}" data-title-off="{% label 'learning.flashcard.button.speak_missing' %}"
+              title="{% if word.audio_url %}{% label 'learning.flashcard.button.speak' %}{% else %}{% label 'learning.flashcard.button.speak_missing' %}{% endif %}"
+              aria-label="{% label 'learning.flashcard.button.speak' %}"{% if not word.audio_url %} disabled{% endif %}>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
+      </button>
       <div class="reading{% if not show_reading_on_front %} back-only{% endif %}">{{ word.reading }}</div>
       <div class="han-viet back-only">{{ word.han_viet }}</div>
       <div class="meaning">{{ word.meaning_vi }}</div>

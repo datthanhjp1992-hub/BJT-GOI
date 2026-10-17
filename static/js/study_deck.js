@@ -194,6 +194,12 @@
     flash.querySelector(".han-viet").textContent = card.han_viet || "";
     flash.querySelector("[data-pos-tag]").textContent = card.part_of_speech || "";
     flash.querySelector(".meaning").textContent = card.meaning;
+    var speak = flash.querySelector("[data-speak]");
+    if (speak) {
+      speak.setAttribute("data-audio-url", card.audio_url || "");
+      speak.disabled = !card.audio_url;
+      speak.title = speak.getAttribute(card.audio_url ? "data-title-on" : "data-title-off");
+    }
 
     var stateTag = root.querySelector("[data-state-tag]");
     stateTag.textContent = deck.text.states[card.state] || card.state;

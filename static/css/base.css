@@ -719,6 +719,11 @@ a.pager-btn:hover{border-color:var(--accent);color:var(--accent-text);}
 .flashcard-tags .tag:last-child{margin-right:0;}
 /* Loại từ ở góc phải trên thẻ; từ chưa phân loại thì ẩn. */
 .flashcard{position:relative;}
+/* Nút loa dưới mặt chữ (17/10/2026) — mờ + không bấm được khi từ chưa có audio_url. */
+.speak-btn{width:38px;height:38px;flex:none;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--accent-text);display:inline-flex;align-items:center;justify-content:center;margin:-4px 0 14px;padding:0;cursor:pointer;transition:border-color .15s,background .15s;}
+.speak-btn:hover:not(:disabled){border-color:var(--accent);background:var(--accent-soft);}
+.speak-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.speak-btn:disabled{opacity:.35;cursor:not-allowed;}
 .flashcard .pos-tag{position:absolute;top:12px;right:12px;margin:0;}
 .flashcard .pos-tag:empty{display:none;}
 .flashcard .back-only{display:none;}
