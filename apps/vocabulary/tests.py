@@ -7,6 +7,8 @@ Ghi chú: nhánh TÌM KIẾM (`?q=`) dùng TrigramSimilarity nên bắt buộc p
 extension pg_trgm — test tìm kiếm ở lớp SearchTests sẽ tự bỏ qua nếu database
 đang chạy không bật được extension đó.
 """
+import io
+
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.management import call_command
@@ -654,3 +656,44 @@ class SynonymTests(TestCase):
         self.a.synonyms.add(self.b)
         self.a.synonyms_note = "静寂、 閑静,"
         self.assertEqual(self.a.synonym_chips(), [("穏やか", True), ("静寂", False), ("閑静", False)])
+
+
+class CheckVocabDataTests(TestCase):
+    """T3 — check_vocab_data bắt được dữ liệu lệch, không chỉ in "đạt"."""
+
+    def setUp(self):
+        self.a = Vocabulary.objects.create(word="運送", reading="うんそう", meaning_vi="Vận chuyển")
+        self.b = Vocabulary.objects.create(word="輸送", reading="ゆそう", meaning_vi="Vận chuyển")
+
+    def _run(self):
+        out = io.StringIO()
+        try:
+            call_command("check_vocab_data", stdout=out)
+        except SystemExit as e:
+            return e.code, out.getvalue()
+        return 0, out.getvalue()
+
+    def test_clean_data_passes(self):
+        self.a.synonyms.add(self.b)
+        code, _ = self._run()
+        self.assertEqual(code, 0)
+
+    def test_one_sided_pair_fails(self):
+        VocabularySynonym.objects.bulk_create([VocabularySynonym(vocabulary=self.a, synonym=self.b)])
+        code, out = self._run()
+        self.assertEqual(code, 1)
+        self.assertIn("運送 → 輸送", out)
+
+    def test_note_repeating_linked_word_fails(self):
+        self.a.synonyms.add(self.b)
+        Vocabulary.objects.filter(pk=self.a.pk).update(synonyms_note="輸送、運搬")
+        code, out = self._run()
+        self.assertEqual(code, 1)
+        self.assertIn("「輸送」", out)
+
+    def test_soft_deleted_link_is_reported_not_failed(self):
+        self.a.synonyms.add(self.b)
+        self.b.soft_delete()
+        code, out = self._run()
+        self.assertEqual(code, 0)
+        self.assertIn("運送 → 輸送", out)
