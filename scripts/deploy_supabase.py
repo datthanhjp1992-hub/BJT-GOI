@@ -40,7 +40,7 @@ from urllib.parse import urlsplit, urlunsplit
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
-LOCAL_APPS = ["accounts", "core", "vocabulary", "learning", "practice_sheets", "gamification", "exam"]
+LOCAL_APPS = ["accounts", "core", "vocabulary", "learning", "practice_sheets", "gamification", "exam", "lessons"]
 AUDIT_COLUMNS = {"created_at", "created_by_id", "updated_at", "updated_by_id"}
 
 GREEN, RED, YELLOW, DIM, RESET = "\033[32m", "\033[31m", "\033[33m", "\033[2m", "\033[0m"

@@ -36,6 +36,8 @@ from apps.core.constants import (
     CODE_TYPE_EXAM_MODE,
     CODE_TYPE_VOCAB_QUESTION,
     CODE_TYPE_PART_OF_SPEECH,
+    CODE_TYPE_POLITENESS_LEVEL,
+    CODE_TYPE_PRACTICE_KIND,
 )
 
 # (code, code_name, mother_code, description, sort_order)
@@ -215,6 +217,18 @@ SEED_DATA = {
         ("phrase", "Cụm từ / thành ngữ", None, "", 8),
         ("expr", "Câu chào / câu cố định", None, "", 9),
         ("other", "Khác", None, "", 10),
+    ],
+    # Học theo bài (docs/SPEC_LUYEN_TAP_BAI.md). Mã 1/2/3 = cột formality của bjt.db;
+    # nhãn suy từ dữ liệu (申します=1, といいます=2, よろしく！=3) — đối chiếu sách ở T2.
+    CODE_TYPE_POLITENESS_LEVEL: [
+        ("1", "Rất trang trọng", None, "尊敬語・謙譲語 — vd ヤンと申します", 1),
+        ("2", "Lịch sự", None, "です・ます — vd ヤンといいます", 2),
+        ("3", "Thân mật", None, "Thể thường — vd よろしく！", 3),
+    ],
+    CODE_TYPE_PRACTICE_KIND: [
+        ("drill", "Luyện thay thế", None, "DrillItem", 1),
+        ("blank", "Chỗ trống đóng vai", None, "RoleplayBlank", 2),
+        ("polite", "Mức lịch sự", None, "PolitenessPhrase", 3),
     ],
 }
 

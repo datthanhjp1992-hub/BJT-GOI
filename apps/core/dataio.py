@@ -57,6 +57,7 @@ LOCAL_APP_LABELS = (
     "gamification",
     "error_reports",
     "keigo",
+    "lessons",
 )
 
 AUDIT_FIELDS = ("created_by", "created_at", "updated_by", "updated_at")

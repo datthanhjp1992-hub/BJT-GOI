@@ -243,3 +243,20 @@ CODE_TYPE_PART_OF_SPEECH = "24"
 
 def part_of_speech_choices():
     return get_choices(CODE_TYPE_PART_OF_SPEECH)
+
+
+# --- Học theo bài (app apps.lessons, docs/SPEC_LUYEN_TAP_BAI.md mục 1.3, 17/10/2026) ---
+CODE_TYPE_POLITENESS_LEVEL = "25"  # Mức lịch sự của câu: 1 rất trang trọng / 2 lịch sự / 3 thân mật
+CODE_TYPE_PRACTICE_KIND = "26"     # Dạng câu luyện tập trong UserPracticeMark
+
+PRACTICE_KIND_DRILL = "drill"      # DrillItem
+PRACTICE_KIND_BLANK = "blank"      # RoleplayBlank
+PRACTICE_KIND_POLITE = "polite"    # PolitenessPhrase
+
+
+def politeness_level_choices():
+    return get_choices(CODE_TYPE_POLITENESS_LEVEL)
+
+
+def practice_kind_choices():
+    return get_choices(CODE_TYPE_PRACTICE_KIND)
