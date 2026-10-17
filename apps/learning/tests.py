@@ -16,7 +16,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.vocabulary import selectors as vocab_selectors
-from apps.vocabulary.models import Topic, Vocabulary, VocabularyTopic
+from apps.vocabulary.models import ExampleSentence, Topic, Vocabulary, VocabularyTopic
 from apps.gamification.models import Contribution
 from apps.gamification.services import (
     CONTRIBUTION_TYPE_COMMENT,
@@ -1926,6 +1926,17 @@ class StudyDeckTests(ReviewTestCase):
         cards = response.context["deck"]["cards"]
         self.assertEqual(cards[str(current)]["audio_url"], url)
         self.assertEqual({c["audio_url"] for k, c in cards.items() if k != str(current)}, {""})
+
+    def test_example_speaker_only_when_sentence_has_audio(self):
+        current = self._deck()["current"]
+        url = "https://example.supabase.co/storage/v1/object/public/vocab-audio/e1.mp3"
+        ExampleSentence.objects.create(vocabulary_id=current, sentence_jp="会議です。", sentence_vi="Họp.")
+        ExampleSentence.objects.create(vocabulary_id=current, sentence_jp="静かに。", sentence_vi="Im lặng.",
+                                       audio_url=url)
+        response = self.client.get(reverse("learning:study"))
+        # 1 nút ở thẻ đang hiện + 1 trong _card_extra nhúng ở #study-deck; câu không audio thì không có nút
+        self.assertContains(response, "speak-btn-sm", count=2)
+        self.assertContains(response, f'data-audio-url="{url}"')
 
     def test_partial_render_also_carries_the_deck(self):
         response = self.client.get(reverse("learning:study"), **PARTIAL)

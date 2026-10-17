@@ -21,7 +21,13 @@ Cần: word (topics đã prefetch càng tốt), examples (tối đa 3).
     </summary>
     <div class="card study-examples-body">
       {% for ex in examples %}
-        <p class="study-example-jp">{{ ex.sentence_jp }}</p>
+        {% comment %}Loa câu ví dụ: cùng data-speak với loa của từ (main.js bắt click ở document nên
+        thẻ đổi qua study_deck.js vẫn chạy). Câu chưa có audio thì không hiện nút.{% endcomment %}
+        <p class="study-example-jp">{{ ex.sentence_jp }}{% if ex.audio_url %}
+          <button type="button" class="speak-btn speak-btn-sm" data-speak data-audio-url="{{ ex.audio_url }}"
+                  title="{% label 'learning.flashcard.button.speak_example' %}" aria-label="{% label 'learning.flashcard.button.speak_example' %}">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
+          </button>{% endif %}</p>
         <p class="muted study-example-vi">{{ ex.sentence_vi }}</p>
       {% endfor %}
     </div>
