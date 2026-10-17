@@ -2,6 +2,8 @@
 Core vocabulary content models.
 All inherit AuditableModel -> created_by/created_at/updated_by/updated_at.
 """
+import re
+
 from django.contrib.postgres.indexes import GinIndex, OpClass
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db import models
@@ -86,6 +88,14 @@ class Vocabulary(SoftDeleteModel):
         help_text="Loại từ (MasterCode 24), vd 'adj-na'. Mã hiện ở góc phải thẻ flashcard.",
     )
     audio_url = models.URLField(blank=True)  # audio VOICEVOX trên Supabase — scripts/generate_vocab_audio.py
+    synonyms = models.ManyToManyField(
+        "self", through="vocabulary.VocabularySynonym", symmetrical=True, blank=True,
+    )
+    synonyms_note = models.CharField(
+        max_length=255, blank=True,
+        help_text="Từ đồng nghĩa KHÔNG có trong hệ thống, ngăn bằng '、', vd '静寂、閑静'. "
+                  "Hiện thành chip chữ ở mặt sau thẻ (docs/SPEC_TU_DONG_NGHIA.md ◆2).",
+    )
     topics = models.ManyToManyField(
         Topic, related_name="vocabularies", blank=True,
         through="vocabulary.VocabularyTopic",
@@ -123,6 +133,12 @@ class Vocabulary(SoftDeleteModel):
             ),
         ]
 
+    def synonym_chips(self):
+        """[(chữ, có trong hệ thống?)] cho mặt sau thẻ: từ liên kết trước, rồi synonyms_note."""
+        linked = [(s.word, True) for s in self.synonyms.all()]
+        notes = [(w.strip(), False) for w in re.split(r"[、,，]", self.synonyms_note) if w.strip()]
+        return linked + notes
+
     def __str__(self):
         return f"{self.word} ({self.reading})"
 
@@ -157,3 +173,35 @@ class VocabularyTopic(AuditableModel):
 
     def __str__(self):
         return f"{self.vocabulary_id} - {self.topic_id}"
+
+
+class VocabularySynonym(AuditableModel):
+    """Bảng nối Vocabulary <-> Vocabulary (đồng nghĩa, hai chiều — spec ◆1).
+
+    `word.synonyms.add(other)` tự tạo cả hai dòng. Đường admin inline / dataio
+    tạo từng dòng bằng save() nên save() tự bù dòng chiều ngược, delete() xoá theo.
+    """
+
+    vocabulary = models.ForeignKey(Vocabulary, related_name="synonym_links", on_delete=models.CASCADE)
+    synonym = models.ForeignKey(Vocabulary, related_name="+", on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("vocabulary", "synonym")
+        verbose_name = "Vocabulary synonym"
+        constraints = [
+            models.CheckConstraint(condition=~Q(vocabulary=F("synonym")), name="synonym_not_self"),
+        ]
+
+    def save(self, *args, **kwargs):
+        # shortcut: sửa `synonym` của dòng có sẵn thì dòng ngược cũ còn lại; check_vocab_data (T3) báo cặp lệch.
+        super().save(*args, **kwargs)
+        reverse = type(self).objects.filter(vocabulary_id=self.synonym_id, synonym_id=self.vocabulary_id)
+        if not reverse.exists():
+            type(self)(vocabulary_id=self.synonym_id, synonym_id=self.vocabulary_id).save()
+
+    def delete(self, *args, **kwargs):
+        type(self).objects.filter(vocabulary_id=self.synonym_id, synonym_id=self.vocabulary_id).delete()
+        return super().delete(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.vocabulary_id} = {self.synonym_id}"

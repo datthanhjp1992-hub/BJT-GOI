@@ -738,6 +738,10 @@ a.pager-btn:hover{border-color:var(--accent);color:var(--accent-text);}
 html:not(.js) .before-reveal,html:not(.js) .shortcut-open{display:none;}
 .reveal-btn{margin-top:16px;}
 .study-topics{text-align:center;margin:12px 0 0;font-size:13px;}
+.study-synonyms{text-align:center;margin:12px 0 0;font-size:13px;}
+.synonym-link{color:var(--accent-text);text-decoration:none;}
+.synonym-link:hover{border-color:var(--accent);}
+.study-no-example{text-align:center;margin:12px 0 0;font-size:13px;}
 .study-examples{margin-top:12px;}
 .study-examples>summary{list-style:none;}
 .study-examples>summary::-webkit-details-marker{display:none;}

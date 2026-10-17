@@ -1,6 +1,6 @@
 # Spec — Từ đồng nghĩa trên thẻ flashcard
 
-> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.3 đã chốt (Dat, 17/10/2026 — cả 5 điểm theo đề xuất) — chưa làm T1** · Người duyệt: Dat
+> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.3 đã chốt (Dat, 17/10/2026 — cả 5 điểm theo đề xuất) — T1 + T2 xong, còn T3 (dữ liệu)** · Người duyệt: Dat
 >
 > Nguồn: bản vẽ thẻ của Dat (17/10/2026), 6 ô: đồng nghĩa · loại từ · từ học · nghĩa ·
 > nút xem ví dụ · ví dụ. Mỗi task ghi **mục tiêu → file → cách làm → điều kiện hoàn thành → test**,
@@ -100,6 +100,11 @@ prefetch theo lô — **không được** sinh N+1 (kiểm bằng `assertNumQuer
   đồng nghĩa với chính mình; cấm trùng; `save()` lẻ tạo chiều ngược; đủ 4 cột audit; xoá mềm một
   từ → từ đó không hiện ở thẻ kia (lọc `is_deleted=False`).
 
+- **Đã xong 17/10/2026.** Migration `0008_synonyms`. `dataio`: cột mới `synonyms_note` có trong
+  mẫu gộp "Từ vựng đầy đủ" (đã cập nhật `htmlTemplate/mau_danh_sach_tu_vung.{csv,xlsx}`); bảng
+  `vocabularysynonym` nhập riêng theo khoá `(vocabulary, synonym)`. Sửa `synonym` của một dòng có sẵn
+  thì dòng ngược cũ còn lại — để `check_vocab_data` (T3) báo.
+
 ### T2 ⭐ Hiện trên thẻ (0,5 ngày)
 - **File:** `templates/learning/_card_extra.html`, `apps/learning/views.py` (prefetch),
   CSS chip trong file theme chung, `properties` (2 nhãn mới).
@@ -107,6 +112,10 @@ prefetch theo lô — **không được** sinh N+1 (kiểm bằng `assertNumQuer
   độ tối đọc được; tắt JS thì vẫn hiện (nằm trong `.after-reveal` như ví dụ).
 - **Test:** từ có / không có đồng nghĩa; chỉ có `synonyms_note`; từ đã xoá mềm không hiện;
   số query của màn học không tăng theo số thẻ; dòng "Chưa có ví dụ" khi 0 ví dụ.
+
+- **Đã xong 17/10/2026.** Khối đồng nghĩa đặt **đầu** `_card_extra.html` (ngay dưới thẻ, trên
+  chủ đề); `services.get_study_cards` prefetch `synonyms` — test khẳng định số query không tăng
+  theo số thẻ. ◆4: từ không có ví dụ hiện "Chưa có ví dụ cho từ này".
 
 ### T3 Soạn dữ liệu + kiểm (1 ngày, phần lớn là Dat duyệt)
 - **File:** `docs/data/vocab_bjt/synonyms.csv` (`word,reading,synonym_word,synonym_reading,ghi_chu`),

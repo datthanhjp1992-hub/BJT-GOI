@@ -194,14 +194,15 @@ class DataIoEngineTests(TestCase):
         """FK dò theo khoá tự nhiên chứ không bắt admin gõ id thô."""
         self.assertEqual(
             dataio.headers_for(ExampleSentence),
-            ["vocabulary__word", "vocabulary__reading", "sentence_jp", "sentence_vi"],
+            ["vocabulary__word", "vocabulary__reading", "sentence_jp", "sentence_vi", "audio_url"],
         )
 
     def test_m2m_has_no_column_but_is_reported(self):
         headers = dataio.headers_for(Vocabulary)
         self.assertNotIn("topics", headers)
         self.assertEqual(
-            dataio.skipped_m2m_names(Vocabulary), [("topics", "vocabulary.vocabularytopic")]
+            dataio.skipped_m2m_names(Vocabulary),
+            [("synonyms", "vocabulary.vocabularysynonym"), ("topics", "vocabulary.vocabularytopic")],
         )
 
     def test_every_declared_natural_key_names_real_fields(self):
@@ -748,7 +749,7 @@ class FullVocabularyDatasetTests(AdminPanelTestCase):
         self.assertEqual(
             self.headers,
             [
-                "word", "reading", "meaning_vi", "han_viet", "part_of_speech", "audio_url", "topics",
+                "word", "reading", "meaning_vi", "han_viet", "part_of_speech", "audio_url", "synonyms_note", "topics",
                 "example1_jp", "example1_vi",
                 "example2_jp", "example2_vi",
                 "example3_jp", "example3_vi",

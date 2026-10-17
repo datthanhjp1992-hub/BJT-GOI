@@ -12,13 +12,14 @@ from django.core.cache import cache
 from django.core.management import call_command
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
+from django.db import IntegrityError, transaction
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 
 from apps.core.properties import label, message
 from apps.learning.models import UserVocabularyProgress
 
-from .models import Topic, Vocabulary, VocabularyTopic
+from .models import Topic, Vocabulary, VocabularySynonym, VocabularyTopic
 from .selectors import LIBRARY_DEFAULT_SESSION_LIMIT, SESSION_LIMIT_ALL
 from .views import DEFAULT_PER_PAGE, PAGE_SIZE
 
@@ -501,6 +502,7 @@ class AdminTopicAssignmentTests(TestCase):
                 "topic_links-TOTAL_FORMS": "1", "topic_links-INITIAL_FORMS": "0",
                 "topic_links-MIN_NUM_FORMS": "0", "topic_links-MAX_NUM_FORMS": "1000",
                 "topic_links-0-topic": str(topic.pk),
+                "synonym_links-TOTAL_FORMS": "0", "synonym_links-INITIAL_FORMS": "0",
                 "examples-TOTAL_FORMS": "0", "examples-INITIAL_FORMS": "0",
                 "examples-MIN_NUM_FORMS": "0", "examples-MAX_NUM_FORMS": "1000",
             },
@@ -611,3 +613,44 @@ class AudioTextTests(SimpleTestCase):
         self.assertIsNone(parse_audio_name("x1.mp3"))
         self.assertEqual(public_audio_url("https://abc.supabase.co/", "w12.mp3", "0123456789abcdef"),
                          "https://abc.supabase.co/storage/v1/object/public/vocab-audio/w12.mp3?v=01234567")
+
+
+class SynonymTests(TestCase):
+    """docs/SPEC_TU_DONG_NGHIA.md T1: đồng nghĩa hai chiều, không tự trỏ, không trùng."""
+
+    def setUp(self):
+        self.a = Vocabulary.objects.create(word="静か", reading="しずか", meaning_vi="Yên tĩnh")
+        self.b = Vocabulary.objects.create(word="穏やか", reading="おだやか", meaning_vi="Êm đềm")
+
+    def test_add_is_symmetric(self):
+        self.a.synonyms.add(self.b)
+        self.assertEqual(list(self.b.synonyms.all()), [self.a])
+
+    def test_single_save_creates_reverse_and_delete_removes_it(self):
+        link = VocabularySynonym.objects.create(vocabulary=self.a, synonym=self.b)
+        self.assertEqual(list(self.b.synonyms.all()), [self.a])
+        link.delete()
+        self.assertFalse(VocabularySynonym.objects.exists())
+
+    def test_audit_columns_filled_on_reverse_row(self):
+        VocabularySynonym.objects.create(vocabulary=self.a, synonym=self.b)
+        self.assertEqual(VocabularySynonym.objects.filter(created_at__isnull=False).count(), 2)
+
+    def test_not_self_and_not_duplicate(self):
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                VocabularySynonym.objects.create(vocabulary=self.a, synonym=self.a)
+        VocabularySynonym.objects.create(vocabulary=self.a, synonym=self.b)
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                VocabularySynonym.objects.bulk_create([VocabularySynonym(vocabulary=self.a, synonym=self.b)])
+
+    def test_soft_deleted_synonym_hidden(self):
+        self.a.synonyms.add(self.b)
+        self.b.soft_delete()
+        self.assertEqual(list(self.a.synonyms.all()), [])
+
+    def test_synonym_chips_linked_first_then_note(self):
+        self.a.synonyms.add(self.b)
+        self.a.synonyms_note = "静寂、 閑静,"
+        self.assertEqual(self.a.synonym_chips(), [("穏やか", True), ("静寂", False), ("閑静", False)])

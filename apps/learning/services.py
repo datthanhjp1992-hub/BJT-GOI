@@ -327,14 +327,14 @@ class StudyCard:
 
 def get_study_cards(user, vocabulary_ids):
     """Các thẻ của `vocabulary_ids` theo ĐÚNG thứ tự truyền vào, số query cố
-    định (không tăng theo số thẻ): từ + chủ đề + ví dụ, tiến độ của user, số
+    định (không tăng theo số thẻ): từ + chủ đề + ví dụ + đồng nghĩa, tiến độ của user, số
     bình luận. Id của từ đã bị xoá thì không có trong kết quả."""
     from apps.gamification import services as gamification_services
 
     ids = list(dict.fromkeys(vocabulary_ids))
     if not ids:
         return []
-    words = Vocabulary.objects.filter(pk__in=ids).prefetch_related("topics", "examples").in_bulk()
+    words = Vocabulary.objects.filter(pk__in=ids).prefetch_related("topics", "examples", "synonyms").in_bulk()
     progress = {
         p.vocabulary_id: p
         for p in UserVocabularyProgress.objects.filter(user=user, vocabulary_id__in=ids)

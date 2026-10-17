@@ -122,6 +122,7 @@ NATURAL_KEYS = {
     # Thiếu khoá này thì nhập lại cùng file là nhân đôi toàn bộ câu ví dụ.
     "vocabulary.examplesentence": ("vocabulary", "sentence_jp"),
     "vocabulary.vocabularytopic": ("vocabulary", "topic"),
+    "vocabulary.vocabularysynonym": ("vocabulary", "synonym"),
     # Một người không đặt hai danh sách trùng tên.
     "learning.userwordlist": ("user", "name"),
     "learning.userwordlistword": ("wordlist", "vocabulary"),

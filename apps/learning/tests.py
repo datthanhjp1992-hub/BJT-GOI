@@ -15,6 +15,7 @@ from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 
+from apps.core.properties import label
 from apps.vocabulary import selectors as vocab_selectors
 from apps.vocabulary.models import ExampleSentence, Topic, Vocabulary, VocabularyTopic
 from apps.gamification.models import Contribution
@@ -1937,6 +1938,34 @@ class StudyDeckTests(ReviewTestCase):
         # 1 nút ở thẻ đang hiện + 1 trong _card_extra nhúng ở #study-deck; câu không audio thì không có nút
         self.assertContains(response, "speak-btn-sm", count=2)
         self.assertContains(response, f'data-audio-url="{url}"')
+
+    def test_synonym_chips_and_no_example_hint_on_card(self):
+        current = Vocabulary.objects.get(pk=self._deck()["current"])
+        other = Vocabulary.objects.create(word="穏やか", reading="おだやか", meaning_vi="Êm đềm")
+        current.synonyms.add(other)
+        Vocabulary.objects.filter(pk=current.pk).update(synonyms_note="静寂")
+        response = self.client.get(reverse("learning:study"))
+        self.assertContains(response, 'class="tag synonym-link"')
+        self.assertContains(response, "?q=%E7%A9%8F%E3%82%84%E3%81%8B")
+        self.assertContains(response, '<span class="tag">静寂</span>', html=True)
+        self.assertContains(response, label("learning.flashcard.hint.no_example"))
+
+    def test_deck_queries_do_not_grow_with_synonyms(self):
+        ids = list(Vocabulary.objects.values_list("pk", flat=True)[:3])
+        extra = Vocabulary.objects.create(word="穏やか", reading="おだやか", meaning_vi="Êm đềm")
+        for pk in ids:
+            Vocabulary.objects.get(pk=pk).synonyms.add(extra)
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        from apps.learning import services
+
+        def count(vocab_ids):
+            with CaptureQueriesContext(connection) as ctx:
+                [c.word.synonym_chips() for c in services.get_study_cards(self.user, vocab_ids)]
+            return len(ctx.captured_queries)
+
+        self.assertEqual(count(ids[:1]), count(ids))
 
     def test_partial_render_also_carries_the_deck(self):
         response = self.client.get(reverse("learning:study"), **PARTIAL)

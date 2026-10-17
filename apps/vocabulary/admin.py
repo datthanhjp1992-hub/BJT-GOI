@@ -14,7 +14,7 @@ qua save(), để trống created_by).
 """
 from django.contrib import admin
 
-from .models import ExampleSentence, Topic, Vocabulary, VocabularyTopic
+from .models import ExampleSentence, Topic, Vocabulary, VocabularySynonym, VocabularyTopic
 
 
 class SoftDeleteAdmin(admin.ModelAdmin):
@@ -63,12 +63,23 @@ class VocabularyTopicInline(admin.TabularInline):
     verbose_name_plural = "Chủ đề"
 
 
+class VocabularySynonymInline(admin.TabularInline):
+    """Từ đồng nghĩa có trong hệ thống — lưu một chiều là đủ, save() tự thêm chiều ngược."""
+
+    model = VocabularySynonym
+    fk_name = "vocabulary"
+    extra = 1
+    autocomplete_fields = ("synonym",)
+    verbose_name = "Từ đồng nghĩa"
+    verbose_name_plural = "Từ đồng nghĩa (có trong hệ thống)"
+
+
 @admin.register(Vocabulary)
 class VocabularyAdmin(SoftDeleteAdmin):
     list_display = ("word", "reading", "part_of_speech", "han_viet", "meaning_vi", "topic_list", "is_deleted", "updated_at")
     list_filter = ("is_deleted", "part_of_speech", "topics")
     search_fields = ("word", "reading", "han_viet", "meaning_vi")
-    inlines = [VocabularyTopicInline, ExampleSentenceInline]
+    inlines = [VocabularyTopicInline, VocabularySynonymInline, ExampleSentenceInline]
 
     def get_queryset(self, request):
         # Không có prefetch thì cột "Chủ đề" bắn thêm 1 query mỗi dòng.
