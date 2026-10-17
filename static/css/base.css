@@ -732,8 +732,8 @@ a.pager-btn:hover{border-color:var(--accent);color:var(--accent-text);}
 /* Âm Hán Việt: từ không có thì ô rỗng — ẩn hẳn cho khỏi chừa khoảng trống. */
 .flashcard .han-viet{color:var(--ink-soft);font-size:14px;letter-spacing:.06em;}
 .flashcard .han-viet:empty{display:none !important;}
-.flashcard .synonyms{color:var(--ink-soft);font-size:14px;margin-top:10px;}
-.flashcard .synonyms::before{content:attr(data-label) " ";}
+.flashcard .synonyms{color:var(--accent-text);font-size:18px;font-weight:600;margin-top:12px;}
+.flashcard .synonyms::before{content:attr(data-label) " ";color:var(--ink-soft);font-size:13px;font-weight:400;}
 .flashcard .synonyms:empty{display:none !important;}
 .flashcard .hint{font-size:14px;margin:6px 0 0;}
 .js .study-screen:not(.is-revealed) .after-reveal{display:none;}
