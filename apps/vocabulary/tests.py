@@ -12,7 +12,7 @@ from django.core.cache import cache
 from django.core.management import call_command
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 
 from apps.core.properties import label, message
@@ -557,3 +557,57 @@ class SoftDeleteTests(VocabularyTestCase):
         self.client.post(url, {"action": "restore_selected", "_selected_action": [vocab.pk]})
         vocab.refresh_from_db()
         self.assertFalse(vocab.is_deleted)
+
+
+class AudioTextTests(SimpleTestCase):
+    """apps/vocabulary/audio.py — chuẩn bị chữ cho VOICEVOX (scripts/generate_vocab_audio.py)."""
+
+    def test_phonetic_matches_engine_kana(self):
+        from apps.vocabulary.audio import phonetic
+
+        # audio_query ghi theo âm: こう→こお, けい→けえ, ー→nguyên âm, を→お
+        for reading, engine in [("こうりょ", "コオリョ"), ("けいゆ", "ケエユ"), ("シナジー", "シナジイ"),
+                                ("つねにくじょうをいうひと", "ツネニクジョオオイウヒト"), ("うらづけ", "ウラズケ")]:
+            self.assertEqual(phonetic(reading), phonetic(engine))
+        self.assertNotEqual(phonetic("めした"), phonetic("もっか"))
+
+    def test_base_form_and_candidates(self):
+        from apps.vocabulary.audio import base_form, word_candidates
+
+        self.assertEqual(base_form("売り出し（売出し）"), "売り出し")
+        self.assertEqual(base_form("協働（する）"), "協働")
+        self.assertEqual(base_form("～切れ"), "切れ")
+        self.assertEqual(base_form("みょうごにち/あさって"), "みょうごにち")
+        self.assertEqual(word_candidates("デフレ略（デフレーション）"), ["デフレ略", "デフレ"])
+        self.assertEqual(word_candidates("拝見敬"), ["拝見敬", "拝見"])
+        self.assertEqual(word_candidates("尊敬"), ["尊敬"])
+
+    def test_speak_text_strips_spaces(self):
+        from apps.vocabulary.audio import speak_text
+
+        self.assertEqual(speak_text("今年は約 50 人 いる。"), "今年は約50人いる。")
+
+    def test_query_kana(self):
+        from apps.vocabulary.audio import query_kana
+
+        q = {"accent_phrases": [{"moras": [{"text": "ア"}, {"text": "メ"}], "pause_mora": {"text": "、"}},
+                                {"moras": [{"text": "ダ"}]}]}
+        self.assertEqual(query_kana(q), "あめ、だ")
+
+    def test_is_dirty(self):
+        from apps.vocabulary.audio import is_dirty
+
+        self.assertTrue(is_dirty("そろそろ決断しなくてはならない。 117"))
+        self.assertTrue(is_dirty("ご覧ください。Xin cảm ơn anh/chị đã liên hệ."))
+        self.assertFalse(is_dirty("今年は、早期退職希望者が約 50 人いるそうだ。"))
+        self.assertFalse(is_dirty("A 社さんとは、長年のお取引をいただいております。"))
+
+    def test_audio_upload_helpers(self):
+        from apps.vocabulary.audio import parse_audio_name, public_audio_url
+
+        self.assertEqual(parse_audio_name("w12.mp3"), ("w", 12))
+        self.assertEqual(parse_audio_name("e7.mp3"), ("e", 7))
+        self.assertIsNone(parse_audio_name("manifest.json"))
+        self.assertIsNone(parse_audio_name("x1.mp3"))
+        self.assertEqual(public_audio_url("https://abc.supabase.co/", "w12.mp3", "0123456789abcdef"),
+                         "https://abc.supabase.co/storage/v1/object/public/vocab-audio/w12.mp3?v=01234567")

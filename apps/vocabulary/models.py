@@ -85,7 +85,7 @@ class Vocabulary(SoftDeleteModel):
         max_length=10, blank=True, choices=part_of_speech_choices,
         help_text="Loại từ (MasterCode 24), vd 'adj-na'. Mã hiện ở góc phải thẻ flashcard.",
     )
-    audio_url = models.URLField(blank=True)  # reserved for future use
+    audio_url = models.URLField(blank=True)  # audio VOICEVOX trên Supabase — scripts/generate_vocab_audio.py
     topics = models.ManyToManyField(
         Topic, related_name="vocabularies", blank=True,
         through="vocabulary.VocabularyTopic",
@@ -131,6 +131,7 @@ class ExampleSentence(AuditableModel):
     vocabulary = models.ForeignKey(Vocabulary, related_name="examples", on_delete=models.CASCADE)
     sentence_jp = models.CharField(max_length=255)
     sentence_vi = models.CharField(max_length=255)
+    audio_url = models.URLField(blank=True)  # audio VOICEVOX trên Supabase — scripts/generate_vocab_audio.py
 
     def __str__(self):
         return self.sentence_jp
