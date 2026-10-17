@@ -194,6 +194,7 @@
     flash.querySelector(".han-viet").textContent = card.han_viet || "";
     flash.querySelector("[data-pos-tag]").textContent = card.part_of_speech || "";
     flash.querySelector(".meaning").textContent = card.meaning;
+    flash.querySelector("[data-synonyms]").textContent = card.synonyms || "";
     var speak = flash.querySelector("[data-speak]");
     if (speak) {
       speak.setAttribute("data-audio-url", card.audio_url || "");

@@ -41,6 +41,12 @@
 | ◆4 | Từ không có ví dụ: nút "Xem ví dụ" mờ (bản vẽ) hay ẩn (hiện tại)? | **Giữ ẩn nút**, thêm một dòng chữ nhỏ "Chưa có ví dụ". Nút bị vô hiệu thì tương phản thấp và trên điện thoại không có tooltip giải thích. |
 | ◆5 | Bấm chip đồng nghĩa đi đâu? | Mở SC05 (danh sách từ vựng) đã tìm sẵn từ đó (`?q=<word>`), **ở tab mới**, để không cắt ngang phiên học. Hiện chưa có trang chi tiết riêng cho một từ. |
 
+**Đổi 17/10/2026 (Dat, sau khi dùng thử):** bỏ ◆5 — từ đồng nghĩa không còn là link sang SC05.
+Chuyển vào **trong thẻ**, một dòng chữ thường ngay dưới nghĩa, chỉ hiện khi lật (`.back-only`),
+tối đa 5 từ ngăn bằng `、` (`Vocabulary.synonym_text`). Bộ thẻ `#study-deck` mang thêm trường
+`synonyms`; `study_deck.js` cập nhật `[data-synonyms]` khi đổi thẻ. Khối chip trong
+`_card_extra.html` đã bỏ.
+
 ### 0.4 Không làm
 
 - Trái nghĩa, từ liên quan, nhóm từ (cùng một bảng nối nhưng thêm `kind` thì sau này mở rộng được — **không** thêm bây giờ).

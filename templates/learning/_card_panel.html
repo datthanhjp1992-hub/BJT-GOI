@@ -93,6 +93,9 @@ data-undo-text, data-discussion-toggle / data-discussion-body.
       <div class="reading{% if not show_reading_on_front %} back-only{% endif %}">{{ word.reading }}</div>
       <div class="han-viet back-only">{{ word.han_viet }}</div>
       <div class="meaning">{{ word.meaning_vi }}</div>
+      {% comment %}Đồng nghĩa (docs/SPEC_TU_DONG_NGHIA.md, đổi 17/10/2026): một dòng chữ trong thẻ, chỉ hiện
+      sau khi lật, không link. Nhãn lấy từ data-label (CSS ::before) để ô rỗng thì :empty ẩn được cả dòng.{% endcomment %}
+      <div class="synonyms back-only" data-synonyms data-label="{% label 'learning.flashcard.label.synonyms' %}">{{ word.synonym_text }}</div>
       <p class="muted hint">{% label "learning.flashcard.hint.tap_to_reveal" %}</p>
     </div>
     <noscript><style>.flashcard .meaning,.flashcard .back-only{display:block!important}.flashcard .hint{display:none!important}</style></noscript>

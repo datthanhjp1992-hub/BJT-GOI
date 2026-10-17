@@ -656,6 +656,7 @@ class SynonymTests(TestCase):
         self.a.synonyms.add(self.b)
         self.a.synonyms_note = "静寂、 閑静,"
         self.assertEqual(self.a.synonym_chips(), [("穏やか", True), ("静寂", False), ("閑静", False)])
+        self.assertEqual(self.a.synonym_text(limit=2), "穏やか、静寂")
 
 
 class CheckVocabDataTests(TestCase):

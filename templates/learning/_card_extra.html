@@ -1,23 +1,13 @@
 {% load properties_tags %}
 {% comment %}
-Phần "mặt sau" riêng của MỘT từ (đồng nghĩa + chủ đề + ví dụ) — tách khỏi _card_panel.html
+Phần "mặt sau" riêng của MỘT từ (chủ đề + ví dụ) — tách khỏi _card_panel.html
 ngày 06/10/2026 (spec.md T4.3.1). Dùng ở 2 chỗ:
   * _card_panel.html — thẻ đang hiện khi server render trang.
   * views._study_card_payload — render sẵn cho từng thẻ trong bộ thẻ nhúng
     (#study-deck); static/js/study_deck.js thay vào [data-card-extra] khi
     chuyển thẻ mà không hỏi lại server.
-Cần: word (topics, synonyms đã prefetch càng tốt), examples (tối đa 3).
+Cần: word (topics đã prefetch càng tốt), examples (tối đa 3).
 {% endcomment %}
-{% comment %}Đồng nghĩa (docs/SPEC_TU_DONG_NGHIA.md): ngay dưới thẻ, tối đa 5 chip. Từ có trong
-hệ thống mở SC05 đã tìm sẵn ở tab mới (◆5) để không cắt phiên học; từ ngoài hệ thống chỉ là chữ.{% endcomment %}
-{% with chips=word.synonym_chips %}{% if chips %}
-  <p class="study-synonyms">
-    <span class="muted">{% label "learning.flashcard.label.synonyms" %}</span>
-    {% for text, linked in chips|slice:":5" %}{% if linked %}<a class="tag synonym-link" href="{% url 'vocabulary:index' %}?q={{ text|urlencode }}" target="_blank" rel="noopener">{{ text }} ↗</a>{% else %}<span class="tag">{{ text }}</span>{% endif %} {% endfor %}
-    {% if chips|length > 5 %}<span class="muted">+{{ chips|length|add:"-5" }}</span>{% endif %}
-  </p>
-{% endif %}{% endwith %}
-
 {% if word.topics.all %}
   <p class="muted study-topics">
     {% for t in word.topics.all %}<span class="tag">{{ t.name_ja|default:t.name }}</span> {% endfor %}

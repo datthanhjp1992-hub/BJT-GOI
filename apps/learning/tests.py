@@ -1939,16 +1939,20 @@ class StudyDeckTests(ReviewTestCase):
         self.assertContains(response, "speak-btn-sm", count=2)
         self.assertContains(response, f'data-audio-url="{url}"')
 
-    def test_synonym_chips_and_no_example_hint_on_card(self):
+    def test_synonyms_inside_card_as_plain_text(self):
         current = Vocabulary.objects.get(pk=self._deck()["current"])
         other = Vocabulary.objects.create(word="穏やか", reading="おだやか", meaning_vi="Êm đềm")
         current.synonyms.add(other)
         Vocabulary.objects.filter(pk=current.pk).update(synonyms_note="静寂")
         response = self.client.get(reverse("learning:study"))
-        self.assertContains(response, 'class="tag synonym-link"')
-        self.assertContains(response, "?q=%E7%A9%8F%E3%82%84%E3%81%8B")
-        self.assertContains(response, '<span class="tag">静寂</span>', html=True)
+        self.assertContains(response, ">穏やか、静寂</div>")
+        self.assertNotContains(response, "?q=")  # không còn link sang SC05
+        self.assertEqual(response.context["deck"]["cards"][str(current.pk)]["synonyms"], "穏やか、静寂")
         self.assertContains(response, label("learning.flashcard.hint.no_example"))
+
+    def test_word_without_synonyms_has_empty_line(self):
+        response = self.client.get(reverse("learning:study"))
+        self.assertRegex(response.content.decode(), r"data-synonyms [^>]*></div>")
 
     def test_deck_queries_do_not_grow_with_synonyms(self):
         ids = list(Vocabulary.objects.values_list("pk", flat=True)[:3])

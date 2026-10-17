@@ -1081,6 +1081,7 @@ def _study_cards_json(request, vocabulary_ids):
             "part_of_speech": word.part_of_speech,
             "audio_url": word.audio_url,
             "meaning": word.meaning_vi,
+            "synonyms": word.synonym_text(),
             "state": card.progress.card_state if card.progress else srs.NEW,
             "comments": card.comment_count,
             "extra": render_to_string(

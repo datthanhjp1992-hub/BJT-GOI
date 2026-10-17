@@ -139,6 +139,10 @@ class Vocabulary(SoftDeleteModel):
         notes = [(w.strip(), False) for w in re.split(r"[、,，]", self.synonyms_note) if w.strip()]
         return linked + notes
 
+    def synonym_text(self, limit=5):
+        """Dòng đồng nghĩa trên mặt sau thẻ (chữ thường, không link) — tối đa `limit` từ."""
+        return "、".join(text for text, _ in self.synonym_chips()[:limit])
+
     def __str__(self):
         return f"{self.word} ({self.reading})"
 
