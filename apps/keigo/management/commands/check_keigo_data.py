@@ -43,6 +43,9 @@ EXPECTED = {
     "cloze": 5,
 }
 
+# Bộ đề tự soạn (docs/data/keigo/tu_soan, nạp bằng scripts/upload_keigo_exercises.py).
+SELF_MADE_PREFIX = "ts-"
+
 
 class Command(BaseCommand):
     help = "Hậu kiểm dữ liệu kính ngữ (chỉ đọc)."
@@ -88,6 +91,8 @@ class Command(BaseCommand):
 
     def _counts(self, skip_expected):
         self.stdout.write(self.style.MIGRATE_HEADING("\n[1] Số dòng từng bảng"))
+        # EXPECTED là số của SÁCH — bộ đề tự soạn (slug ts-…) đếm riêng, không so.
+        book_q = Question.objects.exclude(section__exercise_set__slug__startswith=SELF_MADE_PREFIX)
         got = {
             "lesson": KeigoLesson.objects.count(),
             "verb": KeigoVerb.objects.count(),
@@ -95,14 +100,16 @@ class Command(BaseCommand):
             "pattern": KeigoPattern.objects.count(),
             "example": KeigoExample.objects.count(),
             "phrase_pair": KeigoPhrasePair.objects.count(),
-            "exercise_set": ExerciseSet.objects.count(),
-            "question": Question.objects.count(),
-            "ordering": Question.objects.filter(question_type=QUESTION_TYPE_ORDERING).count(),
-            "cloze": Question.objects.filter(question_type=QUESTION_TYPE_CLOZE).count(),
+            "exercise_set": ExerciseSet.objects.exclude(slug__startswith=SELF_MADE_PREFIX).count(),
+            "question": book_q.count(),
+            "ordering": book_q.filter(question_type=QUESTION_TYPE_ORDERING).count(),
+            "cloze": book_q.filter(question_type=QUESTION_TYPE_CLOZE).count(),
         }
         for k, v in got.items():
             self._row(k, v, None if skip_expected else EXPECTED[k])
         self._row("question_option", QuestionOption.objects.count())
+        self._row("bộ đề tự soạn (ts-)", ExerciseSet.objects.filter(slug__startswith=SELF_MADE_PREFIX).count())
+        self._row("câu tự soạn (ts-)", Question.objects.count() - got["question"])
 
     def _per_set(self):
         self.stdout.write(self.style.MIGRATE_HEADING(
