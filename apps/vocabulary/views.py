@@ -66,6 +66,21 @@ def _natural_key(topic):
     return [int(part) if part.isdigit() else part.lower() for part in re.split(r"(\d+)", text)]
 
 
+def _autoplay_items(words):
+    """Danh sách cho thanh "Nghe cả chủ đề": MỌI trang của kết quả lọc, đúng
+    thứ tự bảng. Mỗi từ = audio của từ rồi audio các câu ví dụ; từ không có
+    audio nào thì bỏ hẳn."""
+    words = list(words.prefetch_related("examples"))
+    items = []
+    for w in words:
+        clips = [w.audio_url] if w.audio_url else []
+        clips += [ex.audio_url for ex in sorted(w.examples.all(), key=lambda e: e.pk) if ex.audio_url]
+        if clips:
+            items.append({"id": w.pk, "word": w.word, "reading": w.reading,
+                          "meaning": w.meaning_vi, "clips": clips})
+    return items
+
+
 def _attach_study_status(user, words, fallback_topic=None):
     """Gắn `study_status` + `primary_topic` cho các từ trên TRANG HIỆN TẠI.
 
@@ -217,5 +232,6 @@ def vocabulary_list_view(request, topic_slug=None):
         "page_range": pager["page_range"],
         "page_ellipsis": pager["ellipsis"],
         "filter_hidden_fields": pager["hidden_fields"],
+        "autoplay_items": _autoplay_items(words),
     })
     return render(request, "vocabulary/list.html", context)

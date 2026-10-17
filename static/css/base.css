@@ -1242,3 +1242,9 @@ a.ls-mode:hover{border-color:var(--accent);}
   .ls-rp{padding:10px 14px 12px 50px;}
   .ls-pair{grid-template-columns:1fr;}
 }
+/* Nghe cả chủ đề (SC05, 17/10/2026) */
+.autoplay{display:flex;flex-direction:column;gap:10px;margin:0 0 12px;}
+.autoplay-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.autoplay-field{display:inline-flex;align-items:center;gap:6px;margin:0;font-size:14px;}
+.autoplay-field select{width:auto;}
+tr.is-playing td{background:var(--accent-soft);}

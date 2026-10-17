@@ -815,3 +815,100 @@ function initRequiredBeforeSubmit() {
     });
   });
 }
+
+// ---------------------------------------------------------------------------
+// 8. Nghe cả chủ đề (SC05, 17/10/2026): phát lần lượt audio từ + câu ví dụ của
+//    MỌI trang kết quả lọc (#autoplay-items). Một <audio> duy nhất; clip hỏng
+//    thì bỏ qua sang clip kế; tốc độ / khoảng nghỉ nhớ trong localStorage.
+// ---------------------------------------------------------------------------
+var AUTOPLAY_STORAGE_KEY = "bjt.autoplay";
+
+function initAutoplay() {
+  var box = document.querySelector("[data-autoplay]");
+  var data = document.getElementById("autoplay-items");
+  if (!box || !data) { return; }
+  var items = JSON.parse(data.textContent);
+  var q = function (sel) { return box.querySelector(sel); };
+  var toggle = q("[data-autoplay-toggle]"), speed = q("[data-autoplay-speed]"),
+      gap = q("[data-autoplay-gap]"), loop = q("[data-autoplay-loop]"), status = q("[data-autoplay-status]");
+  var idleText = status.textContent;
+  var audio = new Audio();
+  var index = 0, clip = 0, playing = false, timer = null;
+
+  try {
+    var saved = JSON.parse(window.localStorage.getItem(AUTOPLAY_STORAGE_KEY) || "{}");
+    if (saved.speed) { speed.value = saved.speed; }
+    if (saved.gap) { gap.value = saved.gap; }
+  } catch (e) { /* bỏ qua */ }
+  function save() {
+    try { window.localStorage.setItem(AUTOPLAY_STORAGE_KEY, JSON.stringify({ speed: speed.value, gap: gap.value })); } catch (e) { /* bỏ qua */ }
+  }
+
+  function fill(text, values) {
+    return text.replace(/\{(\w+)\}/g, function (m, k) { return k in values ? values[k] : m; });
+  }
+  function highlight(id) {
+    document.querySelectorAll("[data-vocab-row].is-playing").forEach(function (r) { r.classList.remove("is-playing"); });
+    var row = id && document.querySelector('[data-vocab-row="' + id + '"]');
+    if (row) { row.classList.add("is-playing"); }
+  }
+  function render() {
+    toggle.textContent = playing ? toggle.dataset.pauseLabel : toggle.dataset.playLabel;
+  }
+
+  function playClip() {
+    clearTimeout(timer);
+    var item = items[index];
+    status.textContent = fill(status.dataset.playingText, {
+      index: index + 1, count: items.length, word: item.word, reading: item.reading, meaning: item.meaning
+    });
+    highlight(item.id);
+    audio.src = item.clips[clip];
+    audio.playbackRate = parseFloat(speed.value);
+    var p = audio.play();
+    if (p && p.catch) { p.catch(function (e) { if (e.name !== "AbortError") { advance(0); } }); }
+  }
+  // Sang clip kế; hết clip của từ thì nghỉ `wait` giây rồi sang từ kế.
+  function advance(wait) {
+    if (!playing) { return; }
+    if (clip + 1 < items[index].clips.length) { clip += 1; playClip(); return; }
+    if (index + 1 >= items.length && !loop.checked) {
+      stop();
+      status.textContent = fill(status.dataset.doneText, { count: items.length });
+      return;
+    }
+    timer = setTimeout(function () { jump((index + 1) % items.length); }, wait * 1000);
+  }
+  function jump(i) {
+    index = (i + items.length) % items.length;
+    clip = 0;
+    if (playing) { playClip(); }
+  }
+  function stop() {
+    playing = false;
+    clearTimeout(timer);
+    audio.pause();
+    index = 0; clip = 0;
+    highlight(null);
+    status.textContent = idleText;
+    render();
+  }
+
+  audio.addEventListener("ended", function () { advance(parseFloat(gap.value)); });
+  audio.addEventListener("error", function () { advance(0); });
+  toggle.addEventListener("click", function () {
+    playing = !playing;
+    if (!playing) { clearTimeout(timer); audio.pause(); }
+    else if (audio.src && audio.currentTime > 0 && !audio.ended) { audio.play(); }
+    else { playClip(); }
+    render();
+  });
+  q("[data-autoplay-prev]").addEventListener("click", function () { jump(index - 1); });
+  q("[data-autoplay-next]").addEventListener("click", function () { jump(index + 1); });
+  q("[data-autoplay-stop]").addEventListener("click", stop);
+  speed.addEventListener("change", function () { audio.playbackRate = parseFloat(speed.value); save(); });
+  gap.addEventListener("change", save);
+  box.hidden = false;
+}
+
+document.addEventListener("DOMContentLoaded", initAutoplay);

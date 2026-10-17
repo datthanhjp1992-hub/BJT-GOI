@@ -424,6 +424,33 @@ class ListViewTests(VocabularyTestCase):
         self.assertNotIn("&page=", second.context["pagination_query"])
         self.assertIn("per_page=10", second.context["pagination_query"])
 
+    def test_autoplay_covers_every_page_and_skips_silent_words(self):
+        from .models import ExampleSentence
+        for index in range(PAGE_SIZE + 2):
+            vocab = self._word("語%02d" % index, "ご%02d" % index, "nghĩa")
+            Vocabulary.objects.filter(pk=vocab.pk).update(audio_url="https://a/%02d.mp3" % index)
+        silent = self._word("無音", "むおん", "không tiếng")
+        only_example = self._word("例", "れい", "ví dụ")
+        ExampleSentence.objects.create(vocabulary=only_example, sentence_jp="例文", sentence_vi="câu",
+                                       audio_url="https://a/ex.mp3")
+        ExampleSentence.objects.create(vocabulary=only_example, sentence_jp="無", sentence_vi="câu")
+
+        response = self._filtered(topic="nha-hang")
+        items = response.context["autoplay_items"]
+        self.assertEqual(len(items), PAGE_SIZE + 3)               # cả trang 2, bỏ từ không có audio
+        self.assertNotIn(silent.pk, [i["id"] for i in items])
+        self.assertEqual(next(i for i in items if i["id"] == only_example.pk)["clips"], ["https://a/ex.mp3"])
+        self.assertEqual(next(i for i in items if i["word"] == "語00")["clips"], ["https://a/00.mp3"])
+        words = [i["word"] for i in items]
+        self.assertEqual(words, sorted(words))                     # đúng thứ tự bảng (order_by word)
+        self.assertContains(response, 'id="autoplay-items"')
+
+    def test_autoplay_bar_hidden_without_audio(self):
+        self._word("無音", "むおん", "không tiếng")
+        response = self._filtered(topic="nha-hang")
+        self.assertEqual(response.context["autoplay_items"], [])
+        self.assertNotContains(response, "data-autoplay")
+
 
 class SearchTests(VocabularyTestCase):
     def setUp(self):
@@ -438,6 +465,7 @@ class SearchTests(VocabularyTestCase):
         response = self._filtered(q="ちゅうもん")
         self.assertEqual(response.context["total_count"], 1)
         self.assertContains(response, "注文する")
+        self.assertEqual(response.context["autoplay_items"], [])   # queryset đã cắt vẫn dựng được
 
     def test_search_is_combined_with_topic_filter(self):
         self._word("注文する", "ちゅうもんする", "gọi món")            # chủ đề Nhà hàng

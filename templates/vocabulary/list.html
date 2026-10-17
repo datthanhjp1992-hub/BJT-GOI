@@ -157,6 +157,46 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
       {% include "partials/per_page_form.html" with per_page_suffix_key="vocabulary.list.field.per_page_suffix" %}
     </div>
 
+    {% comment %}Nghe cả chủ đề (17/10/2026): phát lần lượt audio từ + câu ví dụ của
+    MỌI trang kết quả (autoplay_items), static/js/main.js initAutoplay. Cần JS nên
+    ẩn sẵn, JS bỏ hidden.{% endcomment %}
+    {% if autoplay_items %}
+      {{ autoplay_items|json_script:"autoplay-items" }}
+      <div class="card autoplay" data-autoplay hidden>
+        <div class="autoplay-row">
+          <strong>🔊 {% label "vocabulary.autoplay.title" %}</strong>
+          <button type="button" class="btn btn-primary btn-sm" data-autoplay-toggle
+                  data-play-label="{% label 'vocabulary.autoplay.button.play' %}"
+                  data-pause-label="{% label 'vocabulary.autoplay.button.pause' %}">{% label "vocabulary.autoplay.button.play" %}</button>
+          <button type="button" class="btn btn-outline btn-sm" data-autoplay-prev aria-label="{% label 'vocabulary.autoplay.button.prev' %}" title="{% label 'vocabulary.autoplay.button.prev' %}">⏮</button>
+          <button type="button" class="btn btn-outline btn-sm" data-autoplay-next aria-label="{% label 'vocabulary.autoplay.button.next' %}" title="{% label 'vocabulary.autoplay.button.next' %}">⏭</button>
+          <button type="button" class="btn btn-outline btn-sm" data-autoplay-stop aria-label="{% label 'vocabulary.autoplay.button.stop' %}" title="{% label 'vocabulary.autoplay.button.stop' %}">⏹</button>
+        </div>
+        <div class="autoplay-row">
+          <label class="autoplay-field">{% label "vocabulary.autoplay.field.speed" %}
+            <select data-autoplay-speed>
+              <option value="0.5">0.5x</option><option value="0.75">0.75x</option>
+              <option value="1" selected>1x</option><option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option><option value="2">2x</option>
+            </select>
+          </label>
+          <label class="autoplay-field">{% label "vocabulary.autoplay.field.gap" %}
+            <select data-autoplay-gap>
+              <option value="0">0 {% label "vocabulary.autoplay.option.seconds" %}</option>
+              <option value="1" selected>1 {% label "vocabulary.autoplay.option.seconds" %}</option>
+              <option value="2">2 {% label "vocabulary.autoplay.option.seconds" %}</option>
+              <option value="3">3 {% label "vocabulary.autoplay.option.seconds" %}</option>
+            </select>
+          </label>
+          <label class="checkbox-row autoplay-field"><input type="checkbox" data-autoplay-loop> {% label "vocabulary.autoplay.field.loop" %}</label>
+        </div>
+        {# Chuỗi mẫu cho JS: truyền lại chính placeholder để JS tự điền. #}
+        <p class="muted text-sm m-0" data-autoplay-status aria-live="polite"
+           data-playing-text="{% message 'vocabulary.autoplay.hint.playing' index='{index}' count='{count}' word='{word}' reading='{reading}' meaning='{meaning}' %}"
+           data-done-text="{% message 'vocabulary.autoplay.hint.done' count='{count}' %}">{% message "vocabulary.autoplay.hint.count" count=autoplay_items|length total=total_count %}</p>
+      </div>
+    {% endif %}
+
     <div class="card" style="padding:0;">
       <table>
         <tr>
@@ -167,7 +207,7 @@ JavaScript — JS ở cuối file chỉ để tích/bỏ tích nhanh, không b�
           <th>{% label "vocabulary.list.table.status" %}</th>
         </tr>
         {% for word in page_obj.object_list %}
-          <tr>
+          <tr data-vocab-row="{{ word.pk }}">
             <td class="serif">{{ word.word }}</td>
             <td>{{ word.reading }}</td>
             <td>{{ word.meaning_vi }}</td>
