@@ -1,6 +1,6 @@
 # Spec — Luyện tập theo bài (Quyển 1)
 
-> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.2 đã chốt (Dat, 17/10/2026) — T1–T3 xong — đang làm T4 + T7 (Mốc 1)** · Người duyệt: Dat
+> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.2 đã chốt (Dat, 17/10/2026) — T1–T4, T7 xong (Mốc 1) — tiếp T5 + T6** · Người duyệt: Dat
 >
 > Nguồn: `bjt.db` của BJT-WEB — giáo trình hội thoại công sở "Quyển 1" (anh Smith,
 > công ty ABC商事; 12 chương, 45 bài). Đây là "phần 2" trong bản rà `bjt.db` ngày 16/10/2026;
@@ -126,6 +126,14 @@ Cả 4 màn theo quy tắc trang không quá dài (spec.md §0 quy tắc 9): đo
   Chiều cao đo được (1280×860): L1 1.729px (chương đang học mở, 11 chương gập), L2–L4 vừa 1 màn hình.
 
 ### T4 L1 Tổng quan + sidebar (0,5 ngày)
+- **T4 + T7 xong 17/10/2026 (Mốc 1, code + test, chờ Dat dùng thử trên DB thật).**
+  `/bai/` (L1) + `/bai/lich-su/` (L4), sidebar nhóm "Học theo bài" (◆A). L4 theo đúng khuôn kiểm tra
+  chương của `apps.grammar`: lượt 10 cặp trong session, `?i=`, POST → redirect (F5 không chấm lại),
+  `exam_play.js` bấm là chấm (◆C). Lượt mới ưu tiên cặp đang sai → chưa làm → đã đúng.
+  Khác mockup, cố ý: L1 chưa có thẻ "Học tiếp" và chip Thay thế / Đóng vai chưa bấm được (chờ T5/T6);
+  thẻ Mức lịch sự hiện "x / 41 cặp đã chọn đúng" thay cho "% lượt gần nhất" (không lưu lịch sử lượt — ◆3).
+  Chiều cao: 1280×860 — L1 1.647px, L4 856px, kết quả 1.048px; 375px — L1 1.989px, không cuộn ngang.
+
 ### T5 L2 Luyện thay thế (1 ngày)
 - **Test:** chưa đăng nhập → login; POST "Đúng/Chưa" tạo/cập nhật `UserPracticeMark`;
   bài không có drill → 404.

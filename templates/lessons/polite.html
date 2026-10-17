@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static properties_tags %}
+{% comment %}L4 Mức lịch sự -- mockup SC24 (Dat duyệt 17/10/2026). Một câu hỏi = một bài có 2 câu khác mức:
+"câu nào trang trọng hơn?" (◆4). Chọn là chấm ngay (◆C, data-exam-autosubmit của exam_play.js; tắt JS
+thì nút "Kiểm tra" vẫn gửi form). Lọc ?chuong=, lượt mới ?moi=1, câu ?i=.{% endcomment %}
+
+{% block title %}{% label "lessons.polite.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+<div class="lb-wrap">
+  <div class="eyebrow">{% label "lessons.polite.eyebrow" %}</div>
+  <h1 class="serif" style="font-size:28px;margin:0 0 6px;">{% label "lessons.polite.title" %}</h1>
+  <p class="muted" style="margin:0 0 14px;">{% label "lessons.polite.intro" %}</p>
+
+  <nav class="ls-seg" aria-label="{% label 'lessons.polite.group.all' %}">
+    {% for g in groups %}
+      <a class="{% if g == group %}is-on{% endif %}" href="?chuong={{ g }}"{% if g == group %} aria-current="page"{% endif %}>{% label "lessons.polite.group."|add:g %}</a>
+    {% endfor %}
+  </nav>
+
+  {% if empty %}
+    <div class="card"><p class="muted" style="margin:0;">{% label "lessons.polite.empty" %}</p></div>
+
+  {% elif result %}
+    <div class="card lb-card">
+      <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
+        <div class="ls-ring" style="--p:{{ percent }}"><div><b>{{ percent }}%</b><span class="muted text-sm">{% label "lessons.polite.correct" %}</span></div></div>
+        <div>
+          <h2 class="serif" style="margin:0 0 4px;">{% label "lessons.polite.done" %} · {{ score }} / {{ total }}</h2>
+          <p class="muted text-sm" style="margin:0 0 14px;">{% label "lessons.polite.done_note" %}</p>
+          <div class="lb-actions">
+            <a class="btn btn-primary" href="?chuong={{ group }}&moi=1" data-enter>{% label "lessons.polite.again" %}</a>
+            <a class="btn btn-outline" href="{% url 'lessons:index' %}">{% label "lessons.polite.quit" %}</a>
+          </div>
+        </div>
+      </div>
+      <ul class="ls-sum">
+        {% for it in items %}
+          <li>
+            <span class="mk {% if it.ok %}is-ok{% else %}is-ng{% endif %}">{% if it.ok %}○{% else %}×{% endif %}</span>
+            <span class="muted text-sm" style="min-width:52px;">{% label "lessons.polite.lesson" %} {{ it.lesson.scene_no }}</span>
+            <span class="jp">{{ it.formal.phrase_jp }}</span>
+            <span class="muted">›</span>
+            <span class="jp muted">{{ it.casual.phrase_jp }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+  {% else %}
+    <div class="ex-play-head">
+      <span class="muted text-sm" style="white-space:nowrap;">{% label "lessons.polite.pair" %} {{ i }} / {{ total }}</span>
+      <div class="bar" style="flex:1;"><i class="s-hi" style="width:{{ percent }}%"></i></div>
+    </div>
+
+    <div class="card lb-card">
+      <p class="lb-ctx" style="margin:0 0 12px;">{% label "lessons.polite.lesson" %} {{ question.lesson.scene_no }} · {{ question.lesson.title_vi }}</p>
+
+      {% if answered %}
+        <div class="lb-opts ls-pair">
+          {% for o in question.options %}
+            <div class="lb-opt {% if o == question.formal %}is-ok{% else %}is-ng{% endif %}">
+              <span class="n">{{ forloop.counter }}</span>
+              <span class="t"><span class="jp ls-phrase">{{ o.phrase_jp }}</span>
+                <span class="ls-lv">{% if o == question.formal %}✓ {% label "lessons.polite.more_formal" %}{% else %}{% label "lessons.polite.less_formal" %}{% endif %}</span></span>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="lb-fb {% if is_correct %}is-ok{% else %}is-ng{% endif %}" role="status">
+          <b>{% if is_correct %}○ {% label "exam.play.correct" %}{% else %}× {% label "exam.play.wrong" %}{% endif %}</b>
+          {% label "lessons.polite.formal_is" %} <span class="jp">{{ question.formal.phrase_jp }}</span> — {% label "lessons.polite.explain" %}
+        </div>
+        <div class="lb-actions">
+          <a class="btn btn-primary" href="?chuong={{ group }}&i={{ i|add:'1' }}" data-enter>{% if i < total %}{% label "lessons.polite.next" %}{% else %}{% label "lessons.polite.see_result" %}{% endif %} →</a>
+        </div>
+      {% else %}
+        <form method="post" action="{% url 'lessons:polite_answer' %}" data-exam-autosubmit>
+          {% csrf_token %}
+          <input type="hidden" name="i" value="{{ i }}">
+          <div class="lb-opts ls-pair" role="radiogroup">
+            {% for o in question.options %}
+              <label class="lb-opt">
+                <input type="radio" name="option" value="{{ o.id }}" required>
+                <span class="n">{{ forloop.counter }}</span><span class="t jp ls-phrase">{{ o.phrase_jp }}</span>
+              </label>
+            {% endfor %}
+          </div>
+          <div class="lb-actions">
+            <button class="btn btn-primary" type="submit" data-exam-check>{% label "exam.play.check" %}</button>
+            <span class="muted lb-kbd">{% label "exam.play.keyboard_hint" %}</span>
+          </div>
+        </form>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/exam_play.js' %}" defer></script>{% endblock %}

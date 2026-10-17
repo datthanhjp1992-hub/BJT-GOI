@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}L1 Tổng quan Học theo bài -- mockup SC24 (Dat duyệt 17/10/2026).
+12 chương là <details>: chương đang học mở sẵn, còn lại gập (quy tắc trang không quá dài).
+Mốc 1 (T4 + T7): chỉ "Mức lịch sự" có màn luyện; Luyện thay thế / Đóng vai hiện "Sắp có" và
+chip chưa bấm được cho tới T5 / T6. Thẻ "Học tiếp" của mockup cũng chờ T5 (cần dữ liệu luyện thay thế).{% endcomment %}
+
+{% block title %}{% label "lessons.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">{% label "lessons.eyebrow" %}</div>
+  <h1 class="serif" style="font-size:28px;margin:0 0 6px;">{% label "lessons.title" %}</h1>
+  <p class="muted" style="margin:0 0 20px;max-width:680px;">{% label "lessons.intro" %}</p>
+
+  <div class="ls-modes">
+    <div class="card ls-mode is-soon">
+      <div class="kanji jp">替</div>
+      <h3 class="serif">{% label "lessons.mode.drill" %} <span class="tag">{% label "lessons.mode.soon" %}</span></h3>
+      <p class="muted text-sm">{% label "lessons.mode.drill.desc" %}</p>
+      <div class="meta"><b>{{ stats.drill_known }}</b> / {{ stats.drill_total }} {% label "lessons.mode.said" %}</div>
+    </div>
+    <div class="card ls-mode is-soon">
+      <div class="kanji jp">役</div>
+      <h3 class="serif">{% label "lessons.mode.roleplay" %} <span class="tag">{% label "lessons.mode.soon" %}</span></h3>
+      <p class="muted text-sm">{% label "lessons.mode.roleplay.desc" %}</p>
+      <div class="meta"><b>{{ stats.blank_known }}</b> / {{ stats.blank_total }} {% label "lessons.mode.blanks" %}</div>
+    </div>
+    <a class="card ls-mode" href="{% url 'lessons:polite' %}">
+      <div class="kanji jp">敬</div>
+      <h3 class="serif">{% label "lessons.mode.polite" %}</h3>
+      <p class="muted text-sm">{% label "lessons.mode.polite.desc" %}</p>
+      <div class="meta"><b>{{ stats.polite_known }}</b> / {{ stats.polite_total }} {% label "lessons.mode.pairs" %}</div>
+    </a>
+  </div>
+
+  <h2 class="serif" style="font-size:20px;margin:0 0 12px;">{% label "lessons.units" %}</h2>
+  {% for u in units %}
+    <details class="ls-unit"{% if u.unit.number == open_unit %} open{% endif %}>
+      <summary>
+        <span class="no">{{ u.unit.number }}</span>
+        <span class="nm">{{ u.unit.name_vi }} <span class="jp muted">{{ u.unit.name_jp }}</span></span>
+        <span class="pg muted">{{ u.rows|length }} {% label "lessons.units.lessons" %}{% if u.polite_left %} · {{ u.polite_left }} {% label "lessons.units.polite_left" %}{% else %} · {% label "lessons.chip.polite" %} ✓{% endif %}</span>
+        <span class="chev" aria-hidden="true">›</span>
+      </summary>
+      {% for r in u.rows %}
+        <div class="ls-row">
+          <span class="n">{{ r.lesson.scene_no }}</span>
+          <div><div class="jp">{{ r.lesson.title_jp }}</div><div class="muted text-sm">{{ r.lesson.title_vi }}</div></div>
+          <div class="acts">
+            {% if r.has_drill %}<span class="tag{% if r.drill_known == r.drill_total %} is-ok{% endif %}">{% label "lessons.chip.drill" %}{% if r.drill_known %} {{ r.drill_known }}/{{ r.drill_total }}{% endif %}</span>
+            {% else %}<span class="tag is-off">{% label "lessons.chip.drill" %}</span>{% endif %}
+            {% if r.has_polite %}<a class="tag{% if r.polite_known %} is-ok{% endif %}" href="{% url 'lessons:polite' %}?chuong={{ u.group }}">{% label "lessons.chip.polite" %}{% if r.polite_known %} ✓{% endif %}</a>
+            {% else %}<span class="tag is-off">{% label "lessons.chip.polite" %}</span>{% endif %}
+          </div>
+        </div>
+      {% endfor %}
+      {% if u.unit.roleplays.all %}
+        <div class="ls-rp muted text-sm">{% label "lessons.units.roleplay" %}
+          {% for rp in u.unit.roleplays.all %}<span class="tag is-off">{% label "lessons.chip.roleplay" %} {{ rp.number }}</span>{% endfor %}
+        </div>
+      {% endif %}
+    </details>
+  {% endfor %}
+  <p class="muted text-sm" style="margin-top:10px;">{% label "lessons.units.note" %}</p>
+{% endblock %}
