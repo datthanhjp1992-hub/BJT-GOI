@@ -1,6 +1,6 @@
 # Spec — Luyện tập theo bài (Quyển 1)
 
-> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.2 đã chốt (Dat, 17/10/2026) — T1 xong, tiếp T2** · Người duyệt: Dat
+> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.2 đã chốt (Dat, 17/10/2026) — T1, T2 xong — chờ T3 mockup** · Người duyệt: Dat
 >
 > Nguồn: `bjt.db` của BJT-WEB — giáo trình hội thoại công sở "Quyển 1" (anh Smith,
 > công ty ABC商事; 12 chương, 45 bài). Đây là "phần 2" trong bản rà `bjt.db` ngày 16/10/2026;
@@ -33,7 +33,7 @@ Mức `formality` suy từ dữ liệu (chưa có chú thích trong `bjt.db`):
 | ◆1 | Phần 2 cần tên bài / chương / tình huống, mà phần 1 chưa làm | Tạo app mới **`lessons`** ngay bây giờ với `Unit` + `Lesson` *tối thiểu* (tên, tình huống). Phần 1 sau này thêm hội thoại/audio vào **cùng app**, không đổi bảng. |
 | ◆2 | Chấm luyện thay thế và hội thoại thế nào | **Tự nói → lật đáp án → tự chấm** "Đúng / Chưa" (giống lật thẻ flashcard). Không bắt gõ: so khớp chuỗi tiếng Nhật tự do (kanji/kana, dấu câu, 〜ます/〜ました) sẽ chấm sai nhiều hơn chấm đúng. |
 | ◆3 | Có lưu kết quả không | Lưu **kết quả gần nhất của từng câu** (`Đúng / Chưa`, số lần) — đủ để hiện "đã luyện x/y" mỗi bài và nút "Luyện lại câu chưa thuộc". Không lưu lịch sử từng lượt. |
-| ◆4 | Mức độ lịch sự — dạng câu hỏi | Mỗi câu: **chọn 1 trong 3 mức**, chấm ngay, hiện câu cùng bài ở mức khác để so sánh. 10 câu ngẫu nhiên / lượt, hoặc theo chương. |
+| ◆4 | Mức độ lịch sự — dạng câu hỏi | **Đổi 17/10/2026 (Dat):** mỗi câu là **một cặp trong cùng bài — "câu nào trang trọng hơn?"**, chấm ngay, hiện cả hai mức. 10 cặp ngẫu nhiên / lượt, hoặc theo chương. (Bản đầu "chọn 1 trong 3 mức" bị bỏ — xem phát hiện ở T2.) |
 | ◆5 | Có đưa vào khu Kiểm tra (`apps.exam`) không | **Không** ở bản đầu — ◆2 tự chấm không hợp với bộ máy chấm điểm của exam. Xét lại cho ◆4 sau khi dùng thử. |
 
 ### 0.3 Không làm trong bản này
@@ -81,7 +81,7 @@ Code type mới: **mức lịch sự** — `1` Rất trang trọng · `2` Lịch
 | L1 Tổng quan | `/bai/` | 12 chương dạng `<details>` (đóng sẵn trừ chương đang học); mỗi bài 1 dòng: tên + chip "Thay thế 2/3", "Lịch sự" và tiến độ |
 | L2 Luyện thay thế | `/bai/<scene_no>/thay-the/` | Câu mẫu → lần lượt 3 gợi ý; "Hiện đáp án" → "Đúng / Chưa". Không JS bắt buộc (GET/POST như SC19–SC21) |
 | L3 Hội thoại đóng vai | `/bai/chuong/<n>/dong-vai/<k>/` | Tình huống tiếng Việt, lời thoại có ô trống đánh số; mở từng ô hoặc "Hiện tất cả"; tự chấm từng ô |
-| L4 Mức độ lịch sự | `/bai/lich-su/` (`?chuong=`) | 10 câu / lượt, chọn mức, chấm ngay, hiện câu đối chiếu cùng bài |
+| L4 Mức độ lịch sự | `/bai/lich-su/` (`?chuong=`) | 10 cặp / lượt, chọn câu trang trọng hơn, chấm ngay |
 
 Cả 4 màn theo quy tắc trang không quá dài (spec.md §0 quy tắc 9): đo ở 1280×860 và 375px.
 
@@ -107,6 +107,16 @@ Cả 4 màn theo quy tắc trang không quá dài (spec.md §0 quy tắc 9): đo
 - **`check_lesson_data`:** đủ 12 chương / 45 bài; mỗi `Drill` đúng 3 câu; trong mỗi đoạn đóng
   vai, tập `{n}` trong lời thoại == tập `RoleplayBlank.number`; mỗi bài có câu lịch sự đủ 2 câu.
 - **Hoàn thành:** nạp qua SC07b (upsert) lần 2 báo 0 dòng mới; check không lỗi.
+- **Đã xong 17/10/2026.** `scripts/export_bjt_lessons.py` → 8 file (12 / 45 / 34 / 102 / 24 /
+  117 / 65 / 82 dòng). Nạp thử 2 lần qua `dataio` (upsert) trên Postgres local: lần 2 toàn bộ
+  là cập nhật, 0 dòng mới, 0 lỗi; `check_lesson_data` đạt.
+- **Phát hiện khi đối chiếu mức lịch sự (ảnh hưởng ◆4 / T7):** trong CÙNG một bài, số nhỏ luôn
+  trang trọng hơn (41/41 bài đúng). Nhưng mức **không tuyệt đối giữa các bài**: bài 42 xếp
+  「いつもお世話になっています」(です・ます) vào mức 3, bài 43–44 xếp 「今日はありがとうございました」
+  /「これからもよろしくお願いします」 vào mức 1. Câu hỏi "chọn 1 trong 3 mức" sẽ chấm sai
+  những câu này → đề xuất T7 đổi sang **"câu nào trang trọng hơn?"** theo cặp trong bài
+  (chấm đúng cho cả 41 bài). Giữ nguyên `level_code` trong dữ liệu; nhãn MasterCode 25 hiểu là
+  thứ tự tương đối. **Dat đã chốt 17/10/2026: hỏi theo cặp** (◆4).
 
 ### T3 Mockup L1–L4 (0,5–1 ngày) — **Dat duyệt trước khi code UI**
 - **File:** `htmlTemplate/SC24_LuyenTapBai_A.html` (theme A, dữ liệu thật của bài 1–3).
@@ -121,7 +131,7 @@ Cả 4 màn theo quy tắc trang không quá dài (spec.md §0 quy tắc 9): đo
 - **Test:** đoạn có 3 ô hiện đúng 3 ô; chữ trong lời thoại được escape.
 
 ### T7 L4 Mức độ lịch sự (1 ngày)
-- **Test:** chấm đúng/sai theo `level_code`; lọc `?chuong=`; câu đối chiếu cùng bài.
+- **Test:** câu trang trọng hơn = `level_code` nhỏ hơn trong cặp; thứ tự hai câu hiển thị ngẫu nhiên; lọc `?chuong=`.
 
 ### T8 Tiến độ + "luyện lại câu chưa thuộc" + điện thoại, theme B/C (1 ngày)
 
@@ -146,7 +156,7 @@ Cả 4 màn theo quy tắc trang không quá dài (spec.md §0 quy tắc 9): đo
 
 | Rủi ro | Cách xử lý |
 |---|---|
-| Nhãn mức lịch sự 1/2/3 suy từ dữ liệu, có thể lệch sách | Đối chiếu sách ở T2 trước khi ghi nhãn vào MasterCode |
+| Mức lịch sự 1/2/3 chỉ là thứ tự tương đối trong một bài (xem T2) | T7 hỏi theo cặp "câu nào trang trọng hơn?", không hỏi mức tuyệt đối |
 | Tự chấm dễ "tự cho đúng" | Chấp nhận — mục đích là luyện nói; L1 chỉ hiện tiến độ, không xếp hạng |
 | Phần 1 sau này cần thêm trường cho `Lesson` | Thêm cột nullable, không đổi khoá `scene_no`; CSV phần 2 vẫn nạp được |
 | Lời thoại có `{n}` lệch số đáp án khi sửa tay | `check_lesson_data` kiểm khớp tập `{n}` ↔ `RoleplayBlank` |

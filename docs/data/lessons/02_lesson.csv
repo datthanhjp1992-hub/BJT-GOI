@@ -1,0 +1,46 @@
+﻿unit__number,scene_no,title_jp,title_vi,situation_vi
+1,1,はじめまして,Rất hân hạnh được gặp anh/chị,Anh Smith đang nói chuyện với một người phụ nữ bên đối tác.
+1,2,よろしくお願いします,Rất mong được anh/chị giúp đỡ,Chị Yan cùng cấp trên đến chỗ đối tác.
+1,3,がんばりたいと思います,Tôi sẽ cố gắng hết sức,Chị Yan đang phát biểu tại văn phòng.
+2,4,またかけます,Tôi sẽ gọi lại,Anh Smith đang gọi điện cho đối tác.
+2,5,説明させていただきます,Xin phép được trình bày,Cuộc họp đang diễn ra trong nội bộ công ty.
+2,6,聞くつもりです,Tôi định sẽ hỏi,Chị Yan đang trao đổi với cấp trên về cuộc khảo sát bằng bảng hỏi.
+3,7,どうすればいいですか,Tôi nên làm thế nào ạ?,Anh Smith đang nói chuyện với một nữ đồng nghiệp cùng công ty.
+3,8,何かあったんですか,Có chuyện gì vậy ạ?,Anh Smith đang nói chuyện với một nữ đồng nghiệp cùng công ty.
+3,9,教えていただけますか,Anh/chị chỉ giúp tôi được không ạ?,Chị Yan đang nghe điện thoại.
+3,10,ご都合はいかがでしょうか,Không biết anh/chị có tiện không ạ?,Anh Smith đang gọi điện thoại.
+3,11,失礼ですが,Xin lỗi cho tôi hỏi,Anh Smith đang gọi điện thoại.
+4,12,すみません,Xin lỗi,Anh Smith đang đến thăm công ty đối tác.
+4,13,あのう,"Xin lỗi, cho tôi hỏi một chút",Chị Yan đang nói chuyện với một nam đồng nghiệp cùng công ty.
+4,14,ねえ,Này anh ơi,Chị Yan đang nói chuyện với một nam đồng nghiệp cùng công ty.
+4,15,ちょっとよろしいですか,Tôi làm phiền một chút được không ạ?,Anh Smith đang nói chuyện với một nữ đồng nghiệp cùng công ty.
+5,16,小林さん、お願いします,Cho tôi gặp anh Kobayashi,Anh Smith đang gọi điện thoại.
+5,17,では、お願いします,Vậy thì nhờ anh/chị nhé,Anh Smith đang gọi điện cho đối tác.
+5,18,グラフを作りなおしてくれませんか,Anh/chị làm lại biểu đồ giúp tôi được không?,Anh Smith đang nói chuyện với một nữ đồng nghiệp cùng công ty.
+5,19,支店長にわたしていただけませんか,Anh chuyển giúp tôi cho giám đốc chi nhánh được không ạ?,Chị Yan đang nói chuyện với một nam đồng nghiệp cùng công ty.
+5,20,この日本語の書類、見てくれる？,Xem giúp mình tài liệu tiếng Nhật này nhé?,Anh Smith đang nói chuyện với một nữ đồng nghiệp cùng công ty.
+6,21,わかりました,Tôi hiểu rồi,Anh Smith đang nói chuyện với một nữ đồng nghiệp cùng công ty.
+6,22,かしこまりました,"Vâng, tôi xin ghi nhận ạ",Chị Yan nhận điện thoại của công ty.
+6,23,私でよろしければ,Nếu tôi làm được thì...,Chị Yan đang nói chuyện với cấp trên.
+7,24,すみません,Xin lỗi (cảm ơn) anh/chị,Chị Yan đang nói chuyện với cấp trên.
+7,25,実は,Thật ra là...,Chị Yan đang nói chuyện với cấp trên.
+7,26,今日はちょっと,Hôm nay thì hơi...,Chị Yan đang nói chuyện với một nam đồng nghiệp cùng công ty.
+7,27,結構です,"Thôi, tôi xin phép",Chị Yan đang nói chuyện với một nam đồng nghiệp cùng công ty ở nhà hàng.
+7,28,ゴルフは苦手なんです,Tôi không giỏi chơi golf,Anh Smith đang nói chuyện với một nam đồng nghiệp cùng công ty.
+8,29,席はどうしましょうか,Chỗ ngồi thì sắp xếp thế nào ạ?,Anh Smith và một nữ đồng nghiệp cùng công ty đang bàn về chỗ ngồi trong cuộc họp.
+8,30,いかがいたしましょうか,Tôi nên xử lý thế nào ạ?,Chị Yan đang nói chuyện với cấp trên.
+8,31,ご相談したいことがあるんですが,Tôi có việc muốn xin ý kiến anh/chị,Chị Yan đang xin ý kiến trưởng phòng.
+9,32,休ませていただきたいんですが,Tôi muốn xin phép nghỉ,Anh Smith đang nói chuyện với cấp trên.
+9,33,質問してもよろしいでしょうか,Tôi xin phép hỏi một câu được không ạ?,Chị Yan đang đặt câu hỏi trong cuộc họp.
+9,34,使いたいんですけど、よろしいですか,"Tôi muốn dùng, không biết có được không ạ?",Anh Smith đang nói chuyện với cấp trên.
+10,35,確か第3会議室でしたよね？,Hình như là phòng họp số 3 phải không nhỉ?,Chị Yan đang nói chuyện với một nam đồng nghiệp cùng công ty.
+10,36,というと,Tức là...,Chị Yan đang nói chuyện với một nam đồng nghiệp cùng công ty.
+10,37,つまり,Nói cách khác là...,Anh Smith đang nói chuyện với cấp trên.
+11,38,遅れないでくださいね,Anh đừng đến muộn nhé,Anh Smith đang nói chuyện với một nữ đồng nghiệp cùng công ty.
+11,39,両手でもらったほうがいいですよ,Anh nên nhận bằng hai tay thì hơn,Anh Smith đang nói chuyện với một nữ đồng nghiệp cùng công ty.
+11,40,来たほうがいいんじゃないかな,Chị đến thì hơn đấy,Chị Yan đang nói chuyện với một nam đồng nghiệp cùng công ty.
+11,41,次回にしたらどうですか,Hay là để lần sau?,Anh Smith đang nói chuyện với một nữ đồng nghiệp cùng công ty.
+12,42,いつもお世話になっております,Luôn cảm ơn quý công ty đã giúp đỡ,Chị Yan nhận điện thoại.
+12,43,今日はありがとうございました,Cảm ơn anh/chị về ngày hôm nay,Anh Smith đang nói chuyện với người bên đối tác.
+12,44,お世話になりました,Cảm ơn mọi người đã giúp đỡ,Anh Smith đang phát biểu tại văn phòng.
+12,45,お体に気をつけて,Anh/chị giữ gìn sức khỏe nhé,Một người phụ nữ đang phát biểu tại văn phòng.

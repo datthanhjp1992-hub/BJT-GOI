@@ -11,6 +11,8 @@ Phần 1 (hội thoại đầy đủ, audio, câu then chốt) thêm vào CÙNG 
 Khoá tự nhiên của dataio (màn nhập SC07b) suy từ UniqueConstraint / unique của từng model —
 đổi chúng là đổi header file CSV ở docs/data/lessons/.
 """
+import re
+
 from django.conf import settings
 from django.db import models
 
@@ -100,6 +102,10 @@ class Roleplay(AuditableModel):
 
     def __str__(self):
         return f"Chương {self.unit.number} - đóng vai {self.number}"
+
+
+# Chỗ trống trong RoleplayLine.text_jp: "{1}" -> số 1 = RoleplayBlank.number.
+BLANK_RE = re.compile(r"\{(\d+)\}")
 
 
 class RoleplayLine(AuditableModel):
