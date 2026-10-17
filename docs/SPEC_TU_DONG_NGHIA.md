@@ -1,6 +1,6 @@
 # Spec — Từ đồng nghĩa trên thẻ flashcard
 
-> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.3 đã chốt (Dat, 17/10/2026 — cả 5 điểm theo đề xuất) — T1 + T2 xong, còn T3 (dữ liệu)** · Người duyệt: Dat
+> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.3 đã chốt (Dat, 17/10/2026 — cả 5 điểm theo đề xuất) — T1 + T2 xong, T3 đã nạp dữ liệu (còn `check_vocab_data`)** · Người duyệt: Dat
 >
 > Nguồn: bản vẽ thẻ của Dat (17/10/2026), 6 ô: đồng nghĩa · loại từ · từ học · nghĩa ·
 > nút xem ví dụ · ví dụ. Mỗi task ghi **mục tiêu → file → cách làm → điều kiện hoàn thành → test**,
@@ -125,6 +125,12 @@ prefetch theo lô — **không được** sinh N+1 (kiểm bằng `assertNumQuer
 - **`check_vocab_data`:** mọi `word/reading` trong CSV phải tồn tại; không tự trỏ chính mình;
   không cặp lệch một chiều.
 - **Hoàn thành:** nạp 2 lần → lần 2 báo 0 dòng mới; check không lỗi.
+
+- **Dữ liệu đã nạp 17/10/2026:** 211 cặp (`docs/data/vocab_bjt/synonyms.csv`, bản duyệt có nghĩa
+  `synonyms_review.csv`) — Claude lọc từ 675 nhóm cùng nghĩa tiếng Việt trong 3.036 từ, bỏ cặp chỉ
+  khác dạng từ (取り消し/取り消す) và cặp lệch sắc thái; Dat duyệt, không gạch cặp nào. Nạp qua
+  `dataio` với user `dat`: Supabase có 422 dòng (đủ hai chiều), 0 dòng lệch. **Chưa làm:**
+  lệnh `check_vocab_data`.
 
 ---
 
