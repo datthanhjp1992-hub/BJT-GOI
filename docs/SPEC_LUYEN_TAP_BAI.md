@@ -1,6 +1,6 @@
 # Spec — Luyện tập theo bài (Quyển 1)
 
-> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.2 đã chốt (Dat, 17/10/2026) — T1, T2 xong — chờ T3 mockup** · Người duyệt: Dat
+> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.2 đã chốt (Dat, 17/10/2026) — T1–T3 xong — đang làm T4 + T7 (Mốc 1)** · Người duyệt: Dat
 >
 > Nguồn: `bjt.db` của BJT-WEB — giáo trình hội thoại công sở "Quyển 1" (anh Smith,
 > công ty ABC商事; 12 chương, 45 bài). Đây là "phần 2" trong bản rà `bjt.db` ngày 16/10/2026;
@@ -119,7 +119,11 @@ Cả 4 màn theo quy tắc trang không quá dài (spec.md §0 quy tắc 9): đo
   thứ tự tương đối. **Dat đã chốt 17/10/2026: hỏi theo cặp** (◆4).
 
 ### T3 Mockup L1–L4 (0,5–1 ngày) — **Dat duyệt trước khi code UI**
-- **File:** `htmlTemplate/SC24_LuyenTapBai_A.html` (theme A, dữ liệu thật của bài 1–3).
+- **File:** `htmlTemplate/SC24_LuyenTapBai_A.html` (theme A, dữ liệu thật chèn từ `docs/data/lessons/`:
+  12 chương/45 bài, drill bài 2, đóng vai chương 5, cả 41 cặp lịch sự).
+- **Dat duyệt 17/10/2026, chốt cả 3 điểm như trên giao diện:** ◆A mục sidebar riêng "Học theo bài"
+  dưới "Ôn tập"; ◆B nhãn tự chấm "Nói được / Chưa được"; ◆C L4 chấm ngay khi chọn, không nút "Nộp".
+  Chiều cao đo được (1280×860): L1 1.729px (chương đang học mở, 11 chương gập), L2–L4 vừa 1 màn hình.
 
 ### T4 L1 Tổng quan + sidebar (0,5 ngày)
 ### T5 L2 Luyện thay thế (1 ngày)

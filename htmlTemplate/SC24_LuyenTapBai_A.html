@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC24 Học theo bài | 毎日BJT</title>
+<!--
+  SC24_LuyenTapBai — PROTOTYPE LUYỆN TẬP THEO BÀI, QUYỂN 1 (mockup 17/10/2026, chờ Dat duyệt)
+  Spec: docs/SPEC_LUYEN_TAP_BAI.md (T3). Một file, 4 màn — chuyển màn bằng thanh MOCKUP màu tối
+  trên cùng (chỉ có trong mockup). Theme A — duyệt xong mới làm B/C.
+
+    L1 Tổng quan (12 chương, gập/mở)     L3 Hội thoại đóng vai (chương 5, đoạn 2)
+    L2 Luyện thay thế (bài 2)            L4 Mức độ lịch sự (cặp "câu nào trang trọng hơn?")
+
+  Dữ liệu: chương/bài, câu luyện, lời thoại, 41 cặp câu lịch sự lấy NGUYÊN từ
+  docs/data/lessons/*.csv (xuất từ bjt.db). Tiến độ, "lần trước", điểm số là giả.
+
+  Đã chốt trong spec (◆1–◆5): app lessons riêng; tự nói → lật đáp án → tự chấm; lưu kết quả
+  gần nhất mỗi câu; L4 hỏi theo cặp; không đưa vào khu Kiểm tra.
+
+  Điểm cần Dat chốt trên giao diện (khung vàng ◆):
+    ◆A Vị trí trên sidebar: mục riêng "Học theo bài" ngay dưới "Ôn tập" (L1).
+    ◆B Hai nút tự chấm: "Nói được" / "Chưa được" (L2, L3).
+    ◆C L4: chọn xong hiện ngay đúng/sai + câu gốc thuộc bài nào, không có nút "Nộp" (L4).
+-->
+<style>
+:root{
+  --bg:#FAF6EE;--surface:#FFFFFF;--ink:#24211D;--ink-soft:#6b6455;
+  --accent:#B5432E;--accent-dark:#8f3323;--accent-soft:#f0d9cf;
+  --gold:#B8912B;--teal:#3F6B63;--teal-soft:#dde9e5;--border:#DCD3C0;
+  --wash:#fbf8f2;--bad:#B5432E;--bad-soft:#f6e1da;--good:#3F6B63;--good-soft:#dde9e5;
+  --serif:Georgia,"Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55}
+h1,h2,h3,.serif,.jp{font-family:var(--serif);font-weight:normal}
+h1{font-size:28px;margin:0 0 6px}h2{font-size:20px;margin:0 0 14px}h3{font-size:17px;margin:0 0 10px}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+.muted{color:var(--ink-soft)}.small{font-size:13px}
+.eyebrow{color:var(--accent);font-size:13px;letter-spacing:.02em;margin-bottom:6px}
+
+/* ---- mockup bar (chỉ có trong mockup) ---- */
+.mockbar{position:sticky;top:0;z-index:50;background:#2b2722;color:#e9e3d6;font-size:12.5px;
+  display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 14px}
+.mockbar b{color:#fff;margin-right:6px}
+.mockbar button{background:#423c34;border:0;color:#e9e3d6;padding:5px 10px;border-radius:3px;cursor:pointer}
+.mockbar button.on{background:var(--accent);color:#fff}
+.decide{display:inline-block;background:#fff3c9;color:#6d5410;border:1px dashed #c9a43a;
+  border-radius:3px;padding:1px 7px;font-size:12px;margin-left:6px;vertical-align:middle;font-family:var(--sans)}
+
+/* ---- app shell (giống base.html) ---- */
+.site-topbar{display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 24px;
+  border-bottom:1px solid var(--border);background:var(--surface)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:21px}
+.brand .mark{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;
+  align-items:center;justify-content:center;font-size:14px}
+.site-topbar-user{font-size:14px;color:var(--ink-soft)}
+.body{display:flex;min-height:calc(100vh - 64px - 38px)}
+.site-sidebar{width:232px;flex:none;border-right:1px solid var(--border);background:var(--surface);padding:10px 12px}
+.sidenav-link{display:block;padding:9px 14px;border-radius:3px;color:var(--ink-soft);font-size:14.5px;margin-bottom:2px;cursor:pointer}
+.sidenav-link.active,.sidenav-link:hover{background:var(--accent-soft);color:var(--accent-dark)}
+.sidenav-link.active{font-weight:600}
+.sidenav-sub{padding:0 0 6px 14px}
+.sidenav-sub a{display:flex;justify-content:space-between;padding:7px 14px;border-radius:3px;font-size:13.5px;color:var(--ink-soft);cursor:pointer}
+.sidenav-sub a.active,.sidenav-sub a:hover{background:var(--accent-soft);color:var(--accent-dark)}
+.sidenav-sub a.active{font-weight:600}
+.new{font-size:10px;color:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:0 5px;margin-left:4px}
+main{flex:1;min-width:0;padding:34px 36px 70px}
+.page{max-width:1040px;margin:0 auto}
+.crumb{font-size:13px;color:var(--ink-soft);margin-bottom:14px}
+.crumb a{color:var(--accent);cursor:pointer}
+
+/* ---- components ---- */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:24px}
+.grid{display:grid;gap:18px}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:3px;font-size:15px;
+  cursor:pointer;border:1px solid transparent;background:none}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-dark)}
+.btn-outline{border-color:var(--ink)}.btn-ghost{color:var(--ink-soft);padding-left:4px;padding-right:4px}
+.btn-good{background:var(--good);color:#fff}.btn-bad{border-color:var(--bad);color:var(--bad)}
+.btn-sm{padding:7px 14px;font-size:13.5px}
+.tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12.5px;border:1px solid var(--border);color:var(--ink-soft);white-space:nowrap;cursor:pointer}
+.tag.acc{background:var(--accent-soft);border-color:transparent;color:var(--accent-dark)}
+.tag.good{background:var(--good-soft);border-color:transparent;color:var(--good)}
+.tag.bad{background:var(--bad-soft);border-color:transparent;color:var(--bad)}
+.tag.off{cursor:default;opacity:.45;border-style:dashed}
+.progressbar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progressbar span{display:block;height:100%;background:var(--accent)}
+.progressbar.teal span{background:var(--teal)}
+.scene{border-left:3px solid var(--gold);background:#fffdf7;padding:12px 16px;font-size:15px;line-height:1.7}
+.scene b{display:block;font-size:12px;color:var(--gold);font-weight:600;letter-spacing:.03em;margin-bottom:2px}
+
+/* L1 */
+.resume{display:flex;align-items:center;justify-content:space-between;gap:16px;border-left:4px solid var(--accent)}
+.mode-card{display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:border-color .15s;padding:20px}
+.mode-card:hover{border-color:var(--accent)}
+.mode-card .kanji{width:42px;height:42px;border:1.5px solid var(--accent);border-radius:50%;color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:20px}
+.mode-card .meta{font-size:13px;color:var(--ink-soft);margin-top:auto}
+.unit{background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:6px}
+.unit summary{list-style:none;display:grid;grid-template-columns:34px 1fr 150px 18px;gap:14px;align-items:center;padding:10px 18px;cursor:pointer}
+.unit summary::-webkit-details-marker{display:none}
+.unit summary .no{font-family:var(--serif);font-size:20px;color:var(--accent)}
+.unit summary .nm{font-size:15.5px}.unit summary .nm .jp{color:var(--ink-soft);font-size:14px;margin-left:8px}
+.unit summary .pg{font-size:12px;color:var(--ink-soft)}
+.unit summary .pg .progressbar{margin-top:4px}
+.unit summary .chev{color:var(--ink-soft);transition:transform .15s}
+.unit[open] summary .chev{transform:rotate(90deg)}
+.unit[open] summary{border-bottom:1px solid var(--border)}
+.lrow{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:center;padding:10px 18px;border-bottom:1px solid #eee6d6}
+.lrow .n{color:var(--ink-soft);font-size:13px;text-align:right}
+.lrow .t .jp{font-size:16px}.lrow .t .vi{font-size:13px;color:var(--ink-soft)}
+.lrow .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.rp-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:11px 18px 13px 66px;font-size:13px;color:var(--ink-soft)}
+
+/* L2 */
+.example{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;background:var(--wash);border:1px solid var(--border);border-radius:4px;padding:12px 16px}
+.example .lbl{font-size:12px;color:var(--ink-soft);flex-basis:100%}
+.example .jp{font-size:17px}.example .arr{color:var(--accent)}
+.dots{display:flex;gap:6px}
+.dots span{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--ink-soft);background:#fff}
+.dots span.cur{border:2px solid var(--accent);color:var(--accent);font-weight:700}
+.dots span.ok{background:var(--good);border-color:var(--good);color:#fff}
+.dots span.ng{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.qcard{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:30px 34px 26px;text-align:center}
+.qcard .hint{font-size:13px;color:var(--ink-soft);margin-bottom:8px}
+.qcard .prompt{font-family:var(--serif);font-size:30px;margin:4px 0 20px}
+.answer{font-family:var(--serif);font-size:22px;background:var(--good-soft);border-radius:4px;padding:14px 18px;margin:0 auto 18px;max-width:560px;display:none}
+.answer.show{display:block}
+.grade{display:none;gap:10px;justify-content:center;flex-wrap:wrap}.grade.show{display:flex}
+.sumlist{list-style:none;padding:0;margin:14px 0 0}
+.sumlist li{display:flex;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid #eee6d6;font-size:15px}
+.sumlist .mk{width:22px;flex:none;font-weight:700}.sumlist .mk.ok{color:var(--good)}.sumlist .mk.ng{color:var(--bad)}
+
+/* L3 */
+.rp-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin:18px 0 16px}
+.rp-tabs span{padding:8px 14px;font-size:14px;color:var(--ink-soft);border-bottom:2px solid transparent;cursor:pointer}
+.rp-tabs span.on{color:var(--accent);border-color:var(--accent)}
+.dlg{list-style:none;margin:0;padding:0}
+.dlg li{display:grid;grid-template-columns:130px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid #eee6d6;align-items:start}
+.dlg .sp{font-size:13px;color:var(--ink-soft);padding-top:4px}
+.dlg li.me .sp{color:var(--accent-dark);font-weight:600}
+.dlg .tx{font-family:var(--serif);font-size:18px;line-height:2}
+.blank{display:inline-flex;align-items:center;gap:6px;border:1px dashed var(--accent);border-radius:3px;background:#fdf5f1;
+  color:var(--accent);padding:0 10px;margin:0 2px;cursor:pointer;font-family:var(--sans);font-size:13px;line-height:28px;vertical-align:baseline}
+.blank.open{border-style:solid;background:var(--good-soft);border-color:var(--good);color:var(--ink);font-family:var(--serif);font-size:18px;cursor:default}
+.blank .sg{display:inline-flex;gap:4px;margin-left:6px}
+.blank .sg button{border:1px solid var(--border);background:#fff;border-radius:3px;font-size:12px;padding:0 7px;line-height:22px;cursor:pointer;font-family:var(--sans)}
+.blank .sg button.ok.on{background:var(--good);border-color:var(--good);color:#fff}
+.blank .sg button.ng.on{background:var(--bad);border-color:var(--bad);color:#fff}
+.rp-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px}
+
+/* L4 */
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:3px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;background:#fff;padding:7px 14px;cursor:pointer;font-size:13.5px}
+.seg button+button{border-left:1px solid var(--border)}
+.seg button.on{background:var(--accent);color:#fff}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+.popt{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left;border:1px solid var(--border);border-radius:4px;
+  padding:18px 18px;background:#fff;cursor:pointer;transition:border-color .12s,background .12s}
+.popt:hover{border-color:var(--accent)}
+.popt .k{font-size:12px;color:var(--ink-soft)}.popt .jp{font-size:21px}
+.popt .lv{font-size:12px;display:none}
+.done .popt{cursor:default}.done .popt .lv{display:block}
+.popt.right{border-color:var(--good);background:var(--good-soft)}.popt.right .lv{color:var(--good)}
+.popt.wrong{border-color:var(--bad);background:var(--bad-soft)}.popt.wrong .lv{color:var(--bad)}
+.feedback{margin-top:16px;border-radius:4px;padding:14px 18px;display:none;text-align:left}
+.feedback.show{display:block}.feedback.ok{background:var(--good-soft)}.feedback.ng{background:var(--bad-soft)}
+.feedback .title{font-weight:600;margin-bottom:2px}
+.ring{width:120px;height:120px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+  background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--border) 0)}
+.ring div{width:98px;height:98px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring b{font-family:var(--serif);font-size:30px;font-weight:normal;color:var(--accent-dark);line-height:1}
+
+.screen{display:none}.screen.on{display:block}
+
+@media (max-width:900px){
+  .site-sidebar{display:none}
+  main{padding:22px 16px 60px}
+  .g3,.g4{grid-template-columns:1fr 1fr}
+  .resume{flex-direction:column;align-items:flex-start}
+  .site-topbar{padding:0 16px}
+  .unit summary{grid-template-columns:28px 1fr 18px;padding:12px 14px}
+  .unit summary .pg{display:none}
+  .lrow{grid-template-columns:24px 1fr;padding:10px 14px}
+  .lrow .acts{grid-column:2;justify-content:flex-start}
+  .rp-row{padding:10px 14px 12px 52px}
+  .qcard{padding:22px 16px}.qcard .prompt{font-size:24px}
+  .dlg li{grid-template-columns:1fr;gap:2px}
+  .pair{grid-template-columns:1fr}
+}
+@media (max-width:520px){.g3,.g4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="mockbar">
+  <b>MOCKUP SC24</b>
+  <button data-go="l1" class="on">L1 Tổng quan</button>
+  <button data-go="l2">L2 Luyện thay thế</button>
+  <button data-go="l3">L3 Đóng vai</button>
+  <button data-go="l4">L4 Mức lịch sự</button>
+</div>
+
+<header class="site-topbar">
+  <div class="brand"><span class="mark">毎</span>毎日BJT</div>
+  <div class="site-topbar-user">Dat · Cài đặt · Đăng xuất</div>
+</header>
+
+<div class="body">
+  <aside class="site-sidebar">
+    <a class="sidenav-link">Trang chủ</a>
+    <a class="sidenav-link">Từ vựng</a>
+    <a class="sidenav-link">Ôn tập</a>
+    <a class="sidenav-link active" data-go="l1">Học theo bài <span class="new">MỚI</span></a>
+    <div class="sidenav-sub">
+      <a data-go="l1" data-nav="l1 l2 l3">Tổng quan</a>
+      <a data-go="l4" data-nav="l4">Mức lịch sự</a>
+    </div>
+    <a class="sidenav-link">Kiểm tra</a>
+    <a class="sidenav-link">Luyện tập</a>
+    <a class="sidenav-link">Góp ý</a>
+    <a class="sidenav-link">Kính ngữ</a>
+    <a class="sidenav-link">Ngữ pháp</a>
+  </aside>
+
+  <main><div class="page">
+
+<!-- ================= L1 TỔNG QUAN ================= -->
+<section class="screen on" id="l1">
+  <div class="eyebrow">ビジネス会話・第1巻</div>
+  <h1>Học theo bài <span class="decide">◆A mục riêng trên sidebar, dưới "Ôn tập"</span></h1>
+  <p class="muted" style="margin:0 0 20px">12 chương, 45 tình huống công sở. Luyện nói theo mẫu, đóng vai hội thoại và phân biệt mức lịch sự.</p>
+
+  <div class="card resume" style="margin-bottom:20px">
+    <div>
+      <div class="eyebrow" style="margin:0">Học tiếp</div>
+      <div style="font-size:17px">Chương 1 · Bài 3 <span class="jp">がんばりたいと思います</span></div>
+      <div class="muted small">Luyện thay thế · lần trước nói được 1/3 câu · hôm qua</div>
+    </div>
+    <button class="btn btn-primary" data-go="l2">Luyện tiếp →</button>
+  </div>
+
+  <div class="grid g3" style="margin-bottom:26px">
+    <div class="card mode-card" data-go="l2"><div class="kanji">替</div><h3 style="margin:0">Luyện thay thế</h3>
+      <div class="small muted">Nhìn câu mẫu, thay từ gợi ý và nói thành câu hoàn chỉnh.</div><div class="meta">34 bài · nói được <b>11</b> / 102 câu</div></div>
+    <div class="card mode-card" data-go="l3"><div class="kanji">役</div><h3 style="margin:0">Hội thoại đóng vai</h3>
+      <div class="small muted">Đọc tình huống, tự nói phần còn trống rồi mở đáp án.</div><div class="meta">24 đoạn · đã luyện <b>3</b> / 24</div></div>
+    <div class="card mode-card" data-go="l4"><div class="kanji">敬</div><h3 style="margin:0">Mức lịch sự</h3>
+      <div class="small muted">Hai cách nói cùng một ý — chọn câu trang trọng hơn.</div><div class="meta">41 cặp · lượt gần nhất <b>78%</b></div></div>
+  </div>
+
+  <h2>12 chương</h2>
+  <div id="units"></div>
+  <p class="small muted" style="margin-top:10px">Chương đang học mở sẵn, các chương khác gập lại để trang không quá dài. Chip mờ = bài không có dạng luyện đó.</p>
+</section>
+
+<!-- ================= L2 LUYỆN THAY THẾ ================= -->
+<section class="screen" id="l2">
+  <div class="crumb"><a data-go="l1">Học theo bài</a> › Chương 1 Giới thiệu › Bài 2</div>
+  <div class="eyebrow">Luyện thay thế · Bài 2</div>
+  <h1 class="jp">よろしくお願いします</h1>
+  <p class="muted" style="margin:0 0 16px">Rất mong được anh/chị giúp đỡ · <span class="tag" style="cursor:default">Lần trước: nói được 2/3</span></p>
+
+  <div class="scene" style="margin-bottom:14px"><b>TÌNH HUỐNG</b>Chị Yan cùng cấp trên đến chỗ đối tác.</div>
+  <div class="example" style="margin-bottom:20px">
+    <span class="lbl">Câu mẫu</span>
+    <span class="jp" id="exPrompt"></span><span class="arr">→</span><span class="jp" id="exAnswer"></span>
+  </div>
+
+  <div id="drillPlay">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="dots" id="dots"></div>
+      <span class="small muted">Nói to câu hoàn chỉnh trước khi mở đáp án</span>
+    </div>
+    <div class="qcard">
+      <div class="hint">Gợi ý</div>
+      <div class="prompt" id="dPrompt"></div>
+      <div class="answer" id="dAnswer"></div>
+      <button class="btn btn-primary" id="dReveal">Hiện đáp án</button>
+      <div class="grade" id="dGrade">
+        <button class="btn btn-good" data-grade="1">✓ Nói được</button>
+        <button class="btn btn-bad" data-grade="0">✗ Chưa được</button>
+        <span class="decide" style="align-self:center">◆B nhãn hai nút tự chấm</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="drillDone" style="display:none">
+    <h2 style="margin-bottom:4px">Xong bài 2 — nói được <span id="dScore"></span></h2>
+    <div class="small muted">Kết quả được lưu lại; câu "Chưa được" sẽ hiện ở nút luyện lại.</div>
+    <ul class="sumlist" id="dList"></ul>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+      <button class="btn btn-outline" id="dRetry">Luyện lại câu chưa được</button>
+      <button class="btn btn-primary">Bài 3 がんばりたいと思います →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= L3 ĐÓNG VAI ================= -->
+<section class="screen" id="l3">
+  <div class="crumb"><a data-go="l1">Học theo bài</a> › Chương 5 Nhờ vả › Đóng vai</div>
+  <div class="eyebrow">Hội thoại đóng vai · Chương 5</div>
+  <h1>Nhờ vả <span class="jp muted" style="font-size:20px">依頼する</span></h1>
+
+  <div class="rp-tabs" id="rpTabs"></div>
+  <div class="scene" style="margin-bottom:16px"><b>TÌNH HUỐNG · BẠN ĐÓNG VAI <span id="rpMe"></span></b><span id="rpSit"></span></div>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+    <span class="small muted">Tự nói câu ở mỗi ô trống, rồi bấm ô để xem đáp án và tự chấm.</span>
+    <button class="btn btn-ghost btn-sm" id="rpAll">Hiện tất cả</button>
+  </div>
+  <div class="card" style="padding:6px 22px">
+    <ul class="dlg" id="dlg"></ul>
+  </div>
+  <div class="rp-foot">
+    <span class="small muted" id="rpStat"></span>
+    <button class="btn btn-primary" id="rpNext">Đoạn tiếp →</button>
+  </div>
+</section>
+
+<!-- ================= L4 MỨC LỊCH SỰ ================= -->
+<section class="screen" id="l4">
+  <div class="eyebrow">丁寧さ · Mức lịch sự</div>
+  <h1>Câu nào trang trọng hơn?</h1>
+  <p class="muted" style="margin:0 0 16px">Mỗi cặp là hai cách nói cùng một ý trong cùng một bài. Chọn câu bạn sẽ dùng với khách hàng / cấp trên.</p>
+
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px">
+    <div class="seg" id="l4seg"><button class="on">Tất cả chương</button><button>Chương 1–4</button><button>Chương 5–8</button><button>Chương 9–12</button></div>
+  </div>
+
+  <div id="pPlay">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+      <span class="small muted" id="pCount"></span>
+      <div class="progressbar teal" style="flex:1"><span id="pBar"></span></div>
+    </div>
+    <div class="card" id="pCard">
+      <div class="small muted" id="pCtx"></div>
+      <div class="pair" id="pPair"></div>
+      <div class="feedback" id="pFb"><div class="title" id="pFbT"></div><div class="small" id="pFbD"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:10px;flex-wrap:wrap">
+        <span class="decide">◆C chọn xong chấm ngay, không có nút "Nộp"</span>
+        <button class="btn btn-primary" id="pNext" style="visibility:hidden">Cặp tiếp →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="pDone" style="display:none">
+    <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+      <div class="ring" id="pRing"><div><b id="pPct"></b><span class="small muted">đúng</span></div></div>
+      <div><h2 style="margin-bottom:4px">Xong 10 cặp</h2><div class="muted small">Cặp chọn sai được ghi lại để lần sau ưu tiên hỏi lại.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px"><button class="btn btn-primary" id="pAgain">Lượt mới</button><button class="btn btn-outline" data-go="l1">Về tổng quan</button></div></div>
+    </div>
+    <ul class="sumlist" id="pList"></ul>
+  </div>
+</section>
+
+  </div></main>
+</div>
+
+<script>
+/* Dữ liệu thật từ docs/data/lessons/*.csv — chèn bằng script, đừng sửa tay. */
+const DATA = {"units": [{"number": 1, "name_jp": "紹介する", "name_vi": "Giới thiệu"}, {"number": 2, "name_jp": "意思を表明する", "name_vi": "Bày tỏ ý định"}, {"number": 3, "name_jp": "質問する", "name_vi": "Đặt câu hỏi"}, {"number": 4, "name_jp": "話しかける", "name_vi": "Bắt chuyện"}, {"number": 5, "name_jp": "依頼する", "name_vi": "Nhờ vả"}, {"number": 6, "name_jp": "了解する", "name_vi": "Tiếp nhận, đồng ý"}, {"number": 7, "name_jp": "断る", "name_vi": "Từ chối"}, {"number": 8, "name_jp": "相談する", "name_vi": "Xin ý kiến, bàn bạc"}, {"number": 9, "name_jp": "許可を求める", "name_vi": "Xin phép"}, {"number": 10, "name_jp": "確認する", "name_vi": "Xác nhận"}, {"number": 11, "name_jp": "助言する", "name_vi": "Khuyên nhủ"}, {"number": 12, "name_jp": "挨拶する", "name_vi": "Chào hỏi"}], "lessons": [{"unit": 1, "scene_no": "1", "title_jp": "はじめまして", "title_vi": "Rất hân hạnh được gặp anh/chị", "drill": false, "polite": false}, {"unit": 1, "scene_no": "2", "title_jp": "よろしくお願いします", "title_vi": "Rất mong được anh/chị giúp đỡ", "drill": true, "polite": true}, {"unit": 1, "scene_no": "3", "title_jp": "がんばりたいと思います", "title_vi": "Tôi sẽ cố gắng hết sức", "drill": true, "polite": true}, {"unit": 2, "scene_no": "4", "title_jp": "またかけます", "title_vi": "Tôi sẽ gọi lại", "drill": false, "polite": false}, {"unit": 2, "scene_no": "5", "title_jp": "説明させていただきます", "title_vi": "Xin phép được trình bày", "drill": true, "polite": true}, {"unit": 2, "scene_no": "6", "title_jp": "聞くつもりです", "title_vi": "Tôi định sẽ hỏi", "drill": true, "polite": true}, {"unit": 3, "scene_no": "7", "title_jp": "どうすればいいですか", "title_vi": "Tôi nên làm thế nào ạ?", "drill": true, "polite": true}, {"unit": 3, "scene_no": "8", "title_jp": "何かあったんですか", "title_vi": "Có chuyện gì vậy ạ?", "drill": true, "polite": true}, {"unit": 3, "scene_no": "9", "title_jp": "教えていただけますか", "title_vi": "Anh/chị chỉ giúp tôi được không ạ?", "drill": false, "polite": true}, {"unit": 3, "scene_no": "10", "title_jp": "ご都合はいかがでしょうか", "title_vi": "Không biết anh/chị có tiện không ạ?", "drill": true, "polite": true}, {"unit": 3, "scene_no": "11", "title_jp": "失礼ですが", "title_vi": "Xin lỗi cho tôi hỏi", "drill": true, "polite": true}, {"unit": 4, "scene_no": "12", "title_jp": "すみません", "title_vi": "Xin lỗi", "drill": false, "polite": false}, {"unit": 4, "scene_no": "13", "title_jp": "あのう", "title_vi": "Xin lỗi, cho tôi hỏi một chút", "drill": true, "polite": true}, {"unit": 4, "scene_no": "14", "title_jp": "ねえ", "title_vi": "Này anh ơi", "drill": true, "polite": true}, {"unit": 4, "scene_no": "15", "title_jp": "ちょっとよろしいですか", "title_vi": "Tôi làm phiền một chút được không ạ?", "drill": true, "polite": true}, {"unit": 5, "scene_no": "16", "title_jp": "小林さん、お願いします", "title_vi": "Cho tôi gặp anh Kobayashi", "drill": true, "polite": true}, {"unit": 5, "scene_no": "17", "title_jp": "では、お願いします", "title_vi": "Vậy thì nhờ anh/chị nhé", "drill": true, "polite": true}, {"unit": 5, "scene_no": "18", "title_jp": "グラフを作りなおしてくれませんか", "title_vi": "Anh/chị làm lại biểu đồ giúp tôi được không?", "drill": true, "polite": true}, {"unit": 5, "scene_no": "19", "title_jp": "支店長にわたしていただけませんか", "title_vi": "Anh chuyển giúp tôi cho giám đốc chi nhánh được không ạ?", "drill": true, "polite": true}, {"unit": 5, "scene_no": "20", "title_jp": "この日本語の書類、見てくれる？", "title_vi": "Xem giúp mình tài liệu tiếng Nhật này nhé?", "drill": true, "polite": true}, {"unit": 6, "scene_no": "21", "title_jp": "わかりました", "title_vi": "Tôi hiểu rồi", "drill": false, "polite": true}, {"unit": 6, "scene_no": "22", "title_jp": "かしこまりました", "title_vi": "Vâng, tôi xin ghi nhận ạ", "drill": false, "polite": true}, {"unit": 6, "scene_no": "23", "title_jp": "私でよろしければ", "title_vi": "Nếu tôi làm được thì...", "drill": false, "polite": true}, {"unit": 7, "scene_no": "24", "title_jp": "すみません", "title_vi": "Xin lỗi (cảm ơn) anh/chị", "drill": true, "polite": true}, {"unit": 7, "scene_no": "25", "title_jp": "実は", "title_vi": "Thật ra là...", "drill": true, "polite": true}, {"unit": 7, "scene_no": "26", "title_jp": "今日はちょっと", "title_vi": "Hôm nay thì hơi...", "drill": true, "polite": false}, {"unit": 7, "scene_no": "27", "title_jp": "結構です", "title_vi": "Thôi, tôi xin phép", "drill": false, "polite": true}, {"unit": 7, "scene_no": "28", "title_jp": "ゴルフは苦手なんです", "title_vi": "Tôi không giỏi chơi golf", "drill": true, "polite": true}, {"unit": 8, "scene_no": "29", "title_jp": "席はどうしましょうか", "title_vi": "Chỗ ngồi thì sắp xếp thế nào ạ?", "drill": true, "polite": true}, {"unit": 8, "scene_no": "30", "title_jp": "いかがいたしましょうか", "title_vi": "Tôi nên xử lý thế nào ạ?", "drill": true, "polite": true}, {"unit": 8, "scene_no": "31", "title_jp": "ご相談したいことがあるんですが", "title_vi": "Tôi có việc muốn xin ý kiến anh/chị", "drill": false, "polite": true}, {"unit": 9, "scene_no": "32", "title_jp": "休ませていただきたいんですが", "title_vi": "Tôi muốn xin phép nghỉ", "drill": true, "polite": true}, {"unit": 9, "scene_no": "33", "title_jp": "質問してもよろしいでしょうか", "title_vi": "Tôi xin phép hỏi một câu được không ạ?", "drill": true, "polite": true}, {"unit": 9, "scene_no": "34", "title_jp": "使いたいんですけど、よろしいですか", "title_vi": "Tôi muốn dùng, không biết có được không ạ?", "drill": true, "polite": true}, {"unit": 10, "scene_no": "35", "title_jp": "確か第3会議室でしたよね？", "title_vi": "Hình như là phòng họp số 3 phải không nhỉ?", "drill": true, "polite": true}, {"unit": 10, "scene_no": "36", "title_jp": "というと", "title_vi": "Tức là...", "drill": true, "polite": true}, {"unit": 10, "scene_no": "37", "title_jp": "つまり", "title_vi": "Nói cách khác là...", "drill": true, "polite": true}, {"unit": 11, "scene_no": "38", "title_jp": "遅れないでくださいね", "title_vi": "Anh đừng đến muộn nhé", "drill": true, "polite": true}, {"unit": 11, "scene_no": "39", "title_jp": "両手でもらったほうがいいですよ", "title_vi": "Anh nên nhận bằng hai tay thì hơn", "drill": true, "polite": true}, {"unit": 11, "scene_no": "40", "title_jp": "来たほうがいいんじゃないかな", "title_vi": "Chị đến thì hơn đấy", "drill": true, "polite": true}, {"unit": 11, "scene_no": "41", "title_jp": "次回にしたらどうですか", "title_vi": "Hay là để lần sau?", "drill": true, "polite": true}, {"unit": 12, "scene_no": "42", "title_jp": "いつもお世話になっております", "title_vi": "Luôn cảm ơn quý công ty đã giúp đỡ", "drill": false, "polite": true}, {"unit": 12, "scene_no": "43", "title_jp": "今日はありがとうございました", "title_vi": "Cảm ơn anh/chị về ngày hôm nay", "drill": true, "polite": true}, {"unit": 12, "scene_no": "44", "title_jp": "お世話になりました", "title_vi": "Cảm ơn mọi người đã giúp đỡ", "drill": true, "polite": true}, {"unit": 12, "scene_no": "45", "title_jp": "お体に気をつけて", "title_vi": "Anh/chị giữ gìn sức khỏe nhé", "drill": false, "polite": true}], "drill": {"example_prompt_jp": "山川物産、佐藤課長", "example_answer_jp": "こちら、山川物産の佐藤課長です。", "items": [{"prompt_jp": "みどり銀行、吉田支店長", "answer_jp": "こちら、みどり銀行の吉田支店長です。"}, {"prompt_jp": "日本ツアー、小林さん", "answer_jp": "こちら、日本ツアーの小林さんです。"}, {"prompt_jp": "サン食品、青木部長", "answer_jp": "こちら、サン食品の青木部長です。"}]}, "roleplays": [{"number": 1, "situation_vi": "Bạn là chị Yan của công ty thương mại ABC. Bạn gọi điện cho công ty thương mại Nihon và xin gặp anh Yamada.", "lines": [{"speaker": "Nihon Trading", "text_jp": "はい、日本商事でございます。"}, {"speaker": "Ms.Yan", "text_jp": "ABC商事の{1}、{2}。"}, {"speaker": "Nihon Trading", "text_jp": "はい、少々お待ちください。"}], "blanks": [{"number": 1, "answer_jp": "ヤンと申しますが"}, {"number": 2, "answer_jp": "山田さんお願いします"}]}, {"number": 2, "situation_vi": "Bạn là anh Smith của công ty thương mại ABC. Hãy nhờ đồng nghiệp là chị Sato photo giúp bạn một số tài liệu.", "lines": [{"speaker": "Mr.Smith", "text_jp": "佐藤さん、今、{1}。"}, {"speaker": "Ms.Sato", "text_jp": "はい。"}, {"speaker": "Mr.Smith", "text_jp": "この書類、{2}。"}, {"speaker": "Ms.Sato", "text_jp": "はい、いいですよ。"}, {"speaker": "Mr.Smith", "text_jp": "すみません。{3}。"}], "blanks": [{"number": 1, "answer_jp": "ちょっといいですか"}, {"number": 2, "answer_jp": "コピーしてくれませんか"}, {"number": 3, "answer_jp": "お願いします"}]}], "pairs": [{"scene_no": "2", "title_vi": "Rất mong được anh/chị giúp đỡ", "formal": "ヤンと申します", "casual": "ヤンといいます"}, {"scene_no": "3", "title_vi": "Tôi sẽ cố gắng hết sức", "formal": "どうぞよろしくお願いいたします", "casual": "よろしく！"}, {"scene_no": "5", "title_vi": "Xin phép được trình bày", "formal": "説明させていただきます", "casual": "説明します"}, {"scene_no": "6", "title_vi": "Tôi định sẽ hỏi", "formal": "聞くつもりです", "casual": "聞くつもり"}, {"scene_no": "7", "title_vi": "Tôi nên làm thế nào ạ?", "formal": "休みをとるにはどうすればいいですか", "casual": "休みをとるにはどうすればいいの？"}, {"scene_no": "8", "title_vi": "Có chuyện gì vậy ạ?", "formal": "どうでしたか", "casual": "どうだった？"}, {"scene_no": "9", "title_vi": "Anh/chị chỉ giúp tôi được không ạ?", "formal": "ファックス番号を教えていただけますか", "casual": "ファックス番号、教えて"}, {"scene_no": "10", "title_vi": "Không biết anh/chị có tiện không ạ?", "formal": "明日はいかがでしょうか", "casual": "明日はどう？"}, {"scene_no": "11", "title_vi": "Xin lỗi cho tôi hỏi", "formal": "よろしいですか", "casual": "いい？"}, {"scene_no": "13", "title_vi": "Xin lỗi, cho tôi hỏi một chút", "formal": "すみません", "casual": "あのう"}, {"scene_no": "14", "title_vi": "Này anh ơi", "formal": "すみません", "casual": "ねえ"}, {"scene_no": "15", "title_vi": "Tôi làm phiền một chút được không ạ?", "formal": "ちょっとよろしいですか", "casual": "ちょっといい？"}, {"scene_no": "16", "title_vi": "Cho tôi gặp anh Kobayashi", "formal": "小林さん、お願いします", "casual": "小林さん、お願い"}, {"scene_no": "17", "title_vi": "Vậy thì nhờ anh/chị nhé", "formal": "すみません、お願いします", "casual": "ごめん、お願い"}, {"scene_no": "18", "title_vi": "Anh/chị làm lại biểu đồ giúp tôi được không?", "formal": "今ちょっとよろしいですか", "casual": "今ちょっといい？"}, {"scene_no": "19", "title_vi": "Anh chuyển giúp tôi cho giám đốc chi nhánh được không ạ?", "formal": "中山さんによろしくお伝えください", "casual": "中山さんによろしく"}, {"scene_no": "20", "title_vi": "Xem giúp mình tài liệu tiếng Nhật này nhé?", "formal": "見ていただけませんか", "casual": "見てくれる？"}, {"scene_no": "21", "title_vi": "Tôi hiểu rồi", "formal": "わかりました", "casual": "わかった"}, {"scene_no": "22", "title_vi": "Vâng, tôi xin ghi nhận ạ", "formal": "かしこまりました", "casual": "わかった"}, {"scene_no": "23", "title_vi": "Nếu tôi làm được thì...", "formal": "私でよろしければ", "casual": "私でよかったら"}, {"scene_no": "24", "title_vi": "Xin lỗi (cảm ơn) anh/chị", "formal": "すみません", "casual": "ごめん"}, {"scene_no": "25", "title_vi": "Thật ra là...", "formal": "人と会うことになっていまして……", "casual": "人と会うことになってて……"}, {"scene_no": "27", "title_vi": "Thôi, tôi xin phép", "formal": "もう結構です", "casual": "もういい"}, {"scene_no": "28", "title_vi": "Tôi không giỏi chơi golf", "formal": "苦手なんです", "casual": "苦手なんだ"}, {"scene_no": "29", "title_vi": "Chỗ ngồi thì sắp xếp thế nào ạ?", "formal": "席はどうしましょうか。", "casual": "席、どうする？"}, {"scene_no": "30", "title_vi": "Tôi nên xử lý thế nào ạ?", "formal": "いかがいたしましょうか", "casual": "どうする？"}, {"scene_no": "31", "title_vi": "Tôi có việc muốn xin ý kiến anh/chị", "formal": "ご相談したいことがあるんですが", "casual": "相談したいことがあるんだけど"}, {"scene_no": "32", "title_vi": "Tôi muốn xin phép nghỉ", "formal": "休ませていただきたいんですが", "casual": "休みたいんだけど"}, {"scene_no": "33", "title_vi": "Tôi xin phép hỏi một câu được không ạ?", "formal": "質問してもよろしいでしょうか", "casual": "質問してもいい？"}, {"scene_no": "34", "title_vi": "Tôi muốn dùng, không biết có được không ạ?", "formal": "使いたいんですけど、よろしいですか", "casual": "使いたいんだけど、いい？"}, {"scene_no": "35", "title_vi": "Hình như là phòng họp số 3 phải không nhỉ?", "formal": "確か第3会議室でしたよね", "casual": "確か第3会議室だったよね"}, {"scene_no": "36", "title_vi": "Tức là...", "formal": "というと、3月までということですよね", "casual": "っていうと、3月までっていうこと？"}, {"scene_no": "37", "title_vi": "Nói cách khác là...", "formal": "と言いますと？", "casual": "って言うと？"}, {"scene_no": "38", "title_vi": "Anh đừng đến muộn nhé", "formal": "遅れないでくださいね", "casual": "遅れないでね"}, {"scene_no": "39", "title_vi": "Anh nên nhận bằng hai tay thì hơn", "formal": "気をつけます", "casual": "気をつけるよ"}, {"scene_no": "40", "title_vi": "Chị đến thì hơn đấy", "formal": "すみませんでした", "casual": "ごめん"}, {"scene_no": "41", "title_vi": "Hay là để lần sau?", "formal": "次回にしたらどうですか", "casual": "今度にしたら？"}, {"scene_no": "42", "title_vi": "Luôn cảm ơn quý công ty đã giúp đỡ", "formal": "いつもお世話になっております", "casual": "いつもお世話になっています"}, {"scene_no": "43", "title_vi": "Cảm ơn anh/chị về ngày hôm nay", "formal": "今日はありがとうございました", "casual": "今日はどうも"}, {"scene_no": "44", "title_vi": "Cảm ơn mọi người đã giúp đỡ", "formal": "これからもよろしくお願いします", "casual": "これからもよろしく"}, {"scene_no": "45", "title_vi": "Anh/chị giữ gìn sức khỏe nhé", "formal": "お体に気をつけて、がんばってください", "casual": "体に気をつけて、がんばってね"}]};
+
+/* ---- chỉ có trong mockup ---- */
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+  document.querySelectorAll('.mockbar button').forEach(b=>b.classList.toggle('on',b.dataset.go===id));
+  document.querySelectorAll('.sidenav-sub a').forEach(a=>a.classList.toggle('active',(a.dataset.nav||'').split(' ').includes(id)));
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-go]');if(t){e.preventDefault();go(t.dataset.go);}});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---- L1: 12 chương; tiến độ giả cho chương 1-2 ---- */
+const FAKE={2:'3/3',3:'1/3',5:'2/3'}, FAKE_POL=[2,3,5,6];
+document.getElementById('units').innerHTML=DATA.units.map(u=>{
+  const ls=DATA.lessons.filter(l=>l.unit==u.number);
+  const done=ls.filter(l=>FAKE[l.scene_no]==='3/3').length, drills=ls.filter(l=>l.drill).length;
+  const rows=ls.map(l=>{
+    const d=l.drill?`<span class="tag ${FAKE[l.scene_no]==='3/3'?'good':FAKE[l.scene_no]?'acc':''}" data-go="l2">Thay thế ${FAKE[l.scene_no]||''}</span>`:`<span class="tag off">Thay thế</span>`;
+    const p=l.polite?`<span class="tag ${FAKE_POL.includes(+l.scene_no)?'good':''}" data-go="l4">Lịch sự${FAKE_POL.includes(+l.scene_no)?' ✓':''}</span>`:`<span class="tag off">Lịch sự</span>`;
+    return `<div class="lrow"><span class="n">${l.scene_no}</span><div class="t"><div class="jp">${esc(l.title_jp)}</div><div class="vi">${esc(l.title_vi)}</div></div><div class="acts">${d}${p}</div></div>`;
+  }).join('');
+  const rp=[1,2].map(n=>`<span class="tag ${u.number==1&&n==1?'good':''}" data-go="l3">Đóng vai ${n}${u.number==1&&n==1?' ✓':''}</span>`).join('');
+  const pct=drills?Math.round(done*100/drills):0;
+  return `<details class="unit"${u.number==1?' open':''}><summary><span class="no">${u.number}</span>
+    <span class="nm">${esc(u.name_vi)}<span class="jp">${esc(u.name_jp)}</span></span>
+    <span class="pg">${ls.length} bài · thay thế ${done}/${drills}<div class="progressbar teal"><span style="width:${pct}%"></span></div></span>
+    <span class="chev">›</span></summary>${rows}<div class="rp-row">Đóng vai cả chương: ${rp}</div></details>`;
+}).join('');
+
+/* ---- L2: luyện thay thế bài 2 ---- */
+const DR=DATA.drill; let di=0, dres=[];
+document.getElementById('exPrompt').textContent=DR.example_prompt_jp;
+document.getElementById('exAnswer').textContent=DR.example_answer_jp;
+function dRender(){
+  document.getElementById('dots').innerHTML=DR.items.map((_,i)=>`<span class="${i<dres.length?(dres[i]?'ok':'ng'):i===di?'cur':''}">${i+1}</span>`).join('');
+  const it=DR.items[di];
+  document.getElementById('dPrompt').textContent=it.prompt_jp;
+  const a=document.getElementById('dAnswer'); a.textContent=it.answer_jp; a.classList.remove('show');
+  document.getElementById('dReveal').style.display=''; document.getElementById('dGrade').classList.remove('show');
+}
+document.getElementById('dReveal').onclick=()=>{document.getElementById('dAnswer').classList.add('show');
+  document.getElementById('dReveal').style.display='none';document.getElementById('dGrade').classList.add('show');};
+document.querySelectorAll('[data-grade]').forEach(b=>b.onclick=()=>{
+  dres.push(b.dataset.grade==='1'); di++;
+  if(di<DR.items.length) return dRender();
+  document.getElementById('drillPlay').style.display='none'; document.getElementById('drillDone').style.display='';
+  document.getElementById('dScore').textContent=`${dres.filter(Boolean).length}/${dres.length}`;
+  document.getElementById('dList').innerHTML=DR.items.map((it,i)=>`<li><span class="mk ${dres[i]?'ok':'ng'}">${dres[i]?'✓':'✗'}</span><span class="muted" style="min-width:150px">${esc(it.prompt_jp)}</span><span class="jp">${esc(it.answer_jp)}</span></li>`).join('');
+});
+document.getElementById('dRetry').onclick=()=>{di=0;dres=[];document.getElementById('drillPlay').style.display='';document.getElementById('drillDone').style.display='none';dRender();};
+dRender();
+
+/* ---- L3: đóng vai chương 5 ---- */
+let ri=1;
+function rpRender(){
+  const rp=DATA.roleplays.find(r=>r.number==ri);
+  document.getElementById('rpTabs').innerHTML=DATA.roleplays.map(r=>`<span class="${r.number==ri?'on':''}" data-rp="${r.number}">Đoạn ${r.number}</span>`).join('');
+  const me=rp.lines.find(l=>/\{\d+\}/.test(l.text_jp)).speaker;
+  document.getElementById('rpMe').textContent=me.toUpperCase();
+  document.getElementById('rpSit').textContent=' '+rp.situation_vi;
+  document.getElementById('dlg').innerHTML=rp.lines.map(l=>`<li class="${l.speaker===me?'me':''}"><span class="sp">${esc(l.speaker)}</span>
+    <span class="tx">${esc(l.text_jp).replace(/\{(\d+)\}/g,(_,n)=>`<span class="blank" data-n="${n}">Ô ${n} · bấm để xem</span>`)}</span></li>`).join('');
+  document.querySelectorAll('#rpTabs [data-rp]').forEach(t=>t.onclick=()=>{ri=+t.dataset.rp;rpRender();});
+  document.querySelectorAll('#dlg .blank').forEach(b=>b.onclick=()=>rpOpen(b,rp));
+  document.getElementById('rpNext').textContent=ri<DATA.roleplays.length?'Đoạn tiếp →':'Chương 6 →';
+  rpStat();
+}
+function rpOpen(b,rp){
+  if(b.classList.contains('open'))return;
+  const ans=rp.blanks.find(x=>x.number==b.dataset.n).answer_jp;
+  b.classList.add('open');
+  b.innerHTML=`${esc(ans)}<span class="sg"><button class="ok">✓ Nói được</button><button class="ng">✗ Chưa</button></span>`;
+  b.querySelectorAll('.sg button').forEach(x=>x.onclick=e=>{e.stopPropagation();b.querySelectorAll('.sg button').forEach(y=>y.classList.remove('on'));x.classList.add('on');rpStat();});
+  rpStat();
+}
+function rpStat(){
+  const all=document.querySelectorAll('#dlg .blank'), open=document.querySelectorAll('#dlg .blank.open'), ok=document.querySelectorAll('#dlg .sg .ok.on');
+  document.getElementById('rpStat').textContent=`Đã mở ${open.length}/${all.length} ô · tự chấm nói được ${ok.length}`;
+}
+document.getElementById('rpAll').onclick=()=>{const rp=DATA.roleplays.find(r=>r.number==ri);document.querySelectorAll('#dlg .blank').forEach(b=>rpOpen(b,rp));};
+document.getElementById('rpNext').onclick=()=>{if(ri<DATA.roleplays.length){ri++;rpRender();}};
+rpRender();
+
+/* ---- L4: 10 cặp ngẫu nhiên, thứ tự hai câu ngẫu nhiên ---- */
+let PQ=[], pi=0, pres=[];
+function pStart(){
+  PQ=[...DATA.pairs].sort(()=>Math.random()-.5).slice(0,10).map(p=>({...p,flip:Math.random()<.5}));
+  pi=0;pres=[];document.getElementById('pPlay').style.display='';document.getElementById('pDone').style.display='none';pRender();
+}
+function pRender(){
+  const p=PQ[pi], opts=p.flip?[p.casual,p.formal]:[p.formal,p.casual];
+  document.getElementById('pCount').textContent=`Cặp ${pi+1}/10`;
+  document.getElementById('pBar').style.width=(pi*10)+'%';
+  document.getElementById('pCtx').textContent=`Bài ${p.scene_no} · ${p.title_vi}`;
+  const card=document.getElementById('pCard'); card.classList.remove('done');
+  document.getElementById('pPair').innerHTML=opts.map((o,i)=>`<button class="popt" data-f="${o===p.formal?1:0}"><span class="k">${'AB'[i]}</span><span class="jp">${esc(o)}</span><span class="lv">${o===p.formal?'✓ Trang trọng hơn':'Thân mật hơn'}</span></button>`).join('');
+  document.getElementById('pFb').className='feedback'; document.getElementById('pNext').style.visibility='hidden';
+  document.querySelectorAll('#pPair .popt').forEach(b=>b.onclick=()=>{
+    if(card.classList.contains('done'))return; card.classList.add('done');
+    const ok=b.dataset.f==='1'; pres.push(ok);
+    document.querySelectorAll('#pPair .popt').forEach(x=>x.classList.add(x.dataset.f==='1'?'right':'wrong'));
+    const fb=document.getElementById('pFb'); fb.className='feedback show '+(ok?'ok':'ng');
+    document.getElementById('pFbT').textContent=ok?'Chính xác':'Chưa đúng';
+    document.getElementById('pFbD').innerHTML=`Câu trang trọng hơn: <span class="jp">${esc(p.formal)}</span> — dùng với khách hàng, cấp trên, người mới gặp.`;
+    const n=document.getElementById('pNext'); n.style.visibility=''; n.textContent=pi<9?'Cặp tiếp →':'Xem kết quả →';
+  });
+}
+document.getElementById('pNext').onclick=()=>{
+  if(++pi<10) return pRender();
+  const k=pres.filter(Boolean).length, pct=k*10;
+  document.getElementById('pPlay').style.display='none'; document.getElementById('pDone').style.display='';
+  document.getElementById('pRing').style.setProperty('--p',pct); document.getElementById('pPct').textContent=pct+'%';
+  document.getElementById('pList').innerHTML=PQ.map((p,i)=>`<li><span class="mk ${pres[i]?'ok':'ng'}">${pres[i]?'✓':'✗'}</span><span class="small muted" style="min-width:60px">Bài ${p.scene_no}</span><span class="jp">${esc(p.formal)}</span><span class="muted">›</span><span class="jp muted">${esc(p.casual)}</span></li>`).join('');
+};
+document.getElementById('pAgain').onclick=pStart;
+document.querySelectorAll('#l4seg button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#l4seg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');});
+pStart();
+</script>
+</body>
+</html>
