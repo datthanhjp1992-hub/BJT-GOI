@@ -1,0 +1,1905 @@
+﻿word,reading,nghia,de_xuat,loai,nghia_tu_de_xuat
+(お)祝い,(お)いわい,"tiệc mừng, lời chúc mừng (lịch sự)",祝賀,synonyms_note,
+（時間が）押す,（じかんが）おす,(Thời gian) bị trễ so với lịch trình,遅れる,synonyms_note,
+(電話を)とる,(でんわを)とる,"Nghe, bắt máy (điện thoại)",出る,synonyms_note,
+～側,～がわ,"Phía, bên ~",方,synonyms_note,
+～向け,むけ,Dành cho (đối tượng). VD: 子ども向け – dành cho trẻ em,用,synonyms_note,
+～宛,～あて,Gửi đến… (VD: 田中様宛 – gửi anh Tanaka),宛先,liên kết (từ có sẵn),Địa chỉ người nhận
+～当たり,～あたり,Tính trên mỗi… (VD: 1人当たり – mỗi người),毎,synonyms_note,
+～煮詰まる,～につまる,"(Thảo luận) bế tắc, cạn ý tưởng; (cũng dùng) sắp đi đến kết luận",行き詰まる,synonyms_note,
+～煮詰める,～につめる,"Bàn kỹ, cô đọng lại để đi đến kết luận",詰める,liên kết (từ có sẵn),"Nhồi, nhét; dồn sát lại; bàn kỹ để chốt (chi tiết). VD: 詳細を詰める – chốt chi tiết"
+～畑,～はたけ,"Lĩnh vực, chuyên ngành xuất thân (VD: 営業畑 – dân kinh doanh, 経理畑 – dân kế toán)",分野,liên kết (từ có sẵn),Lĩnh vực
+ATM,エーティーエム,Máy rút tiền tự động (ATM),現金自動預け払い機,synonyms_note,
+IT,アイティー,Công nghệ thông tin (IT – Information Technology),情報技術,synonyms_note,
+M＆A,エムアンドイー,Sáp nhập và mua lại doanh nghiệp (M&A): công ty mua lại hoặc hợp nhất với công ty khác để nắm quyền kiểm soát,合併買収,synonyms_note,
+OS（オペレーティングシステム）,オペレーティングシステム,"Hệ điều hành (OS): phần mềm quản lý phần cứng và phần mềm của máy tính, vd Windows, macOS",基本ソフト,synonyms_note,
+あおる,あおる,"Kích động, thổi bùng (cảm xúc, dư luận, giá cả); quạt (gió, lửa)",扇動する,synonyms_note,
+言い訳,いいわけ,"Lời bào chữa, phân trần, biện bạch",接続,synonyms_note,
+アサイン,あさいん,"Phân công, giao (việc, nhiệm vụ)",割り当てる,synonyms_note,
+アジェンダ,あじぇんだ,"Chương trình họp, các mục nội dung cần bàn",議題,liên kết (từ có sẵn),Chủ đề thảo luận (trong cuộc họp)
+アプローチ,あぷろーち,"Tiếp cận (khách hàng, vấn đề); cách tiếp cận, phương pháp",手法,synonyms_note,
+アポ,アポ,Cuộc hẹn / Lịch hẹn,アポイント,synonyms_note,
+アポ,アポ,Cuộc hẹn / Lịch hẹn,約束,synonyms_note,
+アレンジ,アレンジ,"Thay đổi, điều chỉnh, biến tấu",手直し,liên kết (từ có sẵn),Chỉnh sửa lại (một phần)
+イーコマース,いーこまーす,Thương mại điện tử,電子商取引,synonyms_note,
+いい加減,いいかげん,"Qua loa, vô trách nhiệm; (いい加減に) vừa phải thôi",無責任,synonyms_note,
+いち早く,いちはやく,"Nhanh chóng, trước người khác",真っ先に,synonyms_note,
+インストール,インストール,Cài đặt,導入,liên kết (từ có sẵn),"Đưa vào áp dụng (hệ thống, phương pháp mới)"
+インターン,インターン,Thực tập,研修生,synonyms_note,
+インフラ,インフラストラクチャー,Cơ sở hạ tầng,社会基盤,synonyms_note,
+インフレ,インフレーション,Lạm phát,物価上昇,synonyms_note,
+インボイス,インボイス,Hóa đơn,請求書,liên kết (từ có sẵn),Hóa đơn yêu cầu thanh toán
+インボイス,インボイス,Hóa đơn,送り状,liên kết (từ có sẵn),Phiếu gửi hàng (vận đơn); hóa đơn gửi kèm hàng
+ウィンウィン,うぃんうぃん,Đôi bên cùng có lợi (win-win),相互利益,synonyms_note,
+エアークッション,エアークッション,Túi bóng khí chèn hàng dễ vỡ trong thùng carton.,緩衝材,liên kết (từ có sẵn),Vật liệu chèn lót chống va đập (khi đóng gói hàng)
+エキスパート,エキスパート,Chuyên gia,専門家,synonyms_note,
+エキスパート,エキスパート,Chuyên gia,プロ,synonyms_note,
+エムアンドエー,エムエンドエー,Sáp nhập và mua lại doanh nghiệp (M&A),M＆A,liên kết (từ có sẵn),Sáp nhập và mua lại doanh nghiệp (M&A): công ty mua lại hoặc hợp nhất với công ty khác để nắm quyền kiểm soát
+オークション,オークション,Đấu giá,競売,synonyms_note,
+オーダーメイド,おーだーめいど,"Đặt làm theo yêu cầu, may đo riêng",特注,synonyms_note,
+オープン,オープン,"Mở cửa, khai trương",開業,synonyms_note,
+オープンする,オープンする,"Khai trương, mở cửa",開業する,synonyms_note,
+おそらく,おそらく,"Có lẽ, e rằng",たぶん,synonyms_note,
+オプション,オプション,"Tùy chọn; phần thêm có thể chọn (dịch vụ, phụ kiện)",選択肢,liên kết (từ có sẵn),Phương án lựa chọn
+おまけ,おまけ,"Đồ tặng kèm; bớt thêm, giảm thêm",景品,liên kết (từ có sẵn),"Quà tặng kèm, phần thưởng (khi mua hàng, bốc thăm)"
+おまけに,おまけに,"Hơn nữa, thậm chí",その上,synonyms_note,
+おまけに,おまけに,"Hơn nữa, thậm chí",さらに,synonyms_note,
+オリジナリティー,オリジナリティー,"Tính độc đáo, tính sáng tạo, nét riêng",独創性,synonyms_note,
+オリジナル,オリジナル,"Bản gốc; độc đáo, riêng (tự làm, không sao chép)",独自,synonyms_note,
+お任せする,おまかせする,"Giao cho (anh/chị) làm, phó thác",任せる,liên kết (từ có sẵn),"Giao phó, để cho (ai đó) đảm nhận"
+お口添え,おくちぞえ,"(Kính ngữ) Lời nói giúp, sự giới thiệu (của người khác)",推薦,synonyms_note,
+お尋ね,おたずね,"Sự hỏi, câu hỏi (của người khác, kính ngữ). VD: お尋ねの件 – vấn đề anh/chị hỏi",質問,synonyms_note,
+お控えください,おひかえください,Xin hãy kiềm chế,ご遠慮ください,synonyms_note,
+お申し越し,おもうしこし,(Văn thư) Điều quý vị yêu cầu/đề nghị,お申し出,synonyms_note,
+お目にかかる,おめにかかる,được gặp (khiêm nhường ngữ),お会いする,synonyms_note,
+カーソル,カーソル,Con trỏ (trên màn hình máy tính),ポインター,synonyms_note,
+カギ,かぎ,Chìa khóa; yếu tố then chốt,要,liên kết (từ có sẵn),"Điểm then chốt, mấu chốt (yếu tố quan trọng nhất)"
+かさむ,かさむ,"(Chi phí, số lượng) tăng lên, phình ra – thường mang nghĩa tiêu cực. VD: 費用がかさむ",膨らむ,synonyms_note,
+カタログ,カタログ,"Catalog, cuốn danh mục giới thiệu sản phẩm/dịch vụ (có hình ảnh, giá, mô tả)",商品目録,synonyms_note,
+がっつり,がっつり,"Nhiều, ra trò, hết mình (ăn nhiều, làm hết sức). VD: がっつり食べる",たっぷり,synonyms_note,
+カテゴリー,カテゴリー,"Danh mục, loại, nhóm",分類,liên kết (từ có sẵn),Phân loại
+カテゴリー,カテゴリー,"Danh mục, loại, nhóm",部類,synonyms_note,
+かねがね,かねがね,"(Đã nghe, đã mong) từ lâu. VD: お噂はかねがね伺っております – tôi đã nghe danh anh từ lâu",かねて,synonyms_note,
+かねがね,かねがね,"(Đã nghe, đã mong) từ lâu. VD: お噂はかねがね伺っております – tôi đã nghe danh anh từ lâu",以前から,synonyms_note,
+カンマ（コンマ）,カンマ（コンマ）,Dấu phẩy,読点,synonyms_note,
+キーパーソン,きーぱーそん,"Người then chốt, người có ảnh hưởng quyết định (key person)",キーマン,synonyms_note,
+きっかり,きっかり,"Đúng, chính xác (thời gian, số lượng). VD: 3時きっかり – đúng 3 giờ",ぴったり,synonyms_note,
+きっかり,きっかり,"Đúng, chính xác (thời gian, số lượng). VD: 3時きっかり – đúng 3 giờ",ちょうど,synonyms_note,
+キックオフ,きっくおふ,Khởi động (dự án); buổi họp khởi động dự án,始動,synonyms_note,
+ギフト,ギフト,Quà,贈り物,synonyms_note,
+ギフト,ギフト,Quà,プレゼント,synonyms_note,
+キャッチフレーズ,キャッチフレーズ,"Slogan, khẩu hiệu quảng cáo để thu hút khách hàng",キャッチコピー,synonyms_note,
+キャッチフレーズ,キャッチフレーズ,"Slogan, khẩu hiệu quảng cáo để thu hút khách hàng",宣伝文句,synonyms_note,
+キャビネ（キャビネット）,キャビネ（キャビネット）,"Tủ đựng hồ sơ, tủ tài liệu",書類棚,synonyms_note,
+キャビネット,キャビネット,Tủ hồ sơ,書類棚,synonyms_note,
+キャリア,キャリア,"Sự nghiệp, quá trình làm việc, kinh nghiệm nghề nghiệp",経歴,liên kết (từ có sẵn),"Lý lịch, quá trình học tập và làm việc"
+きり（切り）,きり,"Điểm dừng, chỗ kết thúc. VD: きりがない – không có điểm dừng",区切り,liên kết (từ có sẵn),"Chỗ ngắt, điểm kết thúc (một giai đoạn). VD: 区切りをつける"
+ぎりぎり,ぎりぎり,"Sát nút, vừa kịp, suýt soát (thời gian, số lượng)",すれすれ,synonyms_note,
+クエスチョンマーク,くえすちょんまーく,Dấu chấm hỏi (？),疑問符,synonyms_note,
+くどい,くどい,"Dài dòng, lải nhải đến phát ngán; (vị, màu) quá đậm, ngấy",しつこい,synonyms_note,
+グレード,ぐれーど,"Cấp, hạng, đẳng cấp (sản phẩm, dịch vụ)",等級,synonyms_note,
+グレード,ぐれーど,"Cấp, hạng, đẳng cấp (sản phẩm, dịch vụ)",ランク,synonyms_note,
+クローズアップ,くろーずあっぷ,"Cận cảnh; làm nổi bật, thu hút sự chú ý (vấn đề)",強調,liên kết (từ có sẵn),Nhấn mạnh
+グロス,ぐろす,"Tổng (trước khi trừ chi phí, thuế…); tổng gộp",総額,liên kết (từ có sẵn),Tổng số tiền
+ケース,ケース,"Trường hợp, hộp/vỏ đựng",場合,synonyms_note,
+ケーススタディ,けーすすたでぃ,Nghiên cứu tình huống điển hình (case study),事例研究,synonyms_note,
+ケースバイケース,けーすばいけーす,Tùy từng trường hợp,臨機応変,synonyms_note,
+ケータリング,けーたりんぐ,"Dịch vụ nấu và giao đồ ăn tận nơi (cho tiệc, sự kiện)",仕出し,synonyms_note,
+コーディネーター,こーでぃねーたー,Người điều phối,調整役,synonyms_note,
+コーディネート,コーディネート,"Điều phối, phối hợp (công việc, sự kiện); phối đồ (thời trang)",調整,liên kết (từ có sẵn),"Điều chỉnh, sắp xếp"
+コーポレーション,こーぽれーしょん,"Tập đoàn, công ty (corporation)",会社,liên kết (từ có sẵn),Công ty
+コーポレーション,こーぽれーしょん,"Tập đoàn, công ty (corporation)",株式会社,synonyms_note,
+コーポレートガバナンス,こーぽれーとがばなんす,"Quản trị doanh nghiệp (cơ chế giám sát, điều hành công ty minh bạch)",企業統治,synonyms_note,
+コールバック,コールバック,Gọi lại,折り返し電話,synonyms_note,
+コストパフォーマンス,コストパフォーマンス,Hiệu quả so với chi phí bỏ ra (có đáng đồng tiền hay không),費用対効果,synonyms_note,
+コスパ,こすぱ,Hiệu quả so với chi phí (viết tắt của コストパフォーマンス). VD: コスパがいい – đáng tiền,コストパフォーマンス,liên kết (từ có sẵn),Hiệu quả so với chi phí bỏ ra (có đáng đồng tiền hay không)
+こつこつ,こつこつ,"Cần cù, siêng năng/ Từng chút, từng cái một",着実に,synonyms_note,
+こつこつ,こつこつ,"Cần cù, siêng năng/ Từng chút, từng cái một",地道に,synonyms_note,
+コネ略（コネクション）,コネ略（コネクション）,"Quan hệ, mối quen biết (để nhờ vả, xin việc)",人脈,synonyms_note,
+コネ略（コネクション）,コネ略（コネクション）,"Quan hệ, mối quen biết (để nhờ vả, xin việc)",縁故,synonyms_note,
+この度,このたび,"Lần này, nhân dịp này (cách nói trang trọng)",今回,synonyms_note,
+コミッション,こみっしょん,Tiền hoa hồng; ủy ban,手数料,liên kết (từ có sẵn),"Phí thủ tục, phí dịch vụ, phí hoa hồng"
+ごもっとも,ごもっとも,(Kính ngữ) Anh/chị nói hoàn toàn đúng,おっしゃる通り,synonyms_note,
+コンサル,こんさる,"Tư vấn, nhà tư vấn (viết tắt của コンサルタント/コンサルティング)",コンサルタント,synonyms_note,
+コンスタント,コンスタント,"Đều đặn, ổn định (không thất thường)",安定的,synonyms_note,
+コンセント,コンセント,Ổ cắm điện,差し込み口,synonyms_note,
+コントラスト,こんとらすと,Tương phản (contrast),対照,synonyms_note,
+コンパクト,コンパクト,"Nhỏ gọn, bỏ túi/ Cô đọng, xúc tích",小型,synonyms_note,
+コンビ,こんび,"Cặp, bộ đôi (hai người làm việc ăn ý)",相棒,synonyms_note,
+コンビ,こんび,"Cặp, bộ đôi (hai người làm việc ăn ý)",二人組,synonyms_note,
+コンプライアンス,こんぷらいあんす,Tuân thủ pháp luật và quy định,法令遵守,synonyms_note,
+ご勘弁ください,ごかんべんください,Xin hãy bỏ qua cho (từ chối khéo),ご容赦ください,liên kết (từ có sẵn),"Xin hãy thứ lỗi, mong thông cảm"
+ご存知,ごぞんじ,biết (tôn kính ngữ),ご承知,synonyms_note,
+ご笑納ください,ごしょうのうください,"Xin vui lòng nhận món quà nhỏ này (khiêm nhường, dùng khi tặng quà)",お納めください,synonyms_note,
+ご賢察,ごけんさつ,"(Kính ngữ) Sự suy xét, thấu hiểu (của đối phương). VD: ご賢察ください – mong anh/chị thông cảm",ご推察,synonyms_note,
+ご高覧,ごこうらん,(Kính ngữ) Sự xem (của đối phương). VD: ご高覧ください – kính mời quý vị xem,ご覧,synonyms_note,
+サイズ,サイズ,"Kích cỡ, kích thước",大きさ,synonyms_note,
+サイズ,サイズ,"Kích cỡ, kích thước",寸法,synonyms_note,
+サバイバル,サバイバル,Sự sinh tồn; cuộc cạnh tranh để tồn tại,生き残り,synonyms_note,
+さほど,さほど,"Không đến mức, không… lắm (đi với phủ định). VD: さほど難しくない – không khó lắm",それほど,synonyms_note,
+さほど,さほど,"Không đến mức, không… lắm (đi với phủ định). VD: さほど難しくない – không khó lắm",大して,synonyms_note,
+サボる,サボる,"Trốn việc, trốn học, lười làm",怠ける,synonyms_note,
+シェア,シェア,Thị phần,市場占有率,synonyms_note,
+しかるべき,しかるべき,"Thích đáng, phù hợp, đúng như phải thế. VD: しかるべき処置 – biện pháp thích đáng",相応の,synonyms_note,
+シナジー,しなじー,Hiệu ứng cộng hưởng (kết hợp lại tạo ra hiệu quả lớn hơn tổng các phần),相乗効果,synonyms_note,
+シナリオ,シナリオ,Kịch bản,台本,synonyms_note,
+シナリオ,シナリオ,Kịch bản,筋書き,synonyms_note,
+シニア層,しにあそう,Tầng lớp người cao tuổi,高齢者層,synonyms_note,
+しのぎを削る,しのぎをけずる,Cạnh tranh quyết liệt,競り合う,synonyms_note,
+シビア,シビア,"Nghiêm khắc, khắt khe",厳しい,synonyms_note,
+シフト,シフト,"Ca làm việc, lịch xếp ca; sự chuyển đổi, dịch chuyển",勤務表,synonyms_note,
+しまう,しまう,"Cất đi, cất vào; (～てしまう) làm xong hẳn, lỡ làm",片付ける,synonyms_note,
+しゃきっと,しゃきっと,"Tỉnh táo, nhanh nhẹn, nghiêm chỉnh; (rau) giòn",きびきび,synonyms_note,
+しゃきっと,しゃきっと,"Tỉnh táo, nhanh nhẹn, nghiêm chỉnh; (rau) giòn",てきぱき,synonyms_note,
+し方,しかた,cách làm,やり方,synonyms_note,
+し方,しかた,cách làm,方法,synonyms_note,
+スクリーニング,すくりーにんぐ,"Sàng lọc (ứng viên, dữ liệu, bệnh)",選別,liên kết (từ có sẵn),"Tuyển chọn, phân loại (chọn ra cái đạt chuẩn)"
+スクリーニング,すくりーにんぐ,"Sàng lọc (ứng viên, dữ liệu, bệnh)",ふるい分け,synonyms_note,
+スチール,スチール,Thép,鋼鉄,synonyms_note,
+スパン,スパン,"Khoảng thời gian, chu kỳ. VD: 長いスパンで考える – nghĩ trong khoảng thời gian dài",期間,synonyms_note,
+スピーチ,スピーチ,Bài phát biểu,演説,synonyms_note,
+すり合わせる,すりあわせる,"Đối chiếu và điều chỉnh (ý kiến, kế hoạch giữa các bên cho khớp nhau)",調整する,synonyms_note,
+ずるずる,ずるずる,"Kéo dài lê thê, dây dưa (không dứt khoát); kéo lê",だらだら,synonyms_note,
+ずれ込む,ずれこむ,"Bị lùi, bị trễ so với kế hoạch",遅れる,synonyms_note,
+ずれ込む,ずれこむ,"Bị lùi, bị trễ so với kế hoạch",延びる,synonyms_note,
+セールスポイント,セールスポイント,"Điểm mạnh, điểm thu hút, lợi thế bán hàng của sản phẩm/dịch vụ.",売り,synonyms_note,
+セールスポイント,セールスポイント,"Điểm mạnh, điểm thu hút, lợi thế bán hàng của sản phẩm/dịch vụ.",強み,synonyms_note,
+セキュリティー,セキュリティー,"An ninh, bảo mật",安全,synonyms_note,
+セキュリティー,セキュリティー,"An ninh, bảo mật",保安,synonyms_note,
+ゼムクリップ（クリップ）,ゼムクリップ（クリップ）,Kẹp giấy,クリップ,liên kết (từ có sẵn),"Kẹp, ghim giấy"
+セルフチェック,せるふちぇっく,Tự kiểm tra,自己点検,synonyms_note,
+セロテープ,セロテープ,Băng dính trong (loại nhỏ dùng ở văn phòng),セロハンテープ,synonyms_note,
+ゼロベース,ぜろべーす,"Làm lại từ đầu, xem xét từ con số 0 (không dựa vào cái cũ)",白紙,liên kết (từ có sẵn),"Giấy trắng; trạng thái ban đầu chưa có gì. VD: 白紙に戻す – hủy bỏ, quay về từ đầu"
+その節,そのせつ,"Dịp đó, lần đó (dùng khi cảm ơn chuyện đã qua). VD: その節はお世話になりました",その折,liên kết (từ có sẵn),"Vào dịp đó, lúc đó"
+その線で,そのせんで,Theo hướng đó,その方向で,synonyms_note,
+ソフト略（ソフトウィア）,ソフト略（ソフトウィア）,"Phần mềm (software); mềm, nhẹ nhàng",ソフトウェア,synonyms_note,
+ターゲット,ターゲット,"Mục tiêu, đối tượng nhắm đến",対象,liên kết (từ có sẵn),Đối tượng
+ターゲット,ターゲット,"Mục tiêu, đối tượng nhắm đến",標的,synonyms_note,
+タイトル,タイトル,"Tiêu đề, nhan đề, tựa đề",題名,synonyms_note,
+タイトル,タイトル,"Tiêu đề, nhan đề, tựa đề",表題,synonyms_note,
+たたき台,たたきだい,Bản phác thảo ban đầu (để làm cơ sở thảo luận),素案,liên kết (từ có sẵn),Bản dự thảo sơ bộ
+たたき台,たたきだい,Bản phác thảo ban đầu (để làm cơ sở thảo luận),原案,liên kết (từ có sẵn),Bản dự thảo ban đầu
+ダブつく,ダブつく,"Dư thừa, tồn đọng (hàng hóa, vốn); (quần áo) rộng thùng thình",余る,synonyms_note,
+ダンピング,だんぴんぐ,Bán phá giá,不当廉売,synonyms_note,
+チーフ,ちーふ,"Trưởng nhóm, người phụ trách (chief)",主任,liên kết (từ có sẵn),"Chủ nhiệm, trưởng nhóm (người phụ trách chính một công việc)"
+チーフ,ちーふ,"Trưởng nhóm, người phụ trách (chief)",リーダー,synonyms_note,
+チームワーク,チームワーク,"Tinh thần làm việc nhóm, teamwork",協調性,synonyms_note,
+チラシ,チラシ,"Tờ rơi, tờ quảng cáo dùng để giới thiệu sản phẩm, dịch vụ, sự kiện…",ビラ,synonyms_note,
+つじつま,つじつま,"Sự hợp lý, ăn khớp (lời nói, câu chuyện, số liệu). VD: つじつまが合わない – không khớp",筋道,synonyms_note,
+つながり,つながり,"Mối liên hệ, sự kết nối, quan hệ",関係,synonyms_note,
+つながる,つながる,"Được kết nối, nối với nhau; dẫn đến (kết quả). VD: 成果につながる – dẫn đến thành quả",結び付く,synonyms_note,
+テーマ,テーマ,"Chủ đề, đề tài",主題,synonyms_note,
+テーマ,テーマ,"Chủ đề, đề tài",題目,synonyms_note,
+でたらめ,でたらめ,"Bừa bãi, linh tinh, nhảm nhí, vô căn cứ",いい加減,liên kết (từ có sẵn),"Qua loa, vô trách nhiệm; (いい加減に) vừa phải thôi"
+テナント,テナント,"Người thuê mặt bằng, cửa hàng thuê (trong tòa nhà, trung tâm thương mại)",賃借人,synonyms_note,
+デベロッパー,デベロッパー,Nhà phát triển (công ty phát triển bất động sản; nhà phát triển phần mềm),開発業者,synonyms_note,
+デモンストレーション,でもんすとれーしょん,"Buổi trình diễn, giới thiệu sản phẩm, chạy thử (demo)",実演,synonyms_note,
+デモンストレーション,でもんすとれーしょん,"Buổi trình diễn, giới thiệu sản phẩm, chạy thử (demo)",試行,liên kết (từ có sẵn),"Thử nghiệm, chạy thử"
+デリケート,デリケート,"Nhạy cảm, tế nhị",繊細,synonyms_note,
+デリケート,デリケート,"Nhạy cảm, tế nhị",微妙,synonyms_note,
+どかす,どかす,"Dời, dẹp (đồ vật, người) sang chỗ khác",どける,liên kết (từ có sẵn),"Dẹp sang một bên, di chuyển ra chỗ khác (thường dùng với đồ vật cản đường)"
+トップ,トップ,"Đứng đầu, số một; người đứng đầu (lãnh đạo cao nhất)",首位,synonyms_note,
+トップ,トップ,"Đứng đầu, số một; người đứng đầu (lãnh đạo cao nhất)",最高責任者,synonyms_note,
+ドラスティック,どらすてぃっく,"Mạnh tay, quyết liệt (thay đổi lớn)",抜本的,liên kết (từ có sẵn),"Triệt để, tận gốc"
+ドラスティック,どらすてぃっく,"Mạnh tay, quyết liệt (thay đổi lớn)",思い切った,synonyms_note,
+ネーミング,ネーミング,"Đặt tên, tên gọi",名称,liên kết (từ có sẵn),Tên gọi (chính thức)
+ネガティブ,ネガティブ,"Tiêu cực, bi quan, mang tính phủ định",否定的,synonyms_note,
+ネガティブ,ネガティブ,"Tiêu cực, bi quan, mang tính phủ định",悲観的,synonyms_note,
+ねじ,ねじ,Ốc vít,ビス,synonyms_note,
+ネック,ネック,"Trở ngại, điểm nghẽn, nút thắt, yếu tố cản trở",障害,synonyms_note,
+ネック,ネック,"Trở ngại, điểm nghẽn, nút thắt, yếu tố cản trở",支障,liên kết (từ có sẵn),"Trở ngại, ảnh hưởng xấu. VD: 業務に支障をきたす – gây trở ngại cho công việc"
+ネックになる,ねっくになる,"Trở thành điểm nghẽn, điểm vướng mắc",障害になる,synonyms_note,
+ノウハウ,ノウハウ,"Bí quyết, kinh nghiệm thực tế (know-how)",技術,liên kết (từ có sẵn),Kỹ thuật
+ノウハウ,ノウハウ,"Bí quyết, kinh nghiệm thực tế (know-how)",秘訣,synonyms_note,
+ノルマ,ノルマ,"Chỉ tiêu (định mức phải đạt, nhất là doanh số)",指標,liên kết (từ có sẵn),"Chỉ số, chỉ tiêu (dùng để đánh giá)"
+ノンバンク,ノンバンク,"Tổ chức tài chính phi ngân hàng (cho vay nhưng không nhận tiền gửi: công ty tài chính, công ty thẻ tín dụng…)",貸金業者,synonyms_note,
+バーター,ばーたー,"Hàng đổi hàng, trao đổi qua lại (không dùng tiền)",物々交換,synonyms_note,
+パート,パート,"Làm bán thời gian, nhân viên bán thời gian (part-time); phần, bộ phận",非常勤,synonyms_note,
+パート,パート,"Làm bán thời gian, nhân viên bán thời gian (part-time); phần, bộ phận",パートタイム,synonyms_note,
+ハイテク,はいてく,"Công nghệ cao, kỹ thuật tiên tiến",先端技術,synonyms_note,
+パイプ,パイプ,"Ống; mối quan hệ, kênh kết nối (giữa người, tổ chức). VD: 太いパイプ – quan hệ mật thiết",人脈,synonyms_note,
+パイプ,パイプ,"Ống; mối quan hệ, kênh kết nối (giữa người, tổ chức). VD: 太いパイプ – quan hệ mật thiết",つながり,liên kết (từ có sẵn),"Mối liên hệ, sự kết nối, quan hệ"
+パイロット調査,パイロットちょうさ,Khảo sát thử (trước khi khảo sát chính thức),予備調査,synonyms_note,
+はかどる,はかどる,"Tiến triển thuận lợi, trôi chảy",順調に進む,synonyms_note,
+はしょる,はしょる,"Lược bớt, bỏ bớt (nói/viết tắt cho gọn)",省略する,synonyms_note,
+ばたばた,ばたばた,"Bận rộn, tất bật, chạy đôn chạy đáo; (tiếng) lạch bạch",慌ただしい,synonyms_note,
+はたを振る・旗振り,はたをふる・はたふり,"Phất cờ, đứng ra dẫn dắt (người khởi xướng)",旗振り役,synonyms_note,
+バックアップ,バックアップ,"Sao lưu (backup dữ liệu), hỗ trợ",支援,liên kết (từ có sẵn),Hỗ trợ
+バックアップ,バックアップ,"Sao lưu (backup dữ liệu), hỗ trợ",後援,liên kết (từ có sẵn),"Bảo trợ, hậu thuẫn (sự kiện)"
+バッファー,ばっふぁー,"Phần dư dự phòng (thời gian, ngân sách, hàng tồn…); (IT) bộ đệm",余裕,liên kết (từ có sẵn),"Dư dả, thoải mái (thời gian, tiền bạc, tinh thần)"
+バッファー,ばっふぁー,"Phần dư dự phòng (thời gian, ngân sách, hàng tồn…); (IT) bộ đệm",ゆとり,synonyms_note,
+パフォーマンス,パフォーマンス,"Hiệu suất, năng lực hoạt động (máy móc, con người, hệ thống)",性能,liên kết (từ có sẵn),"Tính năng, hiệu năng"
+パフォーマンス,パフォーマンス,"Hiệu suất, năng lực hoạt động (máy móc, con người, hệ thống)",効率,liên kết (từ có sẵn),"Hiệu suất, hiệu quả"
+パンク,ぱんく,"Thủng lốp; quá tải, vỡ trận (công việc, hệ thống)",破裂,synonyms_note,
+パンフレット（パンフ略）,パンフレット（パンフ略）,"Tờ rơi, cuốn giới thiệu mỏng (vài trang) về sản phẩm, dịch vụ, sự kiện",小冊子,synonyms_note,
+ひいき,ひいき,"Thiên vị, ưu ái; ủng hộ, là khách quen. VD: ご贔屓に – xin tiếp tục ủng hộ",引き立て,liên kết (từ có sẵn),"Sự ủng hộ, chiếu cố (dùng trong thư cảm ơn khách hàng). VD: お引き立てを賜り…"
+ひいては,ひいては,"Và rộng hơn nữa là, kéo theo đó là. VD: 社員の成長は、ひいては会社の成長につながる",さらには,synonyms_note,
+ヒット,ヒット,"Thành công lớn, bán chạy (hit); kết quả tìm kiếm trúng",大当たり,synonyms_note,
+ヒット,ヒット,"Thành công lớn, bán chạy (hit); kết quả tìm kiếm trúng",売れる,liên kết (từ có sẵn),Bán chạy
+ピリオド,ピリオド,Dấu chấm câu; sự kết thúc. VD: ピリオドを打つ – chấm dứt,終止符,synonyms_note,
+ファイリング,ふぁいりんぐ,"Sắp xếp, lưu trữ tài liệu vào hồ sơ (filing)",書類整理,synonyms_note,
+フィードバック,フィードバック,"Phản hồi, góp ý, nhận xét",レスポンス,liên kết (từ có sẵn),"Phản hồi, sự đáp lại; tốc độ phản hồi (của hệ thống)"
+ブイアイピー/ビップ,ブイアイピー/ビップ,"Khách quan trọng, khách VIP",要人,synonyms_note,
+フォロー,フォロー,"Hỗ trợ, đỡ đần (cho người khác); theo dõi, bám sát; theo dõi (trên SNS)",支援,liên kết (từ có sẵn),Hỗ trợ
+フォロー,フォロー,"Hỗ trợ, đỡ đần (cho người khác); theo dõi, bám sát; theo dõi (trên SNS)",補助,liên kết (từ có sẵn),"Hỗ trợ, trợ giúp"
+フォント,フォント,"Phông chữ, kiểu chữ",書体,synonyms_note,
+ブラウザ（ー）,ブラウザ（ー）,Trình duyệt web,閲覧ソフト,synonyms_note,
+プラスチック,プラスチック,"Nhựa, chất dẻo",合成樹脂,synonyms_note,
+ブラッシュアップ,ぶらっしゅあっぷ,"Trau chuốt, nâng cao chất lượng (kế hoạch, kỹ năng, tài liệu)",洗練,liên kết (từ có sẵn),"Tinh tế, trau chuốt, tao nhã"
+フランチャイズ,ふらんちゃいず,Nhượng quyền thương mại,加盟店方式,synonyms_note,
+ブランディング,ぶらんでぃんぐ,Xây dựng thương hiệu,ブランド構築,synonyms_note,
+フリーズ,フリーズ,"(Máy tính) bị treo, bị đơ; đông cứng",固まる,liên kết (từ có sẵn),"Đông cứng lại; (kế hoạch, ý kiến) được chốt, được định hình"
+プリントアウト,プリントアウト,In ra giấy (từ máy tính),印刷する,synonyms_note,
+フル稼働,ふるかどう,Hoạt động hết công suất,全面稼働,synonyms_note,
+ぶれ,ぶれ,"Sự rung, nhòe (ảnh); sự dao động, không nhất quán (lời nói, quan điểm)",ぶれる,liên kết (từ có sẵn),"Rung, nhòe (ảnh); dao động, không nhất quán (quan điểm, phương châm)"
+ブレーンストーミング（ブレスト略）,ブレーンストーミング（ブレスト略）,Brainstorming (động não): cách họp để mọi người tự do đưa ra càng nhiều ý tưởng càng tốt,ブレスト,liên kết (từ có sẵn),Họp động não (viết tắt của ブレーンストーミング)
+ブレスト,ぶれすと,Họp động não (viết tắt của ブレーンストーミング),ブレーンストーミング,synonyms_note,
+プレゼンテーション（プレゼン略）,プレゼンテーション（プレゼン略）,"Bài thuyết trình, giới thiệu, trình bày ý tưởng hoặc sản phẩm",発表,liên kết (từ có sẵn),Công bố
+ぶれる,ぶれる,"Rung, nhòe (ảnh); dao động, không nhất quán (quan điểm, phương châm)",揺れる,synonyms_note,
+ブローカー,ぶろーかー,Người môi giới,仲買人,synonyms_note,
+ブローカー,ぶろーかー,Người môi giới,仲介業者,synonyms_note,
+フロア,フロア,"Tầng, sàn (nhà)",階,synonyms_note,
+プロジェクト,プロジェクト,Dự án,事業,liên kết (từ có sẵn),"Hoạt động kinh doanh, ngành kinh doanh, dự án"
+プロジェクト,プロジェクト,Dự án,企画,liên kết (từ có sẵn),"Lên kế hoạch, kế hoạch (dự án, sản phẩm)"
+プロバイダ（ー）,プロバイダ（ー）,Nhà cung cấp dịch vụ (thường là nhà cung cấp Internet),接続業者,synonyms_note,
+ベースアップ,べーすあっぷ,Tăng lương cơ bản (cho toàn bộ nhân viên),ベア,synonyms_note,
+ペーパレス,ぺーぱれす,Không dùng giấy (số hóa tài liệu),ペーパーレス,synonyms_note,
+ペンチ,ペンチ,Kìm,プライヤー,synonyms_note,
+ベンチャー,ベンチャー,"Doanh nghiệp mạo hiểm, công ty khởi nghiệp (venture)",新興企業,synonyms_note,
+ベンチャー,ベンチャー,"Doanh nghiệp mạo hiểm, công ty khởi nghiệp (venture)",スタートアップ,synonyms_note,
+ホ（ッ）チキス,ホ（ッ）チキス,Cái dập ghim,ステープラー,synonyms_note,
+ぽかぽか,ぽかぽか,"Ấm áp (thời tiết, cơ thể)",温かい,synonyms_note,
+ぼけっと,ぼけっと,"Thẫn thờ, ngẩn ngơ, lơ đãng",ぼんやり,synonyms_note,
+ポシャる,ポシャる,"Thất bại, đổ bể, tiêu tan, không thành",潰れる,synonyms_note,
+ポシャる,ポシャる,"Thất bại, đổ bể, tiêu tan, không thành",立ち消えになる,synonyms_note,
+ボツ㋕,ボツ㋕,"Bị loại, bị bác bỏ (ý tưởng, bản thảo)",不採用,synonyms_note,
+ボツ㋕,ボツ㋕,"Bị loại, bị bác bỏ (ý tưởng, bản thảo)",没,synonyms_note,
+ほったらかす,ほったらかす,"Bỏ mặc, bỏ bê, để đó không làm",放置する,synonyms_note,
+ポテンシャル,ポテンシャル,"Tiềm năng, năng lực tiềm ẩn",潜在能力,synonyms_note,
+ポテンシャル,ポテンシャル,"Tiềm năng, năng lực tiềm ẩn",可能性,synonyms_note,
+ほどほど,ほどほど,"Vừa phải, có chừng mực",適度,synonyms_note,
+ボリューム,ボリューム,"Âm lượng; khối lượng, lượng (nhiều/ít)",音量,synonyms_note,
+ボリューム,ボリューム,"Âm lượng; khối lượng, lượng (nhiều/ít)",量,synonyms_note,
+マーカー,マーカー,"Bút dạ, bút đánh dấu (highlight)",蛍光ペン,synonyms_note,
+マーケティング,マーケティング,"Tiếp thị, marketing",市場調査,synonyms_note,
+マージン,まーじん,"Biên lợi nhuận, tiền chênh lệch (giữa giá vốn và giá bán); khoảng dư (lề)",利ざや,synonyms_note,
+マージン,まーじん,"Biên lợi nhuận, tiền chênh lệch (giữa giá vốn và giá bán); khoảng dư (lề)",粗利,synonyms_note,
+マイペース,まいぺーす,"Làm theo nhịp độ riêng, không bị ảnh hưởng bởi người khác",自己流,synonyms_note,
+マイペース,まいぺーす,"Làm theo nhịp độ riêng, không bị ảnh hưởng bởi người khác",マイペースな,synonyms_note,
+まかなう,まかなう,"Trang trải, chi trả, lo liệu (chi phí, nhân lực). VD: 経費を売上でまかなう",賄う,synonyms_note,
+まかなう,まかなう,"Trang trải, chi trả, lo liệu (chi phí, nhân lực). VD: 経費を売上でまかなう",充てる,liên kết (từ có sẵn),"Dành, phân bổ (tiền, thời gian, người) cho việc gì"
+まず,まず,"Trước hết, đầu tiên",最初に,synonyms_note,
+まず,まず,"Trước hết, đầu tiên",はじめに,synonyms_note,
+マスター,マスター,"Bản gốc, dữ liệu gốc (dữ liệu master); chủ quán; thành thạo (マスターする – nắm vững)",原本,liên kết (từ có sẵn),Bản gốc
+マスター,マスター,"Bản gốc, dữ liệu gốc (dữ liệu master); chủ quán; thành thạo (マスターする – nắm vững)",元データ,synonyms_note,
+まずまず,まずまず,"Tạm được, không tệ, khá ổn",まあまあ,synonyms_note,
+まとまる,まとまる,"(Ý kiến, thương lượng) được thống nhất, đi đến kết quả; được sắp xếp gọn gàng",成立する,synonyms_note,
+まとまる,まとまる,"(Ý kiến, thương lượng) được thống nhất, đi đến kết quả; được sắp xếp gọn gàng",まとめる,liên kết (từ có sẵn),"Tổng hợp, gom lại, sắp xếp; đưa (ý kiến, thương lượng) đến thống nhất"
+マニュアル,マニュアル,"Sổ tay hướng dẫn, tài liệu hướng dẫn thao tác",手引き,liên kết (từ có sẵn),"Sách hướng dẫn, cẩm nang, tài liệu chỉ dẫn"
+マニュアル,マニュアル,"Sổ tay hướng dẫn, tài liệu hướng dẫn thao tác",説明書,synonyms_note,
+マル秘,まるひ,Tuyệt mật (tài liệu đóng dấu ㊙),極秘,synonyms_note,
+マル秘,まるひ,Tuyệt mật (tài liệu đóng dấu ㊙),機密,synonyms_note,
+マンネリ略（マンネリズム）,マンネリ略（マンネリズム）,"Lối mòn, sự lặp lại nhàm chán, không có gì mới",マンネリズム,synonyms_note,
+マンネリ略（マンネリズム）,マンネリ略（マンネリズム）,"Lối mòn, sự lặp lại nhàm chán, không có gì mới",惰性,synonyms_note,
+ミスプリント（ミスプリ略）,ミスプリント（ミスプリ略）,"Lỗi in, in sai, in nhầm",誤植,liên kết (từ có sẵn),"Lỗi in ấn, lỗi đánh máy"
+メール,メール,"Email, thư điện tử",電子メール,synonyms_note,
+メール,メール,"Email, thư điện tử",Eメール,synonyms_note,
+メディア,メディア,Phương tiện truyền thông; kênh truyền thông,媒体,liên kết (từ có sẵn),"Phương tiện truyền thông (báo, TV, web); phương tiện lưu trữ (đĩa, USB)"
+めど,めど,"Mục tiêu, dự kiến; triển vọng. VD: めどが立つ – có triển vọng, thấy được hướng giải quyết",見込み,liên kết (từ có sẵn),"Triển vọng, dự kiến, khả năng. VD: 見込み客 – khách hàng tiềm năng"
+めど,めど,"Mục tiêu, dự kiến; triển vọng. VD: めどが立つ – có triển vọng, thấy được hướng giải quyết",目標,liên kết (từ có sẵn),Mục tiêu
+メモ,メモ,"Ghi chú, mảnh giấy ghi nhớ",覚え書き,synonyms_note,
+メモ,メモ,"Ghi chú, mảnh giấy ghi nhớ",メモ書き,synonyms_note,
+メモる,メモる,Ghi chú lại,書き留める,liên kết (từ có sẵn),Ghi chép lại (để không quên)
+めりはりをつける,めりはりをつける,"Tạo điểm nhấn, phân biệt rõ ràng (lúc làm – lúc nghỉ, chỗ chính – chỗ phụ)",メリハリをつける,synonyms_note,
+メンバー,メンバー,Thành viên,成員,synonyms_note,
+メンバー,メンバー,Thành viên,構成員,synonyms_note,
+モチベーション,モチベーション,Động lực,意欲,synonyms_note,
+モチベーション,モチベーション,Động lực,やる気,synonyms_note,
+もったいない,もったいない,"Lãng phí, phí phạm; (lời khiêm nhường) không dám nhận, quá tốt đối với mình",惜しい,synonyms_note,
+もったいない,もったいない,"Lãng phí, phí phạm; (lời khiêm nhường) không dám nhận, quá tốt đối với mình",無駄,synonyms_note,
+モニター,モニター,Màn hình máy tính; người dùng thử để khảo sát (người thử sản phẩm),画面,synonyms_note,
+モニター,モニター,Màn hình máy tính; người dùng thử để khảo sát (người thử sản phẩm),ディスプレー,synonyms_note,
+モンキーレンチ,モンキーレンチ,Mỏ lết (cờ lê có thể điều chỉnh độ mở để vặn ốc nhiều cỡ),モンキースパナ,synonyms_note,
+やむを得ない,やむをえない,"Không thể tránh được, bất đắc dĩ",致し方ない,synonyms_note,
+やむを得ない,やむをえない,"Không thể tránh được, bất đắc dĩ",しょうがない,liên kết (từ có sẵn),"Đành chịu, không còn cách nào khác"
+やりくり,やりくり,"Xoay xở, thu xếp (tiền bạc, thời gian, công việc)",工面,synonyms_note,
+やりくり,やりくり,"Xoay xở, thu xếp (tiền bạc, thời gian, công việc)",融通,liên kết (từ có sẵn),"Sự linh hoạt, xoay xở; cho vay mượn (tiền). VD: 融通が利く – linh hoạt"
+やりとり,やりとり,"Trao đổi, qua lại (thư từ, ý kiến, hàng hóa)",交換,liên kết (từ có sẵn),"Trao đổi; thay thế (linh kiện, đồ cũ)"
+やりとり,やりとり,"Trao đổi, qua lại (thư từ, ý kiến, hàng hóa)",応酬,synonyms_note,
+やり手,やりて,"Người giỏi giang, tháo vát",敏腕,synonyms_note,
+やり手,やりて,"Người giỏi giang, tháo vát",切れ者,synonyms_note,
+ユーザー,ユーザー,"Người dùng, người sử dụng",利用者,synonyms_note,
+ユーザー,ユーザー,"Người dùng, người sử dụng",使用者,synonyms_note,
+ユーザーフレンドリー,ユーザーフレンドリー,"Thân thiện với người dùng, dễ sử dụng",使いやすい,synonyms_note,
+ゆるめる,ゆるめる,"Nới lỏng, làm chùng ra, làm dịu đi, bớt căng",緩和する,synonyms_note,
+ゆるやか,ゆるやか,"Nhẹ nhàng, chậm rãi, thoai thoải, dần dần",緩い,synonyms_note,
+ゆるやか,ゆるやか,"Nhẹ nhàng, chậm rãi, thoai thoải, dần dần",なだらか,synonyms_note,
+らちがあかない,らちがあかない,"Không tiến triển, không đi đến đâu, giải quyết không xong",行き詰まる,synonyms_note,
+ラフ,ラフ,"Sơ bộ, phác thảo (ラフ案 – bản nháp); đại khái; (trang phục) thoải mái",大まか,liên kết (từ có sẵn),"Sơ lược, đại khái"
+ランダム,ランダム,"Ngẫu nhiên, không theo thứ tự",無作為,liên kết (từ có sẵn),Ngẫu nhiên (không có chủ ý chọn lựa). VD: 無作為抽出 – chọn mẫu ngẫu nhiên
+リース,リース,"Thuê dài hạn (máy móc, thiết bị – lease)",賃貸,synonyms_note,
+リーズナブル,リーズナブル,"(Giá cả) hợp lý, phải chăng",手ごろ,liên kết (từ có sẵn),"Vừa phải, phải chăng (giá cả, kích cỡ)"
+リコール,リコール,Thu hồi sản phẩm lỗi (để sửa chữa/đổi trả),回収,liên kết (từ có sẵn),"Thu hồi, thu lại"
+リスク,リスク,Rủi ro / Nguy cơ,危険性,synonyms_note,
+リスクヘッジ,りすくへっじ,Phòng ngừa rủi ro,危険回避,synonyms_note,
+リスケ,りすけ,"Dời lịch, sắp xếp lại lịch (viết tắt của リスケジュール)",日程変更,synonyms_note,
+リストラ,りすとら,"Tái cơ cấu, cắt giảm nhân sự (sa thải)",人員削減,synonyms_note,
+リニューアル,リニューアル,"Làm mới, đổi mới, cải tạo (cửa hàng, sản phẩm, website)",一新,synonyms_note,
+リニューアル,リニューアル,"Làm mới, đổi mới, cải tạo (cửa hàng, sản phẩm, website)",改装,synonyms_note,
+リミット,リミット,Giới hạn / Hạn chót / Mức giới hạn,期限,liên kết (từ có sẵn),"Thời hạn, hạn chót"
+リミット,リミット,Giới hạn / Hạn chót / Mức giới hạn,上限,liên kết (từ có sẵn),"Giới hạn trên, mức tối đa"
+リリース,リリース,"Phát hành, ra mắt (sản phẩm, phần mềm); thông cáo báo chí (プレスリリース)",発売,liên kết (từ có sẵn),"Bán ra, mở bán (sản phẩm mới)"
+リリース,リリース,"Phát hành, ra mắt (sản phẩm, phần mềm); thông cáo báo chí (プレスリリース)",公開,liên kết (từ có sẵn),"Công khai, công bố, mở cho công chúng"
+リンク,リンク,Liên kết / Đường dẫn,連携,liên kết (từ có sẵn),"Phối hợp, liên kết"
+ルーズ,ルーズ,"Lỏng lẻo, cẩu thả, không đúng giờ, thiếu kỷ luật. VD: 時間にルーズ – hay trễ giờ",だらしない,synonyms_note,
+ルビ,ルビ,Chữ nhỏ ghi cách đọc bên cạnh chữ Hán (furigana),振り仮名,synonyms_note,
+レート,レート,"Tỷ giá, tỷ lệ, mức giá",為替,liên kết (từ có sẵn),"Ngoại hối, tỷ giá; chuyển tiền"
+レート,レート,"Tỷ giá, tỷ lệ, mức giá",割合,liên kết (từ có sẵn),"Tỷ lệ / Tỉ suất / Tỉ trọng (ratio, percentage)"
+レイアウト,レイアウト,"Bố cục, cách sắp xếp, dàn trang",配置,liên kết (từ có sẵn),"Bố trí, sắp xếp (người, đồ vật)"
+レイアウト,レイアウト,"Bố cục, cách sắp xếp, dàn trang",割り付け,synonyms_note,
+レジ（レジスター）,レジ（レジスター）,"Máy tính tiền, quầy thu ngân",レジスター,synonyms_note,
+レジュメ,レジュメ,"Bản tóm tắt nội dung (phát cho người nghe khi thuyết trình, giảng dạy)",要旨,synonyms_note,
+レジュメ,レジュメ,"Bản tóm tắt nội dung (phát cho người nghe khi thuyết trình, giảng dạy)",概要,synonyms_note,
+レスポンス,レスポンス,"Phản hồi, sự đáp lại; tốc độ phản hồi (của hệ thống)",反応,synonyms_note,
+レスポンス,レスポンス,"Phản hồi, sự đáp lại; tốc độ phản hồi (của hệ thống)",応答,synonyms_note,
+レセプション,レセプション,Tiệc chiêu đãi; quầy lễ tân,歓迎会,synonyms_note,
+レセプション,レセプション,Tiệc chiêu đãi; quầy lễ tân,受付,liên kết (từ có sẵn),lễ tân
+レベルアップ,レベルアップ,"Nâng cao trình độ, nâng cấp",向上,liên kết (từ có sẵn),"Nâng cao, phát triển, tăng cường"
+レンタカー,れんたかー,Xe cho thuê,貸し自動車,synonyms_note,
+レンタル,レンタル,"Thuê, cho thuê (ngắn hạn)",貸し出し,liên kết (từ có sẵn),"Cho thuê, cho vay, cho mượn"
+レンタル,レンタル,"Thuê, cho thuê (ngắn hạn)",賃借,synonyms_note,
+レントゲン,れんとげん,"Chụp X-quang, phim X-quang",X線写真,synonyms_note,
+ロープレ,ろーぷれ,"Đóng vai, tập đóng vai (luyện tình huống như bán hàng, tiếp khách)",ロールプレイング,synonyms_note,
+ログアウト,ログアウト,Đăng xuất,サインアウト,synonyms_note,
+ログイン,ログイン,Đăng nhập,サインイン,synonyms_note,
+ロビー,ロビー,"Sảnh (khách sạn, tòa nhà)",玄関ホール,synonyms_note,
+わきまえる,わきまえる,"Biết điều, biết chừng mực, biết rõ (vị trí, hoàn cảnh) để cư xử cho đúng. VD: 立場をわきまえる",心得る,synonyms_note,
+一人前,いちにんまえ,Có thể làm được như người trưởng thành/người có nghề (đủ năng lực); một suất ăn,一人立ち,synonyms_note,
+一人前,いちにんまえ,Có thể làm được như người trưởng thành/người có nghề (đủ năng lực); một suất ăn,一人分,synonyms_note,
+一任する,いちにんする,Giao phó toàn quyền,任せる,liên kết (từ có sẵn),"Giao phó, để cho (ai đó) đảm nhận"
+一任する,いちにんする,Giao phó toàn quyền,委ねる,liên kết (từ có sẵn),Giao phó; ủy thác
+一体となる,いったいとなる,"Hợp làm một, đồng lòng",一丸となる,synonyms_note,
+一元化,いちげんか,"Hợp nhất, thống nhất về một đầu mối (quản lý tập trung)",統合,liên kết (từ có sẵn),"Hợp nhất, sáp nhập"
+一元化,いちげんか,"Hợp nhất, thống nhất về một đầu mối (quản lý tập trung)",一本化,synonyms_note,
+一存,いちぞん,Quyết định riêng của một người. VD: 私の一存では決められません – tôi không thể tự quyết,独断,liên kết (từ có sẵn),Tự ý quyết định
+一層,いっそう,"Hơn nữa, càng… hơn",さらに,synonyms_note,
+一層,いっそう,"Hơn nữa, càng… hơn",ますます,synonyms_note,
+一律,いちりつ,"Đồng loạt như nhau, đồng đều (không phân biệt). VD: 一律1000円",均一,liên kết (từ có sẵn),"Đồng giá, đồng đều. VD: 100円均一 – đồng giá 100 yên"
+一戸建て,いっこだて,"Nhà riêng (nhà độc lập, không phải chung cư)",戸建て,synonyms_note,
+一押し,いちおし,"Đề xuất số một, (sản phẩm) được khuyên dùng nhất",イチオシ,synonyms_note,
+一押し,いちおし,"Đề xuất số một, (sản phẩm) được khuyên dùng nhất",おすすめ,synonyms_note,
+一括,いっかつ,Gộp lại làm một lần. VD: 一括払い – trả một lần,一挙,synonyms_note,
+一括,いっかつ,Gộp lại làm một lần. VD: 一括払い – trả một lần,まとめて,synonyms_note,
+一括請求,いっかつせいきゅう,Yêu cầu thanh toán một lần (gộp chung),一括払い請求,synonyms_note,
+一斉,いっせい,Cùng một lúc; đồng loạt,一斉に,synonyms_note,
+一斉,いっせい,Cùng một lúc; đồng loạt,同時,synonyms_note,
+一環,いっかん,"Một phần, một mắt xích (trong hoạt động lớn). VD: ～の一環として – như một phần của…",一部,synonyms_note,
+一致,いっち,"Nhất trí, thống nhất",合致,synonyms_note,
+一触即発,いっしょくそくはつ,Căng thẳng như dây đàn (chạm vào là nổ),緊迫,synonyms_note,
+一進一退,いっしんいったい,Sự dao động; lúc tiến lúc lùi,浮き沈み,synonyms_note,
+丁寧に,ていねいに,"một cách lịch sự, cẩn thận",丁重に,synonyms_note,
+丁寧に,ていねいに,"một cách lịch sự, cẩn thận",念入りに,synonyms_note,
+丁重,ていちょう,"Lịch sự, trịnh trọng, chu đáo. VD: 丁重に断る – từ chối một cách lịch sự",ねんごろ,synonyms_note,
+丁重,ていちょう,"Lịch sự, trịnh trọng, chu đáo. VD: 丁重に断る – từ chối một cách lịch sự",丁寧,synonyms_note,
+万一,まんいち,"Nếu chẳng may, lỡ ra",もしも,synonyms_note,
+万一,まんいち,"Nếu chẳng may, lỡ ra",万が一,synonyms_note,
+万全,ばんぜん,"Chu đáo, vẹn toàn. VD: 万全を期す – chuẩn bị chu đáo",完璧,synonyms_note,
+万全,ばんぜん,"Chu đáo, vẹn toàn. VD: 万全を期す – chuẩn bị chu đáo",十全,liên kết (từ có sẵn),"Hoàn hảo, đầy đủ không thiếu sót"
+万全状態,ばんぜんじょうたい,"Trạng thái hoàn hảo, sẵn sàng tốt nhất",万全の態勢,synonyms_note,
+上がる,あがる,"(Tự động từ) Tăng lên; (việc) xong, hoàn thành; (chi phí) gói gọn trong. VD: 安く上がる – xong với chi phí rẻ",上昇する,synonyms_note,
+上がる,あがる,"(Tự động từ) Tăng lên; (việc) xong, hoàn thành; (chi phí) gói gọn trong. VD: 安く上がる – xong với chi phí rẻ",仕上がる,liên kết (từ có sẵn),"Làm xong, hoàn thành"
+上げる,あげる,"(Tha động từ) Nâng lên; làm xong, hoàn thành; (chi phí) gói gọn trong; trình lên",引き上げる,liên kết (từ có sẵn),"Nâng lên (giá, tỷ lệ); rút về (nhân viên, vốn)"
+上げる,あげる,"(Tha động từ) Nâng lên; làm xong, hoàn thành; (chi phí) gói gọn trong; trình lên",仕上げる,liên kết (từ có sẵn),"Hoàn thành, hoàn thiện"
+上位,じょうい,"Thứ hạng cao, vị trí trên",上級,synonyms_note,
+上向く,うわむく,"(Tình hình, kinh tế) khởi sắc, đi lên",好転する,synonyms_note,
+上場,じょうじょう,Niêm yết (trên sàn chứng khoán),株式公開,synonyms_note,
+上層部,じょうそうぶ,"Tầng lớp lãnh đạo, ban lãnh đạo cấp cao",経営陣,synonyms_note,
+上層部,じょうそうぶ,"Tầng lớp lãnh đạo, ban lãnh đạo cấp cao",幹部,liên kết (từ có sẵn),"Cán bộ chủ chốt, ban lãnh đạo"
+上席,じょうせき,"Chỗ ngồi danh dự; người cấp trên, cấp bậc cao hơn",上座,synonyms_note,
+上席,じょうせき,"Chỗ ngồi danh dự; người cấp trên, cấp bậc cao hơn",上司,liên kết (từ có sẵn),"Cấp trên, sếp"
+上昇,じょうしょう,Tăng lên,上がる,liên kết (từ có sẵn),"(Tự động từ) Tăng lên; (việc) xong, hoàn thành; (chi phí) gói gọn trong. VD: 安く上がる – xong với chi phí rẻ"
+上昇,じょうしょう,Tăng lên,増加,synonyms_note,
+上期,かみき,Nửa đầu năm tài chính (6 tháng đầu),上半期,synonyms_note,
+上記,じょうき,(Như) ghi ở trên,前述,synonyms_note,
+上記,じょうき,(Như) ghi ở trên,上述,synonyms_note,
+下げ幅,さげはば,"Mức giảm, biên độ giảm",下落幅,synonyms_note,
+下げ止まる,さげどまる,"Ngừng giảm, chạm đáy",底を打つ,synonyms_note,
+下回る,したまわる,"Thấp hơn, dưới mức (con số dự kiến)",割り込む,synonyms_note,
+下期,しもき,Nửa cuối năm tài chính (6 tháng cuối),下半期,synonyms_note,
+下落,げらく,(Giá) sụt giảm,値下がり,liên kết (từ có sẵn),"Giảm giá, hạ giá"
+下落,げらく,(Giá) sụt giảm,下降,liên kết (từ có sẵn),Đi xuống
+下調べ,したしらべ,"Tìm hiểu trước, điều tra trước",予備調査,synonyms_note,
+下調べ,したしらべ,"Tìm hiểu trước, điều tra trước",事前調査,synonyms_note,
+下請け,したうけ,"Nhận thầu lại, nhà thầu phụ",外注,liên kết (từ có sẵn),"Thuê ngoài, đặt bên ngoài làm (gia công)"
+下降,かこう,Đi xuống,低下,synonyms_note,
+下駄をはかせる,げたをはかせる,"Nâng khống, cộng thêm (điểm số, số liệu cho đẹp hơn thực tế)",水増し,liên kết (từ có sẵn),"Thêm nước cho loãng; thổi phồng, khai khống (số liệu)"
+不信,ふしん,"Mất niềm tin, ngờ vực",不信感,synonyms_note,
+不備,ふび,"Thiếu sót, không đầy đủ (hồ sơ, giấy tờ). VD: 書類に不備がある",欠陥,liên kết (từ có sẵn),"Khuyết tật, lỗi (sản phẩm, hệ thống)"
+不備,ふび,"Thiếu sót, không đầy đủ (hồ sơ, giấy tờ). VD: 書類に不備がある",漏れ,synonyms_note,
+不具合,ふぐあい,"Trục trặc, lỗi (máy móc, hệ thống, sản phẩm)",故障,liên kết (từ có sẵn),"Hỏng hóc, trục trặc"
+不具合,ふぐあい,"Trục trặc, lỗi (máy móc, hệ thống, sản phẩm)",不調,liên kết (từ có sẵn),"Tình trạng không tốt, trục trặc (sức khỏe, máy móc, đàm phán)"
+不利,ふり,Bất lợi,不都合,synonyms_note,
+不可抗力,ふかこうりょく,Bất khả kháng,天災,synonyms_note,
+不可欠,ふかけつ,Không thể thiếu,必須,liên kết (từ có sẵn),Bắt buộc
+不可欠,ふかけつ,Không thể thiếu,欠かせない,synonyms_note,
+不可避,ふかひ,Không thể tránh khỏi,避けられない,synonyms_note,
+不可避,ふかひ,Không thể tránh khỏi,必至,synonyms_note,
+不在,ふざい,"Vắng mặt, không có ở đó",留守,synonyms_note,
+不慣れ,ふなれ,Chưa quen,未熟,synonyms_note,
+不手際,ふてぎわ,"Sơ suất, xử lý vụng về. VD: 不手際がありました – chúng tôi đã có sơ suất",手落ち,synonyms_note,
+不手際,ふてぎわ,"Sơ suất, xử lý vụng về. VD: 不手際がありました – chúng tôi đã có sơ suất",ミス,synonyms_note,
+不明,ふめい,"Không rõ, mơ hồ, chưa biết, không xác định",未詳,synonyms_note,
+不景気,ふけいき,"Kinh tế ảm đạm, làm ăn khó khăn",不況,liên kết (từ có sẵn),Suy thoái kinh tế
+不況になる,ふきょうになる,Rơi vào suy thoái kinh tế,景気が悪化する,synonyms_note,
+不注意,ふちゅうい,"Bất cẩn, sơ suất",うっかり,synonyms_note,
+不祥事,ふしょうじ,"Scandal, bê bối",スキャンダル,synonyms_note,
+不祥事,ふしょうじ,"Scandal, bê bối",醜聞,synonyms_note,
+不良品,ふりょうひん,"Sản phẩm lỗi, hàng kém chất lượng",欠陥品,synonyms_note,
+不良品,ふりょうひん,"Sản phẩm lỗi, hàng kém chất lượng",不具合品,synonyms_note,
+不評,ふひょう,"Bị đánh giá không tốt, không được ưa chuộng",悪評,synonyms_note,
+不足,ふそく,"Thiếu, không đủ",欠如,liên kết (từ có sẵn),"Sự thiếu (năng lực, ý thức). VD: 責任感の欠如 – thiếu tinh thần trách nhiệm"
+不足,ふそく,"Thiếu, không đủ",足りない,synonyms_note,
+不透明,ふとうめい,"Không rõ ràng, mờ mịt (tương lai, tình hình); không trong suốt",不確実,synonyms_note,
+世代,せだい,Thế hệ,ジェネレーション,synonyms_note,
+世帯,せたい,Hộ gia đình,家庭,synonyms_note,
+世帯,せたい,Hộ gia đình,所帯,synonyms_note,
+両面,りょうめん,Hai mặt. VD: 両面印刷 – in hai mặt,表裏,synonyms_note,
+並びに,ならびに,"Và, cùng với (văn viết trang trọng)",及び,synonyms_note,
+中堅,ちゅうけん,"Nòng cốt, tầm trung (nhân viên có kinh nghiệm, doanh nghiệp cỡ vừa). VD: 中堅社員",中核,synonyms_note,
+中年,ちゅうねん,Trung niên,壮年,synonyms_note,
+中座,ちゅうざ,"Rời chỗ giữa chừng (cuộc họp, bữa tiệc)",退席,synonyms_note,
+中断,ちゅうだん,"Gián đoạn, tạm dừng giữa chừng",停止,liên kết (từ có sẵn),"Ngừng, đình chỉ"
+中断,ちゅうだん,"Gián đoạn, tạm dừng giữa chừng",中止,synonyms_note,
+中途,ちゅうと,Giữa chừng. VD: 中途採用 – tuyển dụng người đã có kinh nghiệm,途中,synonyms_note,
+中途採用,ちゅうとさいよう,Tuyển dụng những người đã có kinh nghiệm,キャリア採用,synonyms_note,
+中間,ちゅうかん,"Ở giữa, giữa kỳ. VD: 中間報告 – báo cáo giữa kỳ",中ほど,synonyms_note,
+中間,ちゅうかん,"Ở giữa, giữa kỳ. VD: 中間報告 – báo cáo giữa kỳ",中間点,synonyms_note,
+中間決算,ちゅうかんけっさん,Quyết toán giữa kỳ (6 tháng),中間期決算,synonyms_note,
+丸める,まるめる,Vo tròn; làm tròn (số); cạo trọc đầu,四捨五入する,synonyms_note,
+丸投げ,まるなげ,Giao khoán toàn bộ (cho người khác mà không quan tâm),一任,synonyms_note,
+丸投げ,まるなげ,Giao khoán toàn bộ (cho người khác mà không quan tâm),委託,liên kết (từ có sẵn),Ủy thác (giao việc cho bên ngoài làm)
+主任,しゅにん,"Chủ nhiệm, trưởng nhóm (người phụ trách chính một công việc)",係長,liên kết (từ có sẵn),"Trưởng nhóm, tổ trưởng (chức vụ dưới 課長)"
+主導,しゅどう,"Chủ đạo, dẫn dắt",リード,synonyms_note,
+主導的,しゅどうてき,"Mang tính dẫn dắt, chủ đạo",中心的,synonyms_note,
+主要,しゅよう,"Chính, chủ yếu, quan trọng",重要,liên kết (từ có sẵn),Quan trọng
+乗り出す,のりだす,Bắt tay vào (lĩnh vực mới); nhoài người ra,進出する,synonyms_note,
+乗り出す,のりだす,Bắt tay vào (lĩnh vực mới); nhoài người ra,着手する,synonyms_note,
+乗り切る,のりきる,"Vượt qua (trở ngại, khó khăn)",切り抜ける,synonyms_note,
+乗り切る,のりきる,"Vượt qua (trở ngại, khó khăn)",克服する,synonyms_note,
+乱丁,らんちょう,"Lộn trang, sai thứ tự trang (sách in lỗi)",落丁,liên kết (từ có sẵn),Thiếu trang (sách in lỗi)
+乱暴,らんぼう,"Thô bạo, thô lỗ; cẩu thả, ẩu (cách làm)",荒っぽい,synonyms_note,
+乱暴,らんぼう,"Thô bạo, thô lỗ; cẩu thả, ẩu (cách làm)",雑,liên kết (từ có sẵn),"Cẩu thả, qua loa"
+了解,りょうかい,"Hiểu, đồng ý (đã nắm). Lưu ý: nói với cấp trên nên dùng 承知しました",承知,synonyms_note,
+了解,りょうかい,"Hiểu, đồng ý (đã nắm). Lưu ý: nói với cấp trên nên dùng 承知しました",承諾,liên kết (từ có sẵn),"Chấp thuận, đồng ý"
+予備,よび,"Dự bị, dự phòng",控え,liên kết (từ có sẵn),"Bản lưu, bản sao giữ lại; dự bị (người)"
+予備,よび,"Dự bị, dự phòng",スペア,synonyms_note,
+事前,じぜん,Trước (khi làm việc gì). VD: 事前に連絡する – liên lạc trước,あらかじめ,synonyms_note,
+事務,じむ,Công việc văn phòng,庶務,synonyms_note,
+事務局,じむきょく,"Ban thư ký, văn phòng (của tổ chức, sự kiện)",事務所,synonyms_note,
+事務局,じむきょく,"Ban thư ký, văn phòng (của tổ chức, sự kiện)",本部,synonyms_note,
+事情,じじょう,"Tình hình, hoàn cảnh, lý do",事態,liên kết (từ có sẵn),"Tình hình, tình huống (thường là xấu). VD: 緊急事態 – tình trạng khẩn cấp"
+事情,じじょう,"Tình hình, hoàn cảnh, lý do",実情,liên kết (từ có sẵn),Tình hình thực tế
+事態,じたい,"Tình hình, tình huống (thường là xấu). VD: 緊急事態 – tình trạng khẩn cấp",状況,synonyms_note,
+事態,じたい,"Tình hình, tình huống (thường là xấu). VD: 緊急事態 – tình trạng khẩn cấp",局面,synonyms_note,
+事柄,ことがら,"Sự việc, sự vụ",物事,synonyms_note,
+事柄,ことがら,"Sự việc, sự vụ",事項,liên kết (từ có sẵn),"Mục, điều khoản, nội dung. VD: 注意事項 – những điều cần lưu ý"
+事業,じぎょう,"Hoạt động kinh doanh, ngành kinh doanh, dự án",ビジネス,synonyms_note,
+交互,こうご,"Luân phiên, xen kẽ nhau",互い違い,synonyms_note,
+交互,こうご,"Luân phiên, xen kẽ nhau",代わる代わる,synonyms_note,
+交付,こうふ,"Cấp, phát (giấy tờ, tiền trợ cấp)",発行,liên kết (từ có sẵn),"Phát hành (sách, hóa đơn); cấp (giấy tờ)"
+交付,こうふ,"Cấp, phát (giấy tờ, tiền trợ cấp)",支給,liên kết (từ có sẵn),"Cấp, chi trả (lương, trợ cấp, đồ dùng)"
+交代・交替,こうたい,"Thay phiên, thay ca, đổi người",入れ替わり,synonyms_note,
+交流,こうりゅう,Giao lưu,交際,synonyms_note,
+交流,こうりゅう,Giao lưu,ふれあい,synonyms_note,
+人事考課,じんじこうか,"Đánh giá nhân sự (đánh giá năng lực, kết quả làm việc của nhân viên)",人事評価,synonyms_note,
+人事課,じんじか,phòng nhân sự,人事部,synonyms_note,
+人員,じんいん,"Số người, nhân lực",人数,synonyms_note,
+人手,ひとで,"Nhân lực, nhân công, người làm",働き手,synonyms_note,
+人手,ひとで,"Nhân lực, nhân công, người làm",労働力,synonyms_note,
+人望,じんぼう,"Uy tín, được mọi người tin tưởng và yêu mến",信望,synonyms_note,
+人望,じんぼう,"Uy tín, được mọi người tin tưởng và yêu mến",人徳,synonyms_note,
+人材,じんざい,"Nhân lực, nguồn nhân lực",人的資源,synonyms_note,
+人柄,ひとがら,tính cách con người,人格,synonyms_note,
+人柄,ひとがら,tính cách con người,性格,synonyms_note,
+今ひとつ・いまいち,いまひとつ・いまいち,"Chưa được tốt lắm, còn thiếu một chút",いまいち,liên kết (từ có sẵn),"Chưa tốt lắm, còn thiếu một chút, chưa ưng ý"
+今後,こんご,Từ nay về sau,これから,synonyms_note,
+今後,こんご,Từ nay về sau,将来,synonyms_note,
+介する,かいする,"Thông qua (người, tổ chức trung gian). VD: 人を介して – qua người khác",通す,synonyms_note,
+介する,かいする,"Thông qua (người, tổ chức trung gian). VD: 人を介して – qua người khác",仲立ちにする,synonyms_note,
+介護,かいご,"Chăm sóc (cho người cao tuổi, người bệnh...)",ケア,liên kết (từ có sẵn),"Chăm sóc, quan tâm"
+仕上がり,しあがり,"Độ hoàn thiện, kết quả sau khi làm xong",出来栄え,synonyms_note,
+仕上がり,しあがり,"Độ hoàn thiện, kết quả sau khi làm xong",出来上がり,liên kết (từ có sẵn),"Sự hoàn thành, thành phẩm sau khi làm xong"
+仕上がる,しあがる,"Làm xong, hoàn thành",出来上がる,synonyms_note,
+仕上げ,しあげ,Khâu hoàn thiện cuối cùng,最終仕上げ,synonyms_note,
+仕上げる,しあげる,"Hoàn thành, hoàn thiện",完成させる,synonyms_note,
+仕入れ,しいれ,"Nhập hàng, mua hàng vào (để bán lại hoặc sản xuất)",調達,liên kết (từ có sẵn),"Huy động, thu mua (vốn, nguyên vật liệu)"
+仕入れ,しいれ,"Nhập hàng, mua hàng vào (để bán lại hoặc sản xuất)",買い入れ,synonyms_note,
+仕入れる,しいれる,Nhập hàng,買い入れる,synonyms_note,
+仕分け,しわけ,"Sự phân loại, chia hàng (theo nơi giao, loại hàng)",区分け,synonyms_note,
+仕分ける,しわける,"Phân loại, chia ra (theo nhóm, tiêu chí)",分類する,synonyms_note,
+仕切る,しきる,"Ngăn ra; quản lý, chỉ huy, điều hành (sự kiện, công việc). VD: 会議を仕切る",取り仕切る,synonyms_note,
+仕掛け,しかけ,"Cơ chế, thiết bị (bên trong); mánh khóe, chiêu trò",装置,synonyms_note,
+仕掛け,しかけ,"Cơ chế, thiết bị (bên trong); mánh khóe, chiêu trò",からくり,synonyms_note,
+仕様,しよう,"Thông số kỹ thuật, quy cách (sản phẩm)",規格,liên kết (từ có sẵn),"Quy cách, tiêu chuẩn"
+仕様,しよう,"Thông số kỹ thuật, quy cách (sản phẩm)",スペック,synonyms_note,
+付き合い,つきあい,"Sự giao du, quan hệ qua lại (xã giao trong công việc)",交際,synonyms_note,
+付属,ふぞく,"Phụ kèm, trực thuộc. VD: 付属品 – phụ kiện đi kèm",付帯,synonyms_note,
+付箋,ふせん,"Giấy nhớ, giấy dán ghi chú (post-it)",ポストイット,synonyms_note,
+付録,ふろく,Phụ lục; quà tặng kèm (tạp chí),付属資料,synonyms_note,
+付録,ふろく,Phụ lục; quà tặng kèm (tạp chí),おまけ,liên kết (từ có sẵn),"Đồ tặng kèm; bớt thêm, giảm thêm"
+付随,ふずい,"Đi kèm, kèm theo. VD: 付随する費用 – chi phí kèm theo",付帯,synonyms_note,
+代引き,だいびき,Thanh toán khi nhận hàng (COD),代金引換,synonyms_note,
+代替,だいたい,Thay thế. VD: 代替案 – phương án thay thế,置き換え,synonyms_note,
+代替品,だいたいひん,Hàng thay thế,代用品,synonyms_note,
+代理,だいり,"Đại diện, thay mặt (làm việc cho ai đó)",代わり,synonyms_note,
+代理,だいり,"Đại diện, thay mặt (làm việc cho ai đó)",代理人,synonyms_note,
+代行,だいこう,"Làm thay, đại diện làm. VD: 運転代行 – dịch vụ lái xe hộ",代理,liên kết (từ có sẵn),"Đại diện, thay mặt (làm việc cho ai đó)"
+代金,だいきん,"Tiền hàng, số tiền phải trả",料金,synonyms_note,
+代金,だいきん,"Tiền hàng, số tiền phải trả",支払額,synonyms_note,
+仮,かり,Tạm thời; giả sử,一時的,synonyms_note,
+仮定,かてい,Giả định,想定,synonyms_note,
+仮払い,かりばらい,"Tạm ứng (tiền trước, quyết toán sau)",前払い,synonyms_note,
+仮払い,かりばらい,"Tạm ứng (tiền trước, quyết toán sau)",立替,synonyms_note,
+仮設,かせつ,(Dựng) tạm thời. VD: 仮設トイレ – nhà vệ sinh tạm,臨時,liên kết (từ có sẵn),"Tạm thời, đột xuất. VD: 臨時休業 – nghỉ đột xuất"
+仮題,かだい,"Tên, tựa đề tạm thời",仮タイトル,synonyms_note,
+仲介,ちゅうかい,"Môi giới, làm trung gian",斡旋,synonyms_note,
+仲介,ちゅうかい,"Môi giới, làm trung gian",橋渡し,synonyms_note,
+件,けん,"Vụ việc, vấn đề",案件,liên kết (từ có sẵn),"Vụ việc, dự án cần xử lý (hợp đồng, công việc đang theo)"
+件,けん,"Vụ việc, vấn đề",事項,liên kết (từ có sẵn),"Mục, điều khoản, nội dung. VD: 注意事項 – những điều cần lưu ý"
+任務,にんむ,"Nhiệm vụ, công việc được giao, trọng trách",使命,synonyms_note,
+任務,にんむ,"Nhiệm vụ, công việc được giao, trọng trách",職務,synonyms_note,
+企業,きぎょう,"Doanh nghiệp, công ty",会社,liên kết (từ có sẵn),Công ty
+企画,きかく,"Lên kế hoạch, kế hoạch (dự án, sản phẩm)",立案,liên kết (từ có sẵn),"Lập kế hoạch, lên phương án"
+企画,きかく,"Lên kế hoạch, kế hoạch (dự án, sản phẩm)",プラン,synonyms_note,
+企画書,きかくしょ,"Bản kế hoạch, bản đề xuất (dự án)",提案書,synonyms_note,
+伏せる,ふせる,"Úp xuống; giữ kín, không công bố (thông tin)",隠す,synonyms_note,
+伏せる,ふせる,"Úp xuống; giữ kín, không công bố (thông tin)",伏す,synonyms_note,
+休みをとる,やすみをとる,"xin nghỉ, lấy ngày nghỉ",休暇を取る,synonyms_note,
+休憩,きゅうけい,Nghỉ giải lao,休息,synonyms_note,
+休憩,きゅうけい,Nghỉ giải lao,小休止,synonyms_note,
+休暇,きゅうか,Nghỉ phép,休み,synonyms_note,
+休職,きゅうしょく,"Tạm nghỉ việc (vẫn giữ chỗ làm, vì bệnh, sinh con…)",休業,liên kết (từ có sẵn),"Tạm nghỉ kinh doanh (cửa hàng, nhà máy); nghỉ làm"
+休診,きゅうしん,Nghỉ khám bệnh (phòng khám không làm việc),休院,synonyms_note,
+会員,かいいん,Hội viên,メンバー,liên kết (từ có sẵn),Thành viên
+会社概要,かいしゃがいよう,Thông tin tổng quan về công ty,会社案内,synonyms_note,
+会費,かいひ,"Hội phí, phí thành viên",年会費,synonyms_note,
+会館,かいかん,"Hội quán, tòa nhà hội nghị",ホール,synonyms_note,
+伸ばす,のばす,"Kéo dài, duỗi; phát triển, tăng (doanh số, năng lực)",増やす,synonyms_note,
+伸ばす,のばす,"Kéo dài, duỗi; phát triển, tăng (doanh số, năng lực)",拡大する,synonyms_note,
+伸び,のび,"Sự tăng trưởng, sự phát triển, sự mở rộng",成長,liên kết (từ có sẵn),"Tăng trưởng, phát triển"
+伸びる,のびる,"Tăng trưởng, phát triển",成長する,synonyms_note,
+伸び悩む,のびなやむ,"Tăng trưởng chậm, giậm chân tại chỗ",頭打ちになる,synonyms_note,
+伸び悩む,のびなやむ,"Tăng trưởng chậm, giậm chân tại chỗ",停滞する,synonyms_note,
+伸び率,のびりつ,Tỉ lệ tăng trưởng,成長率,synonyms_note,
+伸び率,のびりつ,Tỉ lệ tăng trưởng,増加率,synonyms_note,
+伺う,うかがう,"đến thăm, ghé (khiêm nhường ngữ)",訪問する,liên kết (từ có sẵn),"đến thăm, ghé thăm"
+伺う,うかがう,"đến thăm, ghé (khiêm nhường ngữ)",参上する,liên kết (từ có sẵn),"(Khiêm nhường ngữ) Đến, tới thăm"
+位置付け,いちづけ,"Định vị, xác định vị trí/vai trò (của sản phẩm, sự việc)",役割,liên kết (từ có sẵn),"Vai trò, trách nhiệm"
+体制,たいせい,"Thể chế, cơ cấu tổ chức. VD: 管理体制 – hệ thống quản lý",組織,synonyms_note,
+体制,たいせい,"Thể chế, cơ cấu tổ chức. VD: 管理体制 – hệ thống quản lý",態勢,liên kết (từ có sẵn),"Tư thế sẵn sàng, sự chuẩn bị (lực lượng). VD: 受け入れ態勢 – sự sẵn sàng tiếp nhận"
+体裁,ていさい,"Hình thức, bề ngoài; thể diện. VD: 体裁を整える – chỉnh sửa hình thức cho đẹp",見た目,synonyms_note,
+体裁,ていさい,"Hình thức, bề ngoài; thể diện. VD: 体裁を整える – chỉnh sửa hình thức cho đẹp",体面,synonyms_note,
+体調,たいちょう,"Tình trạng cơ thể, tình trạng sức khỏe",健康状態,synonyms_note,
+体調,たいちょう,"Tình trạng cơ thể, tình trạng sức khỏe",具合,synonyms_note,
+何卒,なにとぞ,"Xin vui lòng, kính mong (trang trọng hơn どうか). VD: 何卒よろしくお願い申し上げます",どうか,synonyms_note,
+余儀なくされる,よぎなくされる,"Buộc phải, không còn cách nào khác",やむを得ない,liên kết (từ có sẵn),"Không thể tránh được, bất đắc dĩ"
+余地,よち,"Chỗ, dư địa (để xem xét, cải thiện). VD: 検討の余地がある – còn chỗ để xem xét",余裕,liên kết (từ có sẵn),"Dư dả, thoải mái (thời gian, tiền bạc, tinh thần)"
+余暇活動,よかかつどう,Hoạt động giải trí (lúc rảnh rỗi),レジャー,synonyms_note,
+余裕,よゆう,"Dư dả, thoải mái (thời gian, tiền bạc, tinh thần)",ゆとり,synonyms_note,
+作りなおす,つくりなおす,làm lại,やり直す,synonyms_note,
+作動,さどう,"(Máy móc, thiết bị) hoạt động, chạy",稼働,liên kết (từ có sẵn),"Vận hành, hoạt động (máy móc, nhà máy). VD: 稼働率 – tỷ lệ vận hành"
+作成,さくせい,"Soạn thảo, lập (tài liệu, kế hoạch)",作る,synonyms_note,
+作成,さくせい,"Soạn thảo, lập (tài liệu, kế hoạch)",策定,synonyms_note,
+作業,さぎょう,"Công việc, thao tác",仕事,synonyms_note,
+作業,さぎょう,"Công việc, thao tác",業務,liên kết (từ có sẵn),"Nghiệp vụ, công việc"
+作業服,さぎょうふく,"Quần áo bảo hộ, đồng phục lao động",作業着,synonyms_note,
+作業服,さぎょうふく,"Quần áo bảo hộ, đồng phục lao động",ユニフォーム,synonyms_note,
+併用,へいよう,"Dùng kết hợp, sử dụng cùng lúc",兼用,liên kết (từ có sẵn),"Dùng cho nhiều mục đích, dùng chung. VD: 男女兼用 – dùng cho cả nam và nữ"
+併記,へいき,"Ghi song song, ghi kèm (cả hai)",並記,synonyms_note,
+例の,れいの,"(Chuyện, cái) mà cả hai đều biết, chuyện đó",あの,synonyms_note,
+例の,れいの,"(Chuyện, cái) mà cả hai đều biết, chuyện đó",例の件,synonyms_note,
+例年,れいねん,"Mọi năm, hằng năm",毎年,synonyms_note,
+例年,れいねん,"Mọi năm, hằng năm",例年並み,synonyms_note,
+供与,きょうよ,"Cung cấp, cấp (vốn, kỹ thuật)",提供,liên kết (từ có sẵn),Cung cấp; tài trợ (chương trình)
+供給,きょうきゅう,"Cung cấp, cung ứng (trái nghĩa: 需要 – nhu cầu)",供与,liên kết (từ có sẵn),"Cung cấp, cấp (vốn, kỹ thuật)"
+依然,いぜん,"Vẫn như trước, vẫn không thay đổi",相変わらず,synonyms_note,
+侵害,しんがい,Xâm phạm (quyền lợi). VD: 著作権侵害 – xâm phạm bản quyền,違反,synonyms_note,
+侵害,しんがい,Xâm phạm (quyền lợi). VD: 著作権侵害 – xâm phạm bản quyền,侵犯,synonyms_note,
+便乗,びんじょう,"Đi nhờ xe; lợi dụng thời cơ, ăn theo. VD: 便乗値上げ – tăng giá ăn theo",乗じる,synonyms_note,
+便乗,びんじょう,"Đi nhờ xe; lợi dụng thời cơ, ăn theo. VD: 便乗値上げ – tăng giá ăn theo",つけ込む,synonyms_note,
+便宜,べんぎ,Sự tiện lợi. VD: 便宜を図る – tạo điều kiện thuận lợi,便利,synonyms_note,
+便宜,べんぎ,Sự tiện lợi. VD: 便宜を図る – tạo điều kiện thuận lợi,配慮,synonyms_note,
+係（係り）,かかり,"Người phụ trách, nhân viên phụ trách (một việc)",担当者,synonyms_note,
+保存,ほぞん,"Lưu (dữ liệu), bảo quản (thực phẩm...), bảo tồn",保管,synonyms_note,
+保存,ほぞん,"Lưu (dữ liệu), bảo quản (thực phẩm...), bảo tồn",貯蔵,synonyms_note,
+保存年限,ほぞんねんげん,Thời hạn lưu trữ,保管期限,synonyms_note,
+保有,ほゆう,Sở hữu,所有,synonyms_note,
+保証,ほしょう,"Bảo đảm, bảo hành. VD: 保証書 – phiếu bảo hành",保証書,synonyms_note,
+保障,ほしょう,"Bảo đảm (an ninh, quyền lợi). VD: 社会保障 – an sinh xã hội",補償,liên kết (từ có sẵn),"Bồi thường, đền bù"
+信念を曲げない,しんねんをまげない,"Không thay đổi niềm tin, kiên định lập trường",信念を貫く,synonyms_note,
+信用,しんよう,"Tin tưởng, uy tín; tín dụng",信頼,liên kết (từ có sẵn),Tin cậy
+信託,しんたく,Ủy thác (tài sản). VD: 信託銀行 – ngân hàng ủy thác,委託,liên kết (từ có sẵn),Ủy thác (giao việc cho bên ngoài làm)
+修正,しゅうせい,Chỉnh sửa,訂正,liên kết (từ có sẵn),"Đính chính, sửa lại cho đúng"
+修正,しゅうせい,Chỉnh sửa,修整,synonyms_note,
+個人事業主,こじんじぎょうしゅ,"Chủ kinh doanh cá thể, người làm tự do (freelance)",自営業者,synonyms_note,
+個人事業主,こじんじぎょうしゅ,"Chủ kinh doanh cá thể, người làm tự do (freelance)",フリーランス,synonyms_note,
+個別,こべつ,"Riêng biệt, riêng lẻ",個々,synonyms_note,
+個別,こべつ,"Riêng biệt, riêng lẻ",一つ一つ,synonyms_note,
+個所,かしょ,"Chỗ, điểm, phần (trong văn bản…). VD: 修正箇所 – chỗ cần sửa",箇所,synonyms_note,
+借り入れ,かりいれ,"Khoản vay, việc vay vốn",融資,liên kết (từ có sẵn),"Cho vay vốn, cấp vốn (ngân hàng cho doanh nghiệp vay)"
+借り入れ,かりいれ,"Khoản vay, việc vay vốn",借金,synonyms_note,
+借り入れる,かりいれる,"Vay (tiền, vốn)",借りる,synonyms_note,
+借り切る,かりきる,"Thuê trọn (toàn bộ xe, phòng, nhà hàng)",貸し切る,synonyms_note,
+値ごろ感,ねごろかん,"Cảm giác giá hợp lý, vừa túi tiền",割安感,synonyms_note,
+値札,ねふだ,"Thẻ giá, nhãn ghi giá",プライスカード,synonyms_note,
+偏った考え,かたよったかんがえ,"Suy nghĩ phiến diện, thiên lệch",偏見,synonyms_note,
+停止,ていし,"Ngừng, đình chỉ",中止,synonyms_note,
+停止,ていし,"Ngừng, đình chỉ",休止,synonyms_note,
+健全,けんぜん,"Lành mạnh, vững mạnh (tài chính, hoạt động)",堅実,synonyms_note,
+健全,けんぜん,"Lành mạnh, vững mạnh (tài chính, hoạt động)",健康的,synonyms_note,
+偽物,にせもの,"Đồ giả, hàng nhái",偽造品,synonyms_note,
+偽物,にせもの,"Đồ giả, hàng nhái",模造品,synonyms_note,
+偽造,ぎぞう,Làm giả,捏造,liên kết (từ có sẵn),"Bịa đặt, ngụy tạo (dữ liệu, sự thật)"
+偽造,ぎぞう,Làm giả,変造,synonyms_note,
+傘下,さんか,"Dưới quyền, trực thuộc (công ty con trong tập đoàn)",系列,liên kết (từ có sẵn),"Hệ thống, chuỗi (công ty cùng tập đoàn). VD: 系列会社 – công ty cùng hệ thống"
+傘下,さんか,"Dưới quyền, trực thuộc (công ty con trong tập đoàn)",グループ内,synonyms_note,
+備品,びひん,"Đồ dùng, trang thiết bị chung (của văn phòng, công ty)",設備,liên kết (từ có sẵn),"Thiết bị, trang thiết bị"
+備品,びひん,"Đồ dùng, trang thiết bị chung (của văn phòng, công ty)",用品,synonyms_note,
+備考欄,びこうらん,Cột ghi chú,コメント欄,synonyms_note,
+催し,もよおし,"Sự kiện, buổi tổ chức",イベント,liên kết (từ có sẵn),Sự kiện
+催す,もよおす,"Tổ chức (sự kiện, buổi tiệc)",開催する,synonyms_note,
+催事,さいじ,"Sự kiện bán hàng (hội chợ, đợt bán đặc biệt tại cửa hàng)",イベント,liên kết (từ có sẵn),Sự kiện
+催促,さいそく,"Hối thúc, thúc giục",督促,liên kết (từ có sẵn),"Đôn đốc, thúc giục (trả tiền, nộp hồ sơ). VD: 督促状 – giấy đòi nợ"
+債務,さいむ,"Nghĩa vụ trả nợ, khoản nợ phải trả",負債,liên kết (từ có sẵn),"Nợ, khoản nợ"
+債権,さいけん,"Quyền đòi nợ, khoản phải thu (trái nghĩa: 債務)",売掛金,liên kết (từ có sẵn),Khoản phải thu (tiền bán chịu chưa thu)
+傷む,いたむ,"Hư hỏng (đồ vật, thức ăn)",傷つく,synonyms_note,
+傷む,いたむ,"Hư hỏng (đồ vật, thức ăn)",劣化する,synonyms_note,
+傾向,けいこう,Khuynh hướng,動向,liên kết (từ có sẵn),"Xu hướng, động thái. VD: 市場の動向 – xu hướng thị trường"
+傾向,けいこう,Khuynh hướng,トレンド,liên kết (từ có sẵn),"Xu hướng, trào lưu"
+僭越,せんえつ,"(Khiêm nhường) Mạo muội, xin phép. VD: 僭越ながら – xin mạo muội…",差し出がましい,synonyms_note,
+償却,しょうきゃく,Khấu hao (tài sản); hoàn trả (nợ),返済,liên kết (từ có sẵn),"Trả nợ, hoàn trả (tiền đã vay/mượn)"
+優先,ゆうせん,Ưu tiên,先行,liên kết (từ có sẵn),"Đi trước, làm trước. VD: 先行販売 – bán trước"
+優先,ゆうせん,Ưu tiên,優遇,liên kết (từ có sẵn),"Ưu đãi, ưu tiên, đãi ngộ tốt"
+優柔不断,ゆうじゅうふだん,"Do dự, thiếu quyết đoán, không dứt khoát",躊躇,liên kết (từ có sẵn),"Do dự, lưỡng lự, chần chừ"
+儲かる,もうかる,"Có lời, sinh lời",利益が出る,synonyms_note,
+儲かる,もうかる,"Có lời, sinh lời",得になる,synonyms_note,
+儲ける,もうける,"Kiếm lời, kiếm tiền",稼ぐ,synonyms_note,
+元～,もと～,"Cựu, nguyên (vd 元社長 – cựu giám đốc)",前～,liên kết (từ có sẵn),"Trước, cựu (vd 前社長 – cựu giám đốc, 前年度 – năm trước)"
+元払い,もとばらい,Người gửi trả cước phí vận chuyển (trái nghĩa: 着払い),発払い,synonyms_note,
+元金,がんきん,Tiền gốc (trong khoản vay),元本,synonyms_note,
+充てる,あてる,"Dành, phân bổ (tiền, thời gian, người) cho việc gì",割り当てる,synonyms_note,
+充てる,あてる,"Dành, phân bổ (tiền, thời gian, người) cho việc gì",振り向ける,synonyms_note,
+充実,じゅうじつ,"Đầy đủ, phong phú",豊富,liên kết (từ có sẵn),"Phong phú, dồi dào, giàu có"
+充電,じゅうでん,Sạc điện,チャージ,synonyms_note,
+先を読む,さきをよむ,"Dự đoán trước, nghĩ xa",見通す,synonyms_note,
+先を読む,さきをよむ,"Dự đoán trước, nghĩ xa",予測する,synonyms_note,
+先取りする,さきどりする,"Đón đầu, làm trước (xu hướng)",先回りする,synonyms_note,
+先手を打つ,せんてをうつ,"Ra tay trước, đi trước một bước",機先を制する,synonyms_note,
+先方,せんぽう,"Phía đối phương, bên kia (đối tác)",相手方,synonyms_note,
+先方,せんぽう,"Phía đối phương, bên kia (đối tác)",先様,synonyms_note,
+先発,せんぱつ,"Đi trước, xuất phát trước (trái nghĩa: 後発)",先行,liên kết (từ có sẵn),"Đi trước, làm trước. VD: 先行販売 – bán trước"
+先着,せんちゃく,Theo thứ tự đến trước. VD: 先着100名 – 100 người đến trước,早い者勝ち,synonyms_note,
+先祖代々,せんぞだいだい,"Đời đời, từ đời tổ tiên đến nay",代々,synonyms_note,
+先端,せんたん,"Mũi nhọn, tiên tiến. VD: 最先端 – tiên tiến nhất",最先端,synonyms_note,
+先細り,さきぼそり,"Ngày càng đi xuống, thu hẹp dần (về sau)",じり貧,synonyms_note,
+先細り,さきぼそり,"Ngày càng đi xuống, thu hẹp dần (về sau)",尻すぼみ,synonyms_note,
+先送りする,さきおくりする,"Hoãn lại, dời sang sau",先延ばしする,synonyms_note,
+入力,にゅうりょく,"Nhập dữ liệu, nhập thông tin",インプット,synonyms_note,
+入札,にゅうさつ,"Đấu thầu, dự thầu",応札,synonyms_note,
+入社,にゅうしゃ,"Vào công ty, bắt đầu làm việc",就職,synonyms_note,
+入荷,にゅうか,"Hàng về, nhập hàng",仕入れ,liên kết (từ có sẵn),"Nhập hàng, mua hàng vào (để bán lại hoặc sản xuất)"
+入金,にゅうきん,"Nộp tiền, tiền vào tài khoản",振り込み,liên kết (từ có sẵn),"Chuyển khoản, chuyển tiền"
+入金,にゅうきん,"Nộp tiền, tiền vào tài khoản",払い込み,liên kết (từ có sẵn),"Sự nộp tiền, thanh toán (vào tài khoản, ngân hàng)"
+全～,ぜん,"Toàn bộ, tất cả (vd 全社員 – toàn bộ nhân viên)",全部,synonyms_note,
+全～,ぜん,"Toàn bộ, tất cả (vd 全社員 – toàn bộ nhân viên)",全体,synonyms_note,
+全とっかえ（する）,ぜんとっかえ（する）,Thay mới toàn bộ,総入れ替え,synonyms_note,
+全力を挙げる,ぜんりょくをあげる,Dốc toàn lực,全力を尽くす,synonyms_note,
+全国,ぜんこく,"Toàn quốc, khắp cả nước",国中,synonyms_note,
+全面,ぜんめん,Toàn bộ (bề mặt); toàn diện. VD: 全面広告 – quảng cáo cả trang,全体,synonyms_note,
+全額,ぜんがく,Toàn bộ số tiền,総額,liên kết (từ có sẵn),Tổng số tiền
+八方ふさがり,はっぽうふさがり,"Bế tắc mọi đường, không còn lối thoát",手詰まり,synonyms_note,
+八方ふさがり,はっぽうふさがり,"Bế tắc mọi đường, không còn lối thoát",お手上げ,synonyms_note,
+公募,こうぼ,"Tuyển chọn công khai, kêu gọi rộng rãi (ứng viên, ý tưởng)",一般募集,synonyms_note,
+公式,こうしき,Chính thức. VD: 公式サイト – trang web chính thức,正式,liên kết (từ có sẵn),Chính thức
+公演,こうえん,"Buổi công diễn, biểu diễn (kịch, nhạc)",上演,synonyms_note,
+公的,こうてき,"Công, thuộc nhà nước/công cộng (trái nghĩa: 私的)",公共,liên kết (từ có sẵn),Công cộng
+公算,こうさん,"Khả năng, xác suất (xảy ra). VD: 実現の公算が大きい – nhiều khả năng thực hiện được",見込み,liên kết (từ có sẵn),"Triển vọng, dự kiến, khả năng. VD: 見込み客 – khách hàng tiềm năng"
+公算,こうさん,"Khả năng, xác suất (xảy ra). VD: 実現の公算が大きい – nhiều khả năng thực hiện được",可能性,synonyms_note,
+共同,きょうどう,"Cùng nhau, chung (nhiều bên cùng làm). VD: 共同開発 – cùng phát triển",協同,synonyms_note,
+共存,きょうぞん,Sự chung sống; sự cùng tồn tại,共生,synonyms_note,
+共有,きょうゆう,"Chia sẻ, dùng chung (thông tin, tài sản)",シェア,liên kết (từ có sẵn),Thị phần
+具体例,ぐたいれい,Ví dụ cụ thể,実例,liên kết (từ có sẵn),Ví dụ thực tế
+具体的,ぐたいてき,Cụ thể,詳細,liên kết (từ có sẵn),"Chi tiết, cụ thể"
+典型,てんけい,"Điển hình, tiêu biểu",代表例,synonyms_note,
+典型,てんけい,"Điển hình, tiêu biểu",典型例,synonyms_note,
+兼ねる,かねる,"Kiêm, kết hợp; (～かねる) khó mà, không thể. VD: 分かりかねます – tôi không rõ",兼務する,synonyms_note,
+兼ね合い,かねあい,"Sự cân đối, cân nhắc cho hài hòa (giữa các yếu tố)",バランス,synonyms_note,
+兼任,けんにん,Kiêm nhiệm (nhiều chức vụ cùng lúc),兼務,synonyms_note,
+兼用,けんよう,"Dùng cho nhiều mục đích, dùng chung. VD: 男女兼用 – dùng cho cả nam và nữ",共用,liên kết (từ có sẵn),Dùng chung
+内装,ないそう,"Nội thất, trang trí bên trong",インテリア,synonyms_note,
+内需,ないじゅ,"Nhu cầu nội địa, nhu cầu trong nước",国内需要,synonyms_note,
+円グラフ,えんぐらふ,Biểu đồ hình tròn,パイチャート,synonyms_note,
+冊子,さっし,"Cuốn sách mỏng, tập tài liệu (in ấn)",小冊子,synonyms_note,
+冊子,さっし,"Cuốn sách mỏng, tập tài liệu (in ấn)",パンフレット,synonyms_note,
+再利用,さいりよう,Tái sử dụng,リユース,synonyms_note,
+再生,さいせい,"Phát lại (video, nhạc); tái sinh, phục hồi; tái chế",再起,synonyms_note,
+再生,さいせい,"Phát lại (video, nhạc); tái sinh, phục hồi; tái chế",回復,liên kết (từ có sẵn),"Hồi phục, phục hồi"
+再編,さいへん,"Tái cơ cấu, tổ chức lại",再編成,synonyms_note,
+再編,さいへん,"Tái cơ cấu, tổ chức lại",リストラ,liên kết (từ có sẵn),"Tái cơ cấu, cắt giảm nhân sự (sa thải)"
+再起動,さいきどう,Khởi động lại,リブート,synonyms_note,
+最中,さいちゅう,Đang giữa lúc. VD: 会議の最中 – đang giữa cuộc họp,途中,synonyms_note,
+最中,さいちゅう,Đang giữa lúc. VD: 会議の最中 – đang giữa cuộc họp,さなか,synonyms_note,
+最優先,さいゆうせん,Ưu tiên hàng đầu,最重要,synonyms_note,
+最善,さいぜん,"Tốt nhất, hết sức. VD: 最善を尽くす – cố gắng hết sức",ベスト,synonyms_note,
+最善を尽くす,さいぜんをつくす,Cố gắng hết sức,全力を尽くす,synonyms_note,
+最終,さいしゅう,"Cuối cùng, sau cùng",最後,synonyms_note,
+最適,さいてき,Thích hợp nhất/ Lý tưởng nhất,ベスト,synonyms_note,
+最適,さいてき,Thích hợp nhất/ Lý tưởng nhất,最良,synonyms_note,
+几帳面,きちょうめん,"Cẩn thận, ngăn nắp, chỉn chu",まめ,liên kết (từ có sẵn),"Chăm chỉ, chu đáo, chịu khó (làm việc nhỏ thường xuyên)"
+几帳面,きちょうめん,"Cẩn thận, ngăn nắp, chỉn chu",律儀,synonyms_note,
+凡例,はんれい,"Chú giải ký hiệu, phần hướng dẫn cách đọc (trong sách, bản đồ, biểu đồ)",記号説明,synonyms_note,
+処分,しょぶん,"Xử lý, thanh lý, vứt bỏ (đồ vật); xử phạt, kỷ luật (người)",廃棄,liên kết (từ có sẵn),"Thải bỏ, hủy bỏ"
+処分する,しょぶんする,"Xử lý, vứt bỏ, thanh lý (đồ vật); kỷ luật (người)",廃棄する,synonyms_note,
+処理,しょり,"Xử lý, giải quyết",対応,liên kết (từ có sẵn),"Ứng phó, xử lý, đối ứng"
+処理,しょり,"Xử lý, giải quyết",始末,synonyms_note,
+処置,しょち,"Xử lý, biện pháp xử lý; sơ cứu, điều trị",措置,liên kết (từ có sẵn),"Biện pháp, sự xử lý"
+処置,しょち,"Xử lý, biện pháp xử lý; sơ cứu, điều trị",手当,liên kết (từ có sẵn),"Phụ cấp (tiền trợ cấp kèm lương); sơ cứu, chữa trị"
+出力,しゅつりょく,"Xuất ra (in ra, hiển thị dữ liệu); công suất",アウトプット,synonyms_note,
+出勤簿,しゅっきんぼ,Sổ chấm công (ghi ngày đi làm của nhân viên),勤怠表,synonyms_note,
+出勤簿,しゅっきんぼ,Sổ chấm công (ghi ngày đi làm của nhân viên),タイムカード,synonyms_note,
+出張届,しゅっちょうとどけ,Đơn đăng ký/thông báo đi công tác,出張申請書,synonyms_note,
+出来,でき,"Kết quả làm ra, chất lượng (sản phẩm, bài làm). VD: 出来がいい – làm tốt",出来栄え,synonyms_note,
+出来上がり,できあがり,"Sự hoàn thành, thành phẩm sau khi làm xong",完成,synonyms_note,
+出社,しゅっしゃ,Đến công ty làm việc,出勤,synonyms_note,
+出荷,しゅっか,Xuất hàng,発送,synonyms_note,
+出荷,しゅっか,Xuất hàng,出庫,synonyms_note,
+出費,しゅっぴ,Chi phí,支出,liên kết (từ có sẵn),Chi tiêu
+出費,しゅっぴ,Chi phí,費用,liên kết (từ có sẵn),Chi phí
+出資,しゅっし,"Góp vốn, đầu tư vốn",投資,liên kết (từ có sẵn),Đầu tư
+分割,ぶんかつ,"Chia ra, chia nhỏ. VD: 分割払い – trả góp",区分,synonyms_note,
+分割,ぶんかつ,"Chia ra, chia nhỏ. VD: 分割払い – trả góp",分ける,synonyms_note,
+分割払い,ぶんかつばらい,Trả góp,ローン払い,synonyms_note,
+分担,ぶんたん,"Phân chia, chia nhau đảm nhận (công việc, chi phí)",割り振り,synonyms_note,
+分析,ぶんせき,Phân tích,解析,synonyms_note,
+分類,ぶんるい,Phân loại,区分,synonyms_note,
+切り口,きりくち,"Mặt cắt; góc nhìn, cách tiếp cận (vấn đề)",視点,liên kết (từ có sẵn),"Góc nhìn, quan điểm"
+切り口,きりくち,"Mặt cắt; góc nhìn, cách tiếp cận (vấn đề)",観点,synonyms_note,
+切り替え,きりかえ,"Sự chuyển đổi, chuyển sang (chế độ, hệ thống, cách nghĩ)",転換,liên kết (từ có sẵn),"Chuyển đổi (phương hướng, chính sách). VD: 方針転換"
+切り替える,きりかえる,"Chuyển đổi, thay đổi (cách làm, suy nghĩ)",変更する,synonyms_note,
+切り替える,きりかえる,"Chuyển đổi, thay đổi (cách làm, suy nghĩ)",切り換える,synonyms_note,
+切り札,きりふだ,"Con át chủ bài, biện pháp cuối cùng",奥の手,synonyms_note,
+切り詰める,きりつめる,"Cắt giảm, tiết kiệm (chi phí)",節約する,synonyms_note,
+切り詰める,きりつめる,"Cắt giảm, tiết kiệm (chi phí)",削る,synonyms_note,
+切羽詰まる,せっぱつまる,"Bị dồn vào đường cùng, bí bách (không còn đường lùi)",追い詰められる,synonyms_note,
+初日,しょにち,"Ngày đầu tiên (của sự kiện, buổi diễn)",初回,synonyms_note,
+初期化する,しょきかする,"Khởi tạo lại, đưa về cài đặt gốc (format)",フォーマットする,synonyms_note,
+初校,しょこう,Bản in thử lần đầu (để sửa lỗi),初稿,synonyms_note,
+初校,しょこう,Bản in thử lần đầu (để sửa lỗi),一校,synonyms_note,
+別々,べつべつ,"Riêng rẽ, tách biệt,riêng",別個,synonyms_note,
+別々,べつべつ,"Riêng rẽ, tách biệt,riêng",個別,liên kết (từ có sẵn),"Riêng biệt, riêng lẻ"
+別添,べってん,Tài liệu gửi kèm (đính kèm riêng),添付資料,synonyms_note,
+別紙,べっし,"Tờ đính kèm (riêng, ngoài văn bản chính). VD: 詳細は別紙をご覧ください",添付資料,synonyms_note,
+利便性,りべんせい,Tính tiện lợi,便利さ,synonyms_note,
+制作,せいさく,"Sản xuất, làm ra (tác phẩm, website, tờ rơi, chương trình)",製作,liên kết (từ có sẵn),"Chế tạo, sản xuất (máy móc, đồ vật)"
+制度,せいど,"Chế độ, hệ thống quy định",仕組み,liên kết (từ có sẵn),"Cơ chế, cấu tạo, cách vận hành"
+制度,せいど,"Chế độ, hệ thống quy định",システム,synonyms_note,
+制約,せいやく,"Hạn chế, ràng buộc (điều kiện)",制限,liên kết (từ có sẵn),"Hạn chế, giới hạn"
+削除,さくじょ,Xóa,消去,synonyms_note,
+前例,ぜんれい,Tiền lệ,先例,synonyms_note,
+前倒し,まえだおし,"Làm sớm hơn kế hoạch, đẩy lên sớm",繰り上げ,synonyms_note,
+前年,ぜんねん,Năm trước,昨年,synonyms_note,
+前年,ぜんねん,Năm trước,前年度,synonyms_note,
+前提,ぜんてい,"Tiền đề, điều kiện tiên quyết. VD: ～を前提に – lấy … làm tiền đề",条件,liên kết (từ có sẵn),Điều kiện
+前置き,まえおき,"Lời mở đầu, phần dẫn",序文,synonyms_note,
+前置き,まえおき,"Lời mở đầu, phần dẫn",はしがき,synonyms_note,
+前進,ぜんしん,"Tiến lên, tiến triển, tiến bộ",進展,liên kết (từ có sẵn),Tiến triển
+割く,さく,"Dành ra (thời gian, nhân lực). VD: 時間を割く",充てる,liên kết (từ có sẵn),"Dành, phân bổ (tiền, thời gian, người) cho việc gì"
+割り当て,わりあて,"Sự phân bổ, phân chia (công việc, ngân sách)",配分,synonyms_note,
+割れ物（ワレモノ）,われもの,Đồ dễ vỡ / Hàng dễ vỡ,壊れ物,synonyms_note,
+割を食う,わりをくう,Bị thiệt thòi,損をする,synonyms_note,
+割合,わりあい,"Tỷ lệ / Tỉ suất / Tỉ trọng (ratio, percentage)",比率,synonyms_note,
+割安,わりやす,Tương đối rẻ (so với giá trị/số lượng),お買い得,synonyms_note,
+創業,そうぎょう,"Sáng lập, thành lập (công ty, việc kinh doanh)",設立,liên kết (từ có sẵn),"Thành lập (công ty, tổ chức)"
+力不足,ちからぶそく,"Thiếu năng lực, không đủ khả năng",実力不足,synonyms_note,
+劣る,おとる,"Kém hơn, thua kém",引けを取る,synonyms_note,
+助言,じょげん,Lời khuyên,アドバイス,synonyms_note,
+労力,ろうりょく,Công sức / Nỗ lực / Sức lực bỏ ra,手間,liên kết (từ có sẵn),"Công sức, thời gian và sự vất vả bỏ ra. VD: 手間がかかる – tốn công"
+動作,どうさ,"Hoạt động (của máy, phần mềm); động tác, cử chỉ",作動,liên kết (từ có sẵn),"(Máy móc, thiết bị) hoạt động, chạy"
+動画,どうが,"Video, hình ảnh động",映像,synonyms_note,
+勝手,かって,"Tự ý, tùy tiện, ích kỷ; tình hình, sự quen thuộc (cách dùng). VD: 使い勝手がいい – dễ dùng",身勝手,synonyms_note,
+募集,ぼしゅう,"Tuyển, chiêu mộ (người, ý kiến)",リクルート,synonyms_note,
+募集要項,ぼしゅうようこう,"Thông tin tuyển dụng (điều kiện, yêu cầu, chế độ)",求人要項,synonyms_note,
+勤務記録表,きんむきろくひょう,"Bảng chấm công, bảng ghi giờ làm việc",勤怠表,synonyms_note,
+勧誘,かんゆう,"Mời chào, chèo kéo (tham gia, mua hàng)",誘い,synonyms_note,
+勧誘,かんゆう,"Mời chào, chèo kéo (tham gia, mua hàng)",セールス,synonyms_note,
+包括,ほうかつ,"Bao quát, toàn diện",網羅,synonyms_note,
+区切り,くぎり,"Chỗ ngắt, điểm kết thúc (một giai đoạn). VD: 区切りをつける",節目,liên kết (từ có sẵn),"Mốc, bước ngoặt (thời điểm quan trọng)"
+区切る,くぎる,"Chia ra, phân đoạn (thời gian, văn bản)",分ける,synonyms_note,
+半額,はんがく,Nửa giá,五割引き,synonyms_note,
+協働（する）,きょうどう（する）,"Hợp tác, cùng làm việc",協力,synonyms_note,
+協働（する）,きょうどう（する）,"Hợp tác, cùng làm việc",連携,liên kết (từ có sẵn),"Phối hợp, liên kết"
+協定,きょうてい,"Hiệp định, thỏa thuận",取り決め,synonyms_note,
+協調,きょうちょう,"Hợp tác, phối hợp",協力,synonyms_note,
+協議,きょうぎ,"Bàn bạc, thương lượng",話し合い,liên kết (từ có sẵn),"Cuộc thảo luận, bàn bạc"
+協賛,きょうさん,"Tài trợ, đồng tài trợ (sự kiện)",後援,liên kết (từ có sẵn),"Bảo trợ, hậu thuẫn (sự kiện)"
+単刀直入,たんとうちょくにゅう,"Nói thẳng vào vấn đề, đi thẳng vào trọng tâm",率直,synonyms_note,
+印鑑,いんかん,Con dấu,判子,synonyms_note,
+印鑑,いんかん,Con dấu,印章,synonyms_note,
+却下,きゃっか,"Bác bỏ, từ chối",退ける,synonyms_note,
+厚意,こうい,"Thiện ý, lòng tốt (của người khác). VD: ご厚意に感謝します",好意,synonyms_note,
+厚意,こうい,"Thiện ý, lòng tốt (của người khác). VD: ご厚意に感謝します",親切,synonyms_note,
+原価,げんか,"Giá vốn, giá thành",仕入れ値,synonyms_note,
+原価,げんか,"Giá vốn, giá thành",コスト,liên kết (từ có sẵn),Chi phí
+原文,げんぶん,"Nguyên văn, bản gốc, nguyên bản",オリジナル,liên kết (từ có sẵn),"Bản gốc; độc đáo, riêng (tự làm, không sao chép)"
+原本,げんぽん,Bản gốc,オリジナル,liên kết (từ có sẵn),"Bản gốc; độc đáo, riêng (tự làm, không sao chép)"
+原稿,げんこう,"Bản thảo (bài viết, bài phát biểu)",草稿,liên kết (từ có sẵn),"Bản nháp, bản thảo"
+厳密,げんみつ,"Nghiêm ngặt, chính xác, chặt chẽ. VD: 厳密に言えば – nói chính xác thì",正確,synonyms_note,
+厳禁,げんきん,Nghiêm cấm,禁止,synonyms_note,
+厳重,げんじゅう,"Nghiêm ngặt, cẩn mật. VD: 厳重注意 – cảnh cáo nghiêm khắc",厳格,synonyms_note,
+参る,まいる,"Chịu thua, bó tay; mệt mỏi, kiệt sức (参った – chịu rồi)",弱る,synonyms_note,
+参る,まいる,"Chịu thua, bó tay; mệt mỏi, kiệt sức (参った – chịu rồi)",閉口する,synonyms_note,
+参る敬,まいる,"(Khiêm nhường ngữ) Đi, đến",伺う,liên kết (từ có sẵn),"đến thăm, ghé (khiêm nhường ngữ)"
+参入,さんにゅう,"Gia nhập, tham gia (thị trường mới)",進出,liên kết (từ có sẵn),"Mở rộng sang, thâm nhập vào (thị trường, khu vực mới)"
+参列,さんれつ,"Có mặt, dự (lễ, đám tang)",列席,synonyms_note,
+参照,さんしょう,Tham chiếu,参考,liên kết (từ có sẵn),Tham khảo
+収支,しゅうし,Thu chi,出入金,synonyms_note,
+収穫,しゅうかく,"Thu hoạch; thành quả, điều thu được",成果,liên kết (từ có sẵn),Thành quả
+取りかかる,とりかかる,Bắt tay vào làm,着手する,synonyms_note,
+取り付ける,とりつける,"Lắp đặt; đạt được (sự đồng ý, hợp đồng). VD: 合意を取り付ける",設置する,synonyms_note,
+取り入れる,とりいれる,"Tiếp thu, đưa vào áp dụng (ý kiến, phương pháp); thu hoạch",導入する,synonyms_note,
+取り寄せる,とりよせる,"Đặt hàng, gọi hàng (từ nơi khác về)",発注する,synonyms_note,
+取り急ぎ,とりいそぎ,(Dùng trong thư) Trước mắt xin báo nhanh… (chưa viết chi tiết),まずは,synonyms_note,
+取り揃える,とりそろえる,"Chuẩn bị đầy đủ, có đủ các loại (hàng hóa). VD: 各種取り揃えております – có đủ các loại",揃える,synonyms_note,
+取り替える,とりかえる,"Thay thế, đổi (cái mới cho cái cũ)",交換する,synonyms_note,
+取り次ぐ,とりつぐ,"Chuyển máy, chuyển lời (cho người khác)",つなぐ,synonyms_note,
+取り消す,とりけす,"Hủy bỏ, rút lại",撤回する,synonyms_note,
+取り消す,とりけす,"Hủy bỏ, rút lại",キャンセルする,synonyms_note,
+取り組み,とりくみ,"Nỗ lực, hoạt động, sáng kiến (để giải quyết vấn đề)",活動,synonyms_note,
+取り組み,とりくみ,"Nỗ lực, hoạt động, sáng kiến (để giải quyết vấn đề)",施策,synonyms_note,
+取り組む,とりくむ,"Nỗ lực giải quyết, dồn sức vào (vấn đề, công việc)",取りかかる,liên kết (từ có sẵn),Bắt tay vào làm
+取り組む,とりくむ,"Nỗ lực giải quyết, dồn sức vào (vấn đề, công việc)",挑む,synonyms_note,
+取り計らい,とりはからい,"Sự sắp xếp, thu xếp (giúp). VD: お取り計らいください – xin vui lòng thu xếp giúp",配慮,synonyms_note,
+取り計らう,とりはからう,"Sắp xếp, thu xếp (giúp cho thuận lợi)",手配する,synonyms_note,
+取引,とりひき,"Giao dịch, mua bán, làm ăn. VD: 取引先 – đối tác",商取引,synonyms_note,
+取引先,とりひきさき,"Đối tác giao dịch, khách hàng",顧客,liên kết (từ có sẵn),Khách hàng
+取扱説明書（取説）,とりあつかいせつめいしょ,Sách hướng dẫn sử dụng,マニュアル,liên kết (từ có sẵn),"Sổ tay hướng dẫn, tài liệu hướng dẫn thao tác"
+取捨選択,しゅしゃせんたく,"Chọn lọc (giữ cái cần, bỏ cái không cần)",選択,liên kết (từ có sẵn),Lựa chọn
+取捨選択,しゅしゃせんたく,"Chọn lọc (giữ cái cần, bỏ cái không cần)",選別,liên kết (từ có sẵn),"Tuyển chọn, phân loại (chọn ra cái đạt chuẩn)"
+取材,しゅざい,"Thu thập tư liệu, lấy tin, phỏng vấn (báo chí)",インタビュー,synonyms_note,
+取締役,とりしまりやく,Thành viên hội đồng quản trị (giám đốc),役員,liên kết (từ có sẵn),"Ban lãnh đạo, cán bộ quản lý cấp cao (thành viên hội đồng quản trị, giám đốc)"
+取締役会,とりしまりやくかい,Hội đồng quản trị,役員会,liên kết (từ có sẵn),Cuộc họp ban lãnh đạo (hội đồng quản trị)
+受け取り,うけとり,Việc nhận; giấy biên nhận,受領,liên kết (từ có sẵn),"Nhận, tiếp nhận (tiền, giấy tờ). VD: 受領書 – giấy biên nhận"
+受け取る,うけとる,"Nhận, tiếp nhận",受領する,synonyms_note,
+受け渡し,うけわたし,"Giao nhận (hàng hóa, tiền)",引き渡し,synonyms_note,
+受付,うけつけ,lễ tân,窓口,liên kết (từ có sẵn),"Quầy tiếp nhận, quầy giao dịch; đầu mối liên lạc. VD: 窓口になる – làm đầu mối"
+受付,うけつけ,lễ tân,フロント,synonyms_note,
+受信,じゅしん,"Nhận (email, tín hiệu)",着信,synonyms_note,
+受託,じゅたく,Nhận ủy thác (công việc),請け負い,synonyms_note,
+受講料,じゅこうりょう,"Phí tham gia khóa học, học phí",授業料,synonyms_note,
+受講者,じゅこうしゃ,Học viên (người tham gia khóa học),参加者,synonyms_note,
+口コミ,くちこみ,"Truyền miệng, đánh giá (của người dùng trên mạng)",評判,synonyms_note,
+口コミ,くちこみ,"Truyền miệng, đánh giá (của người dùng trên mạng)",レビュー,synonyms_note,
+口を出す,くちをだす,"Xen vào, can thiệp vào",口出しする,synonyms_note,
+口を挟む,くちをはさむ,Chen ngang (vào câu chuyện),割り込む,synonyms_note,
+台車,だいしゃ,Xe đẩy hàng,手押し車,synonyms_note,
+台車,だいしゃ,Xe đẩy hàng,カート,synonyms_note,
+叱責,しっせき,Khiển trách,お叱り,synonyms_note,
+右肩上がり,みぎかたあがり,Tăng trưởng liên tục,上り調子,synonyms_note,
+右肩上がり,みぎかたあがり,Tăng trưởng liên tục,増加傾向,synonyms_note,
+右腕,みぎうで,Cánh tay phải; người trợ thủ đắc lực,片腕,synonyms_note,
+叶う,かなう,(Nguyện vọng) thành hiện thực; sánh được. VD: 夢が叶う – ước mơ thành hiện thực,実現する,synonyms_note,
+司会,しかい,"Dẫn chương trình, MC",進行役,synonyms_note,
+司会,しかい,"Dẫn chương trình, MC",司会者,synonyms_note,
+各位,かくい,"Kính gửi các anh chị, quý vị (dùng trong văn bản gửi nhiều người)",皆様,synonyms_note,
+各種,かくしゅ,Các loại,さまざまな,synonyms_note,
+各種,かくしゅ,Các loại,種々,synonyms_note,
+合同,ごうどう,"Chung, liên hợp (nhiều bên cùng tổ chức). VD: 合同会議 – hội nghị chung",共同,liên kết (từ có sẵn),"Cùng nhau, chung (nhiều bên cùng làm). VD: 共同開発 – cùng phát triển"
+合弁,ごうべん,Liên doanh. VD: 合弁会社 – công ty liên doanh,ジョイントベンチャー,synonyms_note,
+合意に至る,ごういにいたる,Đạt được thỏa thuận,合意する,synonyms_note,
+合意を得る,ごういをえる,đạt được sự đồng thuận,合意に至る,liên kết (từ có sẵn),Đạt được thỏa thuận
+合板,ごうはん,"Gỗ dán, ván ép",ベニヤ板,synonyms_note,
+合法,ごうほう,Hợp pháp,適法,synonyms_note,
+合理的,ごうりてき,Hợp lý,筋が通る,synonyms_note,
+同一,どういつ,"Giống nhau, y hệt, đồng nhất",同じ,synonyms_note,
+同僚,どうりょう,Đồng nghiệp,仲間,synonyms_note,
+同業他社,どうぎょうたしゃ,Công ty khác cùng ngành,競合他社,synonyms_note,
+同様,どうよう,"Giống như, tương tự, y như",同じく,synonyms_note,
+同行,どうこう,"Đi cùng (với cấp trên, khách hàng)",同伴,synonyms_note,
+名刺,めいし,Danh thiếp,ビジネスカード,synonyms_note,
+名簿,めいぼ,"Danh sách tên, danh bạ",リスト,liên kết (từ có sẵn),Danh sách / Bảng liệt kê / Bảng danh mục
+向上,こうじょう,"Nâng cao, phát triển, tăng cường",上達,synonyms_note,
+向上,こうじょう,"Nâng cao, phát triển, tăng cường",改善,liên kết (từ có sẵn),Cải thiện
+吟味,ぎんみ,"Xem xét kỹ, chọn lựa kỹ",精査,liên kết (từ có sẵn),"Điều tra kỹ lưỡng, rà soát kỹ"
+否定,ひてい,"Phủ định, bác bỏ, từ chối",否認,synonyms_note,
+周期,しゅうき,Chu kỳ,サイクル,synonyms_note,
+和解,わかい,Hòa giải / Dàn xếp,示談,synonyms_note,
+品揃え,しなぞろえ,"Sự đa dạng, đầy đủ mặt hàng (của cửa hàng). VD: 品揃えが豊富 – nhiều mặt hàng",ラインナップ,liên kết (từ có sẵn),"Dòng sản phẩm, danh mục sản phẩm"
+品目,ひんもく,Danh mục mặt hàng,項目,liên kết (từ có sẵn),"Hạng mục, mục"
+品薄,しなうす,"Khan hàng, ít hàng",品不足,synonyms_note,
+品質,ひんしつ,Chất lượng,クオリティー,synonyms_note,
+唯一,ゆいいつ,"Duy nhất, chỉ có một",ただ一つ,synonyms_note,
+商い,あきない,"Việc buôn bán, kinh doanh",商売,synonyms_note,
+商談,しょうだん,"Đàm phán kinh doanh, thương lượng mua bán",交渉,liên kết (từ có sẵn),"Thương lượng, đàm phán"
+問い合わせ,といあわせ,"Sự hỏi thăm, liên hệ hỏi thông tin. VD: お問い合わせ – liên hệ",照会,liên kết (từ có sẵn),"Hỏi, tra cứu (thông tin với nơi khác)"
+問い合わせる,といあわせる,"Hỏi, liên hệ để hỏi thông tin",照会する,synonyms_note,
+問屋,とんや,"Nhà bán buôn, đại lý bán sỉ",卸売業者,synonyms_note,
+営業,えいぎょう,"Kinh doanh, bán hàng; mở cửa hoạt động (cửa hàng). VD: 営業中 – đang mở cửa",セールス,synonyms_note,
+営業所,えいぎょうしょ,"Văn phòng kinh doanh, địa điểm kinh doanh",事業所,synonyms_note,
+四半期,しはんき,Quý (3 tháng trong năm tài chính),クォーター,synonyms_note,
+四角四面,しかくしめん,"Cứng nhắc, nguyên tắc quá mức (cách nghĩ, thái độ)",杓子定規,synonyms_note,
+回りくどい,まわりくどい,"Vòng vo, rườm rà",遠回し,synonyms_note,
+回復,かいふく,"Hồi phục, phục hồi",持ち直す,synonyms_note,
+回復,かいふく,"Hồi phục, phục hồi",復旧,synonyms_note,
+図表,ずひょう,"Biểu đồ, sơ đồ và bảng biểu",チャート,liên kết (từ có sẵn),Biểu đồ
+図面,ずめん,"Bản vẽ, bản thiết kế",設計図,synonyms_note,
+固まる,かたまる,"Đông cứng lại; (kế hoạch, ý kiến) được chốt, được định hình",決まる,synonyms_note,
+固まる,かたまる,"Đông cứng lại; (kế hoạch, ý kiến) được chốt, được định hình",定まる,synonyms_note,
+固める,かためる,"Làm đông cứng; củng cố; chốt lại (kế hoạch, quyết tâm)",確定する,synonyms_note,
+固辞,こじ,"Một mực từ chối (lời mời, chức vụ)",辞退,synonyms_note,
+国産,こくさん,"Sản xuất trong nước, sản xuất nội địa",国内産,synonyms_note,
+土台,どだい,"Nền móng, nền tảng",基盤,synonyms_note,
+圧倒的,あっとうてき,"Áp đảo, vượt trội hẳn",ずば抜けた,synonyms_note,
+圧勝,あっしょう,Sự chiến thắng áp đảo,大勝,synonyms_note,
+在住,ざいじゅう,"Cư trú, sinh sống tại",居住,synonyms_note,
+在庫,ざいこ,Hàng tồn kho; còn hàng trong kho,ストック,synonyms_note,
+在庫,ざいこ,Hàng tồn kho; còn hàng trong kho,在庫品,synonyms_note,
+均等,きんとう,"Đều nhau, cân bằng. VD: 均等に分ける – chia đều",平等,synonyms_note,
+型番,かたばん,Mã số mẫu (model number) của sản phẩm,品番,synonyms_note,
+型番,かたばん,Mã số mẫu (model number) của sản phẩm,モデル番号,synonyms_note,
+型落ち,かたおち,"Mẫu cũ, đời cũ (bị thay thế bằng mẫu mới)",旧モデル,synonyms_note,
+埋め合わせ,うめあわせ,"Bù đắp (cho phần bị thiếu, lỗi lầm)",穴埋め,synonyms_note,
+埋め合わせる,うめあわせる,"Bù đắp (cho phần thiếu, lỗi lầm)",穴埋めする,synonyms_note,
+基準,きじゅん,"Tiêu chuẩn, tiêu chí",水準,liên kết (từ có sẵn),"Mức, trình độ, tiêu chuẩn"
+基準,きじゅん,"Tiêu chuẩn, tiêu chí",目安,liên kết (từ có sẵn),"Mức tham khảo, tiêu chuẩn ước chừng. VD: 目安として – để tham khảo"
+堅調,けんちょう,"(Thị trường, tăng trưởng) ổn định, vững chắc",好調,liên kết (từ có sẵn),"(Tình trạng) tốt, thuận lợi. VD: 売れ行き好調 – bán chạy"
+報酬,ほうしゅう,"Thù lao, tiền công",謝礼,liên kết (từ có sẵn),"Tiền thù lao, tiền cảm ơn"
+報酬,ほうしゅう,"Thù lao, tiền công",ギャラ,synonyms_note,
+売り出し（売出し）,うりだし,Đợt bán ra (sản phẩm mới); đợt bán giảm giá,発売,liên kết (từ có sẵn),"Bán ra, mở bán (sản phẩm mới)"
+売り出し（売出し）,うりだし,Đợt bán ra (sản phẩm mới); đợt bán giảm giá,セール,synonyms_note,
+売り出す,うりだす,"Tung ra thị trường, bắt đầu bán",発売する,synonyms_note,
+売り切れる,うりきれる,"Bán hết, hết hàng",完売する,synonyms_note,
+売れ行き,うれゆき,Tình hình bán hàng,販売状況,synonyms_note,
+売れ行きがいい,うれゆきがいい,Bán chạy,よく売れる,synonyms_note,
+売上,うりあげ,Doanh số bán hàng,販売額,synonyms_note,
+売上高,うりあげだか,Doanh thu (tổng tiền bán hàng),売上,liên kết (từ có sẵn),Doanh số bán hàng
+売主,うりぬし,"Người bán, bên bán",販売者,synonyms_note,
+売却,ばいきゃく,"Bán đi (tài sản, cổ phần, công ty)",売り払う,synonyms_note,
+売却,ばいきゃく,"Bán đi (tài sản, cổ phần, công ty)",売る,synonyms_note,
+売買,ばいばい,"Mua bán, giao dịch",取引,liên kết (từ có sẵn),"Giao dịch, mua bán, làm ăn. VD: 取引先 – đối tác"
+変動,へんどう,"Biến động (giá cả, tỷ giá, thị trường)",変化,synonyms_note,
+変動,へんどう,"Biến động (giá cả, tỷ giá, thị trường)",変わる,synonyms_note,
+夏時間,なつじかん,Giờ mùa hè,サマータイム,synonyms_note,
+外出,がいしゅつ,Ra ngoài (đi công việc bên ngoài công ty),外回り,synonyms_note,
+外貨,がいか,Ngoại tệ,外国通貨,synonyms_note,
+外資,がいし,Vốn đầu tư nước ngoài,外国資本,synonyms_note,
+多角,たかく,"Nhiều mặt, đa dạng. VD: 多角経営 – kinh doanh đa ngành",多様,synonyms_note,
+大丈夫,だいじょうぶ,"Ổn, không sao",問題ない,synonyms_note,
+大型,おおがた,"Loại lớn, cỡ lớn, quy mô lớn",大規模,synonyms_note,
+大手,おおて,"Công ty lớn, doanh nghiệp lớn",大企業,synonyms_note,
+大盛況,だいせいきょう,"Rất thành công, rất đông vui (sự kiện)",大成功,synonyms_note,
+大詰め,おおづめ,"Giai đoạn cuối cùng, hồi kết",終盤,synonyms_note,
+大詰め,おおづめ,"Giai đoạn cuối cùng, hồi kết",最終段階,synonyms_note,
+大量,たいりょう,Số lượng lớn,多量,synonyms_note,
+太字,ふとじ,Chữ in đậm,ボールド,synonyms_note,
+失念,しつねん,(Lịch sự) Quên mất. VD: 失念しておりました – tôi đã quên mất,忘れる,synonyms_note,
+失態,しったい,"Sai lầm, thất thố (làm mất mặt)",失敗,synonyms_note,
+失態,しったい,"Sai lầm, thất thố (làm mất mặt)",醜態,synonyms_note,
+失言,しつげん,"Lỡ lời, nói hớ",放言,synonyms_note,
+契約を結ぶ,けいやくをむすぶ,Ký hợp đồng,契約締結,liên kết (từ có sẵn),Ký kết hợp đồng
+奥行き,おくゆき,Chiều sâu,深さ,synonyms_note,
+奨励,しょうれい,Khuyến khích,推奨,synonyms_note,
+好況,こうきょう,"Kinh tế phát triển tốt, thịnh vượng (trái nghĩa: 不況)",好景気,synonyms_note,
+好評,こうひょう,"Được đánh giá tốt, được ưa chuộng",評判がいい,synonyms_note,
+好調,こうちょう,"(Tình trạng) tốt, thuận lợi. VD: 売れ行き好調 – bán chạy",順調,liên kết (từ có sẵn),"Thuận lợi, suôn sẻ, tốt đẹp"
+好都合,こうつごう,"Thuận lợi, đúng lúc",都合がいい,synonyms_note,
+妥協,だきょう,Thỏa hiệp,譲歩,liên kết (từ có sẵn),Sự nhượng bộ
+委任,いにん,Ủy quyền,委託,liên kết (từ có sẵn),Ủy thác (giao việc cho bên ngoài làm)
+委託,いたく,Ủy thác (giao việc cho bên ngoài làm),外注,liên kết (từ có sẵn),"Thuê ngoài, đặt bên ngoài làm (gia công)"
+娯楽,ごらく,Giải trí,レジャー,synonyms_note,
+子会社,こがいしゃ,Công ty con,関連会社,liên kết (từ có sẵn),Công ty liên kết (công ty có quan hệ vốn)
+子会社,こがいしゃ,Công ty con,グループ会社,synonyms_note,
+字幕,じまく,Phụ đề,テロップ,synonyms_note,
+字幕,じまく,Phụ đề,キャプション,synonyms_note,
+安売り,やすうり,"Bán rẻ, bán hạ giá",廉売,synonyms_note,
+官公庁,かんこうちょう,Cơ quan nhà nước (trung ương và địa phương),公的機関,synonyms_note,
+官公庁,かんこうちょう,Cơ quan nhà nước (trung ương và địa phương),役所,synonyms_note,
+定価,ていか,Giá niêm yết,標準価格,synonyms_note,
+定時,ていじ,Giờ quy định (thường là giờ tan làm theo quy định). VD: 定時で帰る – về đúng giờ,終業時刻,synonyms_note,
+実力,じつりょく,Thực lực,能力,synonyms_note,
+実施,じっし,"Thực hiện, triển khai",遂行,synonyms_note,
+実施する,じっしする,"thực hiện, tiến hành",実行する,synonyms_note,
+実現,じつげん,"Hiện thực hóa, trở thành hiện thực",達成,synonyms_note,
+実績,じっせき,"Thành tích thực tế, kết quả đã đạt được",成果,liên kết (từ có sẵn),Thành quả
+実質的,じっしつてき,"Về thực chất, trên thực tế",事実上,synonyms_note,
+実践,じっせん,"Thực hành, áp dụng vào thực tế",実行,synonyms_note,
+実際,じっさい,Thực tế,現実,synonyms_note,
+宴会,えんかい,"Bữa tiệc, liên hoan",パーティー,synonyms_note,
+容器,ようき,"Đồ đựng, hộp chứa",入れ物,synonyms_note,
+容器,ようき,"Đồ đựng, hộp chứa",ケース,liên kết (từ có sẵn),"Trường hợp, hộp/vỏ đựng"
+容認,ようにん,"Chấp nhận, dung thứ",許容,liên kết (từ có sẵn),"Cho phép, chấp nhận (trong một giới hạn). VD: 許容範囲 – phạm vi chấp nhận được"
+容認,ようにん,"Chấp nhận, dung thứ",黙認,synonyms_note,
+宿泊,しゅくはく,"Lưu trú, nghỉ lại",滞在,synonyms_note,
+密,みつ,"Mật thiết, chặt chẽ. VD: 密に連絡を取る – liên lạc chặt chẽ",緊密,synonyms_note,
+審査,しんさ,"Thẩm định, xét duyệt",選考,synonyms_note,
+対価,たいか,"Khoản đền đáp, giá trị trao đổi (tiền trả cho hàng hóa, dịch vụ)",代価,synonyms_note,
+対価,たいか,"Khoản đền đáp, giá trị trao đổi (tiền trả cho hàng hóa, dịch vụ)",報酬,liên kết (từ có sẵn),"Thù lao, tiền công"
+対抗,たいこう,"Đối đầu, cạnh tranh. VD: 対抗策 – biện pháp đối phó",張り合う,synonyms_note,
+対比,たいひ,"So sánh, đối chiếu, tương phản",比較,synonyms_note,
+対照的,たいしょうてき,"Tương phản, đối lập rõ rệt",対照,synonyms_note,
+封入,ふうにゅう,"Cho vào phong bì (tài liệu, giấy tờ)",同封,liên kết (từ có sẵn),Gửi kèm (trong phong bì)
+専心,せんしん,"Chuyên tâm, dồn hết tâm sức vào",専念,liên kết (từ có sẵn),Chuyên tâm vào
+専念,せんねん,Chuyên tâm vào,没頭,synonyms_note,
+小切手,こぎって,"Tờ séc, ngân phiếu",チェック,synonyms_note,
+就任,しゅうにん,Nhậm chức,着任,liên kết (từ có sẵn),Đến nhận chức (ở nơi làm việc mới)
+尺度,しゃくど,"Thước đo, tiêu chuẩn đánh giá",基準,liên kết (từ có sẵn),"Tiêu chuẩn, tiêu chí"
+尺度,しゃくど,"Thước đo, tiêu chuẩn đánh giá",ものさし,synonyms_note,
+尽力,じんりょく,"Sự tận lực, dốc sức giúp đỡ. VD: ご尽力いただき – cảm ơn sự giúp đỡ tận tình",骨折り,synonyms_note,
+届け出,とどけで,"Đơn trình báo, khai báo (nộp cho cơ quan, công ty)",申請,liên kết (từ có sẵn),"Nộp đơn, đăng ký xin (giấy phép, phê duyệt)"
+展開,てんかい,"Triển khai, mở rộng (kinh doanh); diễn biến (câu chuyện)",発展,liên kết (từ có sẵn),"Phát triển, mở rộng"
+展開,てんかい,"Triển khai, mở rộng (kinh doanh); diễn biến (câu chuyện)",拡大,liên kết (từ có sẵn),Mở rộng (quy mô); phóng to
+履歴,りれき,"Lịch sử, nhật ký (hoạt động, giao dịch); lý lịch. VD: 履歴書 – sơ yếu lý lịch",経歴,liên kết (từ có sẵn),"Lý lịch, quá trình học tập và làm việc"
+履歴,りれき,"Lịch sử, nhật ký (hoạt động, giao dịch); lý lịch. VD: 履歴書 – sơ yếu lý lịch",記録,synonyms_note,
+履行,りこう,"Thực hiện (hợp đồng, nghĩa vụ, lời hứa)",実行,synonyms_note,
+履行,りこう,"Thực hiện (hợp đồng, nghĩa vụ, lời hứa)",遂行,synonyms_note,
+工夫,くふう,"Công phu, tìm tòi cách làm tốt hơn (sáng kiến, cải tiến)",アイデア,synonyms_note,
+工夫,くふう,"Công phu, tìm tòi cách làm tốt hơn (sáng kiến, cải tiến)",創意,synonyms_note,
+工房,こうぼう,"Xưởng thủ công, xưởng làm đồ thủ công",アトリエ,synonyms_note,
+工数,こうすう,Số công (man-hour): khối lượng công việc tính theo người × thời gian,作業工数,synonyms_note,
+工数,こうすう,Số công (man-hour): khối lượng công việc tính theo người × thời gian,人月,synonyms_note,
+工業,こうぎょう,Công nghiệp,産業,liên kết (từ có sẵn),"Ngành nghề, ngành công nghiệp (nói chung: công nghiệp, nông nghiệp, dịch vụ…)"
+工程,こうてい,"Công đoạn, quy trình",プロセス,synonyms_note,
+工程,こうてい,"Công đoạn, quy trình",手順,liên kết (từ có sẵn),"Trình tự, các bước"
+左様,さよう,"(Trang trọng) Đúng vậy, như vậy",その通り,synonyms_note,
+巨額,きょがく,Số tiền khổng lồ,多額,synonyms_note,
+差し引く,さしひく,"Khấu trừ, trừ đi",控除する,synonyms_note,
+差し替える,さしかえる,"Thay thế (tài liệu, bộ phận bằng cái mới)",入れ替える,synonyms_note,
+差出人,さしだしにん,Người gửi,送り主,synonyms_note,
+差出人,さしだしにん,Người gửi,発信者,synonyms_note,
+差額,さがく,Khoản chênh lệch,差,liên kết (từ có sẵn),"Sự chênh lệch, khác biệt"
+巻き返し,まきかえし,"Phản công, lấy lại thế (sau khi bị thua thiệt)",挽回,synonyms_note,
+巻き返し,まきかえし,"Phản công, lấy lại thế (sau khi bị thua thiệt)",盛り返し,synonyms_note,
+帳消し,ちょうけし,Xóa sổ (nợ); bù trừ hết (công và tội),相殺,synonyms_note,
+平均,へいきん,Trung bình,アベレージ,synonyms_note,
+平常勤務,へいじょうきんむ,Làm việc như bình thường,通常勤務,synonyms_note,
+平行線,へいこうせん,"Đường song song; (ý kiến) không có điểm chung, giằng co",膠着,liên kết (từ có sẵn),"Bế tắc, giằng co (không tiến triển)"
+年代,ねんだい,"Thập niên, thời đại; độ tuổi (vd 30代 – độ tuổi 30)",世代,liên kết (từ có sẵn),Thế hệ
+年内,ねんない,trong năm nay,今年中,synonyms_note,
+年度,ねんど,"Năm tài chính, niên khóa",会計年度,synonyms_note,
+年明け,としあけ,đầu năm mới,年始,synonyms_note,
+年頭,ねんとう,Đầu năm,年始,synonyms_note,
+幸甚,こうじん,"(Văn thư) Rất lấy làm vinh hạnh, vô cùng biết ơn. VD: ご返信いただければ幸甚です",ありがたい,synonyms_note,
+幹事,かんじ,"Người phụ trách tổ chức (tiệc, sự kiện); (công ty) đơn vị chủ quản",世話役,synonyms_note,
+幹部,かんぶ,"Cán bộ chủ chốt, ban lãnh đạo",経営陣,synonyms_note,
+幾多,いくた,"Nhiều, vô số. VD: 幾多の困難 – vô số khó khăn",数々,synonyms_note,
+幾多,いくた,"Nhiều, vô số. VD: 幾多の困難 – vô số khó khăn",多く,synonyms_note,
+広報,こうほう,"Quan hệ công chúng, PR, truyền thông (của công ty)",PR,synonyms_note,
+序列,じょれつ,"Thứ bậc, thứ tự (cấp bậc trong tổ chức)",順位,synonyms_note,
+底をつく,そこをつく,"Cạn kiệt, chạm đáy (tiền, hàng tồn)",尽きる,synonyms_note,
+店舗,てんぽ,Cửa hàng,ショップ,synonyms_note,
+店舗,てんぽ,Cửa hàng,店,synonyms_note,
+店頭,てんとう,"Trước cửa hàng, tại cửa hàng. VD: 店頭販売 – bán tại cửa hàng",店先,synonyms_note,
+廃止,はいし,"Bãi bỏ (chế độ, quy định)",撤廃,synonyms_note,
+廉価,れんか,Giá rẻ,安価,synonyms_note,
+延期,えんき,"Hoãn, lùi lịch",順延,liên kết (từ có sẵn),Hoãn sang ngày kế tiếp (thường do thời tiết)
+延期,えんき,"Hoãn, lùi lịch",先送り,liên kết (từ có sẵn),Trì hoãn
+延滞,えんたい,"Chậm trả, quá hạn thanh toán (tiền thuê, khoản vay)",滞納,synonyms_note,
+延長,えんちょう,Kéo dài thêm (thời gian),延ばす,synonyms_note,
+延長コード,えんちょうこーど,Dây nối điện,延長ケーブル,synonyms_note,
+建前,たてまえ,"Nguyên tắc bề ngoài, lời nói trên danh nghĩa (khác với 本音 – suy nghĩ thật)",表向き,synonyms_note,
+弁解,べんかい,"Bào chữa, biện minh",言い訳,liên kết (từ có sẵn),"Lời bào chữa, phân trần, biện bạch"
+引き下げ,ひきさげ,"Hạ xuống, giảm bớt",低減,synonyms_note,
+引き受ける,ひきうける,"Nhận (đảm nhận việc); bảo lãnh, nhận bảo lãnh phát hành",請け負う,liên kết (từ có sẵn),"Nhận thầu, đảm nhận (công việc theo hợp đồng)"
+引き合い,ひきあい,"Hỏi mua, hỏi giá (từ khách hàng); dẫn ra để so sánh",問い合わせ,liên kết (từ có sẵn),"Sự hỏi thăm, liên hệ hỏi thông tin. VD: お問い合わせ – liên hệ"
+引き立てる,ひきたてる,"Làm nổi bật, tôn lên; ủng hộ, nâng đỡ (người)",際立たせる,synonyms_note,
+引き継ぐ,ひきつぐ,"Bàn giao, chuyển giao, kế thừa",継承する,synonyms_note,
+引き金になる,ひきがねになる,"Trở thành ngòi nổ, nguyên nhân trực tiếp",きっかけになる,synonyms_note,
+引取り,ひきとり,"Nhận lại, tiếp nhận, thu hồi (hàng, đồ cũ)",回収,liên kết (từ có sẵn),"Thu hồi, thu lại"
+弱点,じゃくてん,Điểm yếu,欠点,synonyms_note,
+弱点,じゃくてん,Điểm yếu,短所,synonyms_note,
+強化,きょうか,"Tăng cường, đẩy mạnh, củng cố, nâng cao",拡充,liên kết (từ có sẵn),"Mở rộng và tăng cường (dịch vụ, cơ sở vật chất)"
+強引,ごういん,"Ép buộc, cưỡng ép, bất chấp (làm cho bằng được)",無理やり,synonyms_note,
+強硬,きょうこう,"Cứng rắn, không nhượng bộ (thái độ). Trái nghĩa: 柔軟",強気,synonyms_note,
+強行,きょうこう,"Cố làm bằng được (bất chấp phản đối, khó khăn)",断行,synonyms_note,
+強調,きょうちょう,Nhấn mạnh,力説,synonyms_note,
+当て,あて,"Sự trông cậy, chỗ dựa; mục đích, dự tính. VD: 当てにする – trông cậy vào",見込み,liên kết (từ có sẵn),"Triển vọng, dự kiến, khả năng. VD: 見込み客 – khách hàng tiềm năng"
+当てはまる,あてはまる,"Phù hợp với, đúng với, áp dụng được cho",該当する,synonyms_note,
+当事者,とうじしゃ,"Đương sự, người trong cuộc",関係者,synonyms_note,
+当方,とうほう,Phía chúng tôi,弊社,liên kết (từ có sẵn),Công ty chúng tôi (Khiêm nhường ngữ)
+当日,とうじつ,Ngày hôm đó (ngày diễn ra sự kiện),その日,synonyms_note,
+当番,とうばん,"Phiên trực, người trực",当直,synonyms_note,
+形態,けいたい,"Hình thức, hình thái. VD: 雇用形態 – hình thức tuyển dụng",様式,liên kết (từ có sẵn),"Mẫu, hình thức (văn bản); phong cách"
+形態,けいたい,"Hình thức, hình thái. VD: 雇用形態 – hình thức tuyển dụng",形,synonyms_note,
+形状,けいじょう,Hình dạng,形,synonyms_note,
+待機,たいき,"Chờ sẵn, chờ lệnh",スタンバイ,synonyms_note,
+後ほど,のちほど,"Lát nữa, sau (lịch sự hơn あとで)",後で,synonyms_note,
+後任,こうにん,Người kế nhiệm,後継者,synonyms_note,
+後手に回る,ごてにまわる,"Bị chậm chân, bị động (để đối phương đi trước)",出遅れる,synonyms_note,
+後進,こうしん,"Lớp đi sau, đàn em, thế hệ sau (trong công việc). VD: 後進を育てる – đào tạo lớp kế cận",後輩,synonyms_note,
+従来,じゅうらい,Từ trước đến nay. VD: 従来の方法 – cách làm từ trước,これまで,synonyms_note,
+復唱,ふくしょう,"Nhắc lại, đọc lại (để xác nhận nội dung vừa nghe)",繰り返す,liên kết (từ có sẵn),Lặp đi lặp lại nhiều lần
+微力,びりょく,Sức mọn (khiêm tốn). VD: 微力ながら – tuy sức mọn nhưng,非力,synonyms_note,
+徹夜,てつや,Thức trắng đêm,夜通し,synonyms_note,
+心構え,こころがまえ,"Sự chuẩn bị tinh thần, thái độ sẵn sàng",覚悟,synonyms_note,
+志向,しこう,"Định hướng, hướng tới. VD: 顧客志向 – hướng tới khách hàng",指向,synonyms_note,
+応える,こたえる,"Đáp ứng (kỳ vọng, yêu cầu)",応じる,synonyms_note,
+応対,おうたい,"Tiếp đón, tiếp chuyện (khách, điện thoại)",接客,liên kết (từ có sẵn),"Tiếp khách, phục vụ khách hàng"
+応接室,おうせつしつ,Phòng tiếp khách,応接間,synonyms_note,
+念のため,ねんのため,"Để cho chắc, phòng khi",一応,synonyms_note,
+念書,ねんしょ,Giấy cam kết (một bên viết),誓約書,synonyms_note,
+思いもしなかった,おもいもしなかった,"Không ngờ tới, chưa từng nghĩ đến",思いがけない,synonyms_note,
+思索,しさく,"Sự suy nghĩ, nghiền ngẫm",熟考,synonyms_note,
+怠りなく,おこたりなく,"Không lơ là, chu đáo (không bỏ sót)",抜かりなく,synonyms_note,
+急かす,せかす,"Giục, hối thúc ai đó",催促する,synonyms_note,
+急ぎ,いそぎ,"Việc gấp, khẩn. VD: 急ぎの仕事 – việc gấp",至急,liên kết (từ có sẵn),"Khẩn cấp, gấp"
+急務,きゅうむ,"Việc khẩn cấp, nhiệm vụ cấp bách",緊急課題,synonyms_note,
+急増,きゅうぞう,"Tăng nhanh, tăng đột biến (số lượng)",激増,synonyms_note,
+急速,きゅうそく,"Nhanh chóng, cấp tốc",迅速,liên kết (từ có sẵn),Mau lẹ; nhanh chóng
+性能,せいのう,"Tính năng, hiệu năng",機能,liên kết (từ có sẵn),Chức năng
+性質,せいしつ,Tính chất,特性,synonyms_note,
+恐縮,きょうしゅく,"Cảm thấy ngại, áy náy, xin lỗi (vì làm phiền); cảm ơn (khi nhận ân huệ). VD: 恐縮ですが – xin lỗi đã làm phiền nhưng…",申し訳ない,synonyms_note,
+悠長,ゆうちょう,"Thong thả, chậm rãi (đến mức chậm chạp trong lúc cần gấp)",のんびり,synonyms_note,
+悪化,あっか,"(Tình hình) xấu đi, trở nên tồi tệ hơn",悪くなる,synonyms_note,
+意思疎通,いしそつう,"Thông hiểu lẫn nhau, truyền đạt được ý",コミュニケーション,synonyms_note,
+意見,いけん,ý kiến,見解,liên kết (từ có sẵn),"Quan điểm, cách nghĩ"
+意識,いしき,Ý thức,自覚,synonyms_note,
+感触,かんしょく,"Cảm giác (khi chạm); ấn tượng, phản ứng (của đối phương). VD: 感触がいい – có vẻ khả quan",手応え,liên kết (từ có sẵn),"Cảm giác có hiệu quả, phản ứng tích cực (thấy làm được việc)"
+慣用,かんよう,"Thông dụng, quen dùng. VD: 慣用句 – thành ngữ, quán ngữ",慣習,synonyms_note,
+懇意,こんい,"Thân thiết, quen thân. VD: 懇意にしている – có quan hệ thân thiết",親しい,synonyms_note,
+懇親会,こんしんかい,Tiệc giao lưu,親睦会,synonyms_note,
+懇談会,こんだんかい,Buổi trò chuyện thân mật (trao đổi ý kiến),座談会,synonyms_note,
+懸念,けねん,"Mối lo ngại, sự quan ngại",心配,synonyms_note,
+懸念,けねん,"Mối lo ngại, sự quan ngại",不安,synonyms_note,
+懸案,けんあん,"Vấn đề còn tồn đọng, việc đang chờ giải quyết",未解決事項,synonyms_note,
+成分,せいぶん,Thành phần,要素,synonyms_note,
+成功,せいこう,thành công,成就,synonyms_note,
+成果,せいか,Thành quả,結果,synonyms_note,
+成立,せいりつ,"Được thành lập, được ký kết (hợp đồng, luật, giao dịch)",締結,synonyms_note,
+成長,せいちょう,"Tăng trưởng, phát triển",発展,liên kết (từ có sẵn),"Phát triển, mở rộng"
+戦略,せんりゃく,Chiến lược,ストラテジー,synonyms_note,
+所在地,しょざいち,"Địa chỉ, nơi đặt (trụ sở, văn phòng)",住所,synonyms_note,
+所存,しょぞん,"(Khiêm nhường, trang trọng) Ý định, quyết tâm. VD: 努力する所存です – tôi quyết tâm nỗ lực",つもり,synonyms_note,
+所定,しょてい,Đã quy định sẵn. VD: 所定の用紙 – mẫu giấy quy định,規定,liên kết (từ có sẵn),Quy định
+所感,しょかん,"Cảm nghĩ, cảm nhận (thường viết sau sự kiện, chuyến đi)",感想,synonyms_note,
+所用,しょよう,"Việc bận, công chuyện (riêng)",用事,synonyms_note,
+所用,しょよう,"Việc bận, công chuyện (riêng)",用件,liên kết (từ có sẵn),"Việc cần nói, nội dung công việc (lý do liên hệ). VD: ご用件は何でしょうか"
+手が回らない,てがまわらない,"Không xoay xở kịp, không có thời gian/nhân lực để làm",手が足りない,liên kết (từ có sẵn),"Thiếu người, thiếu nhân lực"
+手が空く,てがあく,Rảnh tay,暇になる,synonyms_note,
+手が足りない,てがたりない,"Thiếu người, thiếu nhân lực",人手不足,synonyms_note,
+手すき,てすき,Lúc rảnh tay. VD: お手すきの際に – khi nào anh/chị rảnh,お手隙,liên kết (từ có sẵn),Lúc rảnh tay. VD: お手隙の際にご確認ください – khi nào rảnh xin hãy xác nhận giúp
+手をつける,てをつける,"Bắt tay vào làm, bắt đầu làm một việc nào đó",着手する,synonyms_note,
+手を借りる,てをかりる,"Nhờ giúp, mượn tay người khác",助けを借りる,synonyms_note,
+手を加える,てをくわえる,"Chỉnh sửa, gia công thêm",修正する,synonyms_note,
+手を引く,てをひく,"Rút tay, rút lui khỏi (công việc, quan hệ)",撤退する,synonyms_note,
+手を打つ,てをうつ,Đưa ra biện pháp (ra tay xử lý),対策を講じる,synonyms_note,
+手を焼く,てをやく,"Vất vả đối phó, khó xử lý (người, vấn đề)",てこずる,synonyms_note,
+手を結ぶ,てをむすぶ,Bắt tay hợp tác,提携する,synonyms_note,
+手一杯,ていっぱい,"Bận kín tay, hết khả năng nhận thêm",手が回らない,liên kết (từ có sẵn),"Không xoay xở kịp, không có thời gian/nhân lực để làm"
+手元,てもと,"Trong tay, bên cạnh mình. VD: 手元にない – không có trong tay",手近,synonyms_note,
+手回し,てまわし,Chuẩn bị trước chu đáo,準備,liên kết (từ có sẵn),Chuẩn bị
+手引き,てびき,"Sách hướng dẫn, cẩm nang, tài liệu chỉ dẫn",ガイド,synonyms_note,
+手応え,てごたえ,"Cảm giác có hiệu quả, phản ứng tích cực (thấy làm được việc)",反響,synonyms_note,
+手抜き,てぬき,"Làm qua loa, làm ẩu, rút bớt công đoạn",手を抜く,liên kết (từ có sẵn),"Làm qua loa, làm ẩu, cắt xén công đoạn"
+手放す,てばなす,"Buông tay, từ bỏ, bán đi (tài sản, quyền lợi)",売却,liên kết (từ có sẵn),"Bán đi (tài sản, cổ phần, công ty)"
+手書き,てがき,Viết tay,自筆,synonyms_note,
+手段,しゅだん,"Phương tiện, cách thức",方法,synonyms_note,
+手直し,てなおし,Chỉnh sửa lại (một phần),修正,liên kết (từ có sẵn),Chỉnh sửa
+手軽,てがる,"Đơn giản, dễ dàng",簡単,synonyms_note,
+手違い,てちがい,"Sai sót, nhầm lẫn (trong khâu sắp xếp, xử lý)",ミス,synonyms_note,
+手配,てはい,"Sắp xếp, chuẩn bị (xe, vé, nhân lực, hàng hóa)",段取り,liên kết (từ có sẵn),"Sự sắp xếp, lên kế hoạch các bước (trình tự công việc)"
+手間を省く,てまをはぶく,"Bớt công sức, tiết kiệm công",省力化,synonyms_note,
+手際,てぎわ,"Sự khéo léo, tay nghề (cách xử lý công việc). VD: 手際がいい – làm nhanh gọn",腕前,synonyms_note,
+手順,てじゅん,"Trình tự, các bước",段取り,liên kết (từ có sẵn),"Sự sắp xếp, lên kế hoạch các bước (trình tự công việc)"
+打ち上げ,うちあげ,"Tiệc liên hoan kết thúc (sau dự án, sự kiện); phóng (tên lửa, pháo hoa)",慰労会,synonyms_note,
+打ち切り,うちきり,"Sự chấm dứt, cắt ngang",中止,synonyms_note,
+打ち切り,うちきり,"Sự chấm dứt, cắt ngang",打ち止め,synonyms_note,
+打ち切る,うちきる,"Chấm dứt, cắt ngang (giữa chừng)",中止する,synonyms_note,
+打ち切る,うちきる,"Chấm dứt, cắt ngang (giữa chừng)",取りやめる,synonyms_note,
+打ち合わせる,うちあわせる,"Trao đổi, bàn bạc, thảo luận",話し合う,liên kết (từ có sẵn),"Bàn bạc, thảo luận với nhau"
+打ち合わせる,うちあわせる,"Trao đổi, bàn bạc, thảo luận",協議する,synonyms_note,
+打合せ,うちあわせ,"Cuộc trao đổi, họp bàn trước (công việc)",ミーティング,synonyms_note,
+打開策,だかいさく,Giải pháp để phá vỡ bế tắc,解決策,liên kết (từ có sẵn),"Giải pháp, biện pháp giải quyết"
+払い出す,はらいだす,"Rút ra, chi ra (tiền từ tài khoản)",引き出す,synonyms_note,
+払い戻し,はらいもどし,"Sự hoàn tiền (khi hủy dịch vụ, vé)",返金,liên kết (từ có sẵn),"Hoàn tiền, trả lại tiền"
+払い戻す,はらいもどす,Hoàn tiền,返金する,synonyms_note,
+払い込み,はらいこみ,"Sự nộp tiền, thanh toán (vào tài khoản, ngân hàng)",振り込み,liên kết (từ có sẵn),"Chuyển khoản, chuyển tiền"
+払い込む,はらいこむ,"Nộp tiền, đóng tiền (vào ngân hàng, công ty bảo hiểm, cơ quan…)",振り込む,liên kết (từ có sẵn),"Chuyển khoản, chuyển tiền"
+批判,ひはん,"Phê phán, chỉ trích",非難,synonyms_note,
+承る,うけたまわる,"(Khiêm nhường ngữ) Nhận, tiếp nhận; lắng nghe",お受けする,synonyms_note,
+承認,しょうにん,"Phê duyệt, chấp thuận",認可,liên kết (từ có sẵn),"Cấp phép, phê chuẩn (của cơ quan nhà nước)"
+技術,ぎじゅつ,Kỹ thuật,テクノロジー,synonyms_note,
+把握,はあく,"Nắm bắt, hiểu rõ (tình hình)",理解,synonyms_note,
+抑える,おさえる,"Kìm nén, hạn chế (chi phí, cảm xúc)",抑制する,synonyms_note,
+投げ出す,なげだす,"Ném ra; bỏ dở, từ bỏ giữa chừng (công việc)",放棄する,synonyms_note,
+投入,とうにゅう,"Đưa vào, bỏ vào (vốn, nhân lực, sản phẩm mới)",投じる,synonyms_note,
+折り合い,おりあい,"Sự thỏa hiệp, dàn xếp. VD: 折り合いがつく – đạt được thỏa hiệp",妥協,liên kết (từ có sẵn),Thỏa hiệp
+折り合いをつける,おりあいをつける,"Đạt thỏa hiệp, thỏa thuận",妥協する,synonyms_note,
+折り合う,おりあう,"Thỏa hiệp, đi đến thống nhất (về điều kiện)",歩み寄る,synonyms_note,
+折り畳む,おりたたむ,Gấp lại,畳む,synonyms_note,
+折り返し,おりかえし,Gọi lại ngay (折り返し電話する); quay vòng lại; (trả lời) ngay lập tức,すぐに,synonyms_note,
+折半,せっぱん,"Chia đôi (chi phí, lợi nhuận)",山分け,synonyms_note,
+抜擢,ばってき,"Đề bạt (người trẻ, người có năng lực vào vị trí quan trọng)",登用,synonyms_note,
+抜本的,ばっぽんてき,"Triệt để, tận gốc",根本的,synonyms_note,
+抱き合わせ,だきあわせ,Bán kèm (ép mua kèm sản phẩm khác),セット販売,synonyms_note,
+押さえる,おさえる,"Ấn, giữ chặt; nắm chắc (điểm chính); giữ chỗ, đặt trước. VD: 会場を押さえる",確保する,synonyms_note,
+抽出,ちゅうしゅつ,"Trích xuất, rút ra (dữ liệu, mẫu); chiết xuất",取り出す,synonyms_note,
+抽選,ちゅうせん,"Rút thăm, bốc thăm, quay số",くじ引き,synonyms_note,
+拘束,こうそく,"Ràng buộc, giữ lại (thời gian, người). VD: 拘束時間 – thời gian bị ràng buộc",束縛,synonyms_note,
+拙速,せっそく,"Nhanh nhưng ẩu, vội vàng làm cho xong",性急,synonyms_note,
+招集,しょうしゅう,Triệu tập (họp),召集,synonyms_note,
+拝受,はいじゅ,"(Khiêm nhường ngữ) Đã nhận (thư, tài liệu). VD: メールを拝受しました",受領,liên kết (từ có sẵn),"Nhận, tiếp nhận (tiền, giấy tờ). VD: 受領書 – giấy biên nhận"
+拝啓,はいけい,"Kính gửi (câu mở đầu thư trang trọng, đi với 敬具)",謹啓,liên kết (từ có sẵn),"Kính gửi (mở đầu thư rất trang trọng, đi với 謹言/敬白)"
+拝見敬,はいけん,(Khiêm nhường ngữ) Xem,見る,synonyms_note,
+拠点,きょてん,"Cứ điểm, cơ sở (sản xuất, kinh doanh)",本拠地,synonyms_note,
+拡充,かくじゅう,"Mở rộng và tăng cường (dịch vụ, cơ sở vật chất)",充実,liên kết (từ có sẵn),"Đầy đủ, phong phú"
+拡大,かくだい,Mở rộng (quy mô); phóng to,拡張,synonyms_note,
+持ち回り,もちまわり,Luân phiên đảm nhận,輪番,liên kết (từ có sẵn),Luân phiên
+持ち越す,もちこす,"Để lại sau, chuyển sang (lần sau, kỳ sau)",繰り越す,synonyms_note,
+持参,じさん,Mang theo (đến),携行,synonyms_note,
+持続的発展,じぞくてきはってん,Phát triển bền vững,持続可能な発展,synonyms_note,
+指定,してい,Chỉ định,指名,synonyms_note,
+指導,しどう,"Chỉ đạo, hướng dẫn",指南,synonyms_note,
+指示,しじ,"Chỉ thị, chỉ đạo",命令,synonyms_note,
+指針,ししん,"Kim chỉ nam, phương châm, hướng dẫn",ガイドライン,synonyms_note,
+振り込み,ふりこみ,"Chuyển khoản, chuyển tiền",送金,synonyms_note,
+振り込む,ふりこむ,"Chuyển khoản, chuyển tiền",送金する,synonyms_note,
+捏造,ねつぞう,"Bịa đặt, ngụy tạo (dữ liệu, sự thật)",でっち上げ,synonyms_note,
+据え置き,すえおき,"Giữ nguyên (giá, mức); hoãn trả (trong thời gian nhất định)",現状維持,synonyms_note,
+捺印,なついん,Đóng dấu,押印,synonyms_note,
+捻出（ねん出）,ねんしゅつ,"Xoay xở (để có được tiền bạc, thời gian)",工面,synonyms_note,
+掘り起こす,ほりおこす,"Đào lên; khai thác, tìm ra (nhu cầu, khách hàng tiềm ẩn)",発掘する,synonyms_note,
+掛け合う,かけあう,"Thương lượng, đàm phán (để đối phương chấp nhận yêu cầu)",交渉する,synonyms_note,
+採算,さいさん,Tính toán lời lỗ. VD: 採算が合わない – không có lãi,収支,liên kết (từ có sẵn),Thu chi
+採算が取れない,さいさんがとれない,"Không có lãi, không bù được chi phí",赤字になる,synonyms_note,
+接客,せっきゃく,"Tiếp khách, phục vụ khách hàng",顧客対応,synonyms_note,
+接待,せったい,"Tiếp đãi, chiêu đãi",もてなし,synonyms_note,
+接触,せっしょく,"Tiếp xúc, liên lạc",コンタクト,liên kết (từ có sẵn),"Liên hệ, liên lạc"
+控え,ひかえ,"Bản lưu, bản sao giữ lại; dự bị (người)",写し,synonyms_note,
+控え,ひかえ,"Bản lưu, bản sao giữ lại; dự bị (người)",コピー,synonyms_note,
+控える,ひかえる,"Kiềm chế, hạn chế; ghi lại; sắp tới gần (sự kiện). VD: 試験を控える – sắp đến kỳ thi",差し控える,synonyms_note,
+推進,すいしん,"Thúc đẩy, xúc tiến, đẩy mạnh",促進,synonyms_note,
+措置,そち,"Biện pháp, sự xử lý",手立て,synonyms_note,
+掲示,けいじ,"Niêm yết, dán thông báo",掲出,synonyms_note,
+掲載,けいさい,"Đăng tải (lên báo, website)",載せる,synonyms_note,
+揉む,もむ,"Xoa bóp; bàn bạc, xem xét kỹ (=検討する). VD: 案を揉む – bàn kỹ phương án",検討する,liên kết (từ có sẵn),"xem xét, bàn bạc"
+提出する,ていしゅつする,nộp,出す,synonyms_note,
+提携,ていけい,"Hợp tác, liên kết (giữa các công ty). VD: 業務提携 – hợp tác kinh doanh",タイアップ,synonyms_note,
+提示,ていじ,"Đưa ra, trình ra (điều kiện, giá, giấy tờ)",示す,liên kết (từ có sẵn),"Chỉ ra, thể hiện"
+提言,ていげん,"Kiến nghị, đề xuất (chính thức)",提案,liên kết (từ có sẵn),"Đề án, đề nghị, gợi ý, kiến nghị"
+揚げ足をとる,あげあしをとる,"Bắt bẻ, bắt lỗi từng câu chữ",あら探しをする,synonyms_note,
+換気,かんき,"Lưu thông không khí, thông gió",通気,synonyms_note,
+搬出,はんしゅつ,"Chuyển ra, mang ra ngoài (hàng hóa, đồ đạc)",運び出す,synonyms_note,
+搭載,とうさい,"Trang bị, tích hợp (chức năng, bộ phận vào máy móc, xe cộ)",装備,synonyms_note,
+摩擦,まさつ,"Ma sát; xung đột, bất hòa. VD: 貿易摩擦 – xung đột thương mại",対立,synonyms_note,
+撤収,てっしゅう,"Thu dọn, rút về (sau sự kiện); rút quân",撤去,synonyms_note,
+撤収,てっしゅう,"Thu dọn, rút về (sau sự kiện); rút quân",引き揚げ,synonyms_note,
+撤回,てっかい,"Rút lại (ý kiến, quyết định)",取り下げ,synonyms_note,
+撤退,てったい,"Rút lui, rút khỏi (thị trường, khu vực)",撤収,liên kết (từ có sẵn),"Thu dọn, rút về (sau sự kiện); rút quân"
+操業,そうぎょう,Vận hành sản xuất (nhà máy),稼働,liên kết (từ có sẵn),"Vận hành, hoạt động (máy móc, nhà máy). VD: 稼働率 – tỷ lệ vận hành"
+支出を削る,ししゅつをけずる,Cắt giảm chi tiêu,経費削減,synonyms_note,
+支払う,しはらう,"Chi trả, thanh toán",払う,synonyms_note,
+支持を得る,しじをうる,Nhận được sự hậu thuẫn,支持される,synonyms_note,
+支援,しえん,Hỗ trợ,援助,synonyms_note,
+支給,しきゅう,"Cấp, chi trả (lương, trợ cấp, đồ dùng)",給付,synonyms_note,
+支障をきたす,ししょうをきたす,Gây trở ngại,支障が出る,synonyms_note,
+改める,あらためる,"Sửa đổi, thay đổi (cho tốt hơn); làm cho trang trọng. VD: 規則を改める – sửa đổi quy định",見直す,liên kết (từ có sẵn),"Xem lại, rà soát lại; đánh giá lại (thấy tốt hơn mình nghĩ)"
+改訂,かいてい,"Sửa đổi, hiệu đính (nội dung sách, tài liệu)",改版,synonyms_note,
+放置,ほうち,"Bỏ mặc, để yên không xử lý",放っておく,synonyms_note,
+放送,ほうそう,Phát sóng,放映,synonyms_note,
+教訓,きょうくん,"Bài học (rút ra từ sai lầm, thất bại...)",戒め,synonyms_note,
+散逸,さんいつ,"Bị thất lạc, phân tán (tài liệu)",紛失,liên kết (từ có sẵn),"Làm mất, thất lạc"
+敬具,けいぐ,"Trân trọng (câu kết thư, đi với 拝啓)",敬白,synonyms_note,
+数値,すうち,"Con số, trị số",数字,synonyms_note,
+整理,せいり,"Sắp xếp, chỉnh lý, thu xếp, tổ chức lại",片付け,synonyms_note,
+整理,せいり,"Sắp xếp, chỉnh lý, thu xếp, tổ chức lại",整頓,synonyms_note,
+敷地,しきち,"Khuôn viên, khu đất",構内,synonyms_note,
+断念,だんねん,"Từ bỏ, bỏ cuộc",諦める,synonyms_note,
+断片,だんぺん,"Mảnh, phần rời rạc",かけら,synonyms_note,
+方向性,ほうこうせい,"Phương hướng, định hướng",方針,liên kết (từ có sẵn),"Phương châm, chính sách"
+方式,ほうしき,"Phương thức,cách thức",やり方,synonyms_note,
+方針,ほうしん,"Phương châm, chính sách",ポリシー,synonyms_note,
+方面,ほうめん,"Hướng, phía; lĩnh vực",方角,synonyms_note,
+施工,せこう,Thi công (công trình),工事,synonyms_note,
+施設,しせつ,"Cơ sở vật chất, công trình (bệnh viện, trường học…)",設備,liên kết (từ có sẵn),"Thiết bị, trang thiết bị"
+既製品,きせいひん,Hàng làm sẵn (không phải đặt làm riêng),レディーメード,synonyms_note,
+日付,ひづけ,Ngày tháng (ghi trên giấy tờ),年月日,synonyms_note,
+日頃,ひごろ,"Ngày thường, thường ngày. VD: 日頃の感謝 – lòng biết ơn thường ngày",普段,liên kết (từ có sẵn),thường ngày
+早朝,そうちょう,Sáng sớm,朝早く,synonyms_note,
+早期,そうき,"Sớm, giai đoạn đầu. VD: 早期退職 – nghỉ hưu sớm",初期,synonyms_note,
+早番,はやばん,Ca sớm,早出,liên kết (từ có sẵn),Đi làm sớm (ca sớm)
+早速,さっそく,ngay lập tức,すぐに,synonyms_note,
+昇格,しょうかく,"Thăng hạng, thăng cấp",昇級,synonyms_note,
+昇進,しょうしん,"Thăng tiến, thăng chức",出世,synonyms_note,
+明らかになる,あきらかになる,"Trở nên rõ ràng, sáng tỏ",判明する,synonyms_note,
+明細,めいさい,Bảng kê chi tiết. VD: 給与明細 – bảng lương chi tiết,内訳,synonyms_note,
+明細書,めいさいしょ,"Bảng kê chi tiết (hàng hóa, chi phí, lương)",内訳書,synonyms_note,
+時間を割く,じかんをさく,Dành thời gian,時間を作る,synonyms_note,
+時間を食う,じかんをくう,Ngốn thời gian,時間がかかる,synonyms_note,
+時間帯,じかんたい,Khung giờ,時間枠,synonyms_note,
+景気,けいき,"Tình hình kinh tế, tình hình kinh doanh. VD: 景気がいい – kinh tế tốt",経済状況,synonyms_note,
+暇つぶし,ひまつぶし,Giết thời gian,退屈しのぎ,synonyms_note,
+暗証番号,あんしょうばんごう,"Mã PIN, mật mã",PIN,synonyms_note,
+暫定的,ざんていてき,"Tạm thời, lâm thời",一時的,synonyms_note,
+更新,こうしん,"Cập nhật; gia hạn (hợp đồng, giấy phép)",アップデート,synonyms_note,
+書き留める,かきとめる,Ghi chép lại (để không quên),メモする,synonyms_note,
+書き込み,かきこみ,"Bài viết, bình luận đăng lên mạng (diễn đàn, SNS); chữ ghi chú vào sách vở",投稿,synonyms_note,
+書き込む,かきこむ,"Viết vào, điền vào",記入する,liên kết (từ có sẵn),điền vào (mẫu đơn)
+書庫,しょこ,"Kho tài liệu, phòng lưu trữ sách",資料室,synonyms_note,
+書類,しょるい,"giấy tờ, hồ sơ",文書,liên kết (từ có sẵn),"Văn bản, tài liệu (chính thức)"
+月一,つきいち,Mỗi tháng một lần,月に一回,synonyms_note,
+月次,げつじ,"Hàng tháng, theo tháng. VD: 月次報告 – báo cáo tháng",月例,synonyms_note,
+有力,ゆうりょく,"Có thế lực, có triển vọng, mạnh. VD: 有力候補 – ứng viên sáng giá",有望,synonyms_note,
+有効,ゆうこう,"Có hiệu lực, có tác dụng, hiệu quả",効果的,synonyms_note,
+有給休暇,ゆうきゅうきゅうか,Nghỉ phép có lương,年次有給休暇,synonyms_note,
+朝一,あさいち,Việc đầu tiên vào buổi sáng (ngay đầu giờ sáng). VD: 朝一で連絡します,朝一番,synonyms_note,
+期日,きじつ,"Ngày hạn định, ngày hẹn (ngày phải làm xong)",期限,liên kết (từ có sẵn),"Thời hạn, hạn chót"
+期末,きまつ,Cuối kỳ (kế toán),年度末,synonyms_note,
+未定,みてい,Chưa quyết định,未決定,synonyms_note,
+未払い,みはらい,"Chưa trả, chưa thanh toán",未決済,synonyms_note,
+未納,みのう,Chưa nộp,滞納,synonyms_note,
+末永く,すえながく,"Lâu dài, mãi mãi. VD: 末永くよろしくお願いします",いつまでも,synonyms_note,
+本人,ほんにん,"Chính người đó, bản thân người đó",当人,synonyms_note,
+本日,ほんじつ,Hôm nay (trang trọng),今日,synonyms_note,
+本末転倒,ほんまつてんとう,Đảo lộn gốc ngọn (coi việc phụ quan trọng hơn việc chính),主客転倒,synonyms_note,
+本決まり,ほんぎまり,Được quyết định chính thức,正式決定,synonyms_note,
+本社,ほんしゃ,"Trụ sở chính, tổng công ty",本店,synonyms_note,
+本腰を入れる,ほんごしをいれる,"Dốc toàn tâm, bắt tay làm thật sự nghiêm túc",本気で取り組む,synonyms_note,
+本音,ほんね,Suy nghĩ thật lòng (khác với 建前 – lời nói bề ngoài),本心,synonyms_note,
+材料,ざいりょう,"Nguyên liệu, vật liệu",資材,liên kết (từ có sẵn),"Vật tư, nguyên vật liệu"
+条件,じょうけん,Điều kiện,要件,synonyms_note,
+条件をのむ,じょうけんをのむ,Chấp nhận điều kiện,条件を受け入れる,synonyms_note,
+来たる,きたる,(Ngày) sắp tới. VD: 来たる4月10日 – ngày 10/4 sắp tới,今度の,synonyms_note,
+来場,らいじょう,"Đến dự (hội trường, sự kiện). VD: ご来場の皆様 – kính thưa quý vị đến dự",来館,synonyms_note,
+来客,らいきゃく,khách đến,訪問客,synonyms_note,
+来期,らいき,Kỳ (tài chính) tới,次期,synonyms_note,
+来賓,らいひん,"Khách mời danh dự, khách quý",ゲスト,synonyms_note,
+板挟み,いたばさみ,Bị kẹt ở giữa (hai bên có ý kiến trái ngược),ジレンマ,synonyms_note,
+枠,わく,"Khung; phạm vi, giới hạn (ngân sách, số lượng). VD: 予算の枠 – trong khuôn khổ ngân sách",範囲,synonyms_note,
+架電,かでん,Gọi điện thoại,電話をかける,synonyms_note,
+染みつく,しみつく,"Thấm vào, bám vào (vết bẩn, mùi); (thói quen) ăn sâu",根付く,synonyms_note,
+柔軟,じゅうなん,"Linh hoạt, mềm dẻo",フレキシブル,synonyms_note,
+査収,さしゅう,Kiểm tra và nhận. VD: ご査収ください – xin vui lòng kiểm tra và nhận,受領,liên kết (từ có sẵn),"Nhận, tiếp nhận (tiền, giấy tờ). VD: 受領書 – giấy biên nhận"
+校正,こうせい,"Hiệu đính, sửa bản in (soát lỗi chính tả, lỗi in)",校閲,synonyms_note,
+株式,かぶしき,"Cổ phần, cổ phiếu",株,synonyms_note,
+根回し,ねまわし,"Vận động, dàn xếp trước (nói chuyện với các bên liên quan trước khi chính thức đề xuất)",事前調整,synonyms_note,
+格付け（格付）,かくづけ,"Xếp hạng, đánh giá cấp bậc (tín dụng, chất lượng)",格付け,synonyms_note,
+格付け（格付）,かくづけ,"Xếp hạng, đánh giá cấp bậc (tín dụng, chất lượng)",ランキング,synonyms_note,
+格安,かくやす,"Giá rẻ bất ngờ, rẻ hơn hẳn",激安,synonyms_note,
+案,あん,"Ý tưởng, đề xuất",プラン,synonyms_note,
+案内,あんない,"Giới thiệu, hướng dẫn",ガイド,synonyms_note,
+棚卸し,たなおろし,Kiểm kê hàng tồn kho,在庫調べ,synonyms_note,
+検品,けんぴん,"Kiểm hàng (kiểm tra số lượng, chất lượng hàng nhập/xuất)",検査,liên kết (từ có sẵn),Kiểm tra
+検索,けんさく,Tìm kiếm,サーチ,synonyms_note,
+検討,けんとう,"Xem xét, bàn bạc, cân nhắc",審議,synonyms_note,
+業務用,ぎょうむよう,"Dùng cho kinh doanh, loại chuyên dụng (cho cửa hàng, nhà hàng)",プロ用,synonyms_note,
+業績,ぎょうせき,"Kết quả kinh doanh, thành tích (của công ty)",成績,synonyms_note,
+業者,ぎょうしゃ,"Nhà cung cấp, nhà thầu, doanh nghiệp (cung cấp dịch vụ, hàng hóa)",取引業者,synonyms_note,
+極端,きょくたん,"Cực đoan, thái quá",行き過ぎ,synonyms_note,
+概況,がいきょう,"Tình hình chung, tổng quan",概要,synonyms_note,
+概略,がいりゃく,"Sơ lược, khái quát những nét chính",概要,synonyms_note,
+概算,がいさん,"Ước tính sơ bộ (chi phí, số lượng)",見積もり,liên kết (từ có sẵn),"Báo giá, ước tính chi phí"
+構図,こうず,"Bố cục (tranh, ảnh); cấu trúc tổng thể (của vấn đề)",構成,liên kết (từ có sẵn),"Cấu trúc, bố cục (bài viết, tổ chức, kế hoạch)"
+構成,こうせい,"Cấu trúc, bố cục (bài viết, tổ chức, kế hoạch)",組み立て,synonyms_note,
+構築,こうちく,"Xây dựng (hệ thống, mối quan hệ)",築く,synonyms_note,
+構造,こうぞう,"Cấu tạo, kết cấu (máy móc, tòa nhà, tổ chức)",仕組み,liên kết (từ có sẵn),"Cơ chế, cấu tạo, cách vận hành"
+様式,ようしき,"Mẫu, hình thức (văn bản); phong cách",書式,synonyms_note,
+標準,ひょうじゅん,"Tiêu chuẩn, mức chuẩn",基準,liên kết (từ có sẵn),"Tiêu chuẩn, tiêu chí"
+模倣,もほう,"Bắt chước, mô phỏng",真似,synonyms_note,
+模様,もよう,"Hoa văn, họa tiết; tình hình, dáng vẻ. VD: 遅れる模様です – có vẻ sẽ trễ",様子,synonyms_note,
+模索（する）,もさく（する）,"Tìm tòi, mò mẫm tìm cách (giải quyết)",試行錯誤,liên kết (từ có sẵn),"Thử sai (thử nhiều cách, rút kinh nghiệm từ thất bại)"
+権威,けんい,"Quyền uy; người có uy tín, chuyên gia hàng đầu",専門家,synonyms_note,
+横ばい,よこばい,"Đi ngang, không thay đổi nhiều (số liệu, giá cả)",停滞,synonyms_note,
+横着,おうちゃく,"Lười biếng, làm ẩu cho nhanh (tránh việc khó)",手抜き,liên kết (từ có sẵn),"Làm qua loa, làm ẩu, rút bớt công đoạn"
+機動力,きどうりょく,"Khả năng hành động nhanh, linh hoạt",機敏さ,synonyms_note,
+機構改革,きこうかいかく,Cải tổ cơ cấu tổ chức,組織改革,synonyms_note,
+機種,きしゅ,"Loại máy, mẫu máy",モデル,synonyms_note,
+機能,きのう,Chức năng,はたらき,synonyms_note,
+機関,きかん,Cơ quan,組織,synonyms_note,
+欠勤,けっきん,Nghỉ làm (không có phép hoặc không được tính lương),欠席,synonyms_note,
+欠員,けついん,Vị trí còn trống (do thiếu người),空きポスト,synonyms_note,
+欠陥,けっかん,"Khuyết tật, lỗi (sản phẩm, hệ thống)",瑕疵,synonyms_note,
+次回,じかい,lần sau,今度,synonyms_note,
+次回,じかい,lần sau,次の機会,synonyms_note,
+次第,しだい,"Trình tự, diễn biến; (～次第) tùy vào, ngay khi. VD: 結果次第 – tùy vào kết quả",順序,synonyms_note,
+歓談,かんだん,Trò chuyện vui vẻ,談笑,synonyms_note,
+正味,しょうみ,"Thực, tịnh (sau khi trừ bao bì, phần phụ). VD: 正味3時間 – thực tế 3 tiếng",実質,synonyms_note,
+正常,せいじょう,Bình thường (không có trục trặc),通常,synonyms_note,
+正当,せいとう,"Chính đáng, hợp lý",妥当,synonyms_note,
+歯止め,はどめ,Phanh hãm; ngăn chặn (sự xấu đi). VD: 歯止めをかける – ngăn chặn,ブレーキ,synonyms_note,
+残業,ざんぎょう,Làm thêm giờ,時間外労働,synonyms_note,
+残金,ざんきん,Số tiền còn lại (còn phải trả),残額,synonyms_note,
+氏,し,"Ông/bà (kính ngữ đặt sau họ tên, vd 田中氏 – ông Tanaka); họ, dòng họ",様,synonyms_note,
+民営,みんえい,Tư nhân quản lý. VD: 民営化 – tư nhân hóa,私営,synonyms_note,
+気が引ける,きがひける,"Cảm thấy ngại, áy náy",恐縮する,synonyms_note,
+気が置けない,きがおけない,"Thân thiết, không phải giữ ý (thoải mái với nhau)",心安い,synonyms_note,
+気を遣う,きをつかう,"Quan tâm, để ý, chu đáo (với người khác)",配慮する,synonyms_note,
+気軽に,きがるに,"Thoải mái, đừng ngại. VD: お気軽にご相談ください – xin đừng ngại liên hệ",遠慮なく,synonyms_note,
+気配り,きくばり,"Sự quan tâm chu đáo, để ý đến người khác",心配り,synonyms_note,
+気配り,きくばり,"Sự quan tâm chu đáo, để ý đến người khác",気遣い,synonyms_note,
+水泡に帰する,すいほうにきする,"Công sức đổ sông đổ biển, tan thành mây khói",無駄になる,synonyms_note,
+求職,きゅうしょく,Tìm việc,職探し,synonyms_note,
+汲み取る,くみとる,"Thấu hiểu, nắm bắt (tâm tư, ý định của người khác); múc lên",察する,synonyms_note,
+決済,けっさい,"Thanh toán (giao dịch, tiền hàng)",支払い,liên kết (từ có sẵn),Việc thanh toán
+決算,けっさん,"Quyết toán, khóa sổ tài chính (cuối kỳ)",締め,liên kết (từ có sẵn),"Chốt sổ, khóa sổ (cuối tháng); phần kết thúc"
+決裁,けっさい,Phê duyệt (cấp trên phê duyệt đề xuất). Khác với 決済 – thanh toán,承認,liên kết (từ có sẵn),"Phê duyệt, chấp thuận"
+決裁印,けっさいいん,Con dấu phê duyệt,承認印,synonyms_note,
+決裂,けつれつ,"Đổ vỡ, thất bại (đàm phán)",物別れ,synonyms_note,
+決議,けつぎ,"Nghị quyết, biểu quyết thông qua",議決,synonyms_note,
+注意を促す,ちゅういをうながす,"Nhắc nhở, kêu gọi chú ý",呼びかける,synonyms_note,
+注意を払う,ちゅういをはらう,Chú ý tới,気をつける,synonyms_note,
+注意事項,ちゅういじこう,những điểm cần lưu ý,留意事項,synonyms_note,
+注目,ちゅうもく,"Sự chú ý, quan tâm (của nhiều người)",関心,synonyms_note,
+注釈,ちゅうしゃく,"Chú thích, chú giải",注記,synonyms_note,
+洗い出し,あらいだし,"Sự rà soát, liệt kê ra hết (vấn đề, công việc cần làm)",リストアップ,liên kết (từ có sẵn),"Liệt kê, lập danh sách"
+洗い出す,あらいだす,"Rà soát và liệt kê ra hết (vấn đề, điểm cần cải thiện)",列挙する,synonyms_note,
+活性化,かっせいか,"Kích hoạt, thúc đẩy cho sôi động (kinh tế, tổ chức)",活発化,synonyms_note,
+活用,かつよう,"Tận dụng, sử dụng hiệu quả",利用,synonyms_note,
+活用,かつよう,"Tận dụng, sử dụng hiệu quả",活かす,synonyms_note,
+流動的,りゅうどうてき,"Hay thay đổi, chưa ổn định (tình hình, kế hoạch)",不安定,synonyms_note,
+流用,りゅうよう,"Sử dụng vào mục đích khác (tiền, tài liệu); tận dụng lại",転用,synonyms_note,
+消費者,しょうひしゃ,Người tiêu dùng,ユーザー,liên kết (từ có sẵn),"Người dùng, người sử dụng"
+混同,こんどう,"Nhầm lẫn, lẫn lộn",取り違え,synonyms_note,
+清書,せいしょ,Chép lại sạch sẽ (từ bản nháp),浄書,synonyms_note,
+済ませる,すませる,"Làm xong, hoàn tất, giải quyết xong",終える,synonyms_note,
+済む,すむ,"Xong, hoàn tất",片付く,synonyms_note,
+渋滞,じゅうたい,"Kẹt xe, ùn tắc",混雑,synonyms_note,
+減価償却,げんかしょうきゃく,Khấu hao tài sản,償却,liên kết (từ có sẵn),Khấu hao (tài sản); hoàn trả (nợ)
+減収,げんしゅう,"Giảm thu nhập, doanh thu giảm",売上減,synonyms_note,
+減少,げんしょう,"Giảm, giảm bớt",低下,synonyms_note,
+滞る,とどこおる,"Bị đình trệ, ứ đọng (công việc, thanh toán)",停滞する,synonyms_note,
+漏れる,もれる,"Rò rỉ, bị lộ (thông tin); bị sót. VD: 名簿から漏れる – bị sót khỏi danh sách",流出する,synonyms_note,
+潜在,せんざい,Tiềm ẩn. VD: 潜在顧客 – khách hàng tiềm năng,潜在的,synonyms_note,
+濃度,のうど,"Nồng độ, hàm lượng, mức độ đậm đặc",濃さ,synonyms_note,
+瀬戸際,せとぎわ,"Bờ vực, thời khắc quyết định",土壇場,synonyms_note,
+点滅,てんめつ,"Nhấp nháy, chớp tắt liên tục",ちかちか,synonyms_note,
+為替相場,かわせそうば,Tỷ giá hối đoái,為替レート,synonyms_note,
+無償,むしょう,"Miễn phí, không lấy tiền. VD: 無償修理 – sửa chữa miễn phí",ただ,synonyms_note,
+無効,むこう,Vô hiệu; không có hiệu lực,失効,synonyms_note,
+無料,むりょう,Miễn phí,ただ,synonyms_note,
+無断,むだん,"Tự ý, không xin phép. VD: 無断欠勤 – nghỉ làm không phép",勝手に,synonyms_note,
+無理,むり,"Vô lý, quá sức, không thể",不可能,synonyms_note,
+焦点,しょうてん,"Tiêu điểm, trọng tâm",重点,liên kết (từ có sẵn),Trọng điểm
+煮詰まる,につまる,"(Thảo luận) chín muồi, sắp đi đến kết luận; bế tắc, nghĩ mãi không ra",行き詰まる,synonyms_note,
+照合,しょうごう,Đối chiếu,突き合わせ,synonyms_note,
+片方,かたほう,"Một bên, một phía (trong hai)",一方,synonyms_note,
+物別れに終わる,ものわかれにおわる,Kết thúc mà không đạt được thỏa thuận,決裂する,synonyms_note,
+物足りない,ものたりない,"Chưa đủ, còn thiếu thiếu, chưa thỏa mãn",不十分,synonyms_note,
+特例,とくれい,"Trường hợp đặc biệt, ngoại lệ",例外,synonyms_note,
+特価,とっか,"Giá đặc biệt, giá ưu đãi",特別価格,synonyms_note,
+特徴,とくちょう,"Đặc trưng, đặc điểm, nét riêng",特色,synonyms_note,
+特許,とっきょ,Bằng sáng chế,パテント,synonyms_note,
+特長,とくちょう,"Ưu điểm nổi bật, điểm mạnh",長所,synonyms_note,
+状態,じょうたい,Trạng thái,状況,synonyms_note,
+狂う,くるう,"Bị đảo lộn, bị sai lệch (kế hoạch, máy móc); điên, phát cuồng",乱れる,synonyms_note,
+狙い,ねらい,"Mục tiêu, ý đồ, mục đích nhắm tới",目的,synonyms_note,
+独占,どくせん,"Độc chiếm, độc quyền",独り占め,synonyms_note,
+独断,どくだん,Tự ý quyết định,独り決め,synonyms_note,
+猶予,ゆうよ,"Sự trì hoãn, gia hạn (thời gian cho phép chậm lại). VD: 支払いの猶予 – gia hạn thanh toán",延期,liên kết (từ có sẵn),"Hoãn, lùi lịch"
+玄人,くろうと,"Người chuyên nghiệp, người trong nghề (trái nghĩa: 素人 – người nghiệp dư)",プロ,synonyms_note,
+現役,げんえき,"Đang tại chức, đang hoạt động (chưa nghỉ hưu); thi đỗ ngay khi còn đi học",現職,synonyms_note,
+現段階,げんだんかい,Giai đoạn hiện tại,現時点,synonyms_note,
+現状,げんじょう,"Hiện trạng, tình hình, tình trạng hiện tại",実情,liên kết (từ có sẵn),Tình hình thực tế
+現行,げんこう,Hiện hành. VD: 現行制度 – chế độ hiện hành,現在の,synonyms_note,
+生じる,しょうじる,"Phát sinh, nảy sinh",発生する,synonyms_note,
+生産,せいさん,Sản xuất,製造,liên kết (từ có sẵn),"Chế tạo, sản xuất"
+生産的,せいさんてき,"Có hiệu quả, mang tính xây dựng",建設的,synonyms_note,
+産地,さんち,"Nơi sản xuất, vùng sản xuất",生産地,synonyms_note,
+用件,ようけん,"Việc cần nói, nội dung công việc (lý do liên hệ). VD: ご用件は何でしょうか",用事,synonyms_note,
+用命,ようめい,"(Kính ngữ ご用命) Sự đặt hàng, sai bảo (của khách). VD: ご用命ください – xin cứ đặt hàng/sai bảo",注文,liên kết (từ có sẵn),"Đặt hàng, gọi món; yêu cầu (điều kiện riêng)"
+用法,ようほう,"Cách dùng, cách sử dụng, phương pháp sử dụng",使い方,synonyms_note,
+用途,ようと,"Công dụng, mục đích sử dụng",使い道,synonyms_note,
+申し出る,もうしでる,"Tự mình đề nghị, xin (đưa ra nguyện vọng, yêu cầu)",願い出る,synonyms_note,
+申し分ない,もうしぶんない,"Hoàn hảo, không có gì để chê, không còn gì để bàn cãi",完璧,synonyms_note,
+申し込み,もうしこみ,"Đăng ký, xin tham gia, nộp đơn",応募,synonyms_note,
+申し込む,もうしこむ,"Đăng ký, nộp đơn, xin tham gia",応募する,synonyms_note,
+申請書,しんせいしょ,"Đơn xin, đơn đăng ký (nộp để xin cấp phép, xin duyệt)",届出書,synonyms_note,
+画期的,かっきてき,"Mang tính đột phá, bước ngoặt",革新的,synonyms_note,
+略す,りゃくす,"Lược bỏ, viết/nói tắt",省略する,synonyms_note,
+異なる,ことなる,Khác nhau,違う,synonyms_note,
+異動,いどう,"Thuyên chuyển, điều chuyển nhân sự",配置転換,synonyms_note,
+番号,ばんごう,"Số, số hiệu",ナンバー,synonyms_note,
+発信,はっしん,"Phát đi, truyền đi (thông tin)",配信,synonyms_note,
+発売,はつばい,"Bán ra, mở bán (sản phẩm mới)",販売開始,synonyms_note,
+発展,はってん,"Phát triển, mở rộng",拡大,liên kết (từ có sẵn),Mở rộng (quy mô); phóng to
+発想,はっそう,"Ý tưởng, cách nghĩ",アイデア,synonyms_note,
+登録,とうろく,Đăng ký,エントリー,synonyms_note,
+白紙,はくし,"Giấy trắng; trạng thái ban đầu chưa có gì. VD: 白紙に戻す – hủy bỏ, quay về từ đầu",まっさら,synonyms_note,
+皆無,かいむ,"Hoàn toàn không có, bằng không",ゼロ,synonyms_note,
+皮切り,かわきり,"Sự mở đầu, khởi đầu (cho một chuỗi sự kiện). VD: ～を皮切りに – bắt đầu từ…",手始め,synonyms_note,
+盛り込む,もりこむ,"Đưa vào, lồng ghép (nội dung vào kế hoạch, tài liệu)",組み込む,liên kết (từ có sẵn),"Đưa vào, cho vào, nhúng/tích hợp (dùng trong IT)"
+盛況,せいきょう,"Thành công, đông vui (sự kiện)",大入り,synonyms_note,
+監査役,かんさやく,"Ban kiểm soát, kiểm soát viên (công ty)",監査人,synonyms_note,
+目を付ける,めをつける,"Để mắt tới, nhắm vào (vì thấy có giá trị)",注目する,synonyms_note,
+目を通す,めをとおす,"Nhìn qua, xem qua",ざっと見る,synonyms_note,
+目を配る,めをくばる,"Để ý xung quanh, quan sát mọi phía",気を配る,synonyms_note,
+目上,めうえ,"Người bề trên (hơn tuổi, chức vụ cao hơn)",上の人,synonyms_note,
+目上,めうえ,"Người bề trên (hơn tuổi, chức vụ cao hơn)",年長者,synonyms_note,
+目安,めやす,"Mức tham khảo, tiêu chuẩn ước chừng. VD: 目安として – để tham khảo",見当,liên kết (từ có sẵn),"Phỏng đoán, ước chừng; phương hướng. VD: 見当がつかない – không đoán được"
+目指す,めざす,Hướng tới; nhắm tới; đặt mục tiêu,狙う,synonyms_note,
+目標,もくひょう,Mục tiêu,ゴール,synonyms_note,
+目玉,めだま,"Con mắt; điểm nổi bật, mặt hàng chủ lực thu hút khách. VD: 目玉商品 – mặt hàng câu khách",呼び物,synonyms_note,
+目線,めせん,Ánh mắt; góc nhìn (từ phía ai). VD: 顧客目線 – góc nhìn của khách hàng,視線,synonyms_note,
+直前,ちょくぜん,Ngay trước (thời điểm),寸前,synonyms_note,
+直属,ちょくぞく,Trực thuộc. VD: 直属の上司 – cấp trên trực tiếp,直轄,synonyms_note,
+直納,ちょくのう,Giao hàng trực tiếp (từ nhà sản xuất đến nơi nhận),直送,synonyms_note,
+相手,あいて,"Đối phương, đối tác, người đối diện, đối thủ",先方,liên kết (từ có sẵn),"Phía đối phương, bên kia (đối tác)"
+着任,ちゃくにん,Đến nhận chức (ở nơi làm việc mới),赴任,liên kết (từ có sẵn),Đến nhận nhiệm vụ ở nơi công tác mới
+着工,ちゃっこう,"Khởi công, bắt đầu xây dựng",起工,synonyms_note,
+着席,ちゃくせき,Ngồi vào chỗ,座る,synonyms_note,
+着手,ちゃくしゅ,Bắt tay vào làm,開始,liên kết (từ có sẵn),Bắt đầu
+着払い,ちゃくばらい,Người nhận trả cước phí (khi nhận hàng),受取人払い,synonyms_note,
+着用,ちゃくよう,"Mặc, đeo (đồng phục, mũ bảo hộ…). VD: ヘルメット着用 – đội mũ bảo hộ",装着,synonyms_note,
+知人,ちじん,người quen,知り合い,synonyms_note,
+知名度,ちめいど,"Mức độ nổi tiếng, độ nhận diện tên tuổi",認知度,synonyms_note,
+破損,はそん,"Hư hỏng, vỡ (hàng hóa, thiết bị)",損傷,synonyms_note,
+破棄,はき,"Hủy bỏ, tiêu hủy (tài liệu); hủy (hợp đồng)",廃棄,liên kết (từ có sẵn),"Thải bỏ, hủy bỏ"
+確定,かくてい,"Xác định, ấn định",決定,liên kết (từ có sẵn),Quyết định
+確認,かくにん,"Xác nhận, kiểm tra",チェック,synonyms_note,
+示す,しめす,"Chỉ ra, thể hiện",表す,synonyms_note,
+社,しゃ,"Công ty (vd 当社 – công ty chúng tôi, 他社 – công ty khác)",会社,liên kết (từ có sẵn),Công ty
+社交辞令,しゃこうじれい,"Lời xã giao, lời khách sáo (không thật lòng)",お世辞,synonyms_note,
+社内,しゃない,"Trong công ty, nội bộ công ty",内部,synonyms_note,
+社判,しゃばん,Con dấu công ty,会社印,synonyms_note,
+社史,しゃし,Lịch sử công ty,沿革,synonyms_note,
+社外,しゃがい,Bên ngoài công ty,外部,synonyms_note,
+社歴,しゃれき,Thâm niên làm việc tại công ty; lịch sử công ty,在職年数,synonyms_note,
+社風,しゃふう,"Văn hóa công ty, nề nếp công ty",企業文化,synonyms_note,
+祝辞,しゅくじ,Lời chúc mừng,お祝いの言葉,synonyms_note,
+視察,しさつ,"Thị sát, khảo sát thực tế",見学,liên kết (từ có sẵn),"Tham quan học hỏi (nhà máy, công ty)"
+視点,してん,"Góc nhìn, quan điểm",観点,synonyms_note,
+私服,しふく,Quần áo thường (không phải đồng phục),普段着,synonyms_note,
+称す,しょうす,"Gọi là, xưng là; mạo danh. VD: ～と称して – lấy cớ là…",名乗る,synonyms_note,
+移動,いどう,Di chuyển,移る,synonyms_note,
+移転,いてん,"Di dời, chuyển (trụ sở, địa điểm); chuyển giao (quyền sở hữu)",転居,synonyms_note,
+程度,ていど,"Mức độ; khoảng, chừng",レベル,liên kết (từ có sẵn),Trình độ / Mức độ / Cấp độ
+税別,ぜいべつ,Chưa bao gồm thuế,税抜,liên kết (từ có sẵn),Giá chưa bao gồm thuế
+稼働,かどう,"Vận hành, hoạt động (máy móc, nhà máy). VD: 稼働率 – tỷ lệ vận hành",運転,synonyms_note,
+積む,つむ,"Chất lên, xếp lên; tích lũy (kinh nghiệm)",重ねる,liên kết (từ có sẵn),"Chồng lên, chất lên; lặp lại nhiều lần, tích lũy (kinh nghiệm)"
+積載,せきさい,"Chất hàng (lên xe, tàu). VD: 積載量 – trọng tải",搭載,liên kết (từ có sẵn),"Trang bị, tích hợp (chức năng, bộ phận vào máy móc, xe cộ)"
+空調,くうちょう,Điều hòa không khí,エアコン,synonyms_note,
+突出,とっしゅつ,"Nhô ra, nổi trội hẳn (vượt xa cái khác)",際立つ,synonyms_note,
+突発的,とっぱつてき,"Đột xuất, bất ngờ",突然の,synonyms_note,
+立ち上げる,たちあげる,"Khởi động, thành lập (dự án, công ty); khởi động (máy tính)",開設する,synonyms_note,
+立ち寄り,たちより,"Ghé qua, tạt vào",寄り道,synonyms_note,
+立て替え,たてかえ,"Trả tiền hộ, ứng tiền trước (thay cho người khác/công ty, sau đó được hoàn lại)",立替払い,synonyms_note,
+立て直す,たてなおす,"Xây dựng lại, vực dậy (công ty, kế hoạch)",再建する,synonyms_note,
+立て続け,たてつづけ,"Liên tiếp, dồn dập",続けざま,synonyms_note,
+立地,りっち,"Vị trí, địa điểm (điều kiện vị trí của cửa hàng, nhà máy). VD: 立地条件 – điều kiện vị trí",ロケーション,synonyms_note,
+立場,たちば,"Vị trí, lập trường, quan điểm",ポジション,synonyms_note,
+第一歩,だいいっぽ,"Bước đầu tiên, bước đầu",スタート,synonyms_note,
+節目,ふしめ,"Mốc, bước ngoặt (thời điểm quan trọng)",転機,synonyms_note,
+箇条書き,かじょうがき,"Viết thành từng mục, gạch đầu dòng",列記,synonyms_note,
+算出,さんしゅつ,"Tính ra, tính toán (con số)",計算,synonyms_note,
+簡便,かんべん,Đơn giản và tiện lợi,手軽,liên kết (từ có sẵn),"Đơn giản, dễ dàng"
+簡易,かんい,"Đơn giản, giản tiện",簡単,synonyms_note,
+粗品,そしな,"Quà nhỏ, quà mọn (cách nói khiêm tốn về quà mình tặng)",心ばかりの品,liên kết (từ có sẵn),Món quà nhỏ thể hiện chút lòng thành (cách nói khiêm tốn)
+精密,せいみつ,"Tinh vi, chính xác. VD: 精密機械 – máy móc chính xác",緻密,synonyms_note,
+糸口,いとぐち,"Manh mối, đầu mối (để giải quyết)",手がかり,synonyms_note,
+系列,けいれつ,"Hệ thống, chuỗi (công ty cùng tập đoàn). VD: 系列会社 – công ty cùng hệ thống",グループ,synonyms_note,
+約,やく,"Khoảng, xấp xỉ, ước chừng, độ chừng",およそ,synonyms_note,
+納得,なっとく,"Hiểu và đồng ý, thấy thỏa đáng",合点,synonyms_note,
+紛失,ふんしつ,"Làm mất, thất lạc",遺失,synonyms_note,
+素人,しろうと,"Người không chuyên, nghiệp dư",アマチュア,synonyms_note,
+累積,るいせき,"Tích lũy, dồn lại (thường là thứ không tốt như nợ, mệt mỏi)",蓄積,synonyms_note,
+累計,るいけい,"Tổng cộng dồn, lũy kế",総計,synonyms_note,
+終日,しゅうじつ,"Cả ngày, suốt ngày",一日中,synonyms_note,
+組み合わせ,くみあわせ,"Sự kết hợp, tổ hợp; cặp đấu (thi đấu)",コンビネーション,synonyms_note,
+組み合わせる,くみあわせる,"Ghép vào, kết hợp",合わせる,synonyms_note,
+組み立てる,くみたてる,"Lắp ráp, lắp ghép",組み上げる,synonyms_note,
+経営,けいえい,"Kinh doanh, quản lý điều hành (công ty)",マネジメント,synonyms_note,
+経歴,けいれき,"Lý lịch, quá trình học tập và làm việc",職歴,synonyms_note,
+経緯,けいい,"Đầu đuôi sự việc, quá trình diễn ra",いきさつ,synonyms_note,
+結びつき,むすびつき,"Mối liên kết, sự gắn bó",つながり,liên kết (từ có sẵn),"Mối liên hệ, sự kết nối, quan hệ"
+絞り込む,しぼりこむ,"Thu hẹp, lọc lại (đối tượng, ứng viên, phương án)",絞る,liên kết (từ có sẵn),"Vắt, ép; thu hẹp (phạm vi, đối tượng để tập trung). VD: 対象を絞る"
+絵に描いた餅,えにかいたもち,"Bánh vẽ (kế hoạch đẹp nhưng không thực tế, vô dụng)",机上の空論,synonyms_note,
+絶好調,ぜっこうちょう,"Phong độ cực tốt, cực kỳ thuận lợi",好調,liên kết (từ có sẵn),"(Tình trạng) tốt, thuận lợi. VD: 売れ行き好調 – bán chạy"
+継続,けいぞく,"Sự tiếp tục, duy trì",続行,synonyms_note,
+維持,いじ,Duy trì,保持,synonyms_note,
+総会,そうかい,"Đại hội, hội nghị toàn thể",大会,synonyms_note,
+総額,そうがく,Tổng số tiền,合計金額,synonyms_note,
+締め,しめ,"Chốt sổ, khóa sổ (cuối tháng); phần kết thúc",締め日,synonyms_note,
+締め切る,しめきる,"Đóng, ngừng nhận (đăng ký, hồ sơ)",打ち切る,liên kết (từ có sẵn),"Chấm dứt, cắt ngang (giữa chừng)"
+編集,へんしゅう,"Biên tập, chỉnh sửa,biên soạn nội dung",エディット,synonyms_note,
+緩和,かんわ,"Nới lỏng, giảm nhẹ (quy định, căng thẳng)",和らげる,synonyms_note,
+練り直す,ねりなおす,"Suy nghĩ lại, soạn lại (kế hoạch)",再検討する,synonyms_note,
+練る,ねる,"Trau chuốt, suy nghĩ kỹ (kế hoạch, ý tưởng, câu văn); nhào (bột)",練り上げる,synonyms_note,
+縛り,しばり,"Sự ràng buộc, điều kiện ràng buộc (hợp đồng)",制約,liên kết (từ có sẵn),"Hạn chế, ràng buộc (điều kiện)"
+縛る,しばる,"Buộc, ràng buộc",拘束する,synonyms_note,
+縮小,しゅくしょう,"Thu nhỏ, thu hẹp (quy mô)",縮減,synonyms_note,
+繫忙期,はんぼうき,"Mùa cao điểm, thời kỳ bận rộn",書き入れ時,synonyms_note,
+繫忙期,はんぼうき,"Mùa cao điểm, thời kỳ bận rộn",ピーク,synonyms_note,
+繰り返す,くりかえす,Lặp đi lặp lại nhiều lần,反復する,synonyms_note,
+羅列,られつ,Liệt kê dài dòng (kể ra hàng loạt),列挙,liên kết (từ có sẵn),Liệt kê
+翌日,よくじつ,Ngày hôm sau / Ngày kế tiếp,次の日,synonyms_note,
+翻意,ほんい,Đổi ý,心変わり,synonyms_note,
+翻訳,ほんやく,"Dịch thuật (văn bản, sách, tài liệu)",訳す,synonyms_note,
+老舗,しにせ,"Cửa hàng lâu đời, thương hiệu lâu năm",名店,synonyms_note,
+職人,しょくにん,"Thợ thủ công lành nghề, nghệ nhân",匠,synonyms_note,
+職員,しょくいん,Nhân viên,社員,synonyms_note,
+肝要,かんよう,"Rất quan trọng, thiết yếu",大切,synonyms_note,
+肯定,こうてい,"Khẳng định, đồng tình, đánh giá tích cực (trái nghĩa: 否定)",是認,synonyms_note,
+肯定的,こうていてき,"Mang tính khẳng định, tích cực (đồng tình)",前向き,liên kết (từ có sẵn),"Tích cực, cầu tiến. VD: 前向きに検討します – sẽ xem xét một cách tích cực"
+脚光を浴びる,きゃっこうをあびる,"Được chú ý, được ca ngợi, trở thành tâm điểm",注目を集める,synonyms_note,
+脚立,きゃたつ,Thang gấp chữ A,踏み台,synonyms_note,
+膠着,こうちゃく,"Bế tắc, giằng co (không tiến triển)",行き詰まり,synonyms_note,
+自主的,じしゅてき,"Tự giác, chủ động",主体的,synonyms_note,
+自営業,じえいぎょう,"Tự kinh doanh, kinh doanh cá thể",個人事業,synonyms_note,
+自在,じざい,"Tự do, linh hoạt, tùy ý",自由自在,synonyms_note,
+自社,じしゃ,Công ty mình,当社,synonyms_note,
+自腹,じばら,Tự bỏ tiền túi,自費,synonyms_note,
+色を付ける,いろをつける,"Tô màu; thêm chút ưu đãi (giảm giá thêm, tăng thêm chút)",おまけする,synonyms_note,
+芳しい,かんばしい,"Tốt, khả quan (thường dùng ở dạng phủ định: 芳しくない – không khả quan)",好ましい,synonyms_note,
+若年,じゃくねん,Người trẻ tuổi. VD: 若年層 – tầng lớp trẻ,若者,synonyms_note,
+苦心,くしん,"Dày công, vất vả để làm được việc gì",苦労,synonyms_note,
+苦戦を強いられる,くせんをしいられる,"Buộc phải chiến đấu vất vả, gặp khó khăn trong cạnh tranh",苦戦する,synonyms_note,
+著作権,ちょさくけん,Quyền tác giả,版権,synonyms_note,
+著者,ちょしゃ,Tác giả,筆者,synonyms_note,
+落としどころ,おとしどころ,"Điểm dừng hợp lý, điểm thỏa hiệp (mà các bên chấp nhận)",妥協点,synonyms_note,
+落とし込む,おとしこむ,"Cụ thể hóa (biến ý tưởng, kế hoạch trừu tượng thành hành động/tài liệu cụ thể)",具体化する,synonyms_note,
+融資,ゆうし,"Cho vay vốn, cấp vốn (ngân hàng cho doanh nghiệp vay)",貸し付け,synonyms_note,
+行列,ぎょうれつ,Hàng người xếp hàng,列,synonyms_note,
+表示,ひょうじ,"Hiển thị, ghi rõ (trên bao bì, màn hình)",表記,synonyms_note,
+裏付け,うらづけ,"Bằng chứng, căn cứ xác thực",根拠,synonyms_note,
+裏付ける,うらづける,"Chứng minh, củng cố bằng chứng",証明する,synonyms_note,
+補充,ほじゅう,"Bổ sung (cho đủ số lượng: người, hàng)",補給,synonyms_note,
+補助,ほじょ,"Hỗ trợ, trợ giúp",サポート,synonyms_note,
+補強,ほきょう,"Gia cố, tăng cường (kết cấu, lực lượng)",強化,liên kết (từ có sẵn),"Tăng cường, đẩy mạnh, củng cố, nâng cao"
+補足,ほそく,"Bổ sung (phần còn thiếu, giải thích thêm)",追加,liên kết (từ có sẵn),"Thêm vào, bổ sung"
+製品,せいひん,Sản phẩm,プロダクト,synonyms_note,
+製法,せいほう,"Phương pháp sản xuất, cách chế tạo",作り方,synonyms_note,
+製造年月日,せいぞうねんがっぴ,Ngày tháng năm sản xuất,製造日,synonyms_note,
+要,かなめ,"Điểm then chốt, mấu chốt (yếu tố quan trọng nhất)",核心,synonyms_note,
+要員,よういん,Nhân sự (cần cho một công việc). VD: 補充要員 – nhân sự bổ sung,人員,liên kết (từ có sẵn),"Số người, nhân lực"
+要因,よういん,"Nguyên nhân, yếu tố chính",原因,synonyms_note,
+要望,ようぼう,"Yêu cầu, mong muốn, nguyện vọng",希望,synonyms_note,
+要求,ようきゅう,"Yêu cầu, đòi hỏi",請求,liên kết (từ có sẵn),"Yêu cầu thanh toán, đòi tiền. VD: 請求書 – hóa đơn đòi tiền"
+要請,ようせい,"Yêu cầu, đề nghị (chính thức, thường từ cơ quan)",依頼,synonyms_note,
+要領,ようりょう,"Điểm cốt yếu; mẹo, cách làm cho khéo. VD: 要領がいい – làm việc khéo, nhanh nhẹn",こつ,synonyms_note,
+見出し,みだし,"Tiêu đề, đề mục, đầu đề",タイトル,liên kết (từ có sẵn),"Tiêu đề, nhan đề, tựa đề"
+見切り,みきり,"Bỏ cuộc, từ bỏ. VD: 見切りをつける – từ bỏ; 見切り品 – hàng thanh lý",断念,liên kết (từ có sẵn),"Từ bỏ, bỏ cuộc"
+見合わせる,みあわせる,"Tạm hoãn, tạm dừng (chờ tình hình); nhìn nhau",見送る,liên kết (từ có sẵn),"Tiễn; hoãn lại, bỏ qua (kế hoạch, cơ hội)"
+見定める,みさだめる,"Xem xét kỹ để xác định, nhìn rõ (thời điểm, bản chất)",見極める,synonyms_note,
+見当たらない,みあたらない,Không tìm thấy,見つからない,synonyms_note,
+見本市,みほんいち,Hội chợ triển lãm,展示会,liên kết (từ có sẵn),triển lãm
+見直し,みなおし,"Xem lại, rà soát lại",再検討,synonyms_note,
+見直す,みなおす,"Xem lại, rà soát lại; đánh giá lại (thấy tốt hơn mình nghĩ)",再検討する,synonyms_note,
+見積もる,みつもる,"Ước tính, dự toán",算出する,synonyms_note,
+見返り,みかえり,"Sự đáp đền, đổi lại (lợi ích nhận được)",代償,synonyms_note,
+見送る,みおくる,"Tiễn; hoãn lại, bỏ qua (kế hoạch, cơ hội)",保留する,synonyms_note,
+見過ごす,みすごす,"Bỏ qua, bỏ sót, làm ngơ",見逃す,synonyms_note,
+規定,きてい,Quy định,規則,synonyms_note,
+規模,きぼ,Quy mô,スケール,synonyms_note,
+覚書,おぼえがき,Biên bản ghi nhớ (thỏa thuận giữa hai bên); phụ lục hợp đồng,メモランダム,synonyms_note,
+解任,かいにん,"Bãi nhiệm, cách chức",罷免,synonyms_note,
+解体,かいたい,"Tháo dỡ (nhà, máy móc); giải thể (tổ chức)",取り壊し,synonyms_note,
+解凍,かいとう,Rã đông; giải nén (file),展開,liên kết (từ có sẵn),"Triển khai, mở rộng (kinh doanh); diễn biến (câu chuyện)"
+解散,かいさん,"Giải tán, giải thể",散会,synonyms_note,
+解決,かいけつ,Giải quyết,解消,synonyms_note,
+解約,かいやく,Hủy hợp đồng,契約解除,synonyms_note,
+解雇,かいこ,"Sa thải, đuổi việc",免職,synonyms_note,
+計上,けいじょう,"Hạch toán, ghi vào sổ sách (doanh thu, chi phí, ngân sách)",算入,synonyms_note,
+訪問,ほうもん,"Đến thăm, thăm",訪れる,synonyms_note,
+訪問する,ほうもんする,"đến thăm, ghé thăm",訪ねる,synonyms_note,
+設ける,もうける,"Thiết lập, đặt ra (quy định, chỗ, cơ hội). VD: 席を設ける – sắp xếp một buổi gặp",設定する,synonyms_note,
+設営,せつえい,"Dựng, bố trí (hội trường, sân khấu, gian hàng)",設置,liên kết (từ có sẵn),"Lắp đặt (thiết bị); thành lập (tổ chức, ủy ban)"
+設定,せってい,"Thiết lập, cài đặt",セッティング,synonyms_note,
+設立,せつりつ,"Thành lập (công ty, tổ chức)",創立,synonyms_note,
+設計,せっけい,"Thiết kế (công trình, sản phẩm, hệ thống…)",デザイン,synonyms_note,
+許可,きょか,"Cho phép, sự cho phép",認可,liên kết (từ có sẵn),"Cấp phép, phê chuẩn (của cơ quan nhà nước)"
+試算,しさん,"Tính thử, ước tính sơ bộ",概算,liên kết (từ có sẵn),"Ước tính sơ bộ (chi phí, số lượng)"
+試行,しこう,"Thử nghiệm, chạy thử",試験運用,synonyms_note,
+試行錯誤,しこうさくご,"Thử sai (thử nhiều cách, rút kinh nghiệm từ thất bại)",手探り,synonyms_note,
+詫び,わび,Lời xin lỗi,謝罪,synonyms_note,
+詫びる,わびる,Xin lỗi / Tạ lỗi,謝る,synonyms_note,
+詰まる,つまる,"Bị tắc, nghẽn; bị dồn kín (lịch); (khoảng cách) được thu hẹp. VD: 差が詰まる",ふさがる,synonyms_note,
+話し合う,はなしあう,"Bàn bạc, thảo luận với nhau",協議する,synonyms_note,
+該当,がいとう,"Thuộc, tương ứng với (điều kiện, trường hợp). VD: 該当者 – người thuộc diện",当てはまる,liên kết (từ có sẵn),"Phù hợp với, đúng với, áp dụng được cho"
+詳しいこと,くわしいこと,chi tiết cụ thể,詳細,liên kết (từ có sẵn),"Chi tiết, cụ thể"
+詳細,しょうさい,"Chi tiết, cụ thể",詳しい,synonyms_note,
+誠実,せいじつ,"Thành thật, chân thành, trung thực",真面目,synonyms_note,
+誠意,せいい,"Thành ý, chân thành",真心,synonyms_note,
+認知,にんち,"Nhận biết, được biết đến. VD: 認知度 – độ nhận biết",認識,liên kết (từ có sẵn),Nhận thức
+認証,にんしょう,"Xác thực (danh tính, đăng nhập)",本人確認,synonyms_note,
+認識,にんしき,Nhận thức,理解,synonyms_note,
+誘導,ゆうどう,"Hướng dẫn, dẫn đường (người, xe)",案内,liên kết (từ có sẵn),"Giới thiệu, hướng dẫn"
+誘致,ゆうち,"Kêu gọi, thu hút (đầu tư, doanh nghiệp, sự kiện về địa phương)",招致,synonyms_note,
+誤差,ごさ,Sai số,ずれ,synonyms_note,
+誤植,ごしょく,"Lỗi in ấn, lỗi đánh máy",ミスプリント,synonyms_note,
+誤算,ごさん,"Tính toán sai, ngoài dự tính",見込み違い,synonyms_note,
+誤解,ごかい,Hiểu lầm,思い違い,synonyms_note,
+誤解を招く,ごかいをまねく,Gây hiểu lầm,誤解を生む,synonyms_note,
+説得,せっとく,Thuyết phục,口説く,synonyms_note,
+課員,かいん,Nhân viên trong phòng (課),部員,synonyms_note,
+調印,ちょういん,"Ký kết (văn bản chính thức, hiệp định)",締結,synonyms_note,
+調整,ちょうせい,"Điều chỉnh, sắp xếp",調節,synonyms_note,
+調査,ちょうさ,"Điều tra, khảo sát",リサーチ,synonyms_note,
+謙虚,けんきょ,"Khiêm tốn, nhún nhường",謙遜,liên kết (từ có sẵn),Khiêm tốn
+講師,こうし,giảng viên,インストラクター,synonyms_note,
+講演,こうえん,"Buổi diễn thuyết, bài giảng",講話,synonyms_note,
+講習,こうしゅう,"Khóa học ngắn hạn, buổi tập huấn",研修,liên kết (từ có sẵn),"Đào tạo, tập huấn (nhân viên)"
+講読,こうどく,"Đặt mua và đọc (báo, tạp chí định kỳ)",購読,synonyms_note,
+議事録,ぎじろく,Biên bản cuộc họp,会議録,synonyms_note,
+議事録をとる,ぎじろくをとる,Ghi biên bản cuộc họp,議事録を作成する,synonyms_note,
+議題,ぎだい,Chủ đề thảo luận (trong cuộc họp),テーマ,liên kết (từ có sẵn),"Chủ đề, đề tài"
+譲歩,じょうほ,Sự nhượng bộ,歩み寄り,synonyms_note,
+譲渡,じょうと,Chuyển nhượng,売り渡し,synonyms_note,
+豊富,ほうふ,"Phong phú, dồi dào, giàu có",潤沢,synonyms_note,
+豪雨,ごうう,Mưa to; mưa như trút nước,大雨,synonyms_note,
+負債,ふさい,"Nợ, khoản nợ",借金,synonyms_note,
+財務,ざいむ,"Tài vụ, tài chính (công ty)",経理,synonyms_note,
+財政,ざいせい,Tài chính,財務,liên kết (từ có sẵn),"Tài vụ, tài chính (công ty)"
+財源,ざいげん,"Nguồn tài chính, nguồn vốn",資金源,synonyms_note,
+貢献,こうけん,"Đóng góp, cống hiến",寄与,synonyms_note,
+販路,はんろ,"Kênh tiêu thụ, đầu ra (của sản phẩm)",流通経路,synonyms_note,
+責任,せきにん,Trách nhiệm,責務,synonyms_note,
+貴重な,きちょうな,quý báu,大切な,synonyms_note,
+買い取り,かいとり,"Sự thu mua, mua lại (đồ cũ, sản phẩm)",引き取り,synonyms_note,
+買い取る,かいとる,"Thu mua, mua lại",引き取る,synonyms_note,
+買い得,かいどく,Mua được giá hời. VD: お買い得 – hàng giá hời,お値打ち,synonyms_note,
+買収,ばいしゅう,"Mua lại, thâu tóm (công ty); mua chuộc, hối lộ",M＆A,liên kết (từ có sẵn),Sáp nhập và mua lại doanh nghiệp (M&A): công ty mua lại hoặc hợp nhất với công ty khác để nắm quyền kiểm soát
+貸し出す,かしだす,"Cho thuê, cho vay, cho mượn",貸す,synonyms_note,
+貸付（貸し付け）,かしつけ,Cho vay (tiền),融資,liên kết (từ có sẵn),"Cho vay vốn, cấp vốn (ngân hàng cho doanh nghiệp vay)"
+貸借対照表,たいしゃくたいしょうひょう,Bảng cân đối kế toán,バランスシート,synonyms_note,
+賃金,ちんぎん,"Tiền lương, tiền công",給与,synonyms_note,
+資本,しほん,Vốn,元手,synonyms_note,
+資格,しかく,"Bằng cấp, chứng chỉ; tư cách",ライセンス,synonyms_note,
+資金,しきん,"Vốn, tiền vốn",資本,liên kết (từ có sẵn),Vốn
+資金繰り,しきんぐり,"Xoay xở vốn, quản lý dòng tiền",やりくり,liên kết (từ có sẵn),"Xoay xở, thu xếp (tiền bạc, thời gian, công việc)"
+賛否,さんぴ,Tán thành hay phản đối,是非,liên kết (từ có sẵn),"Đúng sai, nên hay không. VD: 是非を問う – xét đúng sai; (副詞) nhất định, rất mong"
+賛成する,さんせいする,tán thành,同意する,synonyms_note,
+賜る,たまわる,(Khiêm nhường ngữ) Nhận (từ người trên); (tôn kính) ban cho,いただく,synonyms_note,
+質疑応答,しつぎおうとう,"Hỏi đáp, Q&A",Q&A,synonyms_note,
+購入,こうにゅう,Mua,購買,liên kết (từ có sẵn),Mua (hàng). VD: 購買部 – bộ phận mua hàng
+赤字,あかじ,"Thua lỗ, thâm hụt (trái nghĩa: 黒字 – có lãi)",損失,synonyms_note,
+赤字,あかじ,"Thua lỗ, thâm hụt (trái nghĩa: 黒字 – có lãi)",欠損,synonyms_note,
+起動,きどう,Khởi động,立ち上げ,synonyms_note,
+起用,きよう,"Bổ nhiệm, giao vai trò (cho người, đặc biệt là người mới)",登用,synonyms_note,
+超過,ちょうか,Sự vượt quá,オーバー,synonyms_note,
+趣旨,しゅし,"Mục đích, ý nghĩa chính (của sự kiện, văn bản)",狙い,liên kết (từ có sẵn),"Mục tiêu, ý đồ, mục đích nhắm tới"
+趣旨,しゅし,"Mục đích, ý nghĩa chính (của sự kiện, văn bản)",目的,synonyms_note,
+足がかり,あしがかり,"Bước đệm, chỗ đặt chân (để tiến tới bước tiếp theo)",足場,synonyms_note,
+足が出る,あしがでる,"Vượt quá dự toán, bị lố ngân sách",予算オーバー,synonyms_note,
+足を引っ張る,あしをひっぱる,"Ngáng chân, cản trở (người khác, sự tiến triển)",邪魔をする,synonyms_note,
+足を運ぶ,あしをはこぶ,"Cất công đến, đến tận nơi",出向く,synonyms_note,
+足踏み,あしぶみ,"Dậm chân tại chỗ, không có tiến triển",停滞,synonyms_note,
+路線,ろせん,"Tuyến đường (tàu, xe); đường lối, phương hướng",ルート,liên kết (từ có sẵn),"Tuyến đường, lộ trình; kênh, con đường (phân phối, bán hàng, quan hệ)"
+踏襲,とうしゅう,"Kế thừa, làm theo đúng (cách làm, chính sách trước đây)",継承,synonyms_note,
+躊躇,ちゅうちょ,"Do dự, lưỡng lự, chần chừ",ためらい,synonyms_note,
+車庫,しゃこ,"Nhà để xe, gara",ガレージ,synonyms_note,
+軒並み,のきなみ,"Đồng loạt, hàng loạt (đều như nhau). VD: 軒並み値上がり – đồng loạt tăng giá",一斉に,synonyms_note,
+転勤,てんきん,Chuyển công tác (đến chi nhánh khác trong cùng công ty),配置転換,synonyms_note,
+転送,てんそう,"Chuyển tiếp (email, điện thoại, bưu phẩm)",フォワード,synonyms_note,
+載る,のる,"Được đăng (báo, website); được chất lên (xe)",掲載される,synonyms_note,
+輪ゴム,わゴム,Dây thun / Dây cao su / Dây chun buộc đồ,ゴムバンド,synonyms_note,
+辞職,じしょく,Từ chức,退職,liên kết (từ có sẵn),"Nghỉ việc, thôi việc; nghỉ hưu"
+辞表,じひょう,"Đơn nghỉ việc, từ chức",退職届,synonyms_note,
+近日,きんじつ,"Sắp tới, trong vài ngày tới",近々,synonyms_note,
+返却,へんきゃく,"Trả lại, hoàn trả",返還,synonyms_note,
+返済,へんさい,"Trả nợ, hoàn trả (tiền đã vay/mượn)",償還,synonyms_note,
+迷惑,めいわく,"sự phiền hà, làm phiền",面倒,synonyms_note,
+追い風,おいかぜ,Gió xuôi; điều kiện thuận lợi (trái nghĩa: 向かい風),好条件,synonyms_note,
+追及する,ついきゅうする,"Truy cứu (trách nhiệm), chất vấn đến cùng",問い詰める,synonyms_note,
+退職金,たいしょくきん,Tiền trợ cấp thôi việc (nhận khi nghỉ việc/về hưu),退職手当,synonyms_note,
+退避,たいひ,"Sơ tán, lánh nạn",避難,synonyms_note,
+送信,そうしん,"Gửi đi (email, dữ liệu)",発信,liên kết (từ có sẵn),"Phát đi, truyền đi (thông tin)"
+送料,そうりょう,"Phí vận chuyển, phí gửi hàng",配送料,synonyms_note,
+送迎,そうげい,Đưa đón,出迎え,liên kết (từ có sẵn),Sự ra đón
+透明,とうめい,Trong suốt; minh bạch,ガラス張り,synonyms_note,
+通信販売（通販）,つうしんはんばい,"Bán hàng qua thư/điện thoại/internet (khách đặt hàng từ xa, hàng được giao tận nơi)",EC,synonyms_note,
+通知,つうち,"Thông báo, báo tin",連絡,liên kết (từ có sẵn),liên lạc
+通貨,つうか,Tiền tệ,貨幣,synonyms_note,
+連携,れんけい,"Phối hợp, liên kết",協力,synonyms_note,
+連絡をとる,れんらくをとる,giữ liên lạc,連絡する,synonyms_note,
+週明け,しゅうあけ,Đầu tuần sau,来週初め,synonyms_note,
+進める,すすめる,"tiến hành, xúc tiến",推し進める,synonyms_note,
+進展,しんてん,Tiến triển,進捗,liên kết (từ có sẵn),Tiến độ (công việc)
+進捗,しんちょく,Tiến độ (công việc),進み具合,synonyms_note,
+進行,しんこう,"Tiến hành, tiến triển; điều hành (cuộc họp). VD: 進行役 – người điều phối",実施,liên kết (từ có sẵn),"Thực hiện, triển khai"
+遅くとも,おそくとも,chậm nhất là,遅くても,synonyms_note,
+遅刻する,ちこくする,đi muộn,遅れる,synonyms_note,
+遅延,ちえん,"Trễ, chậm (tàu xe, giao hàng, thanh toán)",遅れ,synonyms_note,
+遊び,あそび,"Sự vui chơi; khoảng hở, độ rơ (của máy móc, vô lăng); sự thong thả, dư địa",余裕,liên kết (từ có sẵn),"Dư dả, thoải mái (thời gian, tiền bạc, tinh thần)"
+運営,うんえい,"Điều hành, quản lý, vận hành",管理,liên kết (từ có sẵn),Quản lý
+運用,うんよう,"Vận hành, vận dụng (hệ thống, quy định); quản lý đầu tư (tài sản)",活用,liên kết (từ có sẵn),"Tận dụng, sử dụng hiệu quả"
+運賃,うんちん,"Cước phí vận chuyển, tiền vé (tàu, xe, máy bay)",運送料,synonyms_note,
+過労,かろう,Làm việc quá sức,働きすぎ,synonyms_note,
+過失,かしつ,"Sơ suất, lỗi (do bất cẩn, không cố ý)",ミス,synonyms_note,
+過程,かてい,Quá trình,プロセス,synonyms_note,
+違法,いほう,"Vi phạm pháp luật, trái pháp luật,trái phép",不法,synonyms_note,
+適任,てきにん,"Người phù hợp (với công việc, vị trí)",うってつけ,synonyms_note,
+適宜,てきぎ,Tùy tình hình mà làm cho phù hợp. VD: 適宜休憩を取ってください,随時,synonyms_note,
+適正,てきせい,"Phù hợp, hợp lý (đúng mức). VD: 適正価格 – giá hợp lý",妥当,synonyms_note,
+適用,てきよう,"Áp dụng (luật, quy định)",採用,liên kết (từ có sẵn),"Tuyển dụng; áp dụng, chọn dùng (ý kiến, phương án)"
+選任,せんにん,"Bổ nhiệm, tuyển chọn (vào chức vụ)",任命,synonyms_note,
+選別,せんべつ,"Tuyển chọn, phân loại (chọn ra cái đạt chuẩn)",選り分け,synonyms_note,
+選定,せんてい,Lựa chọn (theo tiêu chí),選考,synonyms_note,
+選択,せんたく,Lựa chọn,チョイス,synonyms_note,
+遺憾,いかん,Đáng tiếc (dùng trang trọng khi bày tỏ không hài lòng hoặc xin lỗi). VD: 遺憾に思う,残念,synonyms_note,
+還元,かんげん,"Hoàn lại, trả lại (lợi nhuận cho khách hàng, xã hội). VD: 利益を還元する",還付,synonyms_note,
+部分,ぶぶん,phần,一部,synonyms_note,
+部品,ぶひん,"Linh kiện, phụ tùng",パーツ,synonyms_note,
+部材,ぶざい,"Vật liệu, cấu kiện (dùng để lắp ráp công trình, sản phẩm)",材料,liên kết (từ có sẵn),"Nguyên liệu, vật liệu"
+部署,ぶしょ,"Phòng ban, bộ phận",部門,liên kết (từ có sẵn),"Bộ phận, mảng (trong công ty)"
+都心,としん,Trung tâm thành phố,中心部,synonyms_note,
+配付,はいふ,Phát (tài liệu cho từng người),配布,synonyms_note,
+配属,はいぞく,"Phân công về (phòng ban), bố trí nhân sự",配置,liên kết (từ có sẵn),"Bố trí, sắp xếp (người, đồ vật)"
+配慮（する）,はいりょ（する）,"Sự quan tâm, để ý, cân nhắc (đến người khác, tình huống)",気配り,liên kết (từ có sẵn),"Sự quan tâm chu đáo, để ý đến người khác"
+配送,はいそう,"Giao hàng, vận chuyển phân phối",配達,liên kết (từ có sẵn),"Giao (thư, báo, hàng hóa đến tận nơi)"
+重ねる,かさねる,"Chồng lên, chất lên; lặp lại nhiều lần, tích lũy (kinh nghiệm)",積み重ねる,synonyms_note,
+重点,じゅうてん,Trọng điểm,ポイント,liên kết (từ có sẵn),"Điểm, ý chính, điểm quan trọng; điểm tích lũy (thẻ thành viên)"
+重点を置く,じゅうてんをおく,"Đặt trọng tâm, chú trọng vào",重視する,synonyms_note,
+重視,じゅうし,Coi trọng,重んじる,synonyms_note,
+重複,ちょうふく,Trùng lặp,ダブり,synonyms_note,
+重要,じゅうよう,Quan trọng,大事,synonyms_note,
+重量,じゅうりょう,Trọng lượng,重さ,synonyms_note,
+野外,やがい,Ngoài trời,屋外,synonyms_note,
+量産,りょうさん,Sản xuất hàng loạt / Sản xuất quy mô lớn / Sản xuất đại trà,大量生産,synonyms_note,
+金づち（ハンマー）,かなづち,Cái búa,ハンマー,synonyms_note,
+金券,きんけん,Phiếu mua hàng (có giá trị như tiền),商品券,synonyms_note,
+金属,きんぞく,Kim loại,メタル,synonyms_note,
+銘柄,めいがら,"Nhãn hiệu, thương hiệu (sản phẩm); mã cổ phiếu",ブランド,liên kết (từ có sẵn),"Thương hiệu, hàng hiệu"
+長らく,ながらく,"Đã lâu, trong thời gian dài. VD: 長らくお待たせしました – xin lỗi đã để anh/chị đợi lâu",長い間,synonyms_note,
+長引く,ながびく,Kéo dài,長期化する,synonyms_note,
+閉店,へいてん,Đóng cửa hàng,店じまい,synonyms_note,
+開催,かいさい,"Tổ chức (sự kiện, hội nghị)",実施,liên kết (từ có sẵn),"Thực hiện, triển khai"
+開始,かいし,Bắt đầu,スタート,synonyms_note,
+開店,かいてん,"Mở cửa hàng, khai trương",オープン,liên kết (từ có sẵn),"Mở cửa, khai trương"
+開設,かいせつ,"Mở mới, thành lập (văn phòng, tài khoản, website)",設置,liên kết (từ có sẵn),"Lắp đặt (thiết bị); thành lập (tổ chức, ủy ban)"
+間近,まぢか,"Cận kề, sắp đến",目前,synonyms_note,
+関与,かんよ,"Can dự, tham gia",関わり,synonyms_note,
+関連,かんれん,Liên quan,関係,synonyms_note,
+閲覧,えつらん,"Xem, đọc (tài liệu, website)",閲読,synonyms_note,
+降格,こうかく,"Giáng chức, hạ cấp",降級,synonyms_note,
+限定,げんてい,"Giới hạn, hạn chế (số lượng, thời gian). VD: 期間限定 – có thời hạn",限る,synonyms_note,
+限界,げんかい,Giới hạn (mức tối đa không thể chịu hơn được nữa),限度,liên kết (từ có sẵn),"Hạn mức, mức tối đa"
+陳腐,ちんぷ,"Cũ rích, sáo mòn, nhàm chán (ý tưởng, cách nói)",ありきたり,synonyms_note,
+集客,しゅうきゃく,Thu hút khách,客寄せ,synonyms_note,
+集約,しゅうやく,"Tổng hợp, gom lại (ý kiến, thông tin, cơ sở)",集める,synonyms_note,
+集計,しゅうけい,"Tổng hợp số liệu, thống kê",合計,liên kết (từ có sẵn),Tổng cộng
+雇用,こよう,"Tuyển dụng, thuê lao động. VD: 雇用契約 – hợp đồng lao động",採用,liên kết (từ có sẵn),"Tuyển dụng; áp dụng, chọn dùng (ý kiến, phương án)"
+雑談,ざつだん,Trò chuyện phiếm,おしゃべり,synonyms_note,
+雑費,ざっぴ,"Chi phí lặt vặt, khoản chi nhỏ linh tinh",諸経費,synonyms_note,
+離席,りせき,Rời chỗ ngồi (tạm thời),中座,liên kết (từ có sẵn),"Rời chỗ giữa chừng (cuộc họp, bữa tiệc)"
+難局,なんきょく,"Tình thế khó khăn, cục diện khó khăn",苦境,synonyms_note,
+難航,なんこう,"Gặp khó khăn, tiến triển chậm (đàm phán, dự án)",難渋,synonyms_note,
+難色,なんしょく,"Vẻ không đồng ý, thái độ phản đối. VD: 難色を示す – tỏ ý không đồng ý",渋い顔,synonyms_note,
+零細,れいさい,"Quy mô nhỏ lẻ (doanh nghiệp, cơ sở kinh doanh ít vốn, ít người)",小規模,synonyms_note,
+電卓,でんたく,Máy tính bỏ túi,計算機,synonyms_note,
+青写真,あおじゃしん,Bản kế hoạch phác thảo (chưa quyết định chính thức),構想,synonyms_note,
+非効率,ひこうりつ,Không hiệu quả,無駄が多い,synonyms_note,
+非常,ひじょう,"Khẩn cấp; rất, vô cùng (非常に). VD: 非常口 – lối thoát hiểm",緊急,liên kết (từ có sẵn),Khẩn cấp
+非常識,ひじょうしき,"Thiếu ý thức thông thường, bất lịch sự (vô duyên)",常識外れ,synonyms_note,
+非常階段,ひじょうかいだん,Cầu thang thoát hiểm,避難階段,synonyms_note,
+面,めんせつ,Phỏng vấn,面談,synonyms_note,
+面会,めんかい,"Gặp mặt (theo hẹn, thăm người bệnh, gặp người có địa vị)",面談,synonyms_note,
+面識,めんしき,"Đã quen biết, đã từng gặp. VD: 面識がない – chưa gặp bao giờ",顔見知り,synonyms_note,
+音声,おんせい,Âm thanh,音,synonyms_note,
+順,じゅん,"Thứ tự, trình tự",順番,synonyms_note,
+順次,じゅんじ,"Lần lượt, theo thứ tự",次々,synonyms_note,
+預かる,あずかる,"Giữ hộ, nhận giữ; chăm sóc (trẻ); (預かり知らない) không liên quan",保管する,synonyms_note,
+預金,よきん,Tiền gửi ngân hàng,貯金,synonyms_note,
+頒布,はんぷ,"Phân phát, phát (rộng rãi)",配布,synonyms_note,
+頓挫,とんざ,"Bị đình trệ, đổ bể giữa chừng (kế hoạch, dự án)",挫折,synonyms_note,
+頭が切れる,あたまがきれる,"Sắc sảo, đầu óc nhanh nhạy",切れ者,synonyms_note,
+頭が痛い,あたまがいたい,Đau đầu (vì không biết xoay xở thế nào),悩ましい,synonyms_note,
+頭割り,あたまわり,Chia theo đầu người,割り勘,synonyms_note,
+頭打ち,あたまうち,"Chững lại, chạm trần (không tăng thêm được)",伸び悩み,synonyms_note,
+頭金,あたまきん,"Tiền trả trước (khoản đặt cọc ban đầu khi mua trả góp, nhất là mua nhà)",手付金,synonyms_note,
+顔が広い,かおがひろい,"Quen biết rộng, có nhiều mối quan hệ",人脈が広い,synonyms_note,
+顔を出す,かおをだす,"Ló mặt, ghé qua, có mặt",顔を見せる,synonyms_note,
+類似,るいじ,"Tương tự, giống nhau",酷似,synonyms_note,
+顧問,こもん,"Cố vấn, tư vấn",アドバイザー,synonyms_note,
+風向き,かざむき,Hướng gió; chiều hướng tình hình,形勢,synonyms_note,
+風当たり,かぜあたり,"Sức gió; áp lực, sự chỉ trích (từ người khác). VD: 風当たりが強い – bị chỉ trích nhiều",批判,liên kết (từ có sẵn),"Phê phán, chỉ trích"
+飛び込み,とびこみ,Đến/làm mà không hẹn trước (飛び込み営業 – chào hàng tận nơi không hẹn); nhảy xuống (nước),アポなし,synonyms_note,
+飛躍的,ひやくてき,"Nhảy vọt, đột phá",劇的,synonyms_note,
+食い違い,くいちがい,"Sự không khớp, bất đồng (ý kiến, số liệu)",ずれ,synonyms_note,
+食い違う,くいちがう,"Không khớp, bất đồng (ý kiến, số liệu)",かみ合わない,synonyms_note,
+飲み会,のみかい,buổi nhậu,宴会,liên kết (từ có sẵn),"Bữa tiệc, liên hoan"
+飲み込み,のみこみ,"Khả năng tiếp thu, nắm bắt. VD: 飲み込みが早い – tiếp thu nhanh",理解力,synonyms_note,
+飲む,のむ,"Uống; chấp nhận (điều kiện, yêu cầu của đối phương)",受け入れる,synonyms_note,
+養成,ようせい,"Đào tạo, bồi dưỡng, huấn luyện",育成,synonyms_note,
+骨を折る,ほねをおる,"Bỏ nhiều công sức, giúp đỡ tận tình (vì người khác)",尽力する,synonyms_note,
+骨子,こっし,"Nội dung chính, khung sườn (của kế hoạch, bài viết)",要旨,synonyms_note,
+高価,こうか,"Đắt tiền, giá cao",高額,synonyms_note,
+高度,こうど,"Cao, tiên tiến (kỹ thuật, trình độ)",ハイレベル,synonyms_note,
+黒字,くろじ,"Có lãi, thặng dư (trái nghĩa: 赤字)",利益,liên kết (từ có sẵn),"Lợi nhuận, lợi ích"
