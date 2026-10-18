@@ -68,12 +68,12 @@ def _natural_key(topic):
 
 def _autoplay_items(words):
     """Danh sách cho thanh "Nghe cả chủ đề": MỌI trang của kết quả lọc, đúng
-    thứ tự bảng. Mỗi từ = audio của từ rồi audio các câu ví dụ; từ không có
-    audio nào thì bỏ hẳn."""
+    thứ tự bảng. Mỗi từ = audio của từ, nghĩa tiếng Việt, rồi các câu ví dụ;
+    từ không có audio nào thì bỏ hẳn. Audio nghĩa chỉ phát ở đây (thẻ không có nút loa nghĩa)."""
     words = list(words.prefetch_related("examples"))
     items = []
     for w in words:
-        clips = [w.audio_url] if w.audio_url else []
+        clips = [url for url in (w.audio_url, w.meaning_audio_url) if url]
         clips += [ex.audio_url for ex in sorted(w.examples.all(), key=lambda e: e.pk) if ex.audio_url]
         if clips:
             items.append({"id": w.pk, "word": w.word, "reading": w.reading,

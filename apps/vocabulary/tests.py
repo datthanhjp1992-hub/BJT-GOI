@@ -445,6 +445,15 @@ class ListViewTests(VocabularyTestCase):
         self.assertEqual(words, sorted(words))                     # đúng thứ tự bảng (order_by word)
         self.assertContains(response, 'id="autoplay-items"')
 
+    def test_autoplay_plays_word_then_meaning_then_examples(self):
+        from .models import ExampleSentence
+        vocab = self._word("注文", "ちゅうもん", "đặt hàng")
+        Vocabulary.objects.filter(pk=vocab.pk).update(audio_url="https://a/w.mp3", meaning_audio_url="https://a/m.mp3")
+        ExampleSentence.objects.create(vocabulary=vocab, sentence_jp="例文", sentence_vi="câu",
+                                       audio_url="https://a/e.mp3")
+        items = self._filtered(topic="nha-hang").context["autoplay_items"]
+        self.assertEqual(items[0]["clips"], ["https://a/w.mp3", "https://a/m.mp3", "https://a/e.mp3"])
+
     def test_autoplay_bar_hidden_without_audio(self):
         self._word("無音", "むおん", "không tiếng")
         response = self._filtered(topic="nha-hang")

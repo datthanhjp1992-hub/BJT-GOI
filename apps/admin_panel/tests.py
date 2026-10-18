@@ -749,7 +749,7 @@ class FullVocabularyDatasetTests(AdminPanelTestCase):
         self.assertEqual(
             self.headers,
             [
-                "word", "reading", "meaning_vi", "han_viet", "part_of_speech", "audio_url", "synonyms_note", "topics",
+                "word", "reading", "meaning_vi", "han_viet", "part_of_speech", "audio_url", "meaning_audio_url", "synonyms_note", "topics",
                 "example1_jp", "example1_vi",
                 "example2_jp", "example2_vi",
                 "example3_jp", "example3_vi",

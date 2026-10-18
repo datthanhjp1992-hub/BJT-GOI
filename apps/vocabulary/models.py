@@ -88,6 +88,7 @@ class Vocabulary(SoftDeleteModel):
         help_text="Loại từ (MasterCode 24), vd 'adj-na'. Mã hiện ở góc phải thẻ flashcard.",
     )
     audio_url = models.URLField(blank=True)  # audio VOICEVOX trên Supabase — scripts/generate_vocab_audio.py
+    meaning_audio_url = models.URLField(blank=True)  # audio nghĩa tiếng Việt (VieNeu) — chỉ phát trong "Nghe cả chủ đề"
     synonyms = models.ManyToManyField(
         "self", through="vocabulary.VocabularySynonym", symmetrical=True, blank=True,
     )

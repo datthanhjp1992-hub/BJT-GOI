@@ -8,12 +8,17 @@ bucket public "vocab-audio", rồi ghi Vocabulary.audio_url / ExampleSentence.au
     # 2. chạy thật (tạo bucket nếu chưa có, upload, ghi audio_url)
     python scripts/upload_vocab_audio.py --apply --as-user dat
 
-w<id>.mp3 -> Vocabulary id, e<id>.mp3 -> ExampleSentence id. So MD5 với eTag trên bucket:
+w<id>.mp3 -> Vocabulary.audio_url, e<id>.mp3 -> ExampleSentence.audio_url,
+m<id>.mp3 -> Vocabulary.meaning_audio_url (scripts/generate_meaning_audio.py):
+    python scripts/upload_vocab_audio.py media/meaning_audio
+
+So MD5 với eTag trên bucket:
 chưa có -> upload, khác -> ghi đè, giống -> bỏ qua. URL kèm ?v=<md5 rút gọn> nên sửa câu +
-tạo lại audio thì URL tự đổi. Object trên bucket không còn file trên máy chỉ được BÁO, không xoá.
+tạo lại audio thì URL tự đổi. Object (cùng loại w/e/m) trên bucket không còn file trên máy
+chỉ được BÁO, không xoá.
 
 Cần: .env có SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY; DB đã migrate tới
-vocabulary.0007_examplesentence_audio_url (python manage.py migrate --settings=config.settings.supabase).
+vocabulary.0009_vocabulary_meaning_audio_url (python manage.py migrate --settings=config.settings.supabase).
 """
 import argparse
 import json
@@ -109,40 +114,46 @@ def main():
         sys.exit(1)
     say(YELLOW if args.apply else GREEN, "MODE", "GHI THẬT" if args.apply else "CHẠY THỬ (không ghi gì)")
 
-    with connection.cursor() as c:
-        cols = {col.name for col in connection.introspection.get_table_description(c, ExampleSentence._meta.db_table)}
-    has_col = "audio_url" in cols
-    if not has_col:
-        say(RED if args.apply else YELLOW, "MIGRATE", "DB chưa có cột ExampleSentence.audio_url — chạy trước: "
-            ".venv\\Scripts\\python.exe manage.py migrate --settings=config.settings.supabase")
-        if args.apply:
-            sys.exit(1)
-
     files = {p.name: p for p in sorted(args.folder.glob("*.mp3")) if parse_audio_name(p.name)}
+    targets = {"w": (Vocabulary, "audio_url"), "e": (ExampleSentence, "audio_url"),
+               "m": (Vocabulary, "meaning_audio_url")}
+    kinds = {parse_audio_name(name)[0] for name in files}
+    targets = {k: t for k, t in targets.items() if k in kinds}
+    missing_cols = set()
+    with connection.cursor() as c:
+        for kind, (model, field) in targets.items():
+            if field not in {col.name for col in connection.introspection.get_table_description(c, model._meta.db_table)}:
+                missing_cols.add(kind)
+                say(RED if args.apply else YELLOW, "MIGRATE", f"DB chưa có cột {model.__name__}.{field} — chạy trước: "
+                    ".venv\\Scripts\\python.exe manage.py migrate --settings=config.settings.supabase")
+    if missing_cols and args.apply:
+        sys.exit(1)
+
     local = {name: md5_of(p) for name, p in files.items()}
     has_bucket = bucket_exists(base, key, BUCKET)
     remote = list_remote(base, key, BUCKET) if has_bucket else {}
     if not has_bucket:
         say(YELLOW, "BUCKET", f'"{BUCKET}" chưa có — --apply sẽ tạo (public).')
     plan, orphans = plan_uploads(local, remote)
+    # chỉ báo object cùng loại: upload thư mục nghĩa (m) thì audio từ/câu (w/e) không tính là mồ côi
+    orphans = [n for n in orphans if (parse_audio_name(n) or ("",))[0] in kinds]
     counts = {UPLOAD_NEW: 0, UPLOAD_OVERWRITE: 0, UPLOAD_SAME: 0}
     for _, action in plan:
         counts[action] += 1
 
     # URL mong muốn cho từng dòng DB; chỉ dòng đang khác mới ghi.
-    want = {"w": {}, "e": {}}
+    want = {k: {} for k in targets}
     for name, md5 in local.items():
         kind, pk = parse_audio_name(name)
         want[kind][pk] = (name, public_audio_url(base, name, md5))
-    models = {"w": Vocabulary, "e": ExampleSentence}
     changes = {}
-    for kind, model in models.items():
-        if kind == "e" and not has_col:  # chạy thử trước migrate: coi như câu nào cũng phải ghi
+    for kind, (model, field) in targets.items():
+        if kind in missing_cols:  # chạy thử trước migrate: coi như dòng nào cũng phải ghi
             current = dict.fromkeys(model.objects.filter(pk__in=want[kind]).values_list("pk", flat=True), "")
         else:
-            current = dict(model.objects.filter(pk__in=want[kind]).values_list("pk", "audio_url"))
+            current = dict(model.objects.filter(pk__in=want[kind]).values_list("pk", field))
         changes[kind] = {pk: want[kind][pk] for pk, url in current.items() if url != want[kind][pk][1]}
-    missing_rows = sum(len(want[k]) - models[k].objects.filter(pk__in=want[k]).count() for k in want)
+    missing_rows = sum(len(want[k]) - targets[k][0].objects.filter(pk__in=want[k]).count() for k in want)
 
     failed = []
     if args.apply:
@@ -171,15 +182,15 @@ def main():
         try:
             now, user = timezone.now(), get_current_user()
             with transaction.atomic():
-                for kind, model in models.items():
+                for kind, (model, field) in targets.items():
                     objs = []
                     for pk, (name, url) in changes[kind].items():
                         if name in bad:  # file chưa lên bucket thì không trỏ URL tới nó
                             continue
-                        obj = model(pk=pk, audio_url=url, updated_at=now)
+                        obj = model(pk=pk, updated_at=now, **{field: url})
                         obj.updated_by = user
                         objs.append(obj)
-                    model.objects.bulk_update(objs, ["audio_url", "updated_at", "updated_by"], batch_size=500)
+                    model.objects.bulk_update(objs, [field, "updated_at", "updated_by"], batch_size=500)
         finally:
             middleware._thread_locals.user = None
 
@@ -188,7 +199,8 @@ def main():
     print(f"  Upload mới    : {counts[UPLOAD_NEW]}")
     print(f"  Ghi đè        : {counts[UPLOAD_OVERWRITE]}")
     print(f"  Giữ nguyên    : {counts[UPLOAD_SAME]}")
-    print(f"  Ghi audio_url : {len(changes['w'])} từ, {len(changes['e'])} câu ví dụ")
+    print(f"  Ghi audio_url : {len(changes.get('w', {}))} từ, {len(changes.get('e', {}))} câu ví dụ, "
+          f"{len(changes.get('m', {}))} nghĩa")
     if failed:
         print(f"{RED}  Lỗi upload    : {len(failed)} (các dòng này KHÔNG ghi audio_url){RESET}")
         for f in failed[:20]:
