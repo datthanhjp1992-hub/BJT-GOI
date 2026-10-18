@@ -33,7 +33,7 @@
       </ul>
       <div class="lb-actions" style="margin-top:18px;">
         {% if any_left %}<a class="btn btn-outline" href="?lai=1">{% label "lessons.drill.retry" %}</a>{% endif %}
-        {% if next_lesson %}<a class="btn btn-primary" href="{% url 'lessons:drill' next_lesson.scene_no %}">{% label "lessons.polite.lesson" %} {{ next_lesson.scene_no }} <span class="jp">{{ next_lesson.title_jp }}</span> →</a>
+        {% if next_lesson %}<a class="btn btn-primary" href="{% url 'lessons:drill' next_lesson.scene_no %}{% if retry %}?lai=1{% endif %}">{% label "lessons.polite.lesson" %} {{ next_lesson.scene_no }} <span class="jp">{{ next_lesson.title_jp }}</span> →</a>
         {% else %}<a class="btn btn-primary" href="{% url 'lessons:index' %}">{% label "lessons.polite.quit" %}</a>{% endif %}
       </div>
     </div>

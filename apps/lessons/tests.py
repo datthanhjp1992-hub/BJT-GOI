@@ -348,3 +348,67 @@ class RoleplayViewTests(PracticeViewTestCase):
         resp = self.client.get(reverse("lessons:index"))
         self.assertContains(resp, f'class="tag is-ok" href="{self.url}"')
         self.assertEqual(resp.context["stats"]["blank_known"], 3)
+
+
+class ProgressTests(PracticeViewTestCase):
+    """T8 — Học tiếp, Câu chưa thuộc (chuỗi luyện lại qua nhiều bài), tiến độ chương."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.items = {}
+        for lesson in (cls.lessons[1], cls.lessons[3], cls.lessons[8]):
+            drill = Drill.objects.create(lesson=lesson, example_prompt_jp="a", example_answer_jp="b")
+            cls.items[lesson.scene_no] = [DrillItem.objects.create(drill=drill, number=n, prompt_jp=f"p{n}",
+                                                                   answer_jp=f"a{n}") for n in (1, 2, 3)]
+        cls.rp = Roleplay.objects.get(unit=cls.u1, number=1)
+        RoleplayLine.objects.create(roleplay=cls.rp, number=1, speaker="A", text_jp="{1}{2}")
+        cls.blanks = [RoleplayBlank.objects.create(roleplay=cls.rp, number=n, answer_jp="x") for n in (1, 2)]
+
+    def overview(self):
+        return self.client.get(reverse("lessons:index")).context
+
+    def test_fresh_user_resumes_first_drill_and_has_no_retry(self):
+        ctx = self.overview()
+        self.assertEqual(ctx["resume"]["lesson"], self.lessons[1])
+        self.assertIsNone(ctx["resume"]["at"])
+        self.assertEqual((ctx["retry"]["drill"], ctx["retry"]["blank"], ctx["retry"]["polite"]), (0, 0, 0))
+        u1 = ctx["units"][0]
+        self.assertEqual((u1["known"], u1["total"]), (0, 6 + 6 + 2))  # 2 drill × 3 + 6 cặp + 2 ô
+
+    def test_resume_follows_last_practiced_until_finished(self):
+        services.record(self.user, PRACTICE_KIND_DRILL, self.items[9][0].id, True)
+        ctx = self.overview()
+        self.assertEqual(ctx["resume"]["lesson"].scene_no, 9)
+        self.assertEqual((ctx["resume"]["known"], ctx["resume"]["total"]), (1, 3))
+        services.record(self.user, PRACTICE_KIND_BLANK, self.blanks[0].id, False)
+        self.assertEqual(self.overview()["resume"]["roleplay"], self.rp)
+        for b in self.blanks:
+            services.record(self.user, PRACTICE_KIND_BLANK, b.id, True)
+        self.assertEqual(self.overview()["resume"]["lesson"], self.lessons[1])  # đoạn xong -> drill chưa xong đầu
+
+    def test_retry_counts_and_unit_progress(self):
+        services.record(self.user, PRACTICE_KIND_DRILL, self.items[4][1].id, False)
+        services.record(self.user, PRACTICE_KIND_DRILL, self.items[9][0].id, False)
+        services.record(self.user, PRACTICE_KIND_DRILL, self.items[2][0].id, True)
+        services.record(self.user, PRACTICE_KIND_BLANK, self.blanks[1].id, False)
+        formal = services.pairs([self.lessons[0]])[self.lessons[0].id][0]
+        services.record(self.user, PRACTICE_KIND_POLITE, formal.id, False)
+        resp = self.client.get(reverse("lessons:index"))
+        retry = resp.context["retry"]
+        self.assertEqual((retry["drill"], retry["blank"], retry["polite"]), (2, 1, 1))
+        self.assertEqual(retry["drill_lesson"], self.lessons[3])
+        self.assertEqual(retry["roleplay"], self.rp)
+        self.assertContains(resp, f'href="{reverse("lessons:drill", args=[4])}?lai=1"')
+        self.assertEqual(resp.context["units"][0]["known"], 1)
+
+    def test_retry_chain_moves_to_next_lesson_with_wrong_items(self):
+        services.record(self.user, PRACTICE_KIND_DRILL, self.items[4][1].id, False)
+        services.record(self.user, PRACTICE_KIND_DRILL, self.items[9][2].id, False)
+        resp = self.client.get(f"{reverse('lessons:drill', args=[4])}?lai=1&xong=1")
+        self.assertEqual(resp.context["next_lesson"].scene_no, 9)
+        self.assertContains(resp, f'href="{reverse("lessons:drill", args=[9])}?lai=1"')
+        resp = self.client.get(f"{reverse('lessons:drill', args=[9])}?lai=1&xong=1")
+        self.assertIsNone(resp.context["next_lesson"])
+        resp = self.client.get(f"{reverse('lessons:drill', args=[2])}?xong=1")  # không phải luyện lại: bài kế
+        self.assertEqual(resp.context["next_lesson"].scene_no, 4)

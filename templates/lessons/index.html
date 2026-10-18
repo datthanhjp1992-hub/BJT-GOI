@@ -9,7 +9,20 @@ Thẻ dạng luyện = "học tiếp" (bài / đoạn đầu tiên còn câu ch�
 {% block content %}
   <div class="eyebrow">{% label "lessons.eyebrow" %}</div>
   <h1 class="serif" style="font-size:28px;margin:0 0 6px;">{% label "lessons.title" %}</h1>
-  <p class="muted" style="margin:0 0 20px;max-width:680px;">{% label "lessons.intro" %}</p>
+  <p class="muted" style="margin:0 0 16px;">{% label "lessons.intro" %}</p>
+
+  {% if resume %}
+    <div class="card ls-resume">
+      <div>
+        <div class="ls-resume-t"><span class="eyebrow">{% label "lessons.resume" %}</span>
+          {% if resume.kind == "drill" %}{% label "lessons.unit" %} {{ resume.lesson.unit.number }} · {% label "lessons.polite.lesson" %} {{ resume.lesson.scene_no }} <span class="jp">{{ resume.lesson.title_jp }}</span>
+          {% else %}{% label "lessons.unit" %} {{ resume.roleplay.unit.number }} · {% label "lessons.chip.roleplay" %} {{ resume.roleplay.number }} <span class="muted">{{ resume.roleplay.unit.name_vi }}</span>{% endif %}</div>
+        <div class="muted text-sm">{% if resume.kind == "drill" %}{% label "lessons.mode.drill" %}{% else %}{% label "lessons.mode.roleplay" %}{% endif %} ·
+          {% if resume.at %}{% label "lessons.resume.last" %} {{ resume.known }}/{{ resume.total }} {% if resume.kind == "drill" %}{% label "lessons.resume.items" %}{% else %}{% label "lessons.resume.blanks" %}{% endif %} · {% label "lessons.resume.on" %} {{ resume.at|date:"d/m" }}{% else %}{% label "lessons.resume.new" %}{% endif %}</div>
+      </div>
+      <a class="btn btn-primary" href="{% if resume.kind == 'drill' %}{% url 'lessons:drill' resume.lesson.scene_no %}{% else %}{% url 'lessons:roleplay' resume.roleplay.unit.number resume.roleplay.number %}{% endif %}">{% label "lessons.resume.go" %} →</a>
+    </div>
+  {% endif %}
 
   <div class="ls-modes">
     <a class="card ls-mode"{% if next_drill %} href="{% url 'lessons:drill' next_drill.scene_no %}"{% endif %}>
@@ -32,13 +45,24 @@ Thẻ dạng luyện = "học tiếp" (bài / đoạn đầu tiên còn câu ch�
     </a>
   </div>
 
-  <h2 class="serif" style="font-size:20px;margin:0 0 12px;">{% label "lessons.units" %}</h2>
+  <div class="ls-units-head">
+    <h2 class="serif" style="font-size:20px;margin:0;">{% label "lessons.units" %}</h2>
+    {% if retry.drill or retry.blank or retry.polite %}
+      <div class="ls-retry text-sm">
+        <span class="muted">{% label "lessons.retry" %}</span>
+        {% if retry.drill_lesson %}<a class="tag is-ng" href="{% url 'lessons:drill' retry.drill_lesson.scene_no %}?lai=1">{{ retry.drill }} {% label "lessons.retry.drill" %} →</a>{% endif %}
+        {% if retry.roleplay %}<a class="tag is-ng" href="{% url 'lessons:roleplay' retry.roleplay.unit.number retry.roleplay.number %}">{{ retry.blank }} {% label "lessons.retry.blank" %} →</a>{% endif %}
+        {% if retry.polite %}<a class="tag is-ng" href="{% url 'lessons:polite' %}?moi=1">{{ retry.polite }} {% label "lessons.retry.polite" %} →</a>{% endif %}
+      </div>
+    {% endif %}
+  </div>
   {% for u in units %}
     <details class="ls-unit"{% if u.unit.number == open_unit %} open{% endif %}>
       <summary>
         <span class="no">{{ u.unit.number }}</span>
         <span class="nm">{{ u.unit.name_vi }} <span class="jp muted">{{ u.unit.name_jp }}</span></span>
-        <span class="pg muted">{{ u.rows|length }} {% label "lessons.units.lessons" %}{% if u.polite_left %} · {{ u.polite_left }} {% label "lessons.units.polite_left" %}{% else %} · {% label "lessons.chip.polite" %} ✓{% endif %}</span>
+        <span class="pg muted">{{ u.rows|length }} {% label "lessons.units.lessons" %} · {{ u.known }}/{{ u.total }} {% label "lessons.units.done" %}
+          <span class="bar" aria-hidden="true"><i class="s-hi" style="width:{{ u.percent }}%"></i></span></span>
         <span class="chev" aria-hidden="true">›</span>
       </summary>
       {% for r in u.rows %}
@@ -46,7 +70,7 @@ Thẻ dạng luyện = "học tiếp" (bài / đoạn đầu tiên còn câu ch�
           <span class="n">{{ r.lesson.scene_no }}</span>
           <div><div class="jp">{{ r.lesson.title_jp }}</div><div class="muted text-sm">{{ r.lesson.title_vi }}</div></div>
           <div class="acts">
-            {% if r.has_drill %}<a class="tag{% if r.drill_known == r.drill_total %} is-ok{% endif %}" href="{% url 'lessons:drill' r.lesson.scene_no %}">{% label "lessons.chip.drill" %}{% if r.drill_known %} {{ r.drill_known }}/{{ r.drill_total }}{% endif %}</a>
+            {% if r.has_drill %}<a class="tag{% if r.drill_known == r.drill_total %} is-ok{% elif r.drill_ng %} is-ng{% endif %}" href="{% url 'lessons:drill' r.lesson.scene_no %}">{% label "lessons.chip.drill" %}{% if r.drill_known %} {{ r.drill_known }}/{{ r.drill_total }}{% endif %}</a>
             {% else %}<span class="tag is-off">{% label "lessons.chip.drill" %}</span>{% endif %}
             {% if r.has_polite %}<a class="tag{% if r.polite_known %} is-ok{% endif %}" href="{% url 'lessons:polite' %}?chuong={{ u.group }}">{% label "lessons.chip.polite" %}{% if r.polite_known %} ✓{% endif %}</a>
             {% else %}<span class="tag is-off">{% label "lessons.chip.polite" %}</span>{% endif %}
@@ -55,7 +79,7 @@ Thẻ dạng luyện = "học tiếp" (bài / đoạn đầu tiên còn câu ch�
       {% endfor %}
       {% if u.roleplays %}
         <div class="ls-rp muted text-sm">{% label "lessons.units.roleplay" %}
-          {% for rp in u.roleplays %}<a class="tag{% if rp.done %} is-ok{% endif %}" href="{% url 'lessons:roleplay' u.unit.number rp.roleplay.number %}">{% label "lessons.chip.roleplay" %} {{ rp.roleplay.number }}{% if rp.done %} ✓{% endif %}</a>{% endfor %}
+          {% for rp in u.roleplays %}<a class="tag{% if rp.done %} is-ok{% elif rp.ng %} is-ng{% endif %}" href="{% url 'lessons:roleplay' u.unit.number rp.roleplay.number %}">{% label "lessons.chip.roleplay" %} {{ rp.roleplay.number }}{% if rp.done %} ✓{% endif %}</a>{% endfor %}
         </div>
       {% endif %}
     </details>

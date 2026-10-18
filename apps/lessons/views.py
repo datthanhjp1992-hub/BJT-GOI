@@ -119,7 +119,9 @@ def drill_view(request, scene_no):
     if request.GET.get("xong") or not queue:
         rows = [{"item": it, "ok": known.get(it.id)} for it in items]
         context.update(done=True, rows=rows, any_left=any(r["ok"] is not True for r in rows),
-                       next_lesson=services.next_drill_lesson(lesson))
+                       # đang "luyện lại": sang bài kế còn câu chưa được, giữ ?lai=1 (T8)
+                       next_lesson=(services.next_retry_lesson(request.user, lesson) if retry
+                                    else services.next_drill_lesson(lesson)))
         return render(request, "lessons/drill.html", context)
 
     try:

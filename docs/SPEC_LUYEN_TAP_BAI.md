@@ -1,6 +1,6 @@
 # Spec — Luyện tập theo bài (Quyển 1)
 
-> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.2 đã chốt (Dat, 17/10/2026) — T1–T7 xong (Mốc 2, 18/10/2026) — tiếp T8** · Người duyệt: Dat
+> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.2 đã chốt (Dat, 17/10/2026) — T1–T8 xong (Mốc 3, 18/10/2026)** · Người duyệt: Dat
 >
 > Nguồn: `bjt.db` của BJT-WEB — giáo trình hội thoại công sở "Quyển 1" (anh Smith,
 > công ty ABC商事; 12 chương, 45 bài). Đây là "phần 2" trong bản rà `bjt.db` ngày 16/10/2026;
@@ -156,6 +156,16 @@ Cả 4 màn theo quy tắc trang không quá dài (spec.md §0 quy tắc 9): đo
 - **Test:** câu trang trọng hơn = `level_code` nhỏ hơn trong cặp; thứ tự hai câu hiển thị ngẫu nhiên; lọc `?chuong=`.
 
 ### T8 Tiến độ + "luyện lại câu chưa thuộc" + điện thoại, theme B/C (1 ngày)
+- **Xong 18/10/2026.** L1 thêm:
+  - Thẻ **"Học tiếp"** (như mockup): bài drill / đoạn đóng vai luyện gần nhất nếu còn câu chưa được,
+    không thì bài drill chưa xong đầu tiên. Hiện "lần trước nói được x/y · ngày dd/mm".
+  - **Tiến độ chương**: "x/y câu xong" + thanh tiến độ (drill + ô đóng vai + cặp lịch sự).
+    Chương mở sẵn = chương đầu tiên chưa xong hết.
+  - **"Câu chưa thuộc"** (cạnh tiêu đề "12 chương", không thêm chiều cao) — chỉ đếm câu đã chấm
+    "Chưa được": drill → bài đầu tiên có câu sai `?lai=1`, hết bài thì nút "Bài kế" nhảy sang bài sai kế
+    tiếp (vẫn `?lai=1`); đóng vai → đoạn đầu có ô sai; lịch sự → lượt mới (đã ưu tiên cặp sai).
+    Chip bài / đoạn có câu sai tô màu sai.
+  - Kiểm theme A/B/C, sáng/tối, 375px: không cuộn ngang. Chiều cao L1: 1280×860 — 1.677px; 375px — 2.191px.
 
 ---
 
