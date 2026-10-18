@@ -222,10 +222,12 @@ class IndexViewTests(PracticeViewTestCase):
         self.assertEqual(resp.context["stats"]["polite_known"], 6)
         self.assertContains(resp, 'href="/bai/lich-su/?chuong=5-8"')
 
-    def test_sidebar_has_lessons_group(self):
+    def test_sidebar_hides_lessons_while_closed(self):
+        """Tạm đóng 18/10/2026 (Dat): sidebar không còn mục Học theo bài; URL vẫn chạy."""
         resp = self.client.get(reverse("lessons:index"))
-        self.assertContains(resp, reverse("lessons:polite"))
+        self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context["active_nav"], "lessons")
+        self.assertNotContains(resp, 'href="/bai/"')
 
 
 class DrillViewTests(PracticeViewTestCase):
