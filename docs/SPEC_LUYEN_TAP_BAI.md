@@ -1,6 +1,6 @@
 # Spec — Luyện tập theo bài (Quyển 1)
 
-> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.2 đã chốt (Dat, 17/10/2026) — T1–T4, T7 xong (Mốc 1) — tiếp T5 + T6** · Người duyệt: Dat
+> Ngày lập: 17/10/2026 · Trạng thái: **mục 0.2 đã chốt (Dat, 17/10/2026) — T1–T7 xong (Mốc 2, 18/10/2026) — tiếp T8** · Người duyệt: Dat
 >
 > Nguồn: `bjt.db` của BJT-WEB — giáo trình hội thoại công sở "Quyển 1" (anh Smith,
 > công ty ABC商事; 12 chương, 45 bài). Đây là "phần 2" trong bản rà `bjt.db` ngày 16/10/2026;
@@ -137,10 +137,20 @@ Cả 4 màn theo quy tắc trang không quá dài (spec.md §0 quy tắc 9): đo
 ### T5 L2 Luyện thay thế (1 ngày)
 - **Test:** chưa đăng nhập → login; POST "Đúng/Chưa" tạo/cập nhật `UserPracticeMark`;
   bài không có drill → 404.
+- **Xong 18/10/2026.** `/bai/<scene_no>/thay-the/` — câu mẫu + 3 gợi ý, `?n=` câu số mấy, "Hiện đáp án"
+  là `<details>` (không JS), hai nút ◆B POST `…/cham/` rồi redirect sang câu kế; `?lai=1` chỉ hỏi câu
+  chưa "Nói được", `?xong=1` trang kết quả (+ nút sang bài có drill kế tiếp). Thẻ "Luyện thay thế" ở L1
+  dẫn tới bài đầu tiên còn câu chưa được; chip "Thay thế" mỗi bài bấm được.
+  Chiều cao: 1280×860 — L2 ≈ 1 màn, kết quả 891px; 375px — L2 918px, không cuộn ngang.
 
 ### T6 L3 Hội thoại đóng vai (1,5 ngày)
 - **Cách làm:** `{n}` → ô đánh số, dựng trong selector (escape trước rồi mới chèn thẻ, như `|ruby`).
 - **Test:** đoạn có 3 ô hiện đúng 3 ô; chữ trong lời thoại được escape.
+- **Xong 18/10/2026.** `/bai/chuong/<n>/dong-vai/<k>/` — tab Đoạn 1/2, vai người học = người nói câu có ô
+  đầu tiên. Lời thoại tách phần ở `services.line_parts` (chữ để template escape, không `mark_safe`); mỗi ô
+  là `<details>`, chấm ✓/✗ POST rồi redirect `?mo=<các ô đã chấm>#o<n>` để ô vừa chấm vẫn mở;
+  `?all=1` "Hiện tất cả". Chip "Đóng vai" ở L1 bấm được, ✓ khi mọi ô của đoạn đã "Nói được".
+  Chiều cao: 1280×860 — L3 937px (hiện tất cả); 375px — 1.318px, không cuộn ngang.
 
 ### T7 L4 Mức độ lịch sự (1 ngày)
 - **Test:** câu trang trọng hơn = `level_code` nhỏ hơn trong cặp; thứ tự hai câu hiển thị ngẫu nhiên; lọc `?chuong=`.

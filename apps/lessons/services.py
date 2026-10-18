@@ -10,7 +10,7 @@ from django.utils import timezone
 
 from apps.core.constants import PRACTICE_KIND_BLANK, PRACTICE_KIND_DRILL, PRACTICE_KIND_POLITE
 
-from .models import DrillItem, Lesson, PolitenessPhrase, RoleplayBlank, Unit, UserPracticeMark
+from .models import BLANK_RE, DrillItem, Lesson, PolitenessPhrase, Roleplay, RoleplayBlank, Unit, UserPracticeMark
 
 ROUND_SIZE = 10
 
@@ -89,6 +89,65 @@ def record(user, kind, object_id, is_known):
 
 
 # ---------------------------------------------------------------------------
+# L2 Luyện thay thế (◆2: tự nói -> lật đáp án -> tự chấm)
+# ---------------------------------------------------------------------------
+
+def drill_queue(items, known, retry):
+    """Câu sẽ hỏi: cả bài, hoặc (retry) chỉ câu chưa "Nói được"."""
+    return [it for it in items if not retry or known.get(it.id) is not True]
+
+
+def drill_step(queue, number):
+    """(câu hiện tại, số câu kế tiếp hoặc None) — `number` lạ thì về câu đầu hàng đợi."""
+    numbers = [it.number for it in queue]
+    pos = numbers.index(number) if number in numbers else 0
+    return queue[pos], (numbers[pos + 1] if pos + 1 < len(numbers) else None)
+
+
+def next_drill_lesson(lesson):
+    return Lesson.objects.filter(scene_no__gt=lesson.scene_no, drill__isnull=False).first()
+
+
+# ---------------------------------------------------------------------------
+# L3 Hội thoại đóng vai
+# ---------------------------------------------------------------------------
+
+def line_parts(text, blanks):
+    """'スミスです。{1}。' -> [{'text': 'スミスです。'}, {'blank': <RoleplayBlank 1>}, {'text': '。'}].
+    Không dựng HTML ở đây: template tự escape từng phần chữ, ô trống là thẻ của template.
+    {n} không có đáp án giữ nguyên chữ (check_lesson_data báo lỗi loại này)."""
+    parts, pos = [], 0
+    for m in BLANK_RE.finditer(text):
+        blank = blanks.get(int(m.group(1)))
+        if blank is None:
+            continue
+        if m.start() > pos:
+            parts.append({"text": text[pos:m.start()]})
+        parts.append({"blank": blank})
+        pos = m.end()
+    if pos < len(text):
+        parts.append({"text": text[pos:]})
+    return parts
+
+
+def roleplay_lines(roleplay):
+    """Lời thoại đã tách phần + vai của người học (người nói câu có ô trống đầu tiên)."""
+    blanks = {b.number: b for b in roleplay.blanks.all()}
+    lines = [{"line": l, "parts": line_parts(l.text_jp, blanks)} for l in roleplay.lines.all()]
+    me = next((r["line"].speaker for r in lines if any("blank" in p for p in r["parts"])), "")
+    for r in lines:
+        r["me"] = r["line"].speaker == me
+    return lines, me, list(blanks.values())
+
+
+def next_roleplay(roleplay):
+    return (Roleplay.objects.select_related("unit")
+            .filter(unit__number__gte=roleplay.unit.number)
+            .exclude(unit__number=roleplay.unit.number, number__lte=roleplay.number)
+            .order_by("unit__number", "number").first())
+
+
+# ---------------------------------------------------------------------------
 # L1 Tổng quan
 # ---------------------------------------------------------------------------
 
@@ -102,6 +161,12 @@ def overview(user):
     drill_items = {}
     for item_id, lesson_id in DrillItem.objects.values_list("id", "drill__lesson_id"):
         drill_items.setdefault(lesson_id, []).append(item_id)
+
+    blank_known = set(UserPracticeMark.objects.filter(user=user, kind=PRACTICE_KIND_BLANK, is_known=True)
+                      .values_list("object_id", flat=True))
+    roleplay_blanks = {}
+    for blank_id, roleplay_id in RoleplayBlank.objects.values_list("id", "roleplay_id"):
+        roleplay_blanks.setdefault(roleplay_id, []).append(blank_id)
 
     units = []
     for unit in Unit.objects.prefetch_related("roleplays"):
@@ -117,19 +182,31 @@ def overview(user):
                 "has_polite": pair is not None,
                 "polite_known": pair is not None and polite_known.get(pair[0].id) is True,
             })
-        units.append({"unit": unit, "rows": rows, "group": group_of_unit(unit.number),
-                      "polite_left": sum(1 for r in rows if r["has_polite"] and not r["polite_known"])})
+        roleplays = [{"roleplay": rp, "done": all(b in blank_known for b in roleplay_blanks.get(rp.id, []))}
+                     for rp in unit.roleplays.all()]
+        units.append({"unit": unit, "rows": rows, "roleplays": roleplays, "group": group_of_unit(unit.number),
+                      "polite_left": sum(1 for r in rows if r["has_polite"] and not r["polite_known"]),
+                      "drill_left": sum(r["drill_total"] - r["drill_known"] for r in rows),
+                      "roleplay_left": sum(1 for r in roleplays if not r["done"])})
 
-    # Chương mở sẵn = chương đầu tiên còn cặp lịch sự chưa đúng (T5/T6 sẽ tính thêm drill, đóng vai).
-    open_unit = next((u["unit"].number for u in units if u["polite_left"]), 1)
+    # Chương mở sẵn = chương đầu tiên còn câu chưa được ở bất kỳ dạng nào.
+    open_unit = next((u["unit"].number for u in units
+                      if u["polite_left"] or u["drill_left"] or u["roleplay_left"]), 1)
+    # "Học tiếp" của từng thẻ: bài / đoạn đầu tiên còn câu chưa được (hết thì quay về cái đầu).
+    drill_rows = [r for u in units for r in u["rows"] if r["has_drill"]]
+    all_roleplays = [r for u in units for r in u["roleplays"]]
+    next_drill = next((r for r in drill_rows if r["drill_known"] < r["drill_total"]), drill_rows[0] if drill_rows else None)
+    next_rp = next((r for r in all_roleplays if not r["done"]), all_roleplays[0] if all_roleplays else None)
     return {
         "units": units,
         "open_unit": open_unit,
+        "next_drill": next_drill and next_drill["lesson"],
+        "next_roleplay": next_rp and next_rp["roleplay"],
         "stats": {
             "lessons": len(lessons),
             "drill_known": len(drill_known),
             "drill_total": sum(len(v) for v in drill_items.values()),
-            "blank_known": UserPracticeMark.objects.filter(user=user, kind=PRACTICE_KIND_BLANK, is_known=True).count(),
+            "blank_known": len(blank_known),
             "blank_total": RoleplayBlank.objects.count(),
             "polite_known": sum(1 for v in polite_known.values() if v),
             "polite_total": len(found),

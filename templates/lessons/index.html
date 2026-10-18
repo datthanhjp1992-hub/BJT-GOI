@@ -2,8 +2,7 @@
 {% load properties_tags %}
 {% comment %}L1 Tổng quan Học theo bài -- mockup SC24 (Dat duyệt 17/10/2026).
 12 chương là <details>: chương đang học mở sẵn, còn lại gập (quy tắc trang không quá dài).
-Mốc 1 (T4 + T7): chỉ "Mức lịch sự" có màn luyện; Luyện thay thế / Đóng vai hiện "Sắp có" và
-chip chưa bấm được cho tới T5 / T6. Thẻ "Học tiếp" của mockup cũng chờ T5 (cần dữ liệu luyện thay thế).{% endcomment %}
+Thẻ dạng luyện = "học tiếp" (bài / đoạn đầu tiên còn câu chưa được). Chip mờ = bài không có dạng đó.{% endcomment %}
 
 {% block title %}{% label "lessons.title" %} | {% label "common.brand.name" %}{% endblock %}
 
@@ -13,18 +12,18 @@ chip chưa bấm được cho tới T5 / T6. Thẻ "Học tiếp" của mockup c
   <p class="muted" style="margin:0 0 20px;max-width:680px;">{% label "lessons.intro" %}</p>
 
   <div class="ls-modes">
-    <div class="card ls-mode is-soon">
+    <a class="card ls-mode"{% if next_drill %} href="{% url 'lessons:drill' next_drill.scene_no %}"{% endif %}>
       <div class="kanji jp">替</div>
-      <h3 class="serif">{% label "lessons.mode.drill" %} <span class="tag">{% label "lessons.mode.soon" %}</span></h3>
+      <h3 class="serif">{% label "lessons.mode.drill" %}</h3>
       <p class="muted text-sm">{% label "lessons.mode.drill.desc" %}</p>
-      <div class="meta"><b>{{ stats.drill_known }}</b> / {{ stats.drill_total }} {% label "lessons.mode.said" %}</div>
-    </div>
-    <div class="card ls-mode is-soon">
+      <div class="meta"><b>{{ stats.drill_known }}</b> / {{ stats.drill_total }} {% label "lessons.mode.said" %}{% if next_drill %} · {% label "lessons.mode.continue" %} {% label "lessons.polite.lesson" %} {{ next_drill.scene_no }}{% endif %}</div>
+    </a>
+    <a class="card ls-mode"{% if next_roleplay %} href="{% url 'lessons:roleplay' next_roleplay.unit.number next_roleplay.number %}"{% endif %}>
       <div class="kanji jp">役</div>
-      <h3 class="serif">{% label "lessons.mode.roleplay" %} <span class="tag">{% label "lessons.mode.soon" %}</span></h3>
+      <h3 class="serif">{% label "lessons.mode.roleplay" %}</h3>
       <p class="muted text-sm">{% label "lessons.mode.roleplay.desc" %}</p>
-      <div class="meta"><b>{{ stats.blank_known }}</b> / {{ stats.blank_total }} {% label "lessons.mode.blanks" %}</div>
-    </div>
+      <div class="meta"><b>{{ stats.blank_known }}</b> / {{ stats.blank_total }} {% label "lessons.mode.blanks" %}{% if next_roleplay %} · {% label "lessons.mode.continue" %} {% label "lessons.unit" %} {{ next_roleplay.unit.number }}{% endif %}</div>
+    </a>
     <a class="card ls-mode" href="{% url 'lessons:polite' %}">
       <div class="kanji jp">敬</div>
       <h3 class="serif">{% label "lessons.mode.polite" %}</h3>
@@ -47,16 +46,16 @@ chip chưa bấm được cho tới T5 / T6. Thẻ "Học tiếp" của mockup c
           <span class="n">{{ r.lesson.scene_no }}</span>
           <div><div class="jp">{{ r.lesson.title_jp }}</div><div class="muted text-sm">{{ r.lesson.title_vi }}</div></div>
           <div class="acts">
-            {% if r.has_drill %}<span class="tag{% if r.drill_known == r.drill_total %} is-ok{% endif %}">{% label "lessons.chip.drill" %}{% if r.drill_known %} {{ r.drill_known }}/{{ r.drill_total }}{% endif %}</span>
+            {% if r.has_drill %}<a class="tag{% if r.drill_known == r.drill_total %} is-ok{% endif %}" href="{% url 'lessons:drill' r.lesson.scene_no %}">{% label "lessons.chip.drill" %}{% if r.drill_known %} {{ r.drill_known }}/{{ r.drill_total }}{% endif %}</a>
             {% else %}<span class="tag is-off">{% label "lessons.chip.drill" %}</span>{% endif %}
             {% if r.has_polite %}<a class="tag{% if r.polite_known %} is-ok{% endif %}" href="{% url 'lessons:polite' %}?chuong={{ u.group }}">{% label "lessons.chip.polite" %}{% if r.polite_known %} ✓{% endif %}</a>
             {% else %}<span class="tag is-off">{% label "lessons.chip.polite" %}</span>{% endif %}
           </div>
         </div>
       {% endfor %}
-      {% if u.unit.roleplays.all %}
+      {% if u.roleplays %}
         <div class="ls-rp muted text-sm">{% label "lessons.units.roleplay" %}
-          {% for rp in u.unit.roleplays.all %}<span class="tag is-off">{% label "lessons.chip.roleplay" %} {{ rp.number }}</span>{% endfor %}
+          {% for rp in u.roleplays %}<a class="tag{% if rp.done %} is-ok{% endif %}" href="{% url 'lessons:roleplay' u.unit.number rp.roleplay.number %}">{% label "lessons.chip.roleplay" %} {{ rp.roleplay.number }}{% if rp.done %} ✓{% endif %}</a>{% endfor %}
         </div>
       {% endif %}
     </details>

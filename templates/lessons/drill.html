@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}L2 Luyện thay thế -- mockup SC24 (Dat duyệt 17/10/2026). Câu mẫu -> lần lượt 3 gợi ý.
+"Hiện đáp án" là <details> (không cần JS); hai nút tự chấm ◆B POST rồi redirect sang câu kế (?n=).
+?lai=1 chỉ hỏi câu chưa "Nói được"; ?xong=1 trang kết quả.{% endcomment %}
+
+{% block title %}{% label "lessons.mode.drill" %} · {{ lesson.scene_no }} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+<div class="lb-wrap">
+  <div class="ls-crumb muted text-sm"><a href="{% url 'lessons:index' %}">{% label "lessons.title" %}</a> › {% label "lessons.unit" %} {{ lesson.unit.number }} {{ lesson.unit.name_vi }} › {% label "lessons.polite.lesson" %} {{ lesson.scene_no }}</div>
+  <div class="eyebrow">{% label "lessons.mode.drill" %} · {% label "lessons.polite.lesson" %} {{ lesson.scene_no }}</div>
+  <h1 class="jp" style="font-size:28px;margin:0 0 6px;">{{ lesson.title_jp }}</h1>
+  <p class="muted" style="margin:0 0 14px;">{{ lesson.title_vi }}{% if seen %} · <span class="tag">{% label "lessons.drill.last" %} {{ said }}/{{ items|length }}</span>{% endif %}</p>
+
+  {% if lesson.situation_vi %}<div class="ls-scene"><b>{% label "lessons.situation" %}</b> {{ lesson.situation_vi }}</div>{% endif %}
+  <div class="ls-example">
+    <span class="lbl">{% label "lessons.drill.example" %}</span>
+    <span class="jp">{{ drill.example_prompt_jp }}</span><span class="arr" aria-hidden="true">→</span><span class="jp">{{ drill.example_answer_jp }}</span>
+  </div>
+
+  {% if done %}
+    <div class="card lb-card">
+      <h2 class="serif" style="margin:0 0 4px;">{% label "lessons.drill.done" %} {{ lesson.scene_no }} — {% label "lessons.drill.said" %} {{ said }} / {{ items|length }}</h2>
+      <p class="muted text-sm" style="margin:0;">{% label "lessons.drill.done_note" %}</p>
+      <ul class="ls-sum">
+        {% for r in rows %}
+          <li>
+            <span class="mk {% if r.ok %}is-ok{% else %}is-ng{% endif %}">{% if r.ok %}○{% elif r.ok is None %}–{% else %}×{% endif %}</span>
+            <span class="jp muted">{{ r.item.prompt_jp }}</span><span class="muted">→</span><span class="jp">{{ r.item.answer_jp }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+      <div class="lb-actions" style="margin-top:18px;">
+        {% if any_left %}<a class="btn btn-outline" href="?lai=1">{% label "lessons.drill.retry" %}</a>{% endif %}
+        {% if next_lesson %}<a class="btn btn-primary" href="{% url 'lessons:drill' next_lesson.scene_no %}">{% label "lessons.polite.lesson" %} {{ next_lesson.scene_no }} <span class="jp">{{ next_lesson.title_jp }}</span> →</a>
+        {% else %}<a class="btn btn-primary" href="{% url 'lessons:index' %}">{% label "lessons.polite.quit" %}</a>{% endif %}
+      </div>
+    </div>
+
+  {% else %}
+    <div class="ls-drill-head">
+      <div class="lb-dots">
+        {% for d in dots %}<span class="dot{% if d.cur %} is-cur{% elif d.ok %} is-ok{% elif d.ok is False %} is-ng{% endif %}">{{ d.item.number }}</span>{% endfor %}
+      </div>
+      <span class="muted text-sm">{% label "lessons.drill.hint" %}</span>
+    </div>
+    <div class="card lb-card ls-qcard">
+      <div class="muted text-sm">{% label "lessons.drill.cue" %}</div>
+      <div class="ls-prompt jp">{{ current.prompt_jp }}</div>
+      <details class="ls-reveal">
+        <summary class="btn btn-primary">{% label "lessons.drill.reveal" %}</summary>
+        <div class="ls-answer jp">{{ current.answer_jp }}</div>
+        <form method="post" action="{% url 'lessons:drill_mark' lesson.scene_no %}" class="ls-grade">
+          {% csrf_token %}
+          <input type="hidden" name="item" value="{{ current.id }}">
+          <input type="hidden" name="next" value="{{ next_number|default_if_none:'' }}">
+          {% if retry %}<input type="hidden" name="lai" value="1">{% endif %}
+          <button class="btn btn-grade is-good" type="submit" name="ok" value="1">✓ {% label "lessons.grade.ok" %}</button>
+          <button class="btn btn-grade is-forgot" type="submit" name="ok" value="0">✗ {% label "lessons.grade.ng" %}</button>
+        </form>
+      </details>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -7,7 +7,9 @@ from django.test import TestCase
 from django.urls import reverse, reverse_lazy
 
 from apps.core import dataio
-from apps.core.constants import PRACTICE_KIND_POLITE, politeness_level_choices, practice_kind_choices
+from apps.core.constants import (
+    PRACTICE_KIND_BLANK, PRACTICE_KIND_DRILL, PRACTICE_KIND_POLITE, politeness_level_choices, practice_kind_choices,
+)
 
 from . import services, views
 from .models import (
@@ -224,3 +226,125 @@ class IndexViewTests(PracticeViewTestCase):
         resp = self.client.get(reverse("lessons:index"))
         self.assertContains(resp, reverse("lessons:polite"))
         self.assertEqual(resp.context["active_nav"], "lessons")
+
+
+class DrillViewTests(PracticeViewTestCase):
+    """T5 — L2 Luyện thay thế."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        lesson = cls.lessons[1]
+        drill = Drill.objects.create(lesson=lesson, example_prompt_jp="山川物産、佐藤課長",
+                                     example_answer_jp="こちら、山川物産の佐藤課長です。")
+        cls.items = [DrillItem.objects.create(drill=drill, number=n, prompt_jp=f"会社{n}、<b>人{n}</b>",
+                                              answer_jp=f"こちら、会社{n}の人{n}です。") for n in (1, 2, 3)]
+        cls.url = reverse("lessons:drill", args=[lesson.scene_no])
+        cls.mark_url = reverse("lessons:drill_mark", args=[lesson.scene_no])
+
+    def mark(self, item, ok, nxt="", **extra):
+        return self.client.post(self.mark_url, {"item": item.id, "ok": "1" if ok else "0", "next": nxt, **extra})
+
+    def test_login_required(self):
+        self.client.logout()
+        self.assertEqual(self.client.get(self.url).status_code, 302)
+        self.assertEqual(self.mark(self.items[0], True).status_code, 302)
+        self.assertFalse(UserPracticeMark.objects.exists())
+
+    def test_lesson_without_drill_is_404(self):
+        self.assertEqual(self.client.get(reverse("lessons:drill", args=[1])).status_code, 404)
+        self.assertEqual(self.client.get(reverse("lessons:drill", args=[99])).status_code, 404)
+
+    def test_walk_through_and_marks_are_updated(self):
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.context["current"], self.items[0])
+        self.assertEqual(resp.context["next_number"], 2)
+        self.assertContains(resp, "会社1、&lt;b&gt;人1&lt;/b&gt;")  # chữ được escape
+        self.assertRedirects(self.mark(self.items[0], True, nxt="2"), f"{self.url}?n=2")
+        self.assertRedirects(self.mark(self.items[1], False, nxt="3"), f"{self.url}?n=3", fetch_redirect_response=False)
+        self.assertRedirects(self.mark(self.items[2], True), f"{self.url}?xong=1", fetch_redirect_response=False)
+        self.mark(self.items[1], True, nxt="3")  # chấm lại: ghi đè, cộng số lần
+        mark = UserPracticeMark.objects.get(user=self.user, kind=PRACTICE_KIND_DRILL, object_id=self.items[1].id)
+        self.assertEqual((mark.is_known, mark.times), (True, 2))
+        resp = self.client.get(f"{self.url}?xong=1")
+        self.assertTrue(resp.context["done"])
+        self.assertEqual(resp.context["said"], 3)
+        self.assertFalse(resp.context["any_left"])
+
+    def test_retry_only_asks_not_yet_said(self):
+        self.mark(self.items[0], True)
+        self.mark(self.items[1], False)
+        resp = self.client.get(f"{self.url}?lai=1")
+        self.assertEqual(resp.context["current"], self.items[1])
+        self.assertEqual(resp.context["next_number"], 3)
+        self.assertRedirects(self.mark(self.items[2], True, lai="1"), f"{self.url}?lai=1&xong=1",
+                             fetch_redirect_response=False)
+
+    def test_item_of_other_lesson_is_rejected(self):
+        other = reverse("lessons:drill_mark", args=[self.lessons[0].scene_no])
+        self.client.post(other, {"item": self.items[0].id, "ok": "1"})
+        self.assertFalse(UserPracticeMark.objects.exists())
+
+    def test_overview_links_drill(self):
+        resp = self.client.get(reverse("lessons:index"))
+        self.assertEqual(resp.context["next_drill"], self.lessons[1])
+        self.assertContains(resp, f'href="{self.url}"')
+
+
+class RoleplayViewTests(PracticeViewTestCase):
+    """T6 — L3 Hội thoại đóng vai."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.rp = Roleplay.objects.get(unit=cls.u1, number=1)
+        RoleplayLine.objects.create(roleplay=cls.rp, number=1, speaker="Ms.Nakagawa", text_jp="はじめまして。<i>中川</i>です。")
+        RoleplayLine.objects.create(roleplay=cls.rp, number=2, speaker="Mr.Smith", text_jp="{1}。スミスです。{2}。")
+        RoleplayLine.objects.create(roleplay=cls.rp, number=3, speaker="Mr.Smith", text_jp="{3}")
+        cls.blanks = [RoleplayBlank.objects.create(roleplay=cls.rp, number=n, answer_jp=a)
+                      for n, a in ((1, "はじめまして"), (2, "よろしくお願いします"), (3, "これをどうぞ"))]
+        cls.url = reverse("lessons:roleplay", args=[1, 1])
+        cls.mark_url = reverse("lessons:roleplay_mark", args=[1, 1])
+
+    def test_line_parts(self):
+        blanks = {b.number: b for b in self.blanks}
+        parts = services.line_parts("{1}。スミスです。{2}。{9}", blanks)
+        self.assertEqual(parts, [{"blank": self.blanks[0]}, {"text": "。スミスです。"}, {"blank": self.blanks[1]},
+                                 {"text": "。{9}"}])
+
+    def test_three_blanks_and_escaped_text(self):
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'class="ls-blank"', count=3)
+        self.assertContains(resp, "&lt;i&gt;中川&lt;/i&gt;")
+        self.assertNotContains(resp, "<i>中川</i>")
+        self.assertEqual(resp.context["me"], "Mr.Smith")
+        self.assertNotContains(resp, "<details class=\"ls-blank\" id=\"o1\" open")
+
+    def test_mark_keeps_blank_open_and_records(self):
+        resp = self.client.post(self.mark_url, {"blank": self.blanks[0].id, "ok": "1", "mo": "3"})
+        self.assertRedirects(resp, f"{self.url}?mo=1,3#o1", fetch_redirect_response=False)
+        mark = UserPracticeMark.objects.get(user=self.user, kind=PRACTICE_KIND_BLANK, object_id=self.blanks[0].id)
+        self.assertTrue(mark.is_known)
+        resp = self.client.get(f"{self.url}?mo=1,3")
+        self.assertContains(resp, '<details class="ls-blank" id="o1" open>')
+        self.assertContains(resp, '<details class="ls-blank" id="o3" open>')
+        self.assertContains(resp, '<details class="ls-blank" id="o2">')
+        self.assertEqual(resp.context["said"], 1)
+
+    def test_show_all_opens_every_blank(self):
+        resp = self.client.get(f"{self.url}?all=1")
+        for n in (1, 2, 3):
+            self.assertContains(resp, f'id="o{n}" open>')
+
+    def test_blank_of_other_roleplay_rejected_and_missing_is_404(self):
+        self.client.post(reverse("lessons:roleplay_mark", args=[5, 1]), {"blank": self.blanks[0].id, "ok": "1"})
+        self.assertFalse(UserPracticeMark.objects.exists())
+        self.assertEqual(self.client.get(reverse("lessons:roleplay", args=[1, 2])).status_code, 404)
+
+    def test_overview_marks_roleplay_done(self):
+        for b in self.blanks:
+            services.record(self.user, PRACTICE_KIND_BLANK, b.id, True)
+        resp = self.client.get(reverse("lessons:index"))
+        self.assertContains(resp, f'class="tag is-ok" href="{self.url}"')
+        self.assertEqual(resp.context["stats"]["blank_known"], 3)
