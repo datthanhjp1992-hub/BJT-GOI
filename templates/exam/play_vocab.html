@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static properties_tags %}
+{% load static properties_tags error_report_tags %}
 {% comment %}S3 Làm bài kiểm tra từ vựng — mockup htmlTemplate/SC23_KiemTra_A.html màn S3.
 View: exam.views.play_view (Post/Redirect/Get, giống SC21 kính ngữ — dùng chung class .lb-*).
   - Mỗi lần MỘT câu, chấm ngay. Câu sinh sẵn lúc bắt đầu (ExamAnswer.payload).
@@ -77,7 +77,7 @@ View: exam.views.play_view (Post/Redirect/Get, giống SC21 kính ngữ — dùn
           <a class="btn btn-primary" href="{% url 'exam:play' attempt.pk %}" data-enter data-exam-swap>{% label "exam.play.next" %} →</a>
         {% endif %}
         {% if answer.vocabulary_id %}
-          <a class="action-link text-sm" href="{% url 'error_reports:create' %}?vocabulary={{ answer.vocabulary_id }}">{% label "error_report.form.link.report" %}</a>
+          {% report_inline vocabulary_id=answer.vocabulary_id %}
         {% endif %}
       </div>
 

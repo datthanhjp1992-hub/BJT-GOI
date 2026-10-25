@@ -211,3 +211,27 @@ class MasterCodeTests(ErrorReportTestCase):
 
         codes = [code for code, _ in error_status_choices()]
         self.assertNotIn(ERROR_STATUS_HANDLED_PARENT, codes)
+
+
+class InlineReportTests(ErrorReportTestCase):
+    """Form báo lỗi tại chỗ ({% report_inline %}) gửi bằng fetch: nhận JSON, không redirect."""
+
+    def _post(self, description):
+        self.client.force_login(self.learner)
+        return self.client.post(
+            reverse("error_reports:create"),
+            {"vocabulary": self.word.pk, "error_type_code": "001", "description": description},
+            HTTP_X_REQUESTED_WITH="fetch",
+        )
+
+    def test_success_returns_json_and_saves(self):
+        response = self._post("Nghĩa tiếng Việt sai, đúng phải là 'bản dự toán'.")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("message", response.json())
+        self.assertEqual(ErrorReport.objects.get().vocabulary, self.word)
+
+    def test_invalid_returns_400_with_errors(self):
+        response = self._post("sai")
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue(response.json()["errors"])
+        self.assertFalse(ErrorReport.objects.exists())

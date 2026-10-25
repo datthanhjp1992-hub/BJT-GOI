@@ -1,4 +1,4 @@
-{% load properties_tags %}
+{% load properties_tags error_report_tags %}
 {% comment %}
 Thân khu "phản hồi về từ này" — tách khỏi _card_panel.html ngày 06/10/2026
 (spec.md T4.3.3). Bộ thẻ nhúng (#study-deck) KHÔNG mang bình luận: khi người
@@ -8,7 +8,7 @@ qua views.study_discussion_view.
 {% endcomment %}
 <div class="toolbar study-discussion-actions">
   <a class="btn btn-outline btn-sm" href="{% url 'gamification:form' %}?type=meaning&vocabulary={{ word.pk }}">{% label "contribution.form.link.suggest" %}</a>
-  <a class="btn btn-outline btn-sm" href="{% url 'error_reports:create' %}?vocabulary={{ word.pk }}">{% label "error_report.form.link.report" %}</a>
+  {% report_inline vocabulary_id=word.pk %}
 </div>
 
 <h3 class="serif study-discussion-title">{% label "learning.flashcard.section.comments" %}</h3>

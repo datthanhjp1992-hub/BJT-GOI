@@ -558,7 +558,9 @@ class StudySessionViewTests(LearningTestCase):
 
         response = self.client.get(reverse("learning:study"))
         word = response.context["word"]
-        self.assertContains(response, reverse("error_reports:create") + "?vocabulary=%s" % word.pk)
+        # Báo lỗi là form mở tại chỗ (không rời màn học), mang sẵn id từ.
+        self.assertContains(response, 'data-report-form')
+        self.assertContains(response, '<input type="hidden" name="vocabulary" value="%s">' % word.pk, html=True)
         self.assertContains(response, reverse("gamification:form") + "?type=meaning&vocabulary=%s" % word.pk)
 
     def test_deleted_word_is_skipped_not_crashed(self):

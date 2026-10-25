@@ -912,3 +912,36 @@ function initAutoplay() {
 }
 
 document.addEventListener("DOMContentLoaded", initAutoplay);
+
+// ---------------------------------------------------------------------------
+// 8. Báo lỗi tại chỗ ({% report_inline %} — templates/error_reports/_inline.html):
+//    gửi bằng fetch, hiện kết quả ngay trong form, người học không rời màn
+//    đang học/đang thi. Lỗi mạng hoặc server không trả JSON (vd hết phiên
+//    đăng nhập) -> gửi form kiểu thường.
+// ---------------------------------------------------------------------------
+document.addEventListener("submit", function (event) {
+  var form = event.target;
+  if (!(form instanceof HTMLFormElement) || !form.hasAttribute("data-report-form")) { return; }
+  if (!window.fetch || !window.FormData) { return; }
+  event.preventDefault();
+  var status = form.querySelector("[data-report-status]");
+  var button = form.querySelector("button[type=submit]");
+  button.disabled = true;
+  fetch(form.action, {
+    method: "POST", body: new FormData(form), credentials: "same-origin",
+    headers: { "X-Requested-With": "fetch" }
+  })
+    .then(function (response) {
+      if (!/json/.test(response.headers.get("Content-Type") || "")) { throw new Error("not json"); }
+      return response.json().then(function (data) {
+        button.disabled = false;
+        if (response.ok) {
+          form.reset();
+          status.textContent = data.message;
+        } else {
+          status.textContent = data.errors.join(" ");
+        }
+      });
+    })
+    .catch(function () { button.disabled = false; form.submit(); });
+});

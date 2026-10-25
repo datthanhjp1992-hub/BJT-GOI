@@ -1300,3 +1300,10 @@ a.ls-mode:hover{border-color:var(--accent);}
 .autoplay-field{display:inline-flex;align-items:center;gap:6px;margin:0;font-size:14px;}
 .autoplay-field select{width:auto;}
 tr.is-playing td{background:var(--accent-soft);}
+/* Báo lỗi tại chỗ (error_reports/_inline.html): mở ra thì form chiếm trọn một hàng của toolbar. */
+.report-inline > summary{list-style:none;}
+.report-inline > summary::-webkit-details-marker{display:none;}
+.report-inline[open]{flex-basis:100%;text-align:left;}
+.report-inline-form{margin-top:10px;}
+.report-inline-form label{display:block;}
+.report-inline-form [data-report-status]:empty{display:none;}

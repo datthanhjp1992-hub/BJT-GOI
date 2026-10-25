@@ -1,0 +1,20 @@
+{% load properties_tags %}
+<details class="report-inline" data-report-inline>
+  <summary class="btn btn-outline btn-sm">{% label "error_report.form.link.report" %}</summary>
+  <form method="post" action="{% url 'error_reports:create' %}" class="card report-inline-form" data-report-form>
+    {% csrf_token %}
+    {% if vocabulary_id %}<input type="hidden" name="vocabulary" value="{{ vocabulary_id }}">{% endif %}
+    {% if exam_question_id %}<input type="hidden" name="exam_question" value="{{ exam_question_id }}">{% endif %}
+    <div class="field">
+      <label>{% label "error_report.form.field.error_type" %} {{ form.error_type_code }}</label>
+    </div>
+    <div class="field">
+      <label>{% label "error_report.form.field.description" %} {{ form.description }}</label>
+    </div>
+    <div class="field">
+      <label>{% label "error_report.form.field.suggested_fix" %} {{ form.suggested_fix }}</label>
+    </div>
+    <button type="submit" class="btn btn-primary btn-sm">{% label "error_report.form.button.submit" %}</button>
+    <p class="muted text-sm" role="status" data-report-status></p>
+  </form>
+</details>

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load properties_tags %}
+{% load properties_tags error_report_tags %}
 {% comment %}S7 Kết quả đề thi — mockup htmlTemplate/SC23_KiemTra_A.html màn S7 (T7.7).
 View: exam.views.result_view (nhánh đề thi). Dùng cho thi thử (Thi / Luyện) và luyện dạng đề.
   - Vòng % tổng + thanh theo phần + so với lượt trước cùng bộ đề / dạng.
@@ -138,7 +138,7 @@ View: exam.views.result_view (nhánh đề thi). Dùng cho thi thử (Thi / Luy�
           {% endif %}
         </div>
         {% if r.question.explanation_vi %}<p class="ex-explain-text">{{ r.question.explanation_vi|linebreaksbr }}</p>{% endif %}
-        <p class="mt-12 mb-0"><a class="action-link text-sm" href="{% url 'error_reports:create' %}?exam_question={{ r.question.pk }}">{% label "error_report.form.link.report" %}</a></p>
+        <div class="mt-12">{% report_inline exam_question_id=r.question.pk %}</div>
       </div>
     </details>
   {% empty %}

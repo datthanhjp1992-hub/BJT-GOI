@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static properties_tags %}
+{% load static properties_tags error_report_tags %}
 {% comment %}S5 / S6 Làm bài đề thi — mockup htmlTemplate/SC23_KiemTra_A.html màn S5, S6.
 View: exam.views._render_exam. Một template cho thi thử (Thi / Luyện) và luyện dạng đề.
   - Chế độ Thi (timed): thanh phần + đồng hồ (server trả seconds_left, JS chỉ đếm lùi; hết
@@ -95,7 +95,7 @@ View: exam.views._render_exam. Một template cho thi thử (Thi / Luyện) và 
             {% else %}
               <a class="btn btn-primary" href="{% url 'exam:play' attempt.pk %}" data-enter>{% label "exam.play.next" %} →</a>
             {% endif %}
-            <a class="action-link text-sm" href="{% url 'error_reports:create' %}?exam_question={{ question.pk }}">{% label "error_report.form.link.report" %}</a>
+            {% report_inline exam_question_id=question.pk %}
           </div>
 
         {% elif locked %}

@@ -13,6 +13,7 @@ chỉ giữ model/form/service.
 from django.contrib import messages as flash
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.core.properties import message
@@ -57,6 +58,11 @@ def report_create_view(request):
 
     if request.method == "POST":
         form = ErrorReportForm(request.POST)
+        # Form gập ngay trên màn học/thi ({% report_inline %}) gửi bằng fetch:
+        # trả JSON để người học ở lại đúng chỗ đang học dở.
+        inline = request.headers.get("X-Requested-With") == "fetch"
+        if inline and not form.is_valid():
+            return JsonResponse({"errors": [e for errs in form.errors.values() for e in errs]}, status=400)
         if form.is_valid():
             report = form.save(commit=False)
             report.user = request.user
@@ -64,6 +70,8 @@ def report_create_view(request):
             report.exam_question = exam_question
             report.page_path = _referer_path(request)
             report.save()
+            if inline:
+                return JsonResponse({"message": message("error_report.create.success_inline")})
             flash.success(request, message("error_report.create.success"))
             return redirect("error_reports:mine")
     else:

@@ -172,4 +172,4 @@ class ErrorReportTests(WrongbookTestCase):
         attempts.finish(attempt, force=True)
         q = ExamQuestion.objects.get(number=1)
         self.assertContains(self.client.get(reverse("exam:result", args=[attempt.pk])),
-                            f"?exam_question={q.pk}")
+                            f'<input type="hidden" name="exam_question" value="{q.pk}">', html=True)

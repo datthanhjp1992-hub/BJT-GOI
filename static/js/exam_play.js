@@ -168,6 +168,7 @@
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     var tag = e.target && e.target.tagName;
     if (tag === "TEXTAREA" || (tag === "INPUT" && e.target.type !== "radio")) return;
+    if (e.target.closest && e.target.closest("[data-report-inline]")) return;   // đang điền form báo lỗi
     var radios = document.querySelectorAll('[data-exam-form] input[name="option"], [data-exam-autosubmit] input[name="option"]');
     if (radios.length && /^[1-9]$/.test(e.key)) {
       var r = radios[parseInt(e.key, 10) - 1];
