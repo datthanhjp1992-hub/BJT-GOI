@@ -1,102 +1,102 @@
 pattern__code,sentence_jp,sentence_vi,speaker,is_correct,pair_group,display_order
-sonkei-o-go-da,問題解決のためのはっきりした考えをお持ちですか。,,,true,,1
-sonkei-o-go-da,お客様がついさっきまでお待ちだったですよ。,,,true,,2
-sonkei-o-go-da,学長は、本日の会議にはご欠席です。,,,true,,3
-sonkei-o-go-da,何かお探しでしたら、お手伝いましょうか。,,,true,,4
-sonkei-o-go-nasaru,課長がご説明なさいます。,,,true,,1
-sonkei-o-go-nasaru,どうぞご心配なさらないでください。,,,true,,2
-sonkei-o-go-ni-nareru,お客様は飛行機の操縦室へはお入りになれません。,,,true,,1
-sonkei-de-irassharu,こちらは山本先生の奥様でいらっしゃいます。,,,true,,1
-sonkei-de-irassharu,食べ物は何がお好きでいらっしゃいますか。,,,true,,2
-sonkei-te-irassharu,先生は、最近どんなご研究をしていらっしゃいますか。,,,true,,1
-sonkei-te-irassharu,先生はいま本を読んでおいでになります。,,,true,,2
-sonkei-agaru,どうぞお召し上がりください。,,,true,,1
-sonkei-agaru,どうぞおあがりください。,,,true,,2
-sonkei-agaru,おじゃまします。,,A,true,1,3
-sonkei-agaru,どうぞお上がり下さい。,,B,true,1,4
-sonkei-agaru,お荷物のお届けにあがりましたが不在の為持ち帰りました。ご確認ください。,,,true,,5
-sonkei-o-de-irassharu,いつまでもお若くていらっしゃいますね。 若さの秘訣は何でしょうか。,,,true,,1
-sonkei-o-de-irassharu,先生はお顔が広くていらっしゃる学者で、 学会で大活躍なさっています。,,,true,,2
-sonkei-mieru-omieninaru,お客さんが見える前に身なりを整えなさい。,,,true,,1
-sonkei-mieru-omieninaru,取引先の野口様がお見えになりました。,,,true,,2
-sonkei-mieru-omieninaru,水野先生がお見えです。,,,true,,3
-sonkei-mesu,お気に召しましたら、どうぞお持ち帰りください。,,,true,,1
-sonkei-mesu,社長のお母様はお風邪を召されて、ここ１週間ほど休んでいらっしゃるそうです。,,,true,,2
-sonkei-ki,貴社ますますご隆盛のこととお慶び申し上げます。,,,true,,1
-sonkei-ki,貴会からの 6 月 12 日付けの手紙が郵送されてまいりました。,,,true,,2
-sonkei-ki,大学の後輩である貴君に、私はできる限りの力添えをするつもりです。,,,true,,3
-kenjo-o-go-itadaku,本日はこのような素晴らしいパーティーにお招きいただき、ありがとうございます。,,,true,,1
-kenjo-o-go-moushiageru,引き続き本サービスをご利用くださいますようお願い申し上げます。,,,true,,1
-kenjo-o-go-dekiru,ご紹介できる仕事,,,true,,1
-kenjo-zonjiru-zonjiageru,先生はお変わりなくお過ごしのことと存じます。,,,true,,1
-kenjo-zonjiru-zonjiageru,お名前はよく存じ上げております。,,,true,,2
-kenjo-teoru-teorazu,田中はただいま席を外しておりますが、戻って来ましたら、折り返しさせましょうか？,,,true,,1
-kenjo-teoru-teorazu,まだまだ寒さが残っております。お風邪など引きませんようお気をつけください。,,,true,,2
-kenjo-teoru-teorazu,挨拶する予定の市長がまだ到着しておらず、開会式が遅れそうだ。,,,true,,3
-kenjo-o-go-negau,詳細は各地の販売代理店までお問い合わせ願います。,,,true,,1
-kenjo-o-go-negau,個人情報が正しいかどうかご確認願います。,,,true,,2
-kenjo-o-go-negau,誠に申し訳ございませんが、 もう一度ご検討願えませんか。,,,true,,3
-kenjo-uketamawaru,24時間いつでもご注文をうけたまわっております。,,,true,,1
-kenjo-uketamawaru,お問い合わせを確かに承りました。 早急に折り返しご連絡いたしますので、しばらくお待ちください。,,,true,,2
-kenjo-uketamawaru,中村先生のご意見を承りたいのですが、 明日午後2時に研究室に伺ってもよろしいでしょうか。,,,true,,3
-kenjo-uketamawaru,この春ご子息様には、 京都大学を優秀な成績でご卒業なさいました{由|よし}{承|うけたまわ}り、心からお祝い申し上げます。,,,true,,4
-kenjo-hai,すみません。 切符を拝見します。,,,true,,1
-kenjo-hai,お送りいただいた論説を拝読しました。 {僭越|せんえつ}ながら、 私の意見を申し上げます。,,,true,,2
-kenjo-itadaku,さきほど、会長からご紹介いただきました田村と申します。,,,true,,1
-kenjo-itadaku,今日は私が払わせていただきます。 いつもお世話になっておりますから。,,,true,,2
-kenjo-itadaku,当ホテルは様々なタイプの会場をご用意しております。 料金はこちらよりご覧いただけます。,,,true,,3
-kenjo-temairu,すぐ父を呼んでまいりますので、 少々お待ちください。,,,true,,1
-kenjo-temairu,これからお見舞いに行ってまいります。,,,true,,2
-kenjo-temairu,私どもは全てのお客様にご満足いただけるようにこれからも努力を継続して参ります。,,,true,,3
-kenjo-temairu,暖かくなってまいりましたが、いかがお過ごしでしょうか。,,,true,,4
-kenjo-ome-ni-kakaru,長いことご無沙汰しておりましたが、いかがお過ごしでしょうか。度お目にかかりたいと思っておりますが、 なかなか時間がなく、失礼しております。,,,true,,1
-kenjo-ome-ni-kakaru,この話は私が社長にお目にかかった時に、 ゆっくりご説明致します。,,,true,,2
-kenjo-ome-ni-kakaru,あのう、山田と申しますが、 松本部長にお目にかかりたいのですが。,,客,true,1,3
-kenjo-ome-ni-kakaru,はい、少々お待ちください。,,係員,true,1,4
-kenjo-ome-ni-kakeru,最近手に入れた珍しい切手がありますので、ぜひお目にかけたく存じます。,,,true,,1
-kenjo-ome-ni-kakeru,見苦しいところをお目にかけて大変失礼致しました。,,A,true,1,2
-kenjo-ome-ni-kakeru,いいえ、お互い様でございます。 どうぞお気になさいませんように。,,B,true,1,3
-kenjo-ome-ni-kakeru,これから展覧室にお越しになって、 私たちの作品をお目にかけましょうか。,,,true,,4
-kenjo-ome-ni-kakeru,社長にお目にかけるような{骨董品|こっとうひん}ではございません,,,true,,5
-kenjo-goran-ni-ireru,新製品の実物をご覧に入れた方がお分かりになりやすいかと存じます。,,,true,,1
-kenjo-goran-ni-ireru,残念ながら、今日は霧が深いため、 富士山をご覧に入れることができません。,,,true,,2
-sonkei-o-go-nasaru,ご利用なさいますか？,,,true,,3
-sonkei-o-go-da,お待ちです。,,,true,,5
-sonkei-de-irassharu,お元気でいらっしゃる,,,true,,3
-kenjo-o-go-moushiageru,ご報告申し上げます。,,,true,,2
-kenjo-o-go-itadaku,お待ちいただきます。,,,true,,2
-teinei-u-gozaimasu,朝夕はまだまだお寒うございますが、くれぐれもお体にはお気をつけくださいませ。,,,true,,1
-teinei-u-gozaimasu,こちらのワイシャツのほうが少しお高うございます。,,,true,,2
-teinei-u-gozaimasu,東大合格して、おめでとうございます。,,A,true,1,3
-teinei-u-gozaimasu,ありがとうございます。,,B,true,1,4
-teinei-u-gozaimasu,今日の披露宴に、大勢の親友が来てくださって本当に嬉しゅうございます。,,,true,,5
-juju-te-kudasai,Ｂさん、時間ありますか。,,A,true,1,1
-juju-te-kudasai,ええ。,,B,true,1,2
-juju-te-kudasai,じゃ、ちょっとこれ、手伝ってください。,,A,true,1,3
-juju-te-agete-yatte-kudasai,Ｂさん、時間ありますか。,,A,true,1,1
-juju-te-agete-yatte-kudasai,ええ。,,B,true,1,2
-juju-te-agete-yatte-kudasai,Ｃさんが忙しそうなので、手伝ってあげてください。,,A,true,1,3
-juju-te-moratte-kudasai,（あなたは）Ｃさんに荷物を持ってくれるよう依頼してください。,,,true,,1
-juju-te-moratte-kudasai,（あなたは）Ｃさんに荷物を持ってもらってください。,,,true,,2
-juju-te-kureru-temorau,私は先生に教えてもらう。,,,true,,1
-juju-te-kureru-temorau,先生は私に教えてくれる。,,,true,,2
-juju-te-morau-te-itadaku,教えていただけますでしょうか。,,,true,,1
-juju-sasete-morau-itadaku,使用させていただきます。,,,true,,1
-sonkei-ni-naru,お食べになります。,,,true,,1
-sonkei-ni-naru,ご説明になります。,,,true,,2
-sonkei-kudasaru-kudasai,お食べください。,,,true,,1
-sonkei-kudasaru-kudasai,ご注意ください。,,,true,,2
-sonkei-reru-rareru,中田先生がこの本を書かれました。,,,true,,1
-sonkei-reru-rareru,あの方は東京駅で降りられます。,,,true,,2
-sonkei-keishou,あちらは山田様です。,,,true,,1
-sonkei-o-go-ki-on,あなたのお仕事は何ですか。,,,true,,1
-sonkei-o-go-ki-on,ご家族はどちらにいらっしゃいますか。,,,true,,2
-kenjo-o-go-suru-itasu,お持ちします。,,,true,,1
-kenjo-o-go-suru-itasu,ご説明します。,,,true,,2
-kenjo-o-go-suru-itasu,係員がご案内します。,,,true,,3
-kenjo-o-go-sasete-itadakimasu,工場内をご案内させていただきます。,,,true,,1
-kenjo-settoji-o-go-so-hei,お知らせ,,,true,,1
-kenjo-settoji-o-go-so-hei,粗品,,,true,,2
-kenjo-settoji-o-go-so-hei,会社→弊社,,,true,,3
-kenjo-domo-me,私ども,,,true,,1
-kenjo-domo-me,私め,,,true,,2
+sonkei-o-go-da,問題解決のためのはっきりした考えをお持ちですか。,Ngài có ý tưởng rõ ràng nào để giải quyết vấn đề không ạ?,,true,,1
+sonkei-o-go-da,お客様がついさっきまでお待ちだったですよ。,Quý khách đã đợi ở đây đến tận vừa nãy đấy.,,true,,2
+sonkei-o-go-da,学長は、本日の会議にはご欠席です。,Thầy hiệu trưởng vắng mặt trong cuộc họp hôm nay.,,true,,3
+sonkei-o-go-da,何かお探しでしたら、お手伝いましょうか。,"Nếu quý khách đang tìm gì, tôi giúp quý khách nhé?",,true,,4
+sonkei-o-go-nasaru,課長がご説明なさいます。,Trưởng phòng sẽ giải thích.,,true,,1
+sonkei-o-go-nasaru,どうぞご心配なさらないでください。,Xin ngài đừng lo lắng.,,true,,2
+sonkei-o-go-ni-nareru,お客様は飛行機の操縦室へはお入りになれません。,Quý khách không được vào buồng lái máy bay.,,true,,1
+sonkei-de-irassharu,こちらは山本先生の奥様でいらっしゃいます。,Vị này là phu nhân của thầy Yamamoto.,,true,,1
+sonkei-de-irassharu,食べ物は何がお好きでいらっしゃいますか。,Ngài thích món ăn nào ạ?,,true,,2
+sonkei-te-irassharu,先生は、最近どんなご研究をしていらっしゃいますか。,Dạo này thầy đang nghiên cứu về đề tài gì ạ?,,true,,1
+sonkei-te-irassharu,先生はいま本を読んでおいでになります。,Thầy hiện đang đọc sách.,,true,,2
+sonkei-agaru,どうぞお召し上がりください。,Xin mời dùng ạ.,,true,,1
+sonkei-agaru,どうぞおあがりください。,Xin mời dùng ạ. / Xin mời vào nhà ạ.,,true,,2
+sonkei-agaru,おじゃまします。,Tôi xin phép làm phiền ạ.,A,true,1,3
+sonkei-agaru,どうぞお上がり下さい。,Xin mời anh/chị vào nhà.,B,true,1,4
+sonkei-agaru,お荷物のお届けにあがりましたが不在の為持ち帰りました。ご確認ください。,Chúng tôi đến giao hàng nhưng quý khách vắng nhà nên đã mang về. Xin quý khách kiểm tra.,,true,,5
+sonkei-o-de-irassharu,いつまでもお若くていらっしゃいますね。 若さの秘訣は何でしょうか。,Ngài lúc nào cũng trẻ trung quá. Bí quyết giữ trẻ là gì vậy ạ?,,true,,1
+sonkei-o-de-irassharu,先生はお顔が広くていらっしゃる学者で、 学会で大活躍なさっています。,"Thầy là học giả có mối quan hệ rộng, đang hoạt động rất tích cực trong giới học thuật.",,true,,2
+sonkei-mieru-omieninaru,お客さんが見える前に身なりを整えなさい。,Hãy chỉnh trang lại quần áo trước khi khách đến.,,true,,1
+sonkei-mieru-omieninaru,取引先の野口様がお見えになりました。,Ông Noguchi bên đối tác đã đến ạ.,,true,,2
+sonkei-mieru-omieninaru,水野先生がお見えです。,Thầy Mizuno đã đến ạ.,,true,,3
+sonkei-mesu,お気に召しましたら、どうぞお持ち帰りください。,"Nếu quý khách thấy ưng ý, xin cứ mang về.",,true,,1
+sonkei-mesu,社長のお母様はお風邪を召されて、ここ１週間ほど休んでいらっしゃるそうです。,"Nghe nói mẹ của giám đốc bị cảm, đã nghỉ khoảng một tuần nay.",,true,,2
+sonkei-ki,貴社ますますご隆盛のこととお慶び申し上げます。,Chúng tôi xin chúc mừng quý công ty ngày càng phát đạt.,,true,,1
+sonkei-ki,貴会からの 6 月 12 日付けの手紙が郵送されてまいりました。,Thư đề ngày 12 tháng 6 của quý hội đã được gửi đến chúng tôi.,,true,,2
+sonkei-ki,大学の後輩である貴君に、私はできる限りの力添えをするつもりです。,"Cậu là đàn em đại học của tôi, tôi sẽ giúp đỡ cậu hết sức có thể.",,true,,3
+kenjo-o-go-itadaku,本日はこのような素晴らしいパーティーにお招きいただき、ありがとうございます。,Xin cảm ơn quý vị đã mời chúng tôi đến bữa tiệc tuyệt vời hôm nay.,,true,,1
+kenjo-o-go-moushiageru,引き続き本サービスをご利用くださいますようお願い申し上げます。,Kính mong quý khách tiếp tục sử dụng dịch vụ của chúng tôi.,,true,,1
+kenjo-o-go-dekiru,ご紹介できる仕事,Công việc (chúng tôi) có thể giới thiệu cho quý vị.,,true,,1
+kenjo-zonjiru-zonjiageru,先生はお変わりなくお過ごしのことと存じます。,Em nghĩ rằng thầy vẫn mạnh khỏe như xưa.,,true,,1
+kenjo-zonjiru-zonjiageru,お名前はよく存じ上げております。,Tôi đã nghe danh ngài từ lâu.,,true,,2
+kenjo-teoru-teorazu,田中はただいま席を外しておりますが、戻って来ましたら、折り返しさせましょうか？,"Anh Tanaka hiện không có ở chỗ ngồi; khi anh ấy quay lại, tôi bảo anh ấy gọi lại cho quý khách nhé?",,true,,1
+kenjo-teoru-teorazu,まだまだ寒さが残っております。お風邪など引きませんようお気をつけください。,"Trời vẫn còn lạnh. Xin quý vị giữ gìn sức khỏe, đừng để bị cảm.",,true,,2
+kenjo-teoru-teorazu,挨拶する予定の市長がまだ到着しておらず、開会式が遅れそうだ。,"Thị trưởng, người dự kiến phát biểu, vẫn chưa đến nên lễ khai mạc có vẻ sẽ bị trễ.",,true,,3
+kenjo-o-go-negau,詳細は各地の販売代理店までお問い合わせ願います。,Mọi chi tiết xin quý khách liên hệ đại lý bán hàng tại từng địa phương.,,true,,1
+kenjo-o-go-negau,個人情報が正しいかどうかご確認願います。,Xin quý khách vui lòng kiểm tra xem thông tin cá nhân có chính xác không.,,true,,2
+kenjo-o-go-negau,誠に申し訳ございませんが、 もう一度ご検討願えませんか。,"Thành thật xin lỗi, nhưng ngài có thể xem xét lại một lần nữa được không ạ?",,true,,3
+kenjo-uketamawaru,24時間いつでもご注文をうけたまわっております。,"Chúng tôi nhận đặt hàng bất cứ lúc nào, 24 giờ.",,true,,1
+kenjo-uketamawaru,お問い合わせを確かに承りました。 早急に折り返しご連絡いたしますので、しばらくお待ちください。,"Chúng tôi đã nhận được câu hỏi của quý khách. Chúng tôi sẽ liên lạc lại sớm, xin vui lòng chờ một chút.",,true,,2
+kenjo-uketamawaru,中村先生のご意見を承りたいのですが、 明日午後2時に研究室に伺ってもよろしいでしょうか。,"Em muốn được nghe ý kiến của thầy Nakamura, 2 giờ chiều mai em đến phòng nghiên cứu có được không ạ?",,true,,3
+kenjo-uketamawaru,この春ご子息様には、 京都大学を優秀な成績でご卒業なさいました{由|よし}{承|うけたまわ}り、心からお祝い申し上げます。,"Được biết quý công tử đã tốt nghiệp Đại học Kyoto với thành tích xuất sắc vào mùa xuân này, tôi xin thành tâm chúc mừng.",,true,,4
+kenjo-hai,すみません。 切符を拝見します。,"Xin lỗi, cho tôi xem vé ạ.",,true,,1
+kenjo-hai,お送りいただいた論説を拝読しました。 {僭越|せんえつ}ながら、 私の意見を申し上げます。,Tôi đã đọc bài bình luận ngài gửi. Xin mạn phép trình bày ý kiến của mình.,,true,,2
+kenjo-itadaku,さきほど、会長からご紹介いただきました田村と申します。,"Tôi là Tamura, người vừa được chủ tịch giới thiệu.",,true,,1
+kenjo-itadaku,今日は私が払わせていただきます。 いつもお世話になっておりますから。,Hôm nay để tôi trả. Vì lúc nào cũng được anh/chị giúp đỡ.,,true,,2
+kenjo-itadaku,当ホテルは様々なタイプの会場をご用意しております。 料金はこちらよりご覧いただけます。,Khách sạn chúng tôi có nhiều loại hội trường. Quý khách có thể xem bảng giá tại đây.,,true,,3
+kenjo-temairu,すぐ父を呼んでまいりますので、 少々お待ちください。,"Tôi đi gọi bố tôi ngay, xin vui lòng chờ một chút.",,true,,1
+kenjo-temairu,これからお見舞いに行ってまいります。,Bây giờ tôi đi thăm người ốm đây.,,true,,2
+kenjo-temairu,私どもは全てのお客様にご満足いただけるようにこれからも努力を継続して参ります。,Chúng tôi sẽ tiếp tục nỗ lực để mọi quý khách đều hài lòng.,,true,,3
+kenjo-temairu,暖かくなってまいりましたが、いかがお過ごしでしょうか。,"Trời đã ấm dần lên, dạo này ngài vẫn khỏe chứ ạ?",,true,,4
+kenjo-ome-ni-kakaru,長いことご無沙汰しておりましたが、いかがお過ごしでしょうか。度お目にかかりたいと思っておりますが、 なかなか時間がなく、失礼しております。,"Đã lâu không liên lạc, dạo này ngài vẫn khỏe chứ ạ? Tôi rất muốn gặp ngài một lần, nhưng mãi không có thời gian, thật thất lễ.",,true,,1
+kenjo-ome-ni-kakaru,この話は私が社長にお目にかかった時に、 ゆっくりご説明致します。,Chuyện này khi gặp giám đốc tôi sẽ giải thích kỹ.,,true,,2
+kenjo-ome-ni-kakaru,あのう、山田と申しますが、 松本部長にお目にかかりたいのですが。,"Xin lỗi, tôi tên là Yamada, tôi muốn gặp trưởng phòng Matsumoto ạ.",客,true,1,3
+kenjo-ome-ni-kakaru,はい、少々お待ちください。,"Vâng, xin quý khách chờ một chút.",係員,true,1,4
+kenjo-ome-ni-kakeru,最近手に入れた珍しい切手がありますので、ぜひお目にかけたく存じます。,"Tôi mới có được mấy con tem hiếm, nhất định muốn cho ngài xem.",,true,,1
+kenjo-ome-ni-kakeru,見苦しいところをお目にかけて大変失礼致しました。,Thật thất lễ vì để ngài thấy cảnh khó coi.,A,true,1,2
+kenjo-ome-ni-kakeru,いいえ、お互い様でございます。 どうぞお気になさいませんように。,"Không sao, ai cũng có lúc như vậy. Xin ngài đừng bận tâm.",B,true,1,3
+kenjo-ome-ni-kakeru,これから展覧室にお越しになって、 私たちの作品をお目にかけましょうか。,"Bây giờ mời quý vị sang phòng trưng bày, chúng tôi xin giới thiệu các tác phẩm của mình nhé.",,true,,4
+kenjo-ome-ni-kakeru,社長にお目にかけるような{骨董品|こっとうひん}ではございません,Đó không phải là đồ cổ đáng để đưa giám đốc xem đâu ạ.,,true,,5
+kenjo-goran-ni-ireru,新製品の実物をご覧に入れた方がお分かりになりやすいかと存じます。,Tôi nghĩ cho quý vị xem sản phẩm mới thật thì sẽ dễ hiểu hơn.,,true,,1
+kenjo-goran-ni-ireru,残念ながら、今日は霧が深いため、 富士山をご覧に入れることができません。,Rất tiếc hôm nay sương mù dày nên không thể cho quý khách ngắm núi Phú Sĩ.,,true,,2
+sonkei-o-go-nasaru,ご利用なさいますか？,Quý khách có sử dụng không ạ?,,true,,3
+sonkei-o-go-da,お待ちです。,(Người trên) đang đợi.,,true,,5
+sonkei-de-irassharu,お元気でいらっしゃる,(Ngài) vẫn khỏe mạnh.,,true,,3
+kenjo-o-go-moushiageru,ご報告申し上げます。,Tôi xin báo cáo ạ.,,true,,2
+kenjo-o-go-itadaku,お待ちいただきます。,Xin quý khách vui lòng chờ ạ.,,true,,2
+teinei-u-gozaimasu,朝夕はまだまだお寒うございますが、くれぐれもお体にはお気をつけくださいませ。,"Sáng tối trời vẫn còn lạnh, xin quý vị hết sức giữ gìn sức khỏe.",,true,,1
+teinei-u-gozaimasu,こちらのワイシャツのほうが少しお高うございます。,Chiếc sơ mi này đắt hơn một chút ạ.,,true,,2
+teinei-u-gozaimasu,東大合格して、おめでとうございます。,Chúc mừng em đỗ Đại học Tokyo.,A,true,1,3
+teinei-u-gozaimasu,ありがとうございます。,Em cảm ơn ạ.,B,true,1,4
+teinei-u-gozaimasu,今日の披露宴に、大勢の親友が来てくださって本当に嬉しゅうございます。,"Hôm nay rất nhiều bạn thân đã đến dự tiệc cưới, tôi thật sự rất vui.",,true,,5
+juju-te-kudasai,Ｂさん、時間ありますか。,Anh B có rảnh không?,A,true,1,1
+juju-te-kudasai,ええ。,Có.,B,true,1,2
+juju-te-kudasai,じゃ、ちょっとこれ、手伝ってください。,Vậy giúp tôi việc này một chút nhé.,A,true,1,3
+juju-te-agete-yatte-kudasai,Ｂさん、時間ありますか。,Anh B có rảnh không?,A,true,1,1
+juju-te-agete-yatte-kudasai,ええ。,Có.,B,true,1,2
+juju-te-agete-yatte-kudasai,Ｃさんが忙しそうなので、手伝ってあげてください。,"Anh C có vẻ bận, anh giúp anh ấy một tay nhé.",A,true,1,3
+juju-te-moratte-kudasai,（あなたは）Ｃさんに荷物を持ってくれるよう依頼してください。,Bạn hãy nhờ C cầm hành lý giúp.,,true,,1
+juju-te-moratte-kudasai,（あなたは）Ｃさんに荷物を持ってもらってください。,Bạn hãy nhờ C cầm hành lý.,,true,,2
+juju-te-kureru-temorau,私は先生に教えてもらう。,Tôi được thầy dạy.,,true,,1
+juju-te-kureru-temorau,先生は私に教えてくれる。,Thầy dạy cho tôi.,,true,,2
+juju-te-morau-te-itadaku,教えていただけますでしょうか。,Ngài có thể chỉ giúp tôi được không ạ?,,true,,1
+juju-sasete-morau-itadaku,使用させていただきます。,Xin phép cho tôi được sử dụng.,,true,,1
+sonkei-ni-naru,お食べになります。,(Người trên) sẽ dùng bữa.,,true,,1
+sonkei-ni-naru,ご説明になります。,(Người trên) sẽ giải thích.,,true,,2
+sonkei-kudasaru-kudasai,お食べください。,Xin mời dùng.,,true,,1
+sonkei-kudasaru-kudasai,ご注意ください。,Xin quý khách lưu ý.,,true,,2
+sonkei-reru-rareru,中田先生がこの本を書かれました。,Thầy Nakata đã viết cuốn sách này.,,true,,1
+sonkei-reru-rareru,あの方は東京駅で降りられます。,Vị kia sẽ xuống ở ga Tokyo.,,true,,2
+sonkei-keishou,あちらは山田様です。,Vị kia là ông/bà Yamada.,,true,,1
+sonkei-o-go-ki-on,あなたのお仕事は何ですか。,Anh/chị làm nghề gì ạ?,,true,,1
+sonkei-o-go-ki-on,ご家族はどちらにいらっしゃいますか。,Gia đình anh/chị đang ở đâu ạ?,,true,,2
+kenjo-o-go-suru-itasu,お持ちします。,Để tôi cầm giúp ạ.,,true,,1
+kenjo-o-go-suru-itasu,ご説明します。,Tôi xin giải thích.,,true,,2
+kenjo-o-go-suru-itasu,係員がご案内します。,Nhân viên sẽ hướng dẫn quý khách.,,true,,3
+kenjo-o-go-sasete-itadakimasu,工場内をご案内させていただきます。,Xin phép được hướng dẫn quý vị tham quan bên trong nhà máy.,,true,,1
+kenjo-settoji-o-go-so-hei,お知らせ,Thông báo,,true,,1
+kenjo-settoji-o-go-so-hei,粗品,Chút quà mọn,,true,,2
+kenjo-settoji-o-go-so-hei,会社→弊社,Công ty (mình) → công ty chúng tôi,,true,,3
+kenjo-domo-me,私ども,Chúng tôi,,true,,1
+kenjo-domo-me,私め,Kẻ hèn này (rất khiêm nhường),,true,,2

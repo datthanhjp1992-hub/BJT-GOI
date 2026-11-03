@@ -1,40 +1,54 @@
 code,lesson__slug,style_code,title,formation,explanation_vi,display_order
-sonkei-o-go-da,ton-kinh-ngu,sonkei,お・ご～だ,お/ご+N+だ,,1
-sonkei-o-go-nasaru,ton-kinh-ngu,sonkei,お／ご～なさる,お/ご+Vます形+なさる,,2
-sonkei-o-go-ni-nareru,ton-kinh-ngu,sonkei,お／ご～になれる,お/ご+Vます形+になれる,,3
-sonkei-de-irassharu,ton-kinh-ngu,sonkei,N／Na です → N／Na でいらっしゃる,N/Na+でいらっしゃる,Bản in gốc trang 5 ghi nhầm là「でいっらしゃる」.,4
-sonkei-te-irassharu,ton-kinh-ngu,sonkei,～ていらっしゃる,Vて形+いらっしゃる,,5
-sonkei-agaru,ton-kinh-ngu,sonkei,～あがる,,,6
-sonkei-o-de-irassharu,ton-kinh-ngu,sonkei,（お）～でいらっしゃる,(お)+形容詞/N+でいらっしゃる,,7
-sonkei-mieru-omieninaru,ton-kinh-ngu,sonkei,見える／お見えになる,,,8
-sonkei-mesu,ton-kinh-ngu,sonkei,めす,,,9
-sonkei-ki,ton-kinh-ngu,sonkei,貴～,貴+N,,10
-kenjo-o-go-itadaku,khiem-nhuong-ngu,kenjo,お／ご～いただく,お/ご+Vます形+いただく,,1
-kenjo-o-go-moushiageru,khiem-nhuong-ngu,kenjo,お／ご～申し上げる,お/ご+Vます形+申し上げる,,2
-kenjo-o-go-dekiru,khiem-nhuong-ngu,kenjo,お／ご～できる,お/ご+Vます形+できる,,3
-kenjo-zonjiru-zonjiageru,khiem-nhuong-ngu,kenjo,存じる・存じ上げる,,,4
-kenjo-teoru-teorazu,khiem-nhuong-ngu,kenjo,ておる・ておらず,Vて形+おる／Vて形+おらず,,5
-kenjo-o-go-negau,khiem-nhuong-ngu,kenjo,お／ご～願う,お/ご+Vます形+願う,,6
-kenjo-uketamawaru,khiem-nhuong-ngu,kenjo,うけたまわる,,,7
-kenjo-hai,khiem-nhuong-ngu,kenjo,拝～（する）,拝+漢字1字(+する),,8
-kenjo-itadaku,khiem-nhuong-ngu,kenjo,いただく,,,9
-kenjo-temairu,khiem-nhuong-ngu,kenjo,～てまいる,Vて形+まいる,,10
-kenjo-ome-ni-kakaru,khiem-nhuong-ngu,kenjo,お目にかかる,,,11
-kenjo-ome-ni-kakeru,khiem-nhuong-ngu,kenjo,お目にかける,,,12
-kenjo-goran-ni-ireru,khiem-nhuong-ngu,kenjo,ご覧に入れる,,,13
-teinei-u-gozaimasu,the-lich-su,teinei,形容詞 ～うございます,い形容詞語幹+うございます（音便変化あり）,,1
-juju-te-kudasai,dong-tu-cho-nhan,juju,～てください,Vて形+ください,,1
-juju-te-agete-yatte-kudasai,dong-tu-cho-nhan,juju,～てあげて／やってください,Vて形+あげて／やってください,,2
-juju-te-moratte-kudasai,dong-tu-cho-nhan,juju,～てもらってください,Vて形+もらってください,,3
-juju-te-kureru-temorau,dong-tu-cho-nhan,juju,～てくれる・てもらう,Vて形+くれる／Vて形+もらう,,4
-juju-te-morau-te-itadaku,dong-tu-cho-nhan,juju,～Vてもらう・Vていただく,Vて形+もらう／Vて形+いただく,,5
-juju-sasete-morau-itadaku,dong-tu-cho-nhan,juju,～させてもらう・させていただく,Vさせて形+もらう／Vさせて形+いただく,,6
-sonkei-ni-naru,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,お/ご～になる,お/ご+Vます形+になる,,1
-sonkei-kudasaru-kudasai,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,お/ご～くださる/ください,お/ご+Vます形+くださる／ください,,2
-sonkei-reru-rareru,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,「Vれる／Vられる」の形を取るもの,Vれる／Vられる,,3
-sonkei-keishou,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,後ろに～さん、～様、先生、殿、社長などの敬称を付ける,,,4
-sonkei-o-go-ki-on,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,前に「お」「ご」「貴」「御」などを付ける,お/ご/貴/御+N,,5
-kenjo-o-go-suru-itasu,mot-so-quy-tac-chia-dong-tu-co-quy-tac,kenjo,お／ご～する／いたす,お/ご+Vます形+する／いたす,,6
-kenjo-o-go-sasete-itadakimasu,mot-so-quy-tac-chia-dong-tu-co-quy-tac,kenjo,お/ご～ させていただきます,お/ご+Vます形+させていただきます,,7
-kenjo-settoji-o-go-so-hei,mot-so-quy-tac-chia-dong-tu-co-quy-tac,kenjo,前に「お」「ご」「粗」「弊」「拝」などを付ける,お/ご/粗/弊/拝+N,,8
-kenjo-domo-me,mot-so-quy-tac-chia-dong-tu-co-quy-tac,kenjo,後ろに「ども」「め」などを付ける,N+ども／め,,9
+sonkei-o-go-da,ton-kinh-ngu,sonkei,お・ご～だ,お/ご+N+だ,"Tôn kính ngữ dạng ngắn gọn của 「～ている」/「～する」 khi nói về hành động hoặc trạng thái của người trên: お持ちです = 持っていらっしゃる, ご欠席です = 欠席なさる. Động từ gốc Nhật dùng お, danh từ Hán (する) dùng ご. Hay gặp trong công việc: お待ちです, お帰りです, ご在宅です.
+Lưu ý: câu 4 trong sách in thiếu 「し」 — đúng là 「お手伝いしましょうか」 (khiêm nhường ngữ, mình giúp khách).",1
+sonkei-o-go-nasaru,ton-kinh-ngu,sonkei,お／ご～なさる,お/ご+Vます形+なさる,"Tôn kính ngữ: お/ご + Vます形 + なさる, mức kính trọng cao hơn 「～になる」 một chút, hay gặp với động từ Hán (ご説明なさる, ご利用なさる). Thể phủ định nhờ vả rất thường dùng: 「ご心配なさらないでください」.",2
+sonkei-o-go-ni-nareru,ton-kinh-ngu,sonkei,お／ご～になれる,お/ご+Vます形+になれる,"Thể khả năng của 「お～になる」: nói người trên có thể / không thể làm gì một cách lịch sự. Rất hay gặp ở dạng phủ định trong thông báo, nội quy: 「お入りになれません」 (quý khách không được vào).",3
+sonkei-de-irassharu,ton-kinh-ngu,sonkei,N／Na です → N／Na でいらっしゃる,N/Na+でいらっしゃる,"Tôn kính ngữ của 「です」 khi nói về chính người trên (danh từ, tính từ đuôi な): 「先生でいらっしゃいます」 = là thầy/cô. Chỉ dùng cho người, không dùng cho đồ vật (đồ vật dùng 「でございます」).
+Lưu ý: bản in gốc trang 5 ghi nhầm là 「でいっらしゃる」.",4
+sonkei-te-irassharu,ton-kinh-ngu,sonkei,～ていらっしゃる,Vて形+いらっしゃる,"Tôn kính ngữ của 「～ている」: người trên đang làm gì / đang ở trạng thái nào. 「～ておいでになる」 cùng nghĩa, trang trọng hơn và ít gặp hơn.",5
+sonkei-agaru,ton-kinh-ngu,sonkei,～あがる,,"「上がる」 có nhiều nghĩa trong kính ngữ:
+• 召し上がる / お上がりください: (người trên) ăn, uống.
+• お上がりください: mời khách vào nhà (bước lên sàn từ 玄関).
+• Vます形 + に上がる: khiêm nhường ngữ, mình đến chỗ người khác (= 伺う), như 「お届けに上がりました」.",6
+sonkei-o-de-irassharu,ton-kinh-ngu,sonkei,（お）～でいらっしゃる,(お)+形容詞/N+でいらっしゃる,"Tôn kính ngữ khi khen hoặc nói về tính chất của người trên: tính từ đuôi い đổi sang て rồi thêm いらっしゃる (お若くていらっしゃる), thường thêm お phía trước. Tính từ đuôi な / danh từ thì dùng 「でいらっしゃる」 (お元気でいらっしゃる).",7
+sonkei-mieru-omieninaru,ton-kinh-ngu,sonkei,見える／お見えになる,,"「見える」/「お見えになる」 là tôn kính ngữ của 「来る」 (khách / người trên đến). 「お見えになる」 trang trọng hơn; dạng ngắn 「お見えです」 cũng rất hay dùng ở công ty. Lưu ý: 「お見えになられる」 là kính ngữ kép, nên tránh.",8
+sonkei-mesu,ton-kinh-ngu,sonkei,めす,,"「召す」 là tôn kính ngữ cổ, ngày nay chỉ còn trong vài cụm cố định: 気に召す (thích, vừa ý), 風邪を召す (bị cảm), 年を召す (có tuổi), お召しになる (mặc). Không dùng 召す tự do thay cho động từ khác.",9
+sonkei-ki,ton-kinh-ngu,sonkei,貴～,貴+N,"Tiền tố 貴 + danh từ: chỉ thứ thuộc về phía đối phương, dùng trong văn viết trang trọng, thư từ kinh doanh: 貴社 (quý công ty), 貴会, 貴校, 貴君. Khi nói (không phải viết) thì 「御社」 thay cho 「貴社」.",10
+kenjo-o-go-itadaku,khiem-nhuong-ngu,kenjo,お／ご～いただく,お/ご+Vます形+いただく,Khiêm nhường ngữ: お/ご + Vます形 + いただく — mình được người trên làm cho việc gì (nhìn từ phía người nhận ơn). Lịch sự hơn 「～てもらう」. Hay dùng để cảm ơn: 「お招きいただき、ありがとうございます」.,1
+kenjo-o-go-moushiageru,khiem-nhuong-ngu,kenjo,お／ご～申し上げる,お/ご+Vます形+申し上げる,"Khiêm nhường ngữ mức cao nhất của 「お～する」, dùng trong phát biểu, thư từ trang trọng. Chỉ đi với động từ có đối tượng là người trên: お願い申し上げる, ご報告申し上げる, お祝い申し上げる, お詫び申し上げる.",2
+kenjo-o-go-dekiru,khiem-nhuong-ngu,kenjo,お／ご～できる,お/ご+Vます形+できる,Thể khả năng của 「お～する」: mình có thể làm gì cho người trên. 「ご紹介できる」 = (chúng tôi) có thể giới thiệu. Không dùng 「お～になれる」 ở đây vì người làm là mình.,3
+kenjo-zonjiru-zonjiageru,khiem-nhuong-ngu,kenjo,存じる・存じ上げる,,"Khiêm nhường ngữ của 「思う」 và 「知る」:
+• 存じる / 存じます: nghĩ; biết (sự việc).
+• 存じ上げる: biết (một người), kính trọng hơn.
+「知っています」 → 「存じております」, 「知りません」 → 「存じません」.",4
+kenjo-teoru-teorazu,khiem-nhuong-ngu,kenjo,ておる・ておらず,Vて形+おる／Vて形+おらず,"「おる」 là khiêm nhường ngữ của 「いる」. 「～ております」 = 「～ています」 nói về mình hoặc người phía mình (đồng nghiệp khi nói với khách), cũng dùng cho sự việc chung trong thư từ (寒さが残っております). 「～ておらず」 là dạng nối câu phủ định, kiểu văn viết, = 「～ていなくて」.",5
+kenjo-o-go-negau,khiem-nhuong-ngu,kenjo,お／ご～願う,お/ご+Vます形+願う,"お/ご + Vます形 + 願う: nhờ người khác làm gì một cách trang trọng, hay gặp trong thông báo, email: 「ご確認願います」 (mong quý vị kiểm tra). Dạng hỏi 「～願えませんか」 mềm mỏng hơn.",6
+kenjo-uketamawaru,khiem-nhuong-ngu,kenjo,うけたまわる,,"Khiêm nhường ngữ của 「聞く」 (nghe ý kiến, lời dặn), 「引き受ける」 (nhận đơn hàng, yêu cầu) và 「伝え聞く」 (nghe nói). Rất hay gặp ở quầy, tổng đài: 「ご注文を承ります」, 「確かに承りました」.",7
+kenjo-hai,khiem-nhuong-ngu,kenjo,拝～（する）,拝+漢字1字(+する),"Tiền tố 拝 + động từ Hán 1 chữ, khiêm nhường ngữ khi mình làm gì liên quan đến đồ của người trên: 拝見する (xem), 拝読する (đọc), 拝借する (mượn), 拝聴する (nghe).",8
+kenjo-itadaku,khiem-nhuong-ngu,kenjo,いただく,,"「いただく」 là khiêm nhường ngữ của 「もらう」 (nhận) và 「食べる・飲む」. 「～ていただく」: được người trên làm cho. 「～させていただく」: xin phép làm (lịch sự, nhưng đừng lạm dụng). 「ご覧いただける」: (quý khách) có thể xem.",9
+kenjo-temairu,khiem-nhuong-ngu,kenjo,～てまいる,Vて形+まいる,"Vて形 + まいる là khiêm nhường ngữ của 「～てくる」 / 「～ていく」 khi người đi là mình (呼んでまいります, 行ってまいります). Cũng dùng cho sự thay đổi dần dần trong thư từ, phát biểu (暖かくなってまいりました, 努力してまいります).",10
+kenjo-ome-ni-kakaru,khiem-nhuong-ngu,kenjo,お目にかかる,,「お目にかかる」 là khiêm nhường ngữ của 「会う」: mình gặp người trên. Lịch sự hơn 「お会いする」. Hay dùng: 「お目にかかれて光栄です」 (rất vinh dự được gặp ngài).,11
+kenjo-ome-ni-kakeru,khiem-nhuong-ngu,kenjo,お目にかける,,"「お目にかける」 là khiêm nhường ngữ của 「見せる」: mình cho người trên xem. Đừng nhầm với お目にかかる (gặp). 「ご覧に入れる」 cùng nghĩa, trang trọng hơn.",12
+kenjo-goran-ni-ireru,khiem-nhuong-ngu,kenjo,ご覧に入れる,,"「ご覧に入れる」 là khiêm nhường ngữ của 「見せる」, trang trọng hơn お目にかける, hay dùng trong thuyết trình, giới thiệu sản phẩm. Đừng nhầm với 「ご覧になる」 (tôn kính ngữ: người trên xem).",13
+teinei-u-gozaimasu,the-lich-su,teinei,形容詞 ～うございます,い形容詞語幹+うございます（音便変化あり）,"Thể lịch sự rất trang trọng của tính từ đuôi い: bỏ い, đổi âm cuối rồi thêm うございます.
+• ～aい → ～おう: 高い → 高うございます, 寒い → 寒うございます.
+• ～iい → ～ゅう: 嬉しい → 嬉しゅうございます.
+• ～uい → ～うう: 軽い → 軽うございます.
+Ngày nay chủ yếu gặp trong lời chào (おめでとう, ありがとう) và văn phong rất trang trọng.",1
+juju-te-kudasai,dong-tu-cho-nhan,juju,～てください,Vて形+ください,「～てください」: nhờ người nghe làm việc gì cho mình (hoặc phía mình). Lịch sự nhưng vẫn là câu yêu cầu; với người trên nên dùng 「～ていただけませんか」.,1
+juju-te-agete-yatte-kudasai,dong-tu-cho-nhan,juju,～てあげて／やってください,Vて形+あげて／やってください,"「～てあげてください」: nhờ người nghe làm gì đó cho người thứ ba (C). 「～てやってください」 dùng khi người thứ ba là người dưới hoặc người nhà mình (con, em) — ở đây không dùng くれる vì người được giúp không phải mình.",2
+juju-te-moratte-kudasai,dong-tu-cho-nhan,juju,～てもらってください,Vて形+もらってください,「～てもらってください」: nhờ người nghe đi nhờ người thứ ba làm việc gì đó. Câu 1 và câu 2 cùng nghĩa: bạn hãy nhờ C cầm hành lý.,3
+juju-te-kureru-temorau,dong-tu-cho-nhan,juju,～てくれる・てもらう,Vて形+くれる／Vて形+もらう,"Cùng một việc, nói theo hai góc nhìn:
+• Aに Vてもらう: chủ ngữ là người nhận (tôi được A làm cho).
+• Aが Vてくれる: chủ ngữ là người làm (A làm cho tôi), người nhận là mình hoặc phía mình.",4
+juju-te-morau-te-itadaku,dong-tu-cho-nhan,juju,～Vてもらう・Vていただく,Vて形+もらう／Vて形+いただく,「～ていただく」 là khiêm nhường ngữ của 「～てもらう」. Dạng hỏi nhờ vả lịch sự nhất: 「～ていただけますか」 → 「～ていただけませんか」 → 「～ていただけますでしょうか」.,5
+juju-sasete-morau-itadaku,dong-tu-cho-nhan,juju,～させてもらう・させていただく,Vさせて形+もらう／Vさせて形+いただく,「Vさせていただく」: xin phép làm (được cho phép làm) một việc — rất lịch sự. Dùng khi việc đó cần sự cho phép hoặc làm phiền đối phương; dùng tràn lan (説明させていただきます cho mọi thứ) dễ bị coi là thừa.,6
+sonkei-ni-naru,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,お/ご～になる,お/ご+Vます形+になる,"Công thức tôn kính ngữ cơ bản nhất: お + Vます形 (động từ gốc Nhật) / ご + danh từ Hán + になる. Không dùng cho động từ có dạng tôn kính riêng: 食べる → 召し上がる (「お食べになる」 không tự nhiên), 見る → ご覧になる, 言う → おっしゃる.",1
+sonkei-kudasaru-kudasai,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,お/ご～くださる/ください,お/ご+Vます形+くださる／ください,"Tôn kính ngữ khi nhờ hoặc mời người trên làm gì, lịch sự hơn 「～てください」. 「くださる」 dùng khi kể việc người trên làm cho mình, 「ください」 dùng khi trực tiếp nhờ/mời. Động từ có dạng tôn kính riêng thì dùng dạng đó: 食べる → 「召し上がってください」, nên 「お食べください」 ít gặp trong văn lịch sự.",2
+sonkei-reru-rareru,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,「Vれる／Vられる」の形を取るもの,Vれる／Vられる,"Tôn kính ngữ bằng hình thức giống thể bị động: nhóm 1 → ～れる (書かれる), nhóm 2 → ～られる (降りられる), する → される, 来る → 来られる. Mức kính trọng nhẹ hơn 「お～になる」, hay dùng trong công ty và báo chí. Dễ nhầm với bị động / khả năng, phải đoán theo ngữ cảnh.",3
+sonkei-keishou,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,後ろに～さん、～様、先生、殿、社長などの敬称を付ける,,"Thêm kính xưng sau tên hoặc chức danh của người khác: さん (thông thường), 様 (khách, thư từ), 先生 (thầy cô, bác sĩ, luật sư), 殿 (văn bản hành chính), chức danh như 社長, 部長. Không thêm kính xưng cho tên mình hoặc người phía mình khi nói với người ngoài.",4
+sonkei-o-go-ki-on,mot-so-quy-tac-chia-dong-tu-co-quy-tac,sonkei,前に「お」「ご」「貴」「御」などを付ける,お/ご/貴/御+N,"Thêm お/ご/貴/御 trước danh từ thuộc về đối phương để tỏ kính trọng: お仕事, ご家族, 貴社, 御社. Thường: お + từ gốc Nhật, ご + từ Hán (có ngoại lệ: お電話, お食事).",5
+kenjo-o-go-suru-itasu,mot-so-quy-tac-chia-dong-tu-co-quy-tac,kenjo,お／ご～する／いたす,お/ご+Vます形+する／いたす,Công thức khiêm nhường ngữ cơ bản: お/ご + Vます形 + する — mình làm việc gì cho người trên hoặc liên quan đến người trên. 「いたす」 thay 「する」 thì khiêm nhường hơn (ご案内いたします). Không dùng khi việc đó không liên quan đến đối phương (×お読みします một mình đọc sách).,6
+kenjo-o-go-sasete-itadakimasu,mot-so-quy-tac-chia-dong-tu-co-quy-tac,kenjo,お/ご～ させていただきます,お/ご+Vます形+させていただきます,"Gộp 「ご～する」 với 「させていただく」: xin phép được làm việc gì cho khách, rất trang trọng, hay gặp trong hướng dẫn, thuyết trình. Bị nhiều người coi là thừa kính ngữ; 「ご案内いたします」 đã đủ lịch sự.",7
+kenjo-settoji-o-go-so-hei,mot-so-quy-tac-chia-dong-tu-co-quy-tac,kenjo,前に「お」「ご」「粗」「弊」「拝」などを付ける,お/ご/粗/弊/拝+N,"Thêm tiền tố trước danh từ thuộc về phía mình để hạ mình: 粗品 (món quà nhỏ, chút quà mọn), 弊社 (công ty chúng tôi), 拝 (拝見 ...). お/ご cũng dùng cho thứ mình làm hướng tới đối phương: お知らせ (thông báo gửi quý vị), ご連絡.",8
+kenjo-domo-me,mot-so-quy-tac-chia-dong-tu-co-quy-tac,kenjo,後ろに「ども」「め」などを付ける,N+ども／め,"Thêm ども/め sau từ chỉ phía mình để hạ mình: 私ども (chúng tôi — công ty hoặc nhóm của tôi), 私め (kẻ hèn này, rất khiêm, gần như chỉ gặp trong phim hoặc nói đùa).",9
