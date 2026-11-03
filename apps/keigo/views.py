@@ -181,9 +181,8 @@ def lesson_view(request, slug):
     learn_pos = next(i for i, x in enumerate(learnable) if x.pk == lesson.pk)
     prev_lesson = learnable[learn_pos - 1] if learn_pos > 0 else None
     next_lesson = learnable[learn_pos + 1] if learn_pos + 1 < len(learnable) else None
-    for other in (prev_lesson, next_lesson):
-        if other is not None:
-            other.url = lesson_url(other)
+    for other in lessons:  # ca menu chon chuong o breadcrumb lan truoc/sau
+        other.url = lesson_url(other)
 
     index, current = None, None
     prev_item = next_item = None
@@ -197,6 +196,7 @@ def lesson_view(request, slug):
         "lesson": lesson,
         "lesson_number": position + 1,
         "lesson_total": len(lessons),
+        "lessons": lessons,
         "stats": selectors.lesson_stats(lesson),
         "items": items,
         "current": current,

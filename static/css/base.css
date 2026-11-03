@@ -255,6 +255,13 @@ table.keigo-table th .jp{font-family:var(--serif);font-size:15px;color:var(--ink
    Mockup: htmlTemplate/SC17_BaiHoc_PhuongAn.html. Template: keigo/lesson.html.
    ========================================================================== */
 .kl-crumb{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--ink-soft);margin-bottom:14px;}
+.kl-crumb:has(.kl-chap-pick){position:relative;}  /* menu neo dau dong -> khong tran mep phai tren dien thoai */
+.kl-chap-pick > summary{cursor:pointer;list-style:none;}
+.kl-chap-pick > summary::-webkit-details-marker{display:none;}
+.kl-chap-pick ul{position:absolute;z-index:20;left:0;top:calc(100% + 6px);margin:0;padding:6px 0;list-style:none;width:min(360px, 100%);background:var(--surface,#fff);border:1px solid var(--border);box-shadow:0 6px 18px rgba(0,0,0,.08);}
+.kl-chap-pick a{display:block;padding:8px 14px;color:var(--ink);text-decoration:none;font-size:14px;}
+.kl-chap-pick a:hover{background:var(--accent-soft,rgba(0,0,0,.04));}
+.kl-chap-pick a[aria-current]{font-weight:600;color:var(--accent);}
 .kl-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;padding-bottom:24px;margin-bottom:26px;border-bottom:1px solid var(--border);}
 .kl-h1{font-family:var(--serif);font-size:36px;margin:0 0 8px;line-height:1.2;}
 .kl-sum{max-width:580px;margin:0;font-size:14.5px;}

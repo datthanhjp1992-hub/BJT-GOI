@@ -116,6 +116,13 @@ class ItemTests(LessonTestCase):
         resp = self.client.get(self.url(self.ch7))
         self.assertEqual(resp.context["prev_lesson"], self.ch3)
 
+    def test_chapter_picker_links_every_chapter(self):
+        resp = self.client.get(self.url(self.ch3))
+        self.assertContains(resp, 'class="kl-chap-pick"')
+        for lesson in (self.ch1, self.ch7):
+            self.assertContains(resp, f'href="{self.url(lesson)}"')
+        self.assertContains(resp, f'href="{self.url(self.ch3)}" aria-current="page"')
+
     def test_pair_items_wrong_and_plain(self):
         resp = self.client.get(self.url(self.ch3))
         self.assertFalse(resp.context["current"].detail["is_wrong_type"])

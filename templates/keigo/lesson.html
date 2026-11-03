@@ -23,7 +23,14 @@ Moi cau tieng Nhat di qua |ruby (escape TRUOC roi moi ghep <ruby>).{% endcomment
   <nav class="kl-crumb">
     <a href="{% url 'keigo:index' %}" class="action-link">{% label "keigo.tra_cuu.breadcrumb" %}</a>
     <span>&rsaquo;</span>
-    <span>{% label "keigo.lesson.chapter" %} {{ lesson_number }} / {{ lesson_total }}</span>
+    <details class="kl-chap-pick">
+      <summary class="action-link">{% label "keigo.lesson.chapter" %} {{ lesson_number }} / {{ lesson_total }} ▾</summary>
+      <ul>
+        {% for l in lessons %}
+          <li><a href="{{ l.url }}"{% if l.pk == lesson.pk %} aria-current="page"{% endif %}>{{ forloop.counter }}. {{ l.title|lower|capfirst }}</a></li>
+        {% endfor %}
+      </ul>
+    </details>
   </nav>
 
   {# ========== HERO ========== #}
