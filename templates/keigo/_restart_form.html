@@ -1,0 +1,8 @@
+{% load properties_tags %}{% comment %}"Lam lai tu dau" -- xoa luot do dang roi vao cau 1 (views.exercise_abandon_view, lam_lai=1).
+Dung o SC20 (the dang lam do + tung dong) va SC21. Hoi confirm vi mat het cau da tra loi.{% endcomment %}
+<form method="post" action="{% url 'keigo:bai_tap_bo' set_slug %}"
+      onsubmit="return confirm('{% message "keigo.exercise.confirm.restart" %}')">
+  {% csrf_token %}
+  <input type="hidden" name="lam_lai" value="1">
+  <button class="bt-linkbtn" type="submit">{% label "keigo.exercise.list.restart" %}</button>
+</form>

@@ -52,6 +52,7 @@ quyet dinh o dau file do). Du lieu: apps/keigo/exercises.list_rows().
           {% csrf_token %}
           <button class="bt-linkbtn" type="submit">{% label "keigo.exercise.list.resume.abandon" %}</button>
         </form>
+        {% include "keigo/_restart_form.html" with set_slug=resume.exercise_set.slug %}
       </div>
     </div>
   {% elif is_new and first_set %}
@@ -119,6 +120,7 @@ quyet dinh o dau file do). Du lieu: apps/keigo/exercises.list_rows().
         <div class="bt-act">
           {% if r.open_attempt %}
             <a class="btn btn-primary btn-sm" href="{% url 'keigo:bai_tap_lam' r.exercise_set.slug %}">{% label "keigo.exercise.list.continue" %}</a>
+            {% include "keigo/_restart_form.html" with set_slug=r.exercise_set.slug %}
           {% else %}
             <form method="post" action="{% url 'keigo:bai_tap_bat_dau' r.exercise_set.slug %}">
               {% csrf_token %}

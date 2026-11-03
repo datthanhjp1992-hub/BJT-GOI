@@ -216,6 +216,9 @@ def lesson_view(request, slug):
 # `inline` (mo xem/in ngay trong tab moi). Nguoi hoc tu chon o SC17/SC20.
 PDF_DOWNLOAD_PARAM = "download"
 
+# POST lam_lai=1 vao bai_tap_bo -> "Lam lai tu dau" thay vi chi bo luot.
+RESTART_PARAM = "lam_lai"
+
 
 def _pdf_response(request, data, filename):
     disposition = "attachment" if request.GET.get(PDF_DOWNLOAD_PARAM) == "1" else "inline"
@@ -370,10 +373,17 @@ def exercise_start_view(request, set_slug):
 @login_required
 @require_POST
 def exercise_abandon_view(request, set_slug):
-    """"Bo luot nay" -- xoa luot do dang (cau tra loi CASCADE theo)."""
+    """"Bo luot nay" -- xoa luot do dang (cau tra loi CASCADE theo).
+    ?lam_lai=1 ("Lam lai tu dau"): xoa xong tao luot moi, vao thang cau 1."""
     exercise_set = get_object_or_404(ExerciseSet, slug=set_slug)
     deleted, _ = exercises.UserExerciseAttempt.objects.filter(
         user=request.user, exercise_set=exercise_set, finished_at__isnull=True).delete()
+    if request.POST.get(RESTART_PARAM) == "1":
+        attempt, _created = exercises.start_attempt(request.user, exercise_set)
+        if attempt is None:
+            flash.error(request, message("keigo.exercise.error.empty_set"))
+            return redirect("keigo:bai_tap")
+        return redirect("keigo:bai_tap_lam", set_slug=exercise_set.slug)
     if deleted:
         flash.info(request, message("keigo.exercise.info.abandoned", title=exercise_set.title))
     return redirect("keigo:bai_tap")

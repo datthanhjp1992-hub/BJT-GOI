@@ -487,6 +487,8 @@ tr.lt-rule td::before{content:"\25B8  ";}
 .slot sup{font-size:10px;color:var(--ink-soft);margin-left:2px;font-family:var(--sans);font-weight:400;}
 .lb-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:14px;}
 .lb-head .action-link{font-size:13.5px;white-space:nowrap;}
+.lb-head-act{display:flex;align-items:center;gap:16px;}
+.lb-head-act form{margin:0;}
 .lb-h1{font-size:30px;margin:0;}
 .lb-sub{font-size:13.5px;}
 .lb-sub b{color:var(--ink);}

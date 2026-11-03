@@ -436,6 +436,18 @@ class ExerciseStartTests(ExerciseTestCase):
         self.assertFalse(UserExerciseAttempt.objects.exists())
         self.assertFalse(UserQuestionAnswer.objects.exists())
 
+    def test_restart_wipes_answers_and_opens_question_1(self):
+        self.start(self.s1)
+        self.answer(self.s1, self.q_mcq, self.mcq_ok)
+        old = UserExerciseAttempt.objects.get()
+        r = self.client.post(reverse("keigo:bai_tap_bo", args=[self.s1.slug]), {"lam_lai": "1"})
+        self.assertRedirects(r, self.play(self.s1))
+        attempt = UserExerciseAttempt.objects.get()
+        self.assertNotEqual(attempt.pk, old.pk)
+        self.assertFalse(UserQuestionAnswer.objects.exists())
+        self.assertContains(self.client.get(reverse("keigo:bai_tap")), 'name="lam_lai"')
+        self.assertContains(self.client.get(self.play(self.s1)), 'name="lam_lai"')
+
     def test_list_shows_resume_card(self):
         self.start(self.s2)
         r = self.client.get(reverse("keigo:bai_tap"))

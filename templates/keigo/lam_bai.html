@@ -30,7 +30,10 @@ dau file do). View: keigo.views.exercise_play_view (Post/Redirect/Get).
       <div class="muted lb-sub">{% label "keigo.exercise.play.question" %} <b>{{ position }}</b> / {{ total }}
         · {% label "keigo.exercise.play.correct_so_far" %} {{ correct_count }} / {{ answered_count }}</div>
     </div>
-    <a class="action-link" href="{% url 'keigo:bai_tap' %}">{% label "keigo.exercise.play.pause" %}</a>
+    <div class="lb-head-act">
+      <a class="action-link" href="{% url 'keigo:bai_tap' %}">{% label "keigo.exercise.play.pause" %}</a>
+      {% include "keigo/_restart_form.html" with set_slug=exercise_set.slug %}
+    </div>
   </div>
 
   <div class="lb-dots" aria-label="{% label 'keigo.exercise.play.progress_label' %}">
