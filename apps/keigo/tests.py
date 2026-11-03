@@ -110,6 +110,12 @@ class ItemTests(LessonTestCase):
         self.assertIsNone(resp.context["next_item"])
         self.assertContains(resp, f'href="{self.url(self.ch3)}"')
 
+    def test_next_chapter_skips_verb_table(self):
+        resp = self.client.get(self.url(self.ch3))
+        self.assertEqual(resp.context["next_lesson"], self.ch7)
+        resp = self.client.get(self.url(self.ch7))
+        self.assertEqual(resp.context["prev_lesson"], self.ch3)
+
     def test_pair_items_wrong_and_plain(self):
         resp = self.client.get(self.url(self.ch3))
         self.assertFalse(resp.context["current"].detail["is_wrong_type"])

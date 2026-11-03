@@ -176,8 +176,11 @@ def lesson_view(request, slug):
         item.url = f"{base_url}?{urlencode({selectors.LESSON_ITEM_PARAM: item.key})}"
 
     lessons, position = _lesson_position(lesson)
-    prev_lesson = lessons[position - 1] if position > 0 else None
-    next_lesson = lessons[position + 1] if position + 1 < len(lessons) else None
+    # Truoc/sau bo qua chuong bang chia -- no dan sang SC18, lam dut luong hoc.
+    learnable = [x for x in lessons if x.slug != VERB_TABLE_LESSON_SLUG]
+    learn_pos = next(i for i, x in enumerate(learnable) if x.pk == lesson.pk)
+    prev_lesson = learnable[learn_pos - 1] if learn_pos > 0 else None
+    next_lesson = learnable[learn_pos + 1] if learn_pos + 1 < len(learnable) else None
     for other in (prev_lesson, next_lesson):
         if other is not None:
             other.url = lesson_url(other)
