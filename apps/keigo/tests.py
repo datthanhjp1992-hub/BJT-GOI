@@ -310,6 +310,7 @@ class PitfallTests(LessonTestCase):
 # =============================================================================
 from apps.learning.models import StudySession  # noqa: E402
 
+from apps.core.properties import label  # noqa: E402
 from . import exercises  # noqa: E402
 from .models import (  # noqa: E402
     ExerciseSection, ExerciseSet, Question, QuestionOption, UserExerciseAttempt, UserQuestionAnswer,
@@ -542,6 +543,14 @@ class ExerciseFinishAndResultTests(ExerciseTestCase):
         self.assertEqual([it.question for it in page.context["items"]], [self.q_ord])
         self.assertIsNone(page.context["best_before"])
         self.assertEqual(page.context["next_set"], self.s2)
+
+    def test_ai_prompt_lists_only_wrong_questions(self):
+        page = self.client.get(self.do_set1(correct_ord=False)["Location"])
+        prompt = page.context["ai_prompt"]
+        self.assertIn(f"{label('keigo.exercise.result.col.no')} {self.q_ord.number} (", prompt)
+        self.assertNotIn(f"{label('keigo.exercise.result.col.no')} {self.q_mcq.number} (", prompt)
+        self.assertNotIn("{", prompt)  # khong con ruby markup / placeholder
+        self.assertContains(page, 'id="kq-ai-text"')
 
     def test_record_badge_and_perfect_score(self):
         self.do_set1(correct_mcq=False)

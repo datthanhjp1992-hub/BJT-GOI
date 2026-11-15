@@ -66,6 +66,15 @@ dau file do). View: keigo.views.exercise_result_view.
     <a class="action-link" href="{% url 'keigo:bai_tap' %}">{% label "keigo.exercise.result.back" %}</a>
   </div>
 
+  {% if ai_prompt %}
+    <details class="kq-ai">
+      <summary class="action-link">{% label "keigo.exercise.ai.toggle" %} ({{ wrong_count }})</summary>
+      <p class="muted">{% label "keigo.exercise.ai.hint" %}</p>
+      <textarea id="kq-ai-text" class="jp" rows="10" readonly>{{ ai_prompt }}</textarea>
+      <button type="button" class="btn btn-outline" id="kq-ai-copy" data-done="{% label 'keigo.exercise.ai.copied' %}">{% label "keigo.exercise.ai.copy" %}</button>
+    </details>
+  {% endif %}
+
   {# ========== TAB ========== #}
   <nav class="bt-tabs kq-tabs">
     <a class="bt-tab{% if view == 'sai' %} is-active{% endif %}" href="{{ tab_wrong_url }}">{% label "keigo.exercise.result.tab.wrong" %} <span class="c">{{ wrong_count }}</span></a>
@@ -138,4 +147,20 @@ dau file do). View: keigo.views.exercise_result_view.
   </table>
   <p class="muted kq-note">{% label "keigo.exercise.result.history_note" %}</p>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* Sao chep prompt AI -- clipboard API can https/localhost, con lai dung execCommand. */
+(function () {
+  var b = document.getElementById("kq-ai-copy"), t = document.getElementById("kq-ai-text");
+  if (!b) return;
+  b.addEventListener("click", function () {
+    var done = function () { b.textContent = b.dataset.done; };
+    var legacy = function () { t.select(); if (document.execCommand("copy")) done(); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t.value).then(done, legacy);
+    else legacy();
+  });
+})();
+</script>
 {% endblock %}

@@ -561,6 +561,7 @@ def exercise_result_view(request, set_slug):
         view=view,
         items=items if view == exercises.RESULT_VIEW_ALL else wrong,
         wrong_count=len(wrong),
+        ai_prompt=exercises.ai_prompt(exercise_set, wrong),
         item_count=len(items),
         tab_wrong_url=tab_url(exercises.RESULT_VIEW_WRONG),
         tab_all_url=tab_url(exercises.RESULT_VIEW_ALL),

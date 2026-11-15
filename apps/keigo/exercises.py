@@ -26,6 +26,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
 from apps.core import quiz
+from apps.core.properties import label, message
 from apps.core.constants import (
     QUESTION_TYPE_CLOZE,
     QUESTION_TYPE_MCQ,
@@ -460,6 +461,27 @@ def result_items(attempt, questions):
         items.append(ResultItem(question=q, order=i, answer=a, correct=right,
                                 stem_html=stem, is_passage_excerpt=excerpt))
     return items
+
+
+def ai_prompt(exercise_set, wrong_items):
+    """Van ban thuong (khong HTML) cac cau sai -> nguoi hoc dan vao chatbot AI de hoi."""
+    if not wrong_items:
+        return ""
+    plain = lambda t: RUBY_RE.sub(r"\1", t or "").strip()
+    pick = lambda o: f"{o.position}. {plain(o.text_jp)}" if o else "—"
+    blocks = [message("keigo.exercise.ai.intro", title=plain(exercise_set.title))]
+    for it in wrong_items:
+        q = it.question
+        head = f"{label('keigo.exercise.result.col.no')} {q.number} ({label('keigo.exercise.type.' + q.question_type)})"
+        if q.context_note:
+            head += f" {plain(q.context_note)}"
+        lines = [head, f"{label('keigo.exercise.ai.stem')}: {plain(question_sentence(q))}",
+                 f"{label('keigo.exercise.ai.options')}:"]
+        lines += [f"  {pick(o)}" for o in sorted(q.options.all(), key=lambda o: o.position)]
+        lines += [f"{label('keigo.exercise.ai.mine')}: {pick(it.answer.selected_option if it.answer else None)}",
+                  f"{label('keigo.exercise.result.correct_answer')}: {pick(it.correct)}"]
+        blocks.append("\n".join(lines))
+    return "\n\n".join(blocks)
 
 
 def type_breakdown(items):
