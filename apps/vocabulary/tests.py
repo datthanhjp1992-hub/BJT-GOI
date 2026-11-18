@@ -648,6 +648,7 @@ class AudioTextTests(SimpleTestCase):
 
         self.assertEqual(parse_audio_name("w12.mp3"), ("w", 12))
         self.assertEqual(parse_audio_name("e7.mp3"), ("e", 7))
+        self.assertEqual(parse_audio_name("n3.mp3"), ("n", 3))  # NewsSegment (apps.news)
         self.assertIsNone(parse_audio_name("manifest.json"))
         self.assertIsNone(parse_audio_name("x1.mp3"))
         self.assertEqual(public_audio_url("https://abc.supabase.co/", "w12.mp3", "0123456789abcdef"),

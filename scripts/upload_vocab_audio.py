@@ -9,7 +9,8 @@ bucket public "vocab-audio", rồi ghi Vocabulary.audio_url / ExampleSentence.au
     python scripts/upload_vocab_audio.py --apply --as-user dat
 
 w<id>.mp3 -> Vocabulary.audio_url, e<id>.mp3 -> ExampleSentence.audio_url,
-m<id>.mp3 -> Vocabulary.meaning_audio_url (scripts/generate_meaning_audio.py):
+m<id>.mp3 -> Vocabulary.meaning_audio_url (scripts/generate_meaning_audio.py),
+n<id>.mp3 -> NewsSegment.audio_url (scripts/generate_news_audio.py):
     python scripts/upload_vocab_audio.py media/meaning_audio
 
 So MD5 với eTag trên bucket:
@@ -105,6 +106,7 @@ def main():
     from apps.core.middleware import get_current_user
     from apps.exam.audio import UPLOAD_NEW, UPLOAD_OVERWRITE, UPLOAD_SAME, md5_of, plan_uploads
     from apps.vocabulary.audio import BUCKET, parse_audio_name, public_audio_url
+    from apps.news.models import NewsSegment
     from apps.vocabulary.models import ExampleSentence, Vocabulary
 
     base = os.environ.get("SUPABASE_URL", "").rstrip("/")
@@ -116,7 +118,7 @@ def main():
 
     files = {p.name: p for p in sorted(args.folder.glob("*.mp3")) if parse_audio_name(p.name)}
     targets = {"w": (Vocabulary, "audio_url"), "e": (ExampleSentence, "audio_url"),
-               "m": (Vocabulary, "meaning_audio_url")}
+               "m": (Vocabulary, "meaning_audio_url"), "n": (NewsSegment, "audio_url")}
     kinds = {parse_audio_name(name)[0] for name in files}
     targets = {k: t for k, t in targets.items() if k in kinds}
     missing_cols = set()
@@ -200,7 +202,7 @@ def main():
     print(f"  Ghi đè        : {counts[UPLOAD_OVERWRITE]}")
     print(f"  Giữ nguyên    : {counts[UPLOAD_SAME]}")
     print(f"  Ghi audio_url : {len(changes.get('w', {}))} từ, {len(changes.get('e', {}))} câu ví dụ, "
-          f"{len(changes.get('m', {}))} nghĩa")
+          f"{len(changes.get('m', {}))} nghĩa, {len(changes.get('n', {}))} đoạn tin")
     if failed:
         print(f"{RED}  Lỗi upload    : {len(failed)} (các dòng này KHÔNG ghi audio_url){RESET}")
         for f in failed[:20]:

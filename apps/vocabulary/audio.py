@@ -75,12 +75,12 @@ def is_dirty(sentence_jp):
 # Upload (scripts/upload_vocab_audio.py)
 # =============================================================================
 BUCKET = "vocab-audio"
-_FILE_NAME = re.compile(r"^([wem])(\d+)\.mp3$")
+_FILE_NAME = re.compile(r"^([wemn])(\d+)\.mp3$")
 
 
 def parse_audio_name(name):
     """'w12.mp3' -> ('w', 12) (Vocabulary), 'e7.mp3' -> ('e', 7) (ExampleSentence),
-    'm12.mp3' -> ('m', 12) (nghĩa của Vocabulary), khác -> None."""
+    'm12.mp3' -> ('m', 12) (nghĩa của Vocabulary), 'n3.mp3' -> ('n', 3) (NewsSegment), khác -> None."""
     m = _FILE_NAME.match(name)
     return (m.group(1), int(m.group(2))) if m else None
 
