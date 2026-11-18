@@ -44,7 +44,7 @@ class LessonModelTests(TestCase):
 
     def test_mastercode_seeded(self):
         self.assertEqual([c for c, _ in politeness_level_choices()], ["1", "2", "3"])
-        self.assertEqual([c for c, _ in practice_kind_choices()], ["drill", "blank", "polite"])
+        self.assertEqual([c for c, _ in practice_kind_choices()], ["drill", "blank", "polite", "news"])
 
     def test_every_model_has_audit_columns(self):
         for model in dataio.importable_models():

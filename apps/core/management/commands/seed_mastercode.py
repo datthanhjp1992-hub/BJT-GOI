@@ -229,6 +229,7 @@ SEED_DATA = {
         ("drill", "Luyện thay thế", None, "DrillItem", 1),
         ("blank", "Chỗ trống đóng vai", None, "RoleplayBlank", 2),
         ("polite", "Mức lịch sự", None, "PolitenessPhrase", 3),
+        ("news", "Nghe bản tin", None, "NewsLesson", 4),
     ],
 }
 

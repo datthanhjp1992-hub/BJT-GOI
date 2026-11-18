@@ -58,6 +58,7 @@ LOCAL_APP_LABELS = (
     "error_reports",
     "keigo",
     "lessons",
+    "news",
 )
 
 AUDIT_FIELDS = ("created_by", "created_at", "updated_by", "updated_at")

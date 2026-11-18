@@ -252,6 +252,7 @@ CODE_TYPE_PRACTICE_KIND = "26"     # Dạng câu luyện tập trong UserPractic
 PRACTICE_KIND_DRILL = "drill"      # DrillItem
 PRACTICE_KIND_BLANK = "blank"      # RoleplayBlank
 PRACTICE_KIND_POLITE = "polite"    # PolitenessPhrase
+PRACTICE_KIND_NEWS = "news"        # NewsLesson (apps.news)
 
 
 def politeness_level_choices():

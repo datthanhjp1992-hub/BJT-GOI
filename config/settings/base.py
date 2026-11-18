@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "apps.exam",
     # Hoc theo bai - Quyen 1 (docs/SPEC_LUYEN_TAP_BAI.md).
     "apps.lessons",
+    "apps.news",
     # Khu vuc quan tri SC07 - khong co model, chi doc du lieu app khac.
     "apps.admin_panel",
 ]
