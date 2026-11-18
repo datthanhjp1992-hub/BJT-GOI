@@ -58,6 +58,7 @@ class TemplateLeakTests(TestCase):
             reverse("vocabulary:list", args=["nha-hang"]),
             reverse("learning:flashcard", args=["nha-hang"]),
             reverse("learning:review"),
+            reverse("news:index"),
             reverse("practice_sheets:create"),
             reverse("accounts:profile"),
             reverse("accounts:settings"),

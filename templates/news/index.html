@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}Nghe dịch bản tin — danh sách 20 bài (docs/SPEC_NGHE_BAN_TIN.md mục 5).{% endcomment %}
+
+{% block title %}{% label "news.title" %} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <div class="nb-head">
+    <div>
+      <div class="eyebrow">{% label "news.eyebrow" %}</div>
+      <h1 class="serif" style="font-size:28px;margin:0 0 6px;">{% label "news.title" %}</h1>
+      <p class="muted" style="margin:0 0 16px;">{% label "news.intro" %}</p>
+    </div>
+    <div class="tag">{% label "news.done_count" %} {{ done_count }}/{{ total }}</div>
+  </div>
+  <div class="card nb-list">
+    {% for l in lessons %}
+      <a class="nb-row" href="{% url 'news:lesson' l.number %}">
+        <span class="nb-check">{% if l.done %}✓{% endif %}</span>
+        <span class="nb-no jp">第{{ l.number }}課</span>
+        <span class="nb-titles"><span class="jp">{{ l.title_jp }}</span><span class="muted text-sm">{{ l.title_vi }}</span></span>
+      </a>
+    {% empty %}
+      <p class="muted" style="padding:16px;">{% label "news.empty" %}</p>
+    {% endfor %}
+  </div>
+{% endblock %}

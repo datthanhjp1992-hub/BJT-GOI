@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load properties_tags %}
+{% comment %}Nghe dịch bản tin — một bài 3 đoạn. Chữ Nhật + bản dịch ẩn sẵn trong <details>.
+Từ có trong kho = <button class="nb-word"> mở popover chung #nb-pop (không phát audio nghĩa).{% endcomment %}
+
+{% block title %}第{{ lesson.number }}課 {{ lesson.title_jp }} | {% label "common.brand.name" %}{% endblock %}
+
+{% block content %}
+  <div class="nb-nav text-sm">
+    <a class="action-link" href="{% url 'news:index' %}">‹ {% label "news.back" %}</a>
+    <span>
+      {% if prev_number %}<a class="action-link" href="{% url 'news:lesson' prev_number %}">‹ {% label "news.prev" %}</a>{% endif %}
+      {% if next_number %}<a class="action-link" href="{% url 'news:lesson' next_number %}">{% label "news.next" %} ›</a>{% endif %}
+    </span>
+  </div>
+  <div class="eyebrow jp">第{{ lesson.number }}課</div>
+  <h1 class="serif jp" style="font-size:24px;margin:0 0 4px;">{{ lesson.title_jp }}</h1>
+  <p class="muted" style="margin:0 0 12px;">{{ lesson.title_vi }}</p>
+
+  <div class="nb-speed text-sm">
+    <span class="muted">{% label "news.speed" %}</span>
+    <button type="button" class="btn btn-outline btn-sm" data-rate="0.75">0.75×</button>
+    <button type="button" class="btn btn-outline btn-sm" data-rate="1">1×</button>
+  </div>
+
+  {% for seg in segments %}
+    <section class="card nb-seg">
+      <div class="nb-seg-head"><b class="jp">問題{{ seg.number }}</b></div>
+      {% if seg.audio_url %}
+        <audio controls preload="none" src="{{ seg.audio_url }}"></audio>
+      {% else %}
+        <p class="muted text-sm">{% label "news.no_audio" %}</p>
+      {% endif %}
+      <details class="nb-reveal">
+        <summary>{% label "news.show_jp" %}</summary>
+        <p class="jp nb-text">{% for text, v in seg.parts %}{% if v %}<button type="button" class="nb-word" data-r="{{ v.reading }}" data-m="{{ v.meaning_vi }}">{{ text }}</button>{% else %}{{ text }}{% endif %}{% endfor %}</p>
+      </details>
+      <details class="nb-reveal">
+        <summary>{% label "news.show_vi" %}</summary>
+        <p class="nb-text">{{ seg.translation_vi }}</p>
+      </details>
+    </section>
+  {% endfor %}
+
+  <form method="post" action="{% url 'news:mark' lesson.number %}" class="nb-mark">
+    {% csrf_token %}
+    {% if done %}
+      <input type="hidden" name="done" value="0">
+      <span class="tag">✓ {% label "news.done" %}</span>
+      <button class="btn btn-outline btn-sm">{% label "news.undo" %}</button>
+    {% else %}
+      <input type="hidden" name="done" value="1">
+      <button class="btn btn-primary">{% label "news.mark" %}</button>
+    {% endif %}
+  </form>
+  <p class="muted text-sm">{% label "news.credit" %}</p>
+
+  <div id="nb-pop" popover class="card nb-pop"><b class="jp" data-w></b> <span class="jp muted" data-r></span><div data-m></div></div>
+  <script>
+  (function () {
+    var KEY = "news.rate", rate = 1;
+    try { rate = parseFloat(localStorage.getItem(KEY)) || 1; } catch (e) {}
+    function apply(r) {
+      rate = r;
+      document.querySelectorAll("audio").forEach(function (a) { a.playbackRate = r; });
+      document.querySelectorAll("[data-rate]").forEach(function (b) {
+        var on = parseFloat(b.dataset.rate) === r;
+        b.classList.toggle("btn-primary", on);
+        b.classList.toggle("btn-outline", !on);
+      });
+    }
+    document.querySelectorAll("[data-rate]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        apply(parseFloat(b.dataset.rate));
+        try { localStorage.setItem(KEY, String(rate)); } catch (e) {}
+      });
+    });
+    document.querySelectorAll("audio").forEach(function (a) {
+      a.addEventListener("play", function () { a.playbackRate = rate; });
+    });
+    apply(rate);
+
+    var pop = document.getElementById("nb-pop");
+    document.addEventListener("click", function (e) {
+      var w = e.target.closest(".nb-word");
+      if (!w || !pop.showPopover) return;
+      pop.querySelector("[data-w]").textContent = w.textContent;
+      pop.querySelector("[data-r]").textContent = w.dataset.r;
+      pop.querySelector("[data-m]").textContent = w.dataset.m;
+      var box = w.getBoundingClientRect();
+      pop.style.top = (box.bottom + 6) + "px";
+      pop.style.left = Math.max(8, Math.min(box.left, innerWidth - 300)) + "px";
+      pop.showPopover();
+    });
+  })();
+  </script>
+{% endblock %}

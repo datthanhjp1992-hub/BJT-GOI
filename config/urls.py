@@ -15,6 +15,7 @@ urlpatterns = [
     path("ngu-phap/", include("apps.grammar.urls")),
     path("kiem-tra/", include("apps.exam.urls")),
     path("bai/", include("apps.lessons.urls")),
+    path("nghe-ban-tin/", include("apps.news.urls")),
     path("learning/", include("apps.learning.urls")),
     path("practice-sheets/", include("apps.practice_sheets.urls")),
     path("error-reports/", include("apps.error_reports.urls")),

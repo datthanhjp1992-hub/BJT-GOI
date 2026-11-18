@@ -61,6 +61,8 @@ falsy, khong loi).
     </a>
     {% comment %}Học theo bài (Quyển 1, /bai/) TẠM ĐÓNG 18/10/2026 theo Dat — nội dung còn sơ sài. Code + dữ liệu vẫn giữ;
     mở lại = khôi phục khối <details> "lessons" ở đây từ commit ed09bca.{% endcomment %}
+    <a class="sidenav-link{% if active_nav == "news" %} active{% endif %}"
+       href="{% url 'news:index' %}">{% label "common.nav.news" %}</a>
     {% comment %}Khu Kiểm tra (docs/SPEC_KIEM_TRA.md T7.9). Badge Sổ câu sai = số mục còn trong sổ
     (context processor apps.exam.context_processors.exam_badges, đọc lười).{% endcomment %}
     <details class="sidenav-group"{% if active_nav == "exam" %} open{% endif %}>
