@@ -65,6 +65,12 @@ class ImporterTests(TestCase):
         self.assertIn("số câu theo dạng", problems)
         self.assertEqual(ExamSet.objects.count(), 1)
 
+    def test_check_database_skips_section_counts_of_hidden_sets(self):
+        """Bộ đề ẩn (vd câu nghe bản tin, chỉ có p1s3) không làm thi thử được -> không soát cấu trúc 100 câu."""
+        importer.apply_rows([row(1, 1, section="p1s3", audio_path="news/n1.mp3")])
+        ExamSet.objects.update(is_active=False)
+        self.assertEqual(importer.check_database(), [])
+
     def test_transcript_vs_scene(self):
         importer.apply_rows([row(1, 1, section="p1s1", passage_type="会話", audio_path="mock/a.mp3"),
                              row(2, 2, section="p1s2", passage_type="場面設定", audio_path="mock/b.mp3"),

@@ -158,6 +158,6 @@ def check_database():
                 problems.append(f"{exam_set.title} câu {q.number}: số đáp án đúng = {sum(o.is_correct for o in opts)}")
             if q.section_code in listening and not q.audio_path:
                 problems.append(f"{exam_set.title} câu {q.number}: câu nghe thiếu audio_path")
-        if counts != expected:
+        if exam_set.is_active and counts != expected:  # bộ ẩn không làm thi thử được (vd câu nghe bản tin)
             problems.append(f"{exam_set.title}: số câu theo dạng {dict(counts)} khác chuẩn {dict(expected)}")
     return problems
